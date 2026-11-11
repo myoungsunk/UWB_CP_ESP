@@ -1,0 +1,3 @@
+# Host capture/analysis only. The firmware itself has no Python dependency.
+numpy>=1.24
+pyserial>=3.5

@@ -1,0 +1,50 @@
+{
+  "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+  "role": "tag",
+  "pass": false,
+  "no_rf_tx_requested": true,
+  "actual_usb_hardware_test": true,
+  "checks": {
+    "firmware": true,
+    "mode": true,
+    "config": true,
+    "faults": false,
+    "idle": true,
+    "selftest": false,
+    "dev_a": false,
+    "dev_b": false,
+    "decoder": true
+  },
+  "hello": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": false,
+    "fault_latched": true,
+    "boot": 3019769086,
+    "config_id": 230186031,
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "selftest": {
+    "event": "SELFTEST",
+    "role": "tag",
+    "pass": false,
+    "faults": 1,
+    "dev_a": 39638745,
+    "dev_b": 0,
+    "ant_a_tx": 21165,
+    "ant_a_rx": 15060,
+    "ant_b_tx": 0,
+    "ant_b_rx": 0
+  }
+}

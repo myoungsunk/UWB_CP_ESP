@@ -1,0 +1,98 @@
+{
+  "created_utc": "2026-11-11T04:38:26.072658+00:00",
+  "target_build": true,
+  "hardware_tested": false,
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "required_core": "3.3.7",
+  "roles": {
+    "anchor": {
+      "command": [
+        "C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe",
+        "compile",
+        "--fqbn",
+        "esp32:esp32:esp32doit-devkit-v1",
+        "--warnings",
+        "all",
+        "--library",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\vendor\\anchor\\DW1000Ng",
+        "--build-path",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\build\\anchor",
+        "--output-dir",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\dist\\anchor",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\firmware\\ANCHOR_DUAL_DS_CIR"
+      ],
+      "exit_code": 0,
+      "artifacts": {
+        "ANCHOR_DUAL_DS_CIR.ino.bin": {
+          "bytes": 388400,
+          "sha256": "c8ff60e1f01d7b5a3640c64626d0e1bfc99a964c5a2858a4437d66e8407d3eba"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.bootloader.bin": {
+          "bytes": 23520,
+          "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.elf": {
+          "bytes": 6269908,
+          "sha256": "c4b7c04b6e34c01333b254045819a275643989eca879f06f29ed359456347828"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.map": {
+          "bytes": 12961347,
+          "sha256": "0c6213f315c663b668c4d5275442d481966a23f13ff985fe64524c3f761339ac"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.merged.bin": {
+          "bytes": 4194304,
+          "sha256": "991a1c7f4b8f1b1720c53bc259a55627f7f9c3e8a29eab0bdf7630cbcb49a640"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.partitions.bin": {
+          "bytes": 3072,
+          "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+        }
+      }
+    },
+    "tag": {
+      "command": [
+        "C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe",
+        "compile",
+        "--fqbn",
+        "esp32:esp32:esp32doit-devkit-v1",
+        "--warnings",
+        "all",
+        "--library",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\vendor\\tag\\DW1000Ng",
+        "--build-path",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\build\\tag",
+        "--output-dir",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\dist\\tag",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R3_20261111\\UWB_DUAL_DW1000_MODE8_R3_20261111\\firmware\\TAG_DUAL_DS_CIR"
+      ],
+      "exit_code": 0,
+      "artifacts": {
+        "TAG_DUAL_DS_CIR.ino.bin": {
+          "bytes": 392224,
+          "sha256": "d79f630fc919fe149608486224cb389e9d76463230621780431b5e7a08de1493"
+        },
+        "TAG_DUAL_DS_CIR.ino.bootloader.bin": {
+          "bytes": 23520,
+          "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+        },
+        "TAG_DUAL_DS_CIR.ino.elf": {
+          "bytes": 6290644,
+          "sha256": "440715218793ee5d61fbb0a518deff02fe9a6ce6182301080879aa73fdd36f20"
+        },
+        "TAG_DUAL_DS_CIR.ino.map": {
+          "bytes": 12969180,
+          "sha256": "d8d29d2e8c9c60f35a20dda7b444cb3d7733eaf9e20d1bd4e8c25eb7b7ff4140"
+        },
+        "TAG_DUAL_DS_CIR.ino.merged.bin": {
+          "bytes": 4194304,
+          "sha256": "189e724616f17a05580c89e9bda2804d4095de445805c2fe062f0ac030acf80d"
+        },
+        "TAG_DUAL_DS_CIR.ino.partitions.bin": {
+          "bytes": 3072,
+          "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+        }
+      }
+    }
+  },
+  "arduino_cli": "arduino-cli  Version: 1.5.1 Commit: 01f3d4f2b Date: 2026-06-05T10:22:12Z"
+}

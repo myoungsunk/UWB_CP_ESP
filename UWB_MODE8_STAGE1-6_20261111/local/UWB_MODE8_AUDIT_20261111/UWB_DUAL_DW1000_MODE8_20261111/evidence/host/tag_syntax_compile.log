@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/bin/g++", "-std=c++11", "-DESP32", "-DARDUINO", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-Itests/stubs", "-Ivendor/tag/DW1000Ng/src", "-c", "firmware/TAG_DUAL_DS_CIR/app.cpp", "-o", "/mnt/data/UWB_DUAL_DW1000_MODE8_20261111/build/host/tag_syntax_ONLY.o"]

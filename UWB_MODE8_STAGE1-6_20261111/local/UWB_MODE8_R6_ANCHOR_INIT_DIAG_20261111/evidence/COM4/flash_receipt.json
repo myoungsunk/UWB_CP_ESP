@@ -1,0 +1,116 @@
+{
+  "created_utc": "2026-11-11T08:49:42.342025+00:00",
+  "role": "anchor",
+  "port": "COM4",
+  "mac": "28:56:2f:72:e7:18",
+  "flash_pass": true,
+  "selftest_pass": false,
+  "host_qa": "evidence/host/host_qa_receipt.json",
+  "preflight": "evidence/COM4/anchor_offline_preflight.json",
+  "build": "dist/target_build_receipt.json",
+  "source_manifest_sha256": "3a179e195360d5f5e84a58910a967a8fd398bdcc50597772d6a103aef3d37bb0",
+  "firmware": "D8_R6_ANCHOR_DIAG_20261111",
+  "app_offset": "0x10000",
+  "app": "dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin",
+  "app_sha256": "d2f0fa151b055dcade4f9ebfa9f125f467400ebe459b28e6cf1e89b613adb0f0",
+  "prior_app": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R6_ANCHOR_REAUDIT_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin",
+  "prior_app_sha256": "7448a52755023c41d1d760e86f65c1a70c8d6addc9f9322723feea263c134f06",
+  "operations": {
+    "prior_app_verify": {
+      "log": "evidence\\COM4\\r6_preflash_verify.log",
+      "last_write_utc": "2026-11-11T08:45:12.187877+00:00",
+      "exit_code": 0,
+      "command": [
+        "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "verify-flash",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R6_ANCHOR_REAUDIT_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"
+      ]
+    },
+    "prewrite_identity": {
+      "log": "evidence\\COM4\\prewrite_mac.log",
+      "last_write_utc": "2026-11-11T08:46:57.002682+00:00",
+      "exit_code": 0,
+      "command": [
+        "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "read-mac"
+      ]
+    },
+    "write": {
+      "log": "evidence\\COM4\\diag_write.log",
+      "last_write_utc": "2026-11-11T08:47:04.482050+00:00",
+      "exit_code": 0,
+      "command": [
+        "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "write-flash",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R6_ANCHOR_INIT_DIAG_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"
+      ]
+    },
+    "verify": {
+      "log": "evidence\\COM4\\diag_verify.log",
+      "last_write_utc": "2026-11-11T08:47:07.552560+00:00",
+      "exit_code": 0,
+      "command": [
+        "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "verify-flash",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R6_ANCHOR_INIT_DIAG_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"
+      ]
+    },
+    "usb_smoke": {
+      "result": "evidence/COM4/usb_smoke.json",
+      "command": [
+        "py",
+        "-3",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/usb_smoke.py",
+        "--role",
+        "anchor",
+        "--port",
+        "COM4",
+        "--out",
+        "evidence/COM4/usb_smoke.json"
+      ],
+      "exit_code": 2,
+      "boot": 1932020477,
+      "init_failure": {
+        "step": "TX_FCTRL",
+        "reg": "0x08",
+        "offset": null,
+        "comparison": "masked_equal",
+        "mask": "0xffffe000",
+        "expected": "0x252000",
+        "actual": "0x25a00c",
+        "actual_masked": "0x25a000",
+        "different_bits": [
+          15
+        ]
+      }
+    }
+  }
+}

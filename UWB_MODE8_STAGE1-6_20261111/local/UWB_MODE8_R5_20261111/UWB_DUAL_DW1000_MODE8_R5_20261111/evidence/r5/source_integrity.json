@@ -1,0 +1,28 @@
+{
+  "checked_at": "2026-11-11T14:29:50.910786+09:00",
+  "r4_zip_sha256": "2a4342497ab9a693338ea74d7d7abc7ae239c1d0ffb90e19187eb8de0a488a93",
+  "r4_zip_manifest_files_verified": 162,
+  "unchanged_r4_files_by_tree": {
+    "shared": 6,
+    "firmware": 16,
+    "vendor": 50
+  },
+  "exact_r4_replay_fixture_hashes": {
+    "partial_poll_lost_0.json": {
+      "bytes": 5043,
+      "sha256": "cbd680551bc9fc72b849a37770c4659d48bf4bf866703e1f2a0698686b13cee6"
+    },
+    "partial_poll_lost_0.raw": {
+      "bytes": 15872,
+      "sha256": "0c77e8b4f98047e1478d1ef61035be3453eca8fc4f49b6ec055a31d70d5cd4d7"
+    },
+    "partial_poll_lost_1.json": {
+      "bytes": 5049,
+      "sha256": "20706285a419560c4b3cbbe09b1efae39f6b462d9060c8f5c54d6fafdc8b3690"
+    },
+    "partial_poll_lost_1.raw": {
+      "bytes": 15872,
+      "sha256": "0c77e8b4f98047e1478d1ef61035be3453eca8fc4f49b6ec055a31d70d5cd4d7"
+    }
+  }
+}

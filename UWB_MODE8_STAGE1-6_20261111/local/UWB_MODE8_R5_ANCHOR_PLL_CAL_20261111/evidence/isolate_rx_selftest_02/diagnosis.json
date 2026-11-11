@@ -1,0 +1,147 @@
+{
+  "session": 1565289470,
+  "scope": "one Stage 2 transaction without anchor RX SELFTEST",
+  "anchor_hello": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 254674407,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 1,
+    "period_miss": 0
+  },
+  "tag_hello": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 2532775241,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "anchor_pll_before": {
+    "event": "PLLSTATUS",
+    "role": "anchor",
+    "boot": 254674407,
+    "before": 8388610,
+    "after": 8388610,
+    "first_poll_pre_tx": 0,
+    "rf_before": 1,
+    "rf_after": 1,
+    "ec_ctrl": 4,
+    "acknowledged": false,
+    "ready": true,
+    "first_poll_checked": false
+  },
+  "tag_selftest": {
+    "event": "SELFTEST",
+    "role": "tag",
+    "pass": true,
+    "faults": 0,
+    "dev_a": 3737780528,
+    "dev_b": 3737780528,
+    "ant_a_tx": 16436,
+    "ant_a_rx": 16436,
+    "ant_b_tx": 16436,
+    "ant_b_rx": 16436
+  },
+  "exchange_error": "tag: event timeout",
+  "stop": {
+    "anchor": {
+      "event": "STOPPED",
+      "role": "anchor",
+      "session": 1565289470,
+      "stop_request": 599024618,
+      "physical_rf_off_confirmed": false
+    },
+    "tag": {
+      "event": "STOPPED",
+      "role": "tag",
+      "session": 1565289470,
+      "stop_request": 599024618,
+      "physical_rf_off_confirmed": false
+    }
+  },
+  "anchor_pll_after": {
+    "event": "PLLSTATUS",
+    "role": "anchor",
+    "boot": 254674407,
+    "before": 8388610,
+    "after": 8388610,
+    "first_poll_pre_tx": 41943042,
+    "rf_before": 1,
+    "rf_after": 1,
+    "ec_ctrl": 4,
+    "acknowledged": false,
+    "ready": true,
+    "first_poll_checked": true
+  },
+  "stats": {
+    "anchor": {
+      "port": "COM4",
+      "records": 1,
+      "complete": 0,
+      "reader_error": null,
+      "fault_events": 1,
+      "capture_overflow": false,
+      "decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      }
+    },
+    "tag": {
+      "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+      "records": 0,
+      "complete": 0,
+      "reader_error": null,
+      "fault_events": 0,
+      "capture_overflow": false,
+      "decoder": {
+        "skipped_bytes": 934,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      }
+    }
+  }
+}

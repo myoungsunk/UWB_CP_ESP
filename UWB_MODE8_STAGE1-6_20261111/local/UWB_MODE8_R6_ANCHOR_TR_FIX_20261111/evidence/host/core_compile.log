@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/bin/g++", "-std=c++11", "-O1", "-g", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-Ishared", "-fno-pie", "-no-pie", "-fsanitize=address,undefined", "tests/test_core.cpp", "-o", "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_R6_ANCHOR_TR_FIX_20261111/build/host/test_core"]

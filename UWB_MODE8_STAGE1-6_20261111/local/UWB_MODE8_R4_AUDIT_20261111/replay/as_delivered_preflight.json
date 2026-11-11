@@ -1,0 +1,45 @@
+{
+  "checks": {
+    "target_receipt": false,
+    "fqbn": true,
+    "core": true
+  },
+  "roles": {
+    "anchor": {
+      "checks": {
+        "source_binding": false,
+        "bin_sha256": false,
+        "esp32_app_image_header": false,
+        "bootloader.bin_sha256": false,
+        "partitions.bin_sha256": false,
+        "elf_sha256": false,
+        "xtensa_elf_header": false,
+        "merged_sha256": false,
+        "merged_bootloader.bin_at_1000": false,
+        "merged_partitions.bin_at_8000": false,
+        "merged_bin_at_10000": false
+      },
+      "flash_preflight_pass": false
+    },
+    "tag": {
+      "checks": {
+        "source_binding": false,
+        "bin_sha256": false,
+        "esp32_app_image_header": false,
+        "bootloader.bin_sha256": false,
+        "partitions.bin_sha256": false,
+        "elf_sha256": false,
+        "xtensa_elf_header": false,
+        "merged_sha256": false,
+        "merged_bootloader.bin_at_1000": false,
+        "merged_partitions.bin_at_8000": false,
+        "merged_bin_at_10000": false
+      },
+      "flash_preflight_pass": false
+    }
+  },
+  "offline_only": true,
+  "actual_flash_verified": false,
+  "rf_tested": false,
+  "flash_preflight_pass": false
+}

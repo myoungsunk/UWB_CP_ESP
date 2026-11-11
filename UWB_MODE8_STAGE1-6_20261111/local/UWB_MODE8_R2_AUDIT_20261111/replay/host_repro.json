@@ -1,0 +1,37 @@
+{
+  "stage2_false_rejection": {
+    "anchor_complete": true,
+    "tag_complete": true,
+    "anchor_peer_boot": 0,
+    "tag_boot": 202,
+    "p1_p2_peer_boot": [
+      0,
+      0
+    ],
+    "pass": false,
+    "problems": [
+      "ANCHOR_PROVENANCE_MISMATCH_TXN_0",
+      "PAIR_RF_IDENTITY_MISMATCH_TXN_0_INDEX_1",
+      "PAIR_RF_IDENTITY_MISMATCH_TXN_0_INDEX_2"
+    ]
+  },
+  "analysis": {
+    "M8-01_conflicting_p2_rejected_raw_relative_preserved": true,
+    "M8-05_unmatched_anchor_calibration_reported_valid": true,
+    "both_p2_rx_missing_p1_reported_ranges_m": [
+      5.000715901691287,
+      5.109952642815762
+    ],
+    "wrong_local_response_identity_p1_b_range_m": null,
+    "wrong_local_response_identity_p2_b_range_m": 5.110397274032211
+  },
+  "stop_false_pass": {
+    "failed_final_stop_ports": [
+      "tag",
+      "anchor"
+    ],
+    "exit_code": 0,
+    "pass": true,
+    "error": null
+  }
+}

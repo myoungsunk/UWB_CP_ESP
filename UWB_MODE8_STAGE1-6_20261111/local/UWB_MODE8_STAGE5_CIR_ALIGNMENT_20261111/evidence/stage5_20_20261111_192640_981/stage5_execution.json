@@ -1,0 +1,311 @@
+{
+  "question_id": "MODE8-STAGE5-CIR20",
+  "utc": "2026-11-11T10:29:11.759151+00:00",
+  "session": 1588792285,
+  "config_id": 2187351378,
+  "acquisition_pass": true,
+  "stage5_pass": false,
+  "commands": [
+    {
+      "cwd": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag",
+      "args": [
+        "py",
+        "-3",
+        "-B",
+        "-X",
+        "utf8",
+        "evidence/capture_tag_rx_status.py",
+        "--anchor",
+        "COM4",
+        "--stage",
+        "5",
+        "--count",
+        "20",
+        "--out",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981",
+        "--tag-delay-receipt",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\candidate_tag_delay.json"
+      ],
+      "exit": 0
+    },
+    {
+      "cwd": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag",
+      "args": [
+        "py",
+        "-3",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/analyze.py",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag.rfb8",
+        "--anchor",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\anchor.rfb8",
+        "--out",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired"
+      ],
+      "exit": 0
+    },
+    {
+      "cwd": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag",
+      "args": [
+        "py",
+        "-3",
+        "-B",
+        "-X",
+        "utf8",
+        "tools/analyze.py",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag.rfb8",
+        "--out",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only"
+      ],
+      "exit": 0
+    },
+    {
+      "cwd": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111",
+      "args": [
+        "py",
+        "-3",
+        "-B",
+        "-X",
+        "utf8",
+        "evidence/verify_stage5.py",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981",
+        "--collector-exit",
+        "0",
+        "--tag-delay-receipt",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\candidate_tag_delay.json",
+        "--verdict-name",
+        "stage5_detail.json"
+      ],
+      "exit": 2
+    }
+  ],
+  "inputs": [
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\verify_stage5.py",
+      "sha256": "a5db964a6e10de5a8f9369f578e3ea9e23d943766789fa4f42786b939674289b"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag\\tools\\analyze.py",
+      "sha256": "df5cf63532a687bf7d6415405cec6cebe18818ce89b58eb82adb4b120709b858"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag\\evidence\\capture_tag_rx_status.py",
+      "sha256": "68f089f623896d99e6832f4fc3961b272d360a43c78903e3aad26f99aed2395e"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\candidate_tag_delay.json",
+      "sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\anchor\\dist\\target_build_receipt.json",
+      "sha256": "a169a4714c5f5fbb6ba10bf6bc8ff83e144e85f6c0edb1e1326c74947c31f0af"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\anchor\\evidence\\COM4\\flash_receipt.json",
+      "sha256": "c3452debddd227a0ca20e1a0b0d0a8e79da4565a17cdf3786cd34ccf2e3b19e3"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag\\dist\\target_build_receipt.json",
+      "sha256": "001df3c9e6fedca9d8e20d0e9dd0a6de18453c6b99e6fe9b87b06c0fa1d2f1fb"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\tag\\evidence\\pi_flash\\flash_receipt.json",
+      "sha256": "c5cec19c97298bf78f7c32578f6eabbab3b77b6072fc8bfd4873456fba3d1582"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\anchor.rfb8",
+      "sha256": "7e77da9db8d8c916953429ba9b4316afdaa9e08fa6ffb76546e331cf91cd4cd4"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag.rfb8",
+      "sha256": "9c962988caa89c2eef9973564de196557e1a3ed07df7d3e88faa681d88ab1b4e"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\capture_receipt.json",
+      "sha256": "47d3449ebd3a65078f6baeba49a251b87ab8e95c869fca42e0a3a11f81994fc9"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\stage5_detail.json",
+      "sha256": "95fa21e6914e6e95ff294637967bb5dc54ebf925f9cee54f3f28fb3f3a828fc8"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\analysis_receipt.json",
+      "sha256": "a583d47a846aefdf26d61d0da5527f84641378b95bbce30a02abb85345d94bc8"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\observations.csv",
+      "sha256": "888ed48d894fcbf0eca6e6787a6b41f12f8c1e1f2ba48dda2873612a92bc2a80"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t0_b873977267.npz",
+      "sha256": "71f40252b37da04d2a832026b6ff71ef55f61bc4dcddad138d187f1eda555a75"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t10_b873977267.npz",
+      "sha256": "f4a972a3708df3a05f77122a72873011cff92d260ee8bc1fbd9140bc9449f2d7"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t11_b873977267.npz",
+      "sha256": "378e86ab936baae03c11473b6930b4626e6dd2229c5cd4a2e3e133725a2f90da"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t12_b873977267.npz",
+      "sha256": "4ab401a7329cbfd0cb0b1602f380ff303ed4c5a7eddef684d6df6880e29bd9c8"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t13_b873977267.npz",
+      "sha256": "4557c5e0b00b294cf3c6334b6e78dc525369bd7fee10ad4896a2e19a39b11962"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t14_b873977267.npz",
+      "sha256": "d882d3a2368e1077e1c4a00dc5e482d66653af757cff88f6a1a6f7778199d9af"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t15_b873977267.npz",
+      "sha256": "bfdb532dd9e80ac343de0d0ccbb053696521e8a4552102eb87d6489ca4c7203f"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t16_b873977267.npz",
+      "sha256": "920184f4690b38c53e826fe70f39c43c8e21a16ba3156d888cb926c56350c3df"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t17_b873977267.npz",
+      "sha256": "c8c7c84d1cae608a436d19b55c8d8008d212b41542b0447612945deb4f8d69ae"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t18_b873977267.npz",
+      "sha256": "be195d013bf15aa56e15723d3a76dfb9698f0454c0de2722fe97555c4150bb28"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t19_b873977267.npz",
+      "sha256": "c6ca228e147642594f0be1e595ea2039d846195f86d9c035521476c8dec575fd"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t1_b873977267.npz",
+      "sha256": "17aec294180ac72ebeadfe55a1db9215e294378f9ada309a907410b3da96f88a"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t2_b873977267.npz",
+      "sha256": "a216c90a638b7676eaccd6d9b59ef82b9eb598d0a7dce98c79944e3cfe9803e5"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t3_b873977267.npz",
+      "sha256": "bea6d4319482f3e91be2fc1fa5d347589d8338b6cbb7132be6bd8efa174b5e83"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t4_b873977267.npz",
+      "sha256": "56bbd71b7de0fd5df06715203884ddbe17611af70dbda162ff6ec1f113fbc2cf"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t5_b873977267.npz",
+      "sha256": "156f1be8cbcf032e450f91172ac50667df79ac74350f933de8e907c5a24dcef1"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t6_b873977267.npz",
+      "sha256": "48cf2fae7fd03e2fe1f1ce0e638b46c0c2c335073f09afc23e3d74716f5b491d"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t7_b873977267.npz",
+      "sha256": "1aeac0b911ef64a35a294c12d2d4b45871ea57ab6ebbf22e8ba21a43981e4b1f"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t8_b873977267.npz",
+      "sha256": "3a133f060f314098635331944cde5b60bd4cc768564527daa3650192fd6eca21"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\paired\\s1588792285_t9_b873977267.npz",
+      "sha256": "5081b2daf4a543c70e4cc88e102f167f42f6e5e030bebc76a9356100f00dd044"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\analysis_receipt.json",
+      "sha256": "0ddabae7b21128f083836faf286d0eb7c7f06c7e432e389f821c27d786b12428"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\observations.csv",
+      "sha256": "888ed48d894fcbf0eca6e6787a6b41f12f8c1e1f2ba48dda2873612a92bc2a80"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t0_b873977267.npz",
+      "sha256": "71f40252b37da04d2a832026b6ff71ef55f61bc4dcddad138d187f1eda555a75"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t10_b873977267.npz",
+      "sha256": "f4a972a3708df3a05f77122a72873011cff92d260ee8bc1fbd9140bc9449f2d7"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t11_b873977267.npz",
+      "sha256": "378e86ab936baae03c11473b6930b4626e6dd2229c5cd4a2e3e133725a2f90da"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t12_b873977267.npz",
+      "sha256": "4ab401a7329cbfd0cb0b1602f380ff303ed4c5a7eddef684d6df6880e29bd9c8"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t13_b873977267.npz",
+      "sha256": "4557c5e0b00b294cf3c6334b6e78dc525369bd7fee10ad4896a2e19a39b11962"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t14_b873977267.npz",
+      "sha256": "d882d3a2368e1077e1c4a00dc5e482d66653af757cff88f6a1a6f7778199d9af"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t15_b873977267.npz",
+      "sha256": "bfdb532dd9e80ac343de0d0ccbb053696521e8a4552102eb87d6489ca4c7203f"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t16_b873977267.npz",
+      "sha256": "920184f4690b38c53e826fe70f39c43c8e21a16ba3156d888cb926c56350c3df"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t17_b873977267.npz",
+      "sha256": "c8c7c84d1cae608a436d19b55c8d8008d212b41542b0447612945deb4f8d69ae"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t18_b873977267.npz",
+      "sha256": "be195d013bf15aa56e15723d3a76dfb9698f0454c0de2722fe97555c4150bb28"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t19_b873977267.npz",
+      "sha256": "c6ca228e147642594f0be1e595ea2039d846195f86d9c035521476c8dec575fd"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t1_b873977267.npz",
+      "sha256": "17aec294180ac72ebeadfe55a1db9215e294378f9ada309a907410b3da96f88a"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t2_b873977267.npz",
+      "sha256": "a216c90a638b7676eaccd6d9b59ef82b9eb598d0a7dce98c79944e3cfe9803e5"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t3_b873977267.npz",
+      "sha256": "bea6d4319482f3e91be2fc1fa5d347589d8338b6cbb7132be6bd8efa174b5e83"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t4_b873977267.npz",
+      "sha256": "56bbd71b7de0fd5df06715203884ddbe17611af70dbda162ff6ec1f113fbc2cf"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t5_b873977267.npz",
+      "sha256": "156f1be8cbcf032e450f91172ac50667df79ac74350f933de8e907c5a24dcef1"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t6_b873977267.npz",
+      "sha256": "48cf2fae7fd03e2fe1f1ce0e638b46c0c2c335073f09afc23e3d74716f5b491d"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t7_b873977267.npz",
+      "sha256": "1aeac0b911ef64a35a294c12d2d4b45871ea57ab6ebbf22e8ba21a43981e4b1f"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t8_b873977267.npz",
+      "sha256": "3a133f060f314098635331944cde5b60bd4cc768564527daa3650192fd6eca21"
+    },
+    {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_CIR_ALIGNMENT_20261111\\evidence\\stage5_20_20261111_192640_981\\tag_only\\s1588792285_t9_b873977267.npz",
+      "sha256": "5081b2daf4a543c70e4cc88e102f167f42f6e5e030bebc76a9356100f00dd044"
+    }
+  ]
+}

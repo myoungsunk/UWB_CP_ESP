@@ -1,0 +1,18 @@
+{
+  "scope": "Frozen R3 images and sources in a temporary copy; mocked uploader",
+  "test_receipt_baseline_pass": true,
+  "generator_command": [
+    "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.3.7\\tools\\gen_esp32part.exe",
+    "-q",
+    "firmware\\ANCHOR_DUAL_DS_CIR\\partitions.csv",
+    "new.partitions.bin"
+  ],
+  "generator_exit": 0,
+  "old_partition_sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+  "new_partition_sha256": "74fa880384ee61ededb069292e52dc23166840b8b998b68d00e885a2aa708963",
+  "old_image_bytes_and_hashes_still_match": true,
+  "anchor_source_binding_after_change": false,
+  "preflight_pass_after_change": false,
+  "upload_exit": 2,
+  "upload_subprocess_calls": 0
+}

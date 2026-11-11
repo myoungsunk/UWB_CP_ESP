@@ -1,0 +1,35 @@
+{
+  "question_id": "MODE8-STAGE6-FAST-RX-USB",
+  "role": "IMPLEMENTER",
+  "created_utc": "2026-11-11T11:51:35.1007533Z",
+  "parent_receipt": {
+    "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111/evidence/stage6_execution.json",
+    "sha256": "6162757a0dd2a810dba66119c90bd13ab7b06f51f0d8d9b6e13eeb140d37fc11"
+  },
+  "governance": {
+    "common_sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer_sha256": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "revision": "Package source manifests, no Git repository",
+  "baseline_flash": "P2POLL Stage 6 firmware, 650 ms / 921600 verified twice",
+  "devices": "Stationary COM4 anchor and Pi tag, existing temporary antenna delays",
+  "conditions": [
+    {
+      "period_us": 300000,
+      "baud": 921600,
+      "count": 100
+    },
+    {
+      "period_us": 200000,
+      "baud": 2000000,
+      "count": 100
+    }
+  ],
+  "hypotheses": [
+    "A 1 ms RF-task scheduling delay can skip the 800 us post-quiet status sampling window. A DW1000 event can already be latched.",
+    "Contiguous 2 Mbps output can overrun the CH340 delivery path. Compare exact known streams independently of RF and require RFB8 decoder completeness on both hosts."
+  ],
+  "repair": "Stage 6 preserves the RF offsets and quiet intervals, uses short pauses near the receive deadline and checks latched events with hardware timestamp validation. The 2 Mbps path disables the ESP32 software TX ring and drains each bounded burst before applying the idle gap.",
+  "acceptance": "In each condition, 100 matched complete records per endpoint, all 400 raw CIR slots, P1 and P2 independently verified common axes and power grids 100/100 each, zero CRC/schema/sequence gaps, firmware drops, faults or period misses, 99 RF cadence intervals within 4 ms of target, both SELFTEST and STOP confirmed.",
+  "limits": "Applies to these static 100-transaction trials and the installed USB paths. Absolute physical-axis accuracy and complex-phase coherence are outside scope."
+}

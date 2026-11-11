@@ -1,0 +1,829 @@
+{
+  "question_id": "MODE8-STAGE6-CONTINUOUS",
+  "utc": "2026-11-11T11:30:06.0819733Z",
+  "baseline_contract": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_contract.json",
+    "sha256": "e02b6e66e113debbdd5577cf37e509ee09a518b784326f7a2d9301285e1f676c"
+  },
+  "io_amendment": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_io_amendment.json",
+    "sha256": "401dfdcd5cb572ebeb0be39061416db716e27082f4dd5ea09ca92dda905425a0"
+  },
+  "role": "IMPLEMENTER",
+  "independence": "Implementer verification",
+  "tag_delay_receipt": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\candidate_tag_delay.json",
+    "sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385"
+  },
+  "board_firmware": {
+    "active_version": "P2POLL",
+    "anchor_restore": {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\anchor\\evidence\\COM4_restore\\flash_receipt.json",
+      "sha256": "6575987f3961729fc1d1662d8fcae7af964f8cd4515743659f2144832e2223ac"
+    },
+    "tag_restore": {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\tag\\evidence\\pi_flash_restore\\flash_receipt.json",
+      "sha256": "10709ded6c4ada8ecda38af0a4ac3b07ad5cf66077dae5e73dfe09b58b646cb3"
+    },
+    "final_capture_session": 1155967570,
+    "final_capture_pass": true,
+    "stopped": true
+  },
+  "versions": {
+    "P2POLL": {
+      "anchor": {
+        "build": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\anchor\\dist\\target_build_receipt.json",
+          "sha256": "204024c3912849c5a5c893aab7819bcfbbe7651c1f15c231cf94c1b751f58ace"
+        },
+        "host_qa": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\anchor\\evidence\\host\\host_qa_receipt.json",
+          "sha256": "203b1300a52cbfeacc7425478d4bdce144904b4ede499d54e5d5056184b95b8d"
+        },
+        "source_manifest_sha256": "02e3524996fa89fc1261486f833e0c77b7332847a37b426b946d9bfb7ab91156",
+        "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+        "core": "3.3.7",
+        "artifacts": {
+          "ANCHOR_DUAL_DS_CIR.ino.bin": {
+            "bytes": 400704,
+            "sha256": "e3903fbbf7f6a8ec0d8447d75034e89c763760c09bb048865e95da468ca9a29b"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.bootloader.bin": {
+            "bytes": 23520,
+            "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.elf": {
+            "bytes": 6340804,
+            "sha256": "7c4f6443f2c2b3075989eb2d59e9618b56e57ca1100e75354348147b46ebfeb0"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.map": {
+            "bytes": 12942336,
+            "sha256": "2e3557d4e701e619068d25a291865855e3816d8cdb4ed03f3a19f6afb790f2aa"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.merged.bin": {
+            "bytes": 4194304,
+            "sha256": "604a9508c9411511b518f2b39dfaac79f1b3bcc64043f075c2296317f40f9c67"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.partitions.bin": {
+            "bytes": 3072,
+            "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+          }
+        }
+      },
+      "tag": {
+        "build": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\tag\\dist\\target_build_receipt.json",
+          "sha256": "77e56e9dbcc0f7cf26f717298602942e5be6027bf33977d9c91567a1bf7be1f0"
+        },
+        "host_qa": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\tag\\evidence\\host\\host_qa_receipt.json",
+          "sha256": "10d53a1a7efa3ea7bfe2fa6c7a46afe361f74670d6f911ebe9856ad4561746e0"
+        },
+        "source_manifest_sha256": "61ce9fa862906d528396a8ca3d0eeb8ca856cbd69157f0070991c1e3dc01dcd4",
+        "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+        "core": "3.3.7",
+        "artifacts": {
+          "TAG_DUAL_DS_CIR.ino.bin": {
+            "bytes": 399712,
+            "sha256": "4a9611ddae818acd3cf35c45898dd05a2e6a9ff5db01276e72473e583f6f7583"
+          },
+          "TAG_DUAL_DS_CIR.ino.bootloader.bin": {
+            "bytes": 23520,
+            "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+          },
+          "TAG_DUAL_DS_CIR.ino.elf": {
+            "bytes": 6313164,
+            "sha256": "05d7575ad7a313135110b35eb3bbb7437dee6c3f4ec1f38a77653e1c257c430d"
+          },
+          "TAG_DUAL_DS_CIR.ino.map": {
+            "bytes": 12922999,
+            "sha256": "b9f15ce53d73c1476455a2a9b9f58b67d7b242a36db22eda9aa8695c61d77583"
+          },
+          "TAG_DUAL_DS_CIR.ino.merged.bin": {
+            "bytes": 4194304,
+            "sha256": "26b54e7e324e1ffae10362a5635c9c85f78a5d5cb584fd10c2622c89548b9eb3"
+          },
+          "TAG_DUAL_DS_CIR.ino.partitions.bin": {
+            "bytes": 3072,
+            "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+          }
+        }
+      }
+    },
+    "P2IOFIX": {
+      "anchor": {
+        "build": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\anchor\\dist\\target_build_receipt.json",
+          "sha256": "f171174ca1f584be33aace3472451d2fff2b73d3e2d463756ebf56a81aa4cf1b"
+        },
+        "host_qa": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\anchor\\evidence\\host\\host_qa_receipt.json",
+          "sha256": "06a758ecd3bf1b9804bc463a0f1f459804600bc14cdb6247997bf1b56c763b08"
+        },
+        "source_manifest_sha256": "c392f96b73be3e6a4bab0228dbdaa30843042a8ad6703f1f4bf5c6f0a6886c4a",
+        "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+        "core": "3.3.7",
+        "artifacts": {
+          "ANCHOR_DUAL_DS_CIR.ino.bin": {
+            "bytes": 400864,
+            "sha256": "c638af5eaf898b9abae5d75c19a4fe6f583bfe1c9b5c56abb6ac8d6b0015832e"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.bootloader.bin": {
+            "bytes": 23520,
+            "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.elf": {
+            "bytes": 6342040,
+            "sha256": "3df0d2a63d713f3c6b2c60bb48a99981f038ec94052d1e3db0485ab2332b52e3"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.map": {
+            "bytes": 12964645,
+            "sha256": "4d30244615a9d133ec9fe2b65a1dc50832edaa22c7391e9e0ece59a997f35f2b"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.merged.bin": {
+            "bytes": 4194304,
+            "sha256": "5918a3b44db7c0659fc765cb8f2dc102925f479013a7bf28c8b16b70c50fae45"
+          },
+          "ANCHOR_DUAL_DS_CIR.ino.partitions.bin": {
+            "bytes": 3072,
+            "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+          }
+        }
+      },
+      "tag": {
+        "build": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\tag\\dist\\target_build_receipt.json",
+          "sha256": "4b71ccef7bacc308b15981b60756bb309ee0d21c845fbe1ecb5d78dd37110990"
+        },
+        "host_qa": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\tag\\evidence\\host\\host_qa_receipt.json",
+          "sha256": "5c010586d1038af4746e6d39f63534ddd8c9d40551edadbed9904e6f8805177c"
+        },
+        "source_manifest_sha256": "736eb0c30aa797de317de50d7fc71bd84f823f230027d06e827a0a175cd36a0a",
+        "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+        "core": "3.3.7",
+        "artifacts": {
+          "TAG_DUAL_DS_CIR.ino.bin": {
+            "bytes": 399888,
+            "sha256": "b0d27678cfdad9ab54b63b503fe7e4b30b33f6b6ef123025c8048bfa31588d2b"
+          },
+          "TAG_DUAL_DS_CIR.ino.bootloader.bin": {
+            "bytes": 23520,
+            "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+          },
+          "TAG_DUAL_DS_CIR.ino.elf": {
+            "bytes": 6314380,
+            "sha256": "b84a9ab81f4cb19398fc6ea1c34fc163619c971c3c5e43f81445216c5776de57"
+          },
+          "TAG_DUAL_DS_CIR.ino.map": {
+            "bytes": 12945346,
+            "sha256": "704fe3c9f26b2e615c6664e1e07308735fd95423601cd3572eff271a221c2616"
+          },
+          "TAG_DUAL_DS_CIR.ino.merged.bin": {
+            "bytes": 4194304,
+            "sha256": "02a2d631561cbbfd9adb7064decfc29566b707a7a795e0e71e93efe1cb51debd"
+          },
+          "TAG_DUAL_DS_CIR.ino.partitions.bin": {
+            "bytes": 3072,
+            "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+          }
+        }
+      }
+    }
+  },
+  "capture_command_template": "py -3 -B -X utf8 evidence/capture_tag_rx_status.py --anchor COM4 --stage 6 --period-us PERIOD_US --baud BAUD --count 100 --out RUN_DIR --tag-delay-receipt DELAY_RECEIPT",
+  "runs": [
+    {
+      "session": 3336850805,
+      "version": "P2POLL",
+      "period_us": 650000,
+      "baud": 921600,
+      "requested": 100,
+      "capture_pass": true,
+      "collector_exit": 0,
+      "verified_pass": true,
+      "capture_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_100_20261111_201126_226\\capture_receipt.json",
+        "sha256": "69b01ee2b5b1698c45bd33ba15b594008829c9a21b85e945e835b34e43d5a693"
+      },
+      "verifier_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_100_20261111_201126_226\\stage6_verdict.json",
+        "sha256": "9815d9d048731a5581b8027bc639c93ad0ed0dedd32feed51b2ff87970c1f21c"
+      },
+      "raw_anchor": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_100_20261111_201126_226\\anchor.rfb8",
+        "sha256": "61829993cb0678238dd9cfd221a12c53cd70d5abad243778640566e221a8e34a"
+      },
+      "raw_tag": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_100_20261111_201126_226\\tag.rfb8",
+        "sha256": "01b096f1e40c460cf1c55ed0ec079b2daf8ed4893e5823b08719632326c96d51"
+      },
+      "anchor_records": 100,
+      "tag_records": 100,
+      "anchor_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "tag_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "verified_common_grids": {
+        "P1": {
+          "common_grids_verified": 100,
+          "CIR_slots_verified": 200,
+          "signed_range_m_min_max": {
+            "A": [
+              0.6720605159704028,
+              0.8303599283739941
+            ],
+            "B": [
+              0.6884632935803496,
+              0.8918142334356787
+            ]
+          },
+          "overlap_points_min": 975,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        },
+        "P2": {
+          "common_grids_verified": 100,
+          "CIR_slots_verified": 200,
+          "signed_range_m_min_max": {
+            "A": [
+              0.8559881595183155,
+              1.0089286874627934
+            ],
+            "B": [
+              0.6764101907969058,
+              0.8861157086018944
+            ]
+          },
+          "overlap_points_min": 962,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        }
+      },
+      "verified_cadence": {
+        "expected_period_us": 650000,
+        "interval_count": 99,
+        "interval_us_min_max": [
+          649937.7163461539,
+          650006.3541666666
+        ],
+        "max_abs_interval_error_us": 62.28365384612698,
+        "allowed_jitter_us": 4000,
+        "first_to_last_poll_s": 64.35055423878205
+      },
+      "verified_transport": {
+        "anchor": {
+          "records": 100,
+          "complete": 100,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            358099,
+            358149
+          ]
+        },
+        "tag": {
+          "records": 100,
+          "complete": 100,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            365232,
+            366670
+          ]
+        }
+      },
+      "stop_pass": true,
+      "baud_restored": null
+    },
+    {
+      "session": 2371408291,
+      "version": "P2POLL",
+      "period_us": 200000,
+      "baud": 2000000,
+      "requested": 100,
+      "capture_pass": false,
+      "collector_exit": 2,
+      "verified_pass": null,
+      "capture_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_201249_707\\capture_receipt.json",
+        "sha256": "24fec817513ca6dad5b5f2d9c6e61c9d988cb7443d4472782995a6763a94f963"
+      },
+      "verifier_receipt": null,
+      "raw_anchor": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_201249_707\\anchor.rfb8",
+        "sha256": "31bd9d82d6c412d805da81e0e92940bc7aabe3ae3bebb0e39a064bdab4edcc61"
+      },
+      "raw_tag": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_201249_707\\tag.rfb8",
+        "sha256": "1b6d2527e37e0eb262880535bb6e5c3c114a3d06fceb85c56a519e40f54b9092"
+      },
+      "anchor_records": 52,
+      "tag_records": 1,
+      "anchor_capture_decoder": {
+        "skipped_bytes": 187091,
+        "crc_errors": 48,
+        "schema_errors": 0,
+        "sequence_gap_events": 28,
+        "trailing_bytes": 0
+      },
+      "tag_capture_decoder": {
+        "skipped_bytes": 2104880,
+        "crc_errors": 99,
+        "schema_errors": 0,
+        "sequence_gap_events": 2,
+        "trailing_bytes": 0
+      },
+      "verified_common_grids": null,
+      "verified_cadence": null,
+      "verified_transport": null,
+      "stop_pass": true,
+      "baud_restored": null
+    },
+    {
+      "session": 577352612,
+      "version": "P2IOFIX",
+      "period_us": 300000,
+      "baud": 921600,
+      "requested": 100,
+      "capture_pass": false,
+      "collector_exit": 2,
+      "verified_pass": false,
+      "capture_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_300ms_100_20261111_202141_012\\capture_receipt.json",
+        "sha256": "113e834c185662c9825da24b4527351fc76aa85c81d39d067c11c169a55a2262"
+      },
+      "verifier_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_300ms_100_20261111_202141_012\\stage6_verdict.json",
+        "sha256": "d8096097c1c45f6c0f3a344835235af43bba8c5149b80c265ec8614637df037c"
+      },
+      "raw_anchor": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_300ms_100_20261111_202141_012\\anchor.rfb8",
+        "sha256": "3129c64b7b222ff21b8bbe614cc5da1710032561ebfd014263e8822be7c5713d"
+      },
+      "raw_tag": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_300ms_100_20261111_202141_012\\tag.rfb8",
+        "sha256": "40e2e34a8e98d98f3825f783982685a3ff4479558a920445c71d36535a515b9b"
+      },
+      "anchor_records": 100,
+      "tag_records": 100,
+      "anchor_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "tag_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "verified_common_grids": {
+        "P1": {
+          "common_grids_verified": 75,
+          "CIR_slots_verified": 150,
+          "signed_range_m_min_max": {
+            "A": [
+              0.6759130064785207,
+              0.8789380677770611
+            ],
+            "B": [
+              0.6298371834714189,
+              1.0898215791182995
+            ]
+          },
+          "overlap_points_min": 983,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 2.220446049250313E-16
+        },
+        "P2": {
+          "common_grids_verified": 74,
+          "CIR_slots_verified": 148,
+          "signed_range_m_min_max": {
+            "A": [
+              0.6390590680080429,
+              0.7697190171614277
+            ],
+            "B": [
+              0.6087359099959697,
+              0.8234785782273684
+            ]
+          },
+          "overlap_points_min": 984,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        }
+      },
+      "verified_cadence": {
+        "expected_period_us": 300000,
+        "interval_count": 99,
+        "interval_us_min_max": [
+          299932.7083333333,
+          300002.86057692306
+        ],
+        "max_abs_interval_error_us": 67.29166666668607,
+        "allowed_jitter_us": 4000,
+        "first_to_last_poll_s": 29.700206666666666
+      },
+      "verified_transport": {
+        "anchor": {
+          "records": 100,
+          "complete": 100,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            183098,
+            183148
+          ]
+        },
+        "tag": {
+          "records": 100,
+          "complete": 74,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            177599,
+            192312
+          ]
+        }
+      },
+      "stop_pass": true,
+      "baud_restored": null
+    },
+    {
+      "session": 918908873,
+      "version": "P2IOFIX",
+      "period_us": 650000,
+      "baud": 921600,
+      "requested": 100,
+      "capture_pass": false,
+      "collector_exit": 2,
+      "verified_pass": false,
+      "capture_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_650ms_100_20261111_202327_877\\capture_receipt.json",
+        "sha256": "8fac6ce280422bcce57170793725990ad9cf0895c3b98aaf9201708ec1d9007b"
+      },
+      "verifier_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_650ms_100_20261111_202327_877\\stage6_verdict.json",
+        "sha256": "dca8c17cdb990edb7ff62557de370fa795faee7c0764da40bfd71c0db751e03e"
+      },
+      "raw_anchor": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_650ms_100_20261111_202327_877\\anchor.rfb8",
+        "sha256": "ab8b3c56b2ed4e7013de32b712cea62e73fde8e1e34f9f4624a08fbfb22e7443"
+      },
+      "raw_tag": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_650ms_100_20261111_202327_877\\tag.rfb8",
+        "sha256": "237cc0e3355573f4233c83f32829f144d82895fe51c11ae15f49f47df4536c8c"
+      },
+      "anchor_records": 100,
+      "tag_records": 100,
+      "anchor_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "tag_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "verified_common_grids": {
+        "P1": {
+          "common_grids_verified": 98,
+          "CIR_slots_verified": 196,
+          "signed_range_m_min_max": {
+            "A": [
+              0.6878065829768539,
+              0.8295217475320898
+            ],
+            "B": [
+              0.6653545559945628,
+              0.8616638728915624
+            ]
+          },
+          "overlap_points_min": 980,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        },
+        "P2": {
+          "common_grids_verified": 98,
+          "CIR_slots_verified": 196,
+          "signed_range_m_min_max": {
+            "A": [
+              0.8675476108560133,
+              1.0173042396939385
+            ],
+            "B": [
+              0.67238377807686,
+              0.9045362364036854
+            ]
+          },
+          "overlap_points_min": 956,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        }
+      },
+      "verified_cadence": {
+        "expected_period_us": 650000,
+        "interval_count": 99,
+        "interval_us_min_max": [
+          649996.1378205129,
+          650006.3621794871
+        ],
+        "max_abs_interval_error_us": 6.362179487128742,
+        "allowed_jitter_us": 4000,
+        "first_to_last_poll_s": 64.35061012820513
+      },
+      "verified_transport": {
+        "anchor": {
+          "records": 100,
+          "complete": 98,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            358165,
+            358170
+          ]
+        },
+        "tag": {
+          "records": 100,
+          "complete": 98,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            365930,
+            366941
+          ]
+        }
+      },
+      "stop_pass": true,
+      "baud_restored": null
+    },
+    {
+      "session": 2813865899,
+      "version": "P2IOFIX",
+      "period_us": 200000,
+      "baud": 2000000,
+      "requested": 100,
+      "capture_pass": false,
+      "collector_exit": 2,
+      "verified_pass": null,
+      "capture_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_202458_020\\capture_receipt.json",
+        "sha256": "f29020b061cb577cf6d5736fa7dd27c2a3d7b9bfd33440629dcdcf9c3bb61037"
+      },
+      "verifier_receipt": null,
+      "raw_anchor": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_202458_020\\anchor.rfb8",
+        "sha256": "318548bcdabd09bf59767157f53ac03d9f5713090649f4915b1fc91b98dfea3a"
+      },
+      "raw_tag": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_202458_020\\tag.rfb8",
+        "sha256": "b1b3d64dad0a2428c846475f39d3c4c849445f81182be5008d093cb6126a40f9"
+      },
+      "anchor_records": 40,
+      "tag_records": 0,
+      "anchor_capture_decoder": {
+        "skipped_bytes": 267151,
+        "crc_errors": 60,
+        "schema_errors": 0,
+        "sequence_gap_events": 24,
+        "trailing_bytes": 0
+      },
+      "tag_capture_decoder": {
+        "skipped_bytes": 2222244,
+        "crc_errors": 100,
+        "schema_errors": 0,
+        "sequence_gap_events": 1,
+        "trailing_bytes": 0
+      },
+      "verified_common_grids": null,
+      "verified_cadence": null,
+      "verified_transport": null,
+      "stop_pass": true,
+      "baud_restored": {
+        "tag": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_202458_020\\tag_baud_restored.json",
+          "sha256": "87437f07897e4728a1d91bda7d409fda9b319834f6a3102729f552b753a33f82"
+        },
+        "anchor": {
+          "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_202458_020\\anchor_baud_restored.json",
+          "sha256": "bd4352a87dae489849aaa04393496d35c4f6cc08d709e9e47f6a5beff72d416e"
+        }
+      }
+    },
+    {
+      "session": 1155967570,
+      "version": "P2POLL",
+      "period_us": 650000,
+      "baud": 921600,
+      "requested": 100,
+      "capture_pass": true,
+      "collector_exit": 0,
+      "verified_pass": true,
+      "capture_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_restored_100_20261111_202825_538\\capture_receipt.json",
+        "sha256": "77a6e6cf69647efff7049ee170823043ba59257be47aae24c50a396928ef048b"
+      },
+      "verifier_receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_restored_100_20261111_202825_538\\stage6_verdict.json",
+        "sha256": "33a49a27d25c66ab1d85ec93805d7c1dc18c03641b220b905f1578081e059252"
+      },
+      "raw_anchor": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_restored_100_20261111_202825_538\\anchor.rfb8",
+        "sha256": "c6f92268964d86530ee53708654e6f37334ed1c72f28a41af1205db819c381a4"
+      },
+      "raw_tag": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_650ms_restored_100_20261111_202825_538\\tag.rfb8",
+        "sha256": "dbbb9e2d278c58a1afd37f02345420eba1466b8f32fcbf05bfd8f88c12baa211"
+      },
+      "anchor_records": 100,
+      "tag_records": 100,
+      "anchor_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "tag_capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "verified_common_grids": {
+        "P1": {
+          "common_grids_verified": 100,
+          "CIR_slots_verified": 200,
+          "signed_range_m_min_max": {
+            "A": [
+              0.6661974279404532,
+              0.8352179933298579
+            ],
+            "B": [
+              0.7501080611572006,
+              0.8934898128737045
+            ]
+          },
+          "overlap_points_min": 961,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        },
+        "P2": {
+          "common_grids_verified": 100,
+          "CIR_slots_verified": 200,
+          "signed_range_m_min_max": {
+            "A": [
+              0.8936799099704047,
+              1.0194822000426464
+            ],
+            "B": [
+              0.6703751212666211,
+              0.8790778504020234
+            ]
+          },
+          "overlap_points_min": 984,
+          "overlap_points_max": 991,
+          "max_independent_range_delta_m": 1.1102230246251565E-16
+        }
+      },
+      "verified_cadence": {
+        "expected_period_us": 650000,
+        "interval_count": 99,
+        "interval_us_min_max": [
+          649937.6842948718,
+          650006.3141025641
+        ],
+        "max_abs_interval_error_us": 62.31570512824692,
+        "allowed_jitter_us": 4000,
+        "first_to_last_poll_s": 64.35055009615385
+      },
+      "verified_transport": {
+        "anchor": {
+          "records": 100,
+          "complete": 100,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            358100,
+            358150
+          ]
+        },
+        "tag": {
+          "records": 100,
+          "complete": 100,
+          "decoder": {
+            "skipped_bytes": 0,
+            "crc_errors": 0,
+            "schema_errors": 0,
+            "sequence_gap_events": 0,
+            "trailing_bytes": 0
+          },
+          "sent_delta": 100,
+          "drops_delta": 0,
+          "period_miss": 0,
+          "fault_events": 0,
+          "processing_us_min_max": [
+            365230,
+            366764
+          ]
+        }
+      },
+      "stop_pass": true,
+      "baud_restored": null
+    }
+  ],
+  "stage6_pass_sessions": [
+    3336850805,
+    1155967570
+  ],
+  "run_decisions": [
+    "650 ms / 921600 baud is the demonstrated baseline for the P2POLL image",
+    "Retested 2 Mbps / 200 ms despite incomplete RF at the added 300 ms condition to separately check high-speed RFB8 transport",
+    "150 ms was gated on a successful 200 ms test",
+    "Restored the baseline firmware and ran a fresh 650 ms trial"
+  ],
+  "remaining_limits": "Stationary bench setup and temporary antenna delays. Absolute physical-axis accuracy and complex phase coherence unverified. The source of high-baud corruption and intermittent probe omissions remains unresolved."
+}

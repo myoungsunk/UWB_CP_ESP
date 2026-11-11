@@ -1,0 +1,2 @@
+400d5a04 T DW1000Ng::initializeNoInterruptChecked(unsigned char, unsigned char)
+getRCphase/readRCphase absent from the linked anchor ELF

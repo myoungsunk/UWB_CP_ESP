@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/local/swift/usr/bin/clang++", "-std=c++11", "-DESP32", "-DARDUINO", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-Itests/stubs", "-Ivendor/tag/DW1000Ng/src", "-fsyntax-only", "firmware/TAG_DUAL_DS_CIR/app.cpp"]

@@ -1,0 +1,5 @@
+﻿session,txn,slot,radio,probe,cir_valid,crc_ok,fp_index,fp_basic_quality,range_m,axis_method,axis_estimate_available,both_endpoints_calibrated,axis_not_ground_truth,range_sigma_floor_ns,unknown_fp_bias_and_covariance,static_reuse_motion_bound_m,rx_dbm_raw,fp_dbm_raw
+77,0,0,A,1,True,True,740.0,True,5.000715901691287,P1_DS_confirmed_by_P2,True,False,True,,True,,-69.4073131109,-114.307047011
+77,0,1,B,1,True,True,740.078125,True,5.109952642815762,P1_DS_confirmed_by_P2,True,False,True,,True,,-69.4073131109,-114.307047011
+77,0,2,A,2,True,True,740.0,True,,relative_only,False,False,True,,True,,-69.4073131109,-114.307047011
+77,0,3,B,2,True,True,740.078125,True,,relative_only,False,False,True,,True,,-69.4073131109,-114.307047011

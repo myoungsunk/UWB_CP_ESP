@@ -1,0 +1,9 @@
+{
+  "created_utc": "2026-11-11",
+  "target_build": false,
+  "hardware_tested": false,
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "required_core": "3.3.7",
+  "roles": {},
+  "error": "R4 source changed after R3 build; R4 target toolchain absent. Rebuild both roles."
+}

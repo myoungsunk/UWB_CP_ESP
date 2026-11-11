@@ -1,0 +1,5 @@
+WSL Ubuntu-22.04 host syntax with stubs
+COMMAND: g++ -std=c++11 -DESP32 -DARDUINO -Wall -Wextra -Wpedantic -Werror -Itests/stubs -Ivendor/anchor/DW1000Ng/src -fsyntax-only firmware/ANCHOR_DUAL_DS_CIR/app.cpp
+EXIT: 0
+COMMAND: g++ -std=c++11 -DESP32 -DARDUINO -Wall -Wextra -Wpedantic -Werror -Itests/stubs -Ivendor/tag/DW1000Ng/src -fsyntax-only firmware/TAG_DUAL_DS_CIR/app.cpp
+EXIT: 0

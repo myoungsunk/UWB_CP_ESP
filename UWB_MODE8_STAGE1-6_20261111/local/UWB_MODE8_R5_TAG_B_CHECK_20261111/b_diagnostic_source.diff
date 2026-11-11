@@ -1,0 +1,52 @@
+--- R5/shared/esp32_port.hpp
++++ B-diagnostic/shared/esp32_port.hpp
+@@ -79,7 +79,8 @@
+   // Both CS pins high before any library initialization; never configure tag GPIO4 or GPIO5.
+   for(unsigned i=0;i<N;++i){digitalWrite(pins(i).cs,HIGH);pinMode(pins(i).cs,OUTPUT);pinMode(pins(i).irq,INPUT);pinMode(pins(i).rst,INPUT);}
+   SPI.begin(18,19,23,pins(0).cs);
+-  for(unsigned i=0;i<N;++i){
++  // B-only diagnostic. Both chip selects are idle before this loop.
++  for(unsigned i=1;i<N;++i){
+    rx_[i]=false;latched_[i]=false;choose(uint8_t(i));
+ #if DUAL8_ANCHOR
+    SPIporting::setSlowReadShiftFix(true);DW1000Ng::initializeNoInterrupt(pins(i).cs,pins(i).rst);
+@@ -188,9 +189,11 @@
+  }
+  void relax()override{delayMicroseconds(25);const uint64_t n=nowUs();if(n-lastYield_>=2000){delay(1);lastYield_=nowUs();}}
+  bool selftest(){
+-  bool ok=true;for(unsigned k=0;k<32;++k)for(unsigned i=0;i<N;++i)ok=guard(uint8_t(i))&&ok;
+-  if(ok){for(unsigned i=0;i<N;++i)ok=arm(uint8_t(i))&&ok;delay(1);for(unsigned i=0;i<N;++i)idle(uint8_t(i));for(unsigned i=0;i<N;++i)ok=guard(uint8_t(i))&&ok;}
+-  return ok;
++  constexpr uint8_t radio=1;
++  for(unsigned k=0;k<32;++k)if(!guard(radio))return false;
++  if(!arm(radio))return false;
++  delay(1);idle(radio);
++  return guard(radio);
+  }
+ };
+ } // namespace dual8
+--- R5/shared/app.hpp
++++ B-diagnostic/shared/app.hpp
+@@ -51,7 +51,7 @@
+  if(!s||!*s||*s=='-'||*s=='+'){return false;}
+  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
+ }
+-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
++static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R5_B_ONLY_DIAG_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
+ static void stop(uint32_t request=0){active=false;remaining=0;idleAll();emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)request);}
+ static void command(char*line){
+  char*save=nullptr;char*w[9]{};unsigned n=0;for(char*p=strtok_r(line," \t\r",&save);p;p=strtok_r(nullptr," \t\r",&save)){if(n==9){emit("{\"event\":\"ERROR\",\"reason\":\"TOO_MANY_TOKENS\"}");return;}w[n++]=p;}if(!n)return;
+@@ -83,11 +83,8 @@
+   char*e=nullptr;double sigma=strtod(w[5],&e);if(*e||!isfinite(sigma)||sigma<=0||sigma>100){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_SIGMA\"}");return;}
+   Calibration c;c.tx=uint16_t(tx);c.rx=uint16_t(rx);c.id=id;c.range_sigma_m=sigma;hwOk=port.setCalibration(i,c);hello();return;
+  }
+- if(!strcmp(w[0],"START")&&n==3){uint32_t s,count;if(!number(w[1],s)||!number(w[2],count)||!s||count<1||count>1000000||config.stage<2||validate(config)||!hwOk||port.faulted()){
+-   emit("{\"event\":\"ERROR\",\"reason\":\"START_GUARD\"}");return;}
+-  session=s;remaining=count;targetCount=count;txn=0;peerBoot=0;periodMiss=0;nextStart=port.nowUs()+20000;runExpire=port.nowUs()+uint64_t(count)*config.period_us+10000000ULL;active=true;
+-  if(!DUAL8_ANCHOR){if(!port.arm(0)||!port.arm(1)){active=false;hwOk=false;idleAll();}}
+-  hello();return;
++ if(!strcmp(w[0],"START")){
++  emit("{\"event\":\"ERROR\",\"reason\":\"DIAGNOSTIC_ONLY\"}");return;
+  }
+  emit("{\"event\":\"ERROR\",\"reason\":\"UNKNOWN_COMMAND\"}");
+ }

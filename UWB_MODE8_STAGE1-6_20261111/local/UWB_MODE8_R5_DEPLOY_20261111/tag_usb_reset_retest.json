@@ -1,0 +1,70 @@
+{
+  "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+  "commands": [
+    "HELLO",
+    "RESET",
+    "SELFTEST"
+  ],
+  "same_esp32_boot": true,
+  "pass": false,
+  "no_rf_tx_requested": true,
+  "before": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": false,
+    "fault_latched": true,
+    "boot": 674540175,
+    "config_id": 230186031,
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "after": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": false,
+    "fault_latched": true,
+    "boot": 674540175,
+    "config_id": 230186031,
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "selftest": {
+    "event": "SELFTEST",
+    "role": "tag",
+    "pass": false,
+    "faults": 2,
+    "dev_a": 2016085952,
+    "dev_b": 0,
+    "ant_a_tx": 33017,
+    "ant_a_rx": 243,
+    "ant_b_tx": 0,
+    "ant_b_rx": 0
+  },
+  "decoder": {
+    "skipped_bytes": 934,
+    "crc_errors": 0,
+    "schema_errors": 0,
+    "sequence_gap_events": 0,
+    "trailing_bytes": 0
+  }
+}

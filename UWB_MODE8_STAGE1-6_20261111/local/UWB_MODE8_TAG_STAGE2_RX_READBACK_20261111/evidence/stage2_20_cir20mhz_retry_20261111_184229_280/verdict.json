@@ -1,0 +1,50 @@
+{
+  "utc": "2026-11-11T09:43:04.544828+00:00",
+  "session": 4198944787,
+  "pair_audit_pass": true,
+  "capture_pass": true,
+  "firmware": {
+    "tag": "D8_R5_TAG_STAGE2_RXCHECK_20261111",
+    "anchor": "D8_R6_ANCHOR_TRFIX_20261111"
+  },
+  "first_poll": {
+    "txn": 0,
+    "tx_ok": true,
+    "tag_a_ok": true,
+    "tag_b_ok": true,
+    "tag_a_b_air_matches": true,
+    "clkpll_ll": false
+  },
+  "radios": [
+    {
+      "radio": 0,
+      "polls": 20,
+      "probes": 40,
+      "delay_rechecks": 0,
+      "delay_recovered": 0
+    },
+    {
+      "radio": 1,
+      "polls": 20,
+      "probes": 40,
+      "delay_rechecks": 0,
+      "delay_recovered": 0
+    }
+  ],
+  "cir_hz": [
+    20000000
+  ],
+  "valid_cir_slots": 80,
+  "complete": {
+    "tag": 20,
+    "anchor": 20
+  },
+  "session_deadline": false,
+  "stop_acknowledged": true,
+  "sha256": {
+    "evidence\\stage2_20_cir20mhz_retry_20261111_184229_280\\capture_receipt.json": "8fcd5d0a77ef1ba24f619506cd0fb025e5af6794ac4def78c55ea382f181e873",
+    "evidence\\stage2_20_cir20mhz_retry_20261111_184229_280\\tag_rx_status.json": "33ccf48a3e7faf0c1919fb6ed8fe470279a2b71b9016bf1fadfe54a4deebe5cb",
+    "evidence\\stage2_20_cir20mhz_retry_20261111_184229_280\\tag.rfb8": "e265cb8ca0434a35d4982f6d3e7450a63265e74b2af1d82805a03b7679d3f7e2",
+    "evidence\\stage2_20_cir20mhz_retry_20261111_184229_280\\anchor.rfb8": "9f10427cf5ff313b9beb09d71c980bffd23d67dc2fe900ecb70661b0044328e0"
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "status": "PASS",
+  "scope": "HOST_SYNTHETIC",
+  "cases": {
+    "stage2": {
+      "original_stage2_pass": true,
+      "crc_valid_forged_peer_rejected": [
+        "PAIR_RF_IDENTITY_MISMATCH_TXN_0_INDEX_2"
+      ]
+    },
+    "matched": {
+      "range_m": [
+        5.000715901691287,
+        5.109952642815762,
+        5.0011384518532775,
+        5.110397274032211
+      ],
+      "both_calibrated": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "common_grid_lengths": [
+        993,
+        993
+      ]
+    },
+    "wrong_anchor_config": {
+      "range_m": [
+        5.000715901691287,
+        5.109952642815762,
+        null,
+        null
+      ],
+      "both_calibrated": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "common_grid_lengths": [
+        993,
+        0
+      ]
+    },
+    "no_p2_slot_with_shared_p2_retained": {
+      "range_m": [
+        null,
+        null,
+        null,
+        null
+      ],
+      "both_calibrated": [
+        false,
+        false,
+        false,
+        false
+      ],
+      "common_grid_lengths": [
+        0,
+        0
+      ]
+    },
+    "wrong_local_response_identity": {
+      "range_m": [
+        5.000715901691287,
+        null,
+        5.0011384518532775,
+        null
+      ],
+      "both_calibrated": [
+        true,
+        false,
+        true,
+        false
+      ],
+      "common_grid_lengths": [
+        0,
+        0
+      ]
+    }
+  }
+}

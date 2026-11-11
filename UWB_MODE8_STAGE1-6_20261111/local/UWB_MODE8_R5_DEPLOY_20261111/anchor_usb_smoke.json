@@ -1,0 +1,49 @@
+{
+  "port": "COM4",
+  "role": "anchor",
+  "pass": true,
+  "no_rf_tx_requested": true,
+  "actual_usb_hardware_test": true,
+  "checks": {
+    "firmware": true,
+    "mode": true,
+    "config": true,
+    "faults": true,
+    "idle": true,
+    "selftest": true,
+    "dev_a": true,
+    "decoder": true
+  },
+  "hello": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 2499673351,
+    "config_id": 230186031,
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "selftest": {
+    "event": "SELFTEST",
+    "role": "anchor",
+    "pass": true,
+    "faults": 0,
+    "dev_a": 3737780528,
+    "dev_b": 0,
+    "ant_a_tx": 16436,
+    "ant_a_rx": 16436,
+    "ant_b_tx": 0,
+    "ant_b_rx": 0
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "recorded_utc": "2026-11-11T11:17:45.718367+00:00",
+  "previous_failed_capture": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_20261111\\evidence\\stage6_200ms_2mbps_100_20261111_201249_707\\capture_receipt.json",
+    "sha256": "24fec817513ca6dad5b5f2d9c6e61c9d988cb7443d4472782995a6763a94f963"
+  },
+  "stream_diagnostics": {
+    "anchor": {
+      "record_headers": 100,
+      "byte_length_delta_between_record_headers": {
+        "-11": 1,
+        "-10": 1,
+        "-9": 1,
+        "-8": 3,
+        "-7": 3,
+        "-5": 1,
+        "-4": 2,
+        "-3": 7,
+        "-2": 13,
+        "-1": 16,
+        "0": 51
+      },
+      "post_status": {
+        "event": "HELLO",
+        "role": "anchor",
+        "firmware": "D8_R6_ANCHOR_STAGE6_P2POLL_20261111",
+        "mode": 8,
+        "wire": "RFB8",
+        "hw_ok": true,
+        "fault_latched": false,
+        "boot": 1223356250,
+        "config_id": 2350632374,
+        "stage": 6,
+        "period_us": 200000,
+        "baud": 2000000,
+        "active": false,
+        "wifi_ota": false,
+        "cal_default_is_uncalibrated": true,
+        "drops": 0,
+        "sent": 200,
+        "period_miss": 0
+      }
+    },
+    "tag": {
+      "record_headers": 100,
+      "byte_length_delta_between_record_headers": {
+        "-12": 2,
+        "-11": 1,
+        "-10": 4,
+        "-9": 4,
+        "-8": 7,
+        "-7": 20,
+        "-6": 16,
+        "-5": 20,
+        "-4": 7,
+        "-3": 9,
+        "-2": 6,
+        "-1": 2,
+        "0": 1
+      },
+      "post_status": {
+        "event": "HELLO",
+        "role": "tag",
+        "firmware": "D8_R5_TAG_STAGE6_P2POLL_20261111",
+        "mode": 8,
+        "wire": "RFB8",
+        "hw_ok": true,
+        "fault_latched": false,
+        "boot": 1921359407,
+        "config_id": 2350632374,
+        "stage": 6,
+        "period_us": 200000,
+        "baud": 2000000,
+        "active": false,
+        "wifi_ota": false,
+        "cal_default_is_uncalibrated": true,
+        "drops": 0,
+        "sent": 100,
+        "period_miss": 0
+      }
+    }
+  },
+  "observed": "The CRC errors coincided with short received frames. Anchor RF records with good CRC also reported missing first responses. The source-level UART mutex coupling gives a plausible path for tag RF timing delay.",
+  "repair": "Check UART0 buffered RX length before entering HardwareSerial on the RF loop. At 2 Mbps, drain and pause 400 us after each 512-byte record burst.",
+  "new_condition": {
+    "period_us": 300000,
+    "baud": 921600,
+    "count": 100
+  },
+  "conditions_to_retry": [
+    {
+      "period_us": 200000,
+      "baud": 2000000,
+      "count": 100
+    },
+    {
+      "period_us": 150000,
+      "baud": 2000000,
+      "count": 100
+    }
+  ],
+  "retry_order": "300 ms, then 200 ms, then 150 ms if the prior condition succeeds.",
+  "acceptance": "Use the same acceptance gates as stage6_contract.json."
+}

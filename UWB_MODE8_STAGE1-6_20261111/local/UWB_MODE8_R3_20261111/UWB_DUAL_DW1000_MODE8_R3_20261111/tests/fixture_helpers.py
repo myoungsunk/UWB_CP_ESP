@@ -1,0 +1,62 @@
+"""Synthetic anchor record built from synthetic tag RF frames (tests only)."""
+import copy
+import zlib
+
+
+def frame_at(hexstr):
+    return bytearray.fromhex(hexstr)
+
+
+def reframe_txn(frame_hex, txn):
+    b = frame_at(frame_hex)
+    b[12:16] = txn.to_bytes(4, 'little')
+    b[92:96] = zlib.crc32(b[:92]).to_bytes(4, 'little')
+    return b.hex()
+
+
+def with_txn(m, txn):
+    v = copy.deepcopy(m)
+    v['txn'] = txn
+    v['frames'] = [reframe_txn(f, txn) if f is not None else None for f in v['frames']]
+    for kind in ('poll_rx', 'probe_rx'):
+        for r in v[kind]:
+            if r['ok']:
+                idx = 0 if kind == 'poll_rx' else 1 + v['probe_rx'].index(r) // 2
+                r['air'] = v['frames'][idx]
+    return v
+
+
+def synthetic_anchor(tag):
+    p1, p2 = frame_at(tag['frames'][1]), frame_at(tag['frames'][2])
+    poll = frame_at(tag['frames'][0])
+    to_ticks = lambda b, p: int.from_bytes(b[p:p+5], 'little')
+    rx = [to_ticks(p1, 37), to_ticks(p1, 42)]
+    responses = []
+    for radio in range(2):
+        if tag['stage'] == 2:
+            responses.append({'ok': False, 'lde': False, 'hw': 0, 'air': ''})
+            continue
+        response = poll[:]
+        response[5], response[28] = 2 + radio, radio
+        response[20:24] = tag['boot'].to_bytes(4, 'little')
+        response[24:28] = tag['peer_boot'].to_bytes(4, 'little')
+        response[57:62] = tag['poll_rx'][radio]['hw'].to_bytes(5, 'little')
+        response[62:67] = tag['tx'][radio]['actual'].to_bytes(5, 'little')
+        response[92:96] = zlib.crc32(response[:92]).to_bytes(4, 'little')
+        responses.append({'ok': True, 'lde': True, 'hw': rx[radio], 'air': response.hex()})
+    return {
+        'schema': 'dual8.record.v1', 'role': 'anchor', 'mode': 8,
+        'stage': tag['stage'], 'period_us': tag['period_us'],
+        'session': tag['session'], 'txn': tag['txn'],
+        'boot': tag['peer_boot'], 'peer_boot': 0 if tag['stage'] == 2 else tag['boot'],
+        'config': tag['config'], 'resp_mask': p1[29],
+        'complete': True, 'errors': 0, 'metadata_conflict': False,
+        'frames': tag['frames'][:],
+        'tx': [
+            {'ok': True, 'actual': to_ticks(poll, 32)},
+            {'ok': True, 'actual': to_ticks(p1, 47)},
+            {'ok': True, 'actual': to_ticks(p2, 47)},
+        ],
+        'response_rx': responses,
+        'calibration': [{'id': 0}],
+    }

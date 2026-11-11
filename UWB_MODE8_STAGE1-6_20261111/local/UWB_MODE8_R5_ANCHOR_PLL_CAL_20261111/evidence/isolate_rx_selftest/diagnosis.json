@@ -1,0 +1,75 @@
+{
+  "session": 1019627178,
+  "scope": "one Stage 2 transaction without anchor RX SELFTEST",
+  "setup_error": "tag: event timeout",
+  "stop": {
+    "anchor": {
+      "event": "STOPPED",
+      "role": "anchor",
+      "session": 1145858086,
+      "stop_request": 1960823065,
+      "physical_rf_off_confirmed": false
+    },
+    "tag": "tag: event timeout"
+  },
+  "anchor_pll_after": {
+    "event": "PLLSTATUS",
+    "role": "anchor",
+    "boot": 254674407,
+    "before": 8388610,
+    "after": 8388610,
+    "first_poll_pre_tx": 41943042,
+    "rf_before": 1,
+    "rf_after": 1,
+    "ec_ctrl": 4,
+    "acknowledged": false,
+    "ready": true,
+    "first_poll_checked": true
+  },
+  "stats": {
+    "anchor": {
+      "port": "COM4",
+      "records": 0,
+      "complete": 0,
+      "reader_error": null,
+      "fault_events": 0,
+      "capture_overflow": false,
+      "decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "capture_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      }
+    },
+    "tag": {
+      "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+      "records": 0,
+      "complete": 0,
+      "reader_error": null,
+      "fault_events": 0,
+      "capture_overflow": false,
+      "decoder": {
+        "skipped_bytes": 934,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "capture_decoder": {
+        "skipped_bytes": 934,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      }
+    }
+  }
+}

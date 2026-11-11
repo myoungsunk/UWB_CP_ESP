@@ -1,0 +1,2785 @@
+{
+  "question_id": "MODE8-STAGE4-DS20",
+  "utc": "2026-11-11T10:17:07.826336+00:00",
+  "governance_sha256": {
+    "common_sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer_sha256": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "stage": 4,
+  "session": 2041379429,
+  "config_id": 266905776,
+  "count": 20,
+  "firmware": {
+    "anchor": "D8_R6_ANCHOR_STAGE4_20261111",
+    "tag": "D8_R5_TAG_STAGE4_20261111"
+  },
+  "input_sha256": {
+    "anchor": "da19b3f0e3f4ba0072f15fa9ddef23868d3f8ef80dff3b813fec97d6ca77a8c6",
+    "tag": "e665f2b118c92e87ae1e5a0220960d692cf82306664d52b8d964b906fc3e0854"
+  },
+  "collector_receipt_sha256": "9a936417b034ea61be2b0613212bf10726bf283f4f697c37df4ddad365aaeaf9",
+  "collector_exit_code": 2,
+  "pre_rfb8_serial_bytes": {
+    "anchor": 0,
+    "tag": 934
+  },
+  "period_us": 300000,
+  "cir_hz": 20000000,
+  "reference_m_approx": 0.8,
+  "tag_delay_ticks": [
+    16436,
+    16436
+  ],
+  "max_allowed_abs_delta_m": 1e-06,
+  "result": {
+    "A": {
+      "valid": 15,
+      "recomputed": 20,
+      "median_m": 0.06582913114215401,
+      "min_m": -0.17438778957374815,
+      "max_m": 0.1264697296212159,
+      "max_abs_delta_m": 1.5472194359045233e-10
+    },
+    "B": {
+      "valid": 0,
+      "recomputed": 20,
+      "median_m": -1.7788186978872504,
+      "min_m": -2.2460110937028333,
+      "max_m": -1.7367736567478247,
+      "max_abs_delta_m": 1.2335243937400264e-10
+    }
+  },
+  "source": "Local DW1000 TX_TIME.actual and RX_TIME.hw; RX_RAWST is preserved as diagnostic data.",
+  "math": "r1=AR-AP, d1=TR-TP, r2=TF-TR, d2=AF-AR, each mod 2^40. ToF=(r1*r2-d1*d2)/(r1+d1+r2+d2).",
+  "pass": false,
+  "problems": [],
+  "pair_audit_problems": [
+    "TAG_DS_INVALID_TXN_0",
+    "TAG_DS_INVALID_TXN_1",
+    "TAG_DS_INVALID_TXN_10",
+    "TAG_DS_INVALID_TXN_11",
+    "TAG_DS_INVALID_TXN_12",
+    "TAG_DS_INVALID_TXN_13",
+    "TAG_DS_INVALID_TXN_14",
+    "TAG_DS_INVALID_TXN_15",
+    "TAG_DS_INVALID_TXN_16",
+    "TAG_DS_INVALID_TXN_17",
+    "TAG_DS_INVALID_TXN_18",
+    "TAG_DS_INVALID_TXN_19",
+    "TAG_DS_INVALID_TXN_2",
+    "TAG_DS_INVALID_TXN_3",
+    "TAG_DS_INVALID_TXN_4",
+    "TAG_DS_INVALID_TXN_5",
+    "TAG_DS_INVALID_TXN_6",
+    "TAG_DS_INVALID_TXN_7",
+    "TAG_DS_INVALID_TXN_8",
+    "TAG_DS_INVALID_TXN_9",
+    "TAG_DS_RANGE_MISMATCH_TXN_0_RADIO_0",
+    "TAG_DS_RANGE_MISMATCH_TXN_0_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_10_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_11_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_12_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_13_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_14_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_15_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_16_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_17_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_18_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_19_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_1_RADIO_0",
+    "TAG_DS_RANGE_MISMATCH_TXN_1_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_2_RADIO_0",
+    "TAG_DS_RANGE_MISMATCH_TXN_2_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_3_RADIO_0",
+    "TAG_DS_RANGE_MISMATCH_TXN_3_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_4_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_5_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_6_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_7_RADIO_0",
+    "TAG_DS_RANGE_MISMATCH_TXN_7_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_8_RADIO_1",
+    "TAG_DS_RANGE_MISMATCH_TXN_9_RADIO_1",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_0",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_1",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_10",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_11",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_12",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_13",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_14",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_15",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_16",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_17",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_18",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_19",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_2",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_3",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_4",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_5",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_6",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_7",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_8",
+    "TAG_INCOMPLETE_OR_ERROR_TXN_9"
+  ],
+  "transactions": [
+    {
+      "txn": 0,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            185434230836,
+            186073205177,
+            187223363636,
+            32573171145,
+            33212146740,
+            34362307248
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 186073220608,
+            "tag_poll": 32573186048,
+            "tag_probe1": 34362322944
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": false,
+            "d_m": -0.174387789578,
+            "tof_ticks": -37.1800684874,
+            "r1": 638974341,
+            "d1": 638975595,
+            "r2": 1150160508,
+            "d2": 1150158459,
+            "six_ts": [
+              185434230836,
+              186073205177,
+              187223363636,
+              32573171145,
+              33212146740,
+              34362307248
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974341,
+            "d1": 638975595,
+            "r2": 1150160508,
+            "d2": 1150158459
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -37.18006848659691,
+          "distance_m": -0.17438778957374815,
+          "abs_delta_m": 4.251848872982578e-12,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            185434230836,
+            186712181583,
+            187223363636,
+            30330676427,
+            31608628276,
+            32119809429
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 186712196608,
+            "tag_poll": 30330691584,
+            "tag_probe1": 32119824384
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -2.24601109381,
+            "tof_ticks": -478.857186581,
+            "r1": 1277950747,
+            "d1": 1277951849,
+            "r2": 511181153,
+            "d2": 511182053,
+            "six_ts": [
+              185434230836,
+              186712181583,
+              187223363636,
+              30330676427,
+              31608628276,
+              32119809429
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277950747,
+            "d1": 1277951849,
+            "r2": 511181153,
+            "d2": 511182053
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -478.85718655899893,
+          "distance_m": -2.2460110937028333,
+          "abs_delta_m": 1.0716671994259741e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 1,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            204600960564,
+            205239935448,
+            206390093364,
+            51739874905,
+            52378850868,
+            53529010571
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 205239950848,
+            "tag_poll": 51739890176,
+            "tag_probe1": 53529025536
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": false,
+            "d_m": -0.129993978736,
+            "tof_ticks": -27.7151573747,
+            "r1": 638974884,
+            "d1": 638975963,
+            "r2": 1150159703,
+            "d2": 1150157916,
+            "six_ts": [
+              204600960564,
+              205239935448,
+              206390093364,
+              51739874905,
+              52378850868,
+              53529010571
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974884,
+            "d1": 638975963,
+            "r2": 1150159703,
+            "d2": 1150157916
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -27.715157372431765,
+          "distance_m": -0.1299939787257053,
+          "abs_delta_m": 1.0294681773714842e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            204600960564,
+            205878911773,
+            206390093364,
+            49497341078,
+            50775292980,
+            51286473616
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 205878926848,
+            "tag_poll": 49497356288,
+            "tag_probe1": 51286488576
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -2.06409192685,
+            "tof_ticks": -440.071402879,
+            "r1": 1277951209,
+            "d1": 1277951902,
+            "r2": 511180636,
+            "d2": 511181591,
+            "six_ts": [
+              204600960564,
+              205878911773,
+              206390093364,
+              49497341078,
+              50775292980,
+              51286473616
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951209,
+            "d1": 1277951902,
+            "r2": 511180636,
+            "d2": 511181591
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -440.0714028764962,
+          "distance_m": -2.0640919268321354,
+          "abs_delta_m": 1.786482073384832e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 2,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            223770407988,
+            224409382960,
+            225559540788,
+            70909295697,
+            71548271668,
+            72698431210
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 224409398272,
+            "tag_poll": 70909310976,
+            "tag_probe1": 72698446336
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": false,
+            "d_m": -0.0705264680753,
+            "tof_ticks": -15.0364823109,
+            "r1": 638974972,
+            "d1": 638975971,
+            "r2": 1150159542,
+            "d2": 1150157828,
+            "six_ts": [
+              223770407988,
+              224409382960,
+              225559540788,
+              70909295697,
+              71548271668,
+              72698431210
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974972,
+            "d1": 638975971,
+            "r2": 1150159542,
+            "d2": 1150157828
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -15.036482303053052,
+          "distance_m": -0.07052646803863409,
+          "abs_delta_m": 3.666590642215084e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            223770407988,
+            225048359196,
+            225559540788,
+            68666722625,
+            69944674356,
+            70455854958
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 225048374272,
+            "tag_poll": 68666737664,
+            "tag_probe1": 70455869952
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -2.00881261886,
+            "tof_ticks": -428.285666837,
+            "r1": 1277951208,
+            "d1": 1277951731,
+            "r2": 511180602,
+            "d2": 511181592,
+            "six_ts": [
+              223770407988,
+              225048359196,
+              225559540788,
+              68666722625,
+              69944674356,
+              70455854958
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951208,
+            "d1": 1277951731,
+            "r2": 511180602,
+            "d2": 511181592
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -428.28566681730007,
+          "distance_m": -2.008812618764057,
+          "abs_delta_m": 9.594280925284693e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 3,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            242939854388,
+            243578829066,
+            244728987188,
+            90078715725,
+            90717691444,
+            91867851325
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 243578844160,
+            "tag_poll": 90078730752,
+            "tag_probe1": 91867866624
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": false,
+            "d_m": -0.0961570926125,
+            "tof_ticks": -20.5010184345,
+            "r1": 638974678,
+            "d1": 638975719,
+            "r2": 1150159881,
+            "d2": 1150158122,
+            "six_ts": [
+              242939854388,
+              243578829066,
+              244728987188,
+              90078715725,
+              90717691444,
+              91867851325
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974678,
+            "d1": 638975719,
+            "r2": 1150159881,
+            "d2": 1150158122
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -20.50101842556025,
+          "distance_m": -0.09615709257052436,
+          "abs_delta_m": 4.19756313041475e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            242939854388,
+            244217805273,
+            244728987188,
+            87836103219,
+            89114054708,
+            89625235639
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 244217820672,
+            "tag_poll": 87836118528,
+            "tag_probe1": 89625250816
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -2.05303586883,
+            "tof_ticks": -437.714213794,
+            "r1": 1277950885,
+            "d1": 1277951489,
+            "r2": 511180931,
+            "d2": 511181915,
+            "six_ts": [
+              242939854388,
+              244217805273,
+              244728987188,
+              87836103219,
+              89114054708,
+              89625235639
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277950885,
+            "d1": 1277951489,
+            "r2": 511180931,
+            "d2": 511181915
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -437.71421378876994,
+          "distance_m": -2.053035868805665,
+          "abs_delta_m": 2.433475643215388e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 4,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            262109303348,
+            262748278086,
+            263898436148,
+            109248139213,
+            109887114804,
+            111037274480
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 262748293120,
+            "tag_poll": 109248154624,
+            "tag_probe1": 111037289984
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0658283824008,
+            "tof_ticks": 14.0348345031,
+            "r1": 638974738,
+            "d1": 638975591,
+            "r2": 1150159676,
+            "d2": 1150158062,
+            "six_ts": [
+              262109303348,
+              262748278086,
+              263898436148,
+              109248139213,
+              109887114804,
+              111037274480
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974738,
+            "d1": 638975591,
+            "r2": 1150159676,
+            "d2": 1150158062
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 14.034834536056575,
+          "distance_m": 0.06582838255552194,
+          "abs_delta_m": 1.5472194359045233e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            262109303348,
+            263387255056,
+            263898436148,
+            107005487191,
+            108283439156,
+            108794619237
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 263387270144,
+            "tag_poll": 107005502464,
+            "tag_probe1": 108794634240
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.8657570615,
+            "tof_ticks": -397.785736579,
+            "r1": 1277951708,
+            "d1": 1277951965,
+            "r2": 511180081,
+            "d2": 511181092,
+            "six_ts": [
+              262109303348,
+              263387255056,
+              263898436148,
+              107005487191,
+              108283439156,
+              108794619237
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951708,
+            "d1": 1277951965,
+            "r2": 511180081,
+            "d2": 511181092
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -397.7857365765262,
+          "distance_m": -1.865757061489883,
+          "abs_delta_m": 1.0117018334199201e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 5,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            281278751284,
+            281917726466,
+            283067884084,
+            128417561157,
+            129056537140,
+            130206696286
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 281917741568,
+            "tag_poll": 128417576448,
+            "tag_probe1": 130206711296
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0721954491384,
+            "tof_ticks": 15.3923147369,
+            "r1": 638975182,
+            "d1": 638975983,
+            "r2": 1150159146,
+            "d2": 1150157618,
+            "six_ts": [
+              281278751284,
+              281917726466,
+              283067884084,
+              128417561157,
+              129056537140,
+              130206696286
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975182,
+            "d1": 638975983,
+            "r2": 1150159146,
+            "d2": 1150157618
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 15.392314709477978,
+          "distance_m": 0.07219544900991766,
+          "abs_delta_m": 1.2848233588158564e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            281278751284,
+            282556703019,
+            283067884084,
+            126174869228,
+            127452821044,
+            127964001065
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 282556718080,
+            "tag_poll": 126174884352,
+            "tag_probe1": 127964016128
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.80310734091,
+            "tof_ticks": -384.428603559,
+            "r1": 1277951735,
+            "d1": 1277951816,
+            "r2": 511180021,
+            "d2": 511181065,
+            "six_ts": [
+              281278751284,
+              282556703019,
+              283067884084,
+              126174869228,
+              127452821044,
+              127964001065
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951735,
+            "d1": 1277951816,
+            "r2": 511180021,
+            "d2": 511181065
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -384.42860356977,
+          "distance_m": -1.803107340956677,
+          "abs_delta_m": 4.667688457971053e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 6,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            300448198708,
+            301087173749,
+            302237331508,
+            147586980601,
+            148225956404,
+            149376115641
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 301087188992,
+            "tag_poll": 147586995712,
+            "tag_probe1": 149376131072
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0891139089999,
+            "tof_ticks": 18.9993877887,
+            "r1": 638975041,
+            "d1": 638975803,
+            "r2": 1150159237,
+            "d2": 1150157759,
+            "six_ts": [
+              300448198708,
+              301087173749,
+              302237331508,
+              147586980601,
+              148225956404,
+              149376115641
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975041,
+            "d1": 638975803,
+            "r2": 1150159237,
+            "d2": 1150157759
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 18.99938777081595,
+          "distance_m": 0.08911390891604994,
+          "abs_delta_m": 8.385006577960041e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            300448198708,
+            301726150666,
+            302237331508,
+            145344247927,
+            146622199860,
+            147133379651
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 301726166016,
+            "tag_poll": 145344263168,
+            "tag_probe1": 147133394944
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.74380814352,
+            "tof_ticks": -371.785813456,
+            "r1": 1277951958,
+            "d1": 1277951933,
+            "r2": 511179791,
+            "d2": 511180842,
+            "six_ts": [
+              300448198708,
+              301726150666,
+              302237331508,
+              145344247927,
+              146622199860,
+              147133379651
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951958,
+            "d1": 1277951933,
+            "r2": 511179791,
+            "d2": 511180842
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -371.78581345374005,
+          "distance_m": -1.743808143506998,
+          "abs_delta_m": 1.3001821841385208e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 7,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            319617647668,
+            320256622608,
+            321406780468,
+            166756401944,
+            167395377716,
+            168545537030
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 320256637952,
+            "tag_poll": 166756417024,
+            "tag_probe1": 168545552384
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": false,
+            "d_m": -0.0365209314054,
+            "tof_ticks": -7.78638650197,
+            "r1": 638974940,
+            "d1": 638975772,
+            "r2": 1150159314,
+            "d2": 1150157860,
+            "six_ts": [
+              319617647668,
+              320256622608,
+              321406780468,
+              166756401944,
+              167395377716,
+              168545537030
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974940,
+            "d1": 638975772,
+            "r2": 1150159314,
+            "d2": 1150157860
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -7.786386499738997,
+          "distance_m": -0.03652093139489108,
+          "abs_delta_m": 1.0508920122997978e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            319617647668,
+            320895599139,
+            321406780468,
+            164513628185,
+            165791579700,
+            166302759929
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 320895614464,
+            "tag_poll": 164513643520,
+            "tag_probe1": 166302775296
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.87212226155,
+            "tof_ticks": -399.142818829,
+            "r1": 1277951471,
+            "d1": 1277951515,
+            "r2": 511180229,
+            "d2": 511181329,
+            "six_ts": [
+              319617647668,
+              320895599139,
+              321406780468,
+              164513628185,
+              165791579700,
+              166302759929
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951471,
+            "d1": 1277951515,
+            "r2": 511180229,
+            "d2": 511181329
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -399.14281882004974,
+          "distance_m": -1.8721222615110498,
+          "abs_delta_m": 3.895017641752929e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 8,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            338787096116,
+            339426071201,
+            340576228916,
+            185925822176,
+            186564798004,
+            187714957135
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 339426086400,
+            "tag_poll": 185925837312,
+            "tag_probe1": 187714972160
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0658298798087,
+            "tof_ticks": 14.0351537555,
+            "r1": 638975085,
+            "d1": 638975828,
+            "r2": 1150159131,
+            "d2": 1150157715,
+            "six_ts": [
+              338787096116,
+              339426071201,
+              340576228916,
+              185925822176,
+              186564798004,
+              187714957135
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975085,
+            "d1": 638975828,
+            "r2": 1150159131,
+            "d2": 1150157715
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 14.035153738476842,
+          "distance_m": 0.06582987972878608,
+          "abs_delta_m": 7.991392270145781e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            338787096116,
+            340065047978,
+            340576228916,
+            183683006784,
+            184960958516,
+            185472138341
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 340065062912,
+            "tag_poll": 183683021824,
+            "tag_probe1": 185472153600
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.77731062,
+            "tof_ticks": -378.928655125,
+            "r1": 1277951862,
+            "d1": 1277951732,
+            "r2": 511179825,
+            "d2": 511180938,
+            "six_ts": [
+              338787096116,
+              340065047978,
+              340576228916,
+              183683006784,
+              184960958516,
+              185472138341
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951862,
+            "d1": 1277951732,
+            "r2": 511179825,
+            "d2": 511180938
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -378.92865512116214,
+          "distance_m": -1.7773106199778534,
+          "abs_delta_m": 2.2146506850617698e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 9,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            357956544052,
+            358595519136,
+            359745676852,
+            205095241956,
+            205734217780,
+            206884376918
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 358595534336,
+            "tag_poll": 205095257088,
+            "tag_probe1": 206884391936
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0753780940898,
+            "tof_ticks": 16.0708654402,
+            "r1": 638975084,
+            "d1": 638975824,
+            "r2": 1150159138,
+            "d2": 1150157716,
+            "six_ts": [
+              357956544052,
+              358595519136,
+              359745676852,
+              205095241956,
+              205734217780,
+              206884376918
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975084,
+            "d1": 638975824,
+            "r2": 1150159138,
+            "d2": 1150157716
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 16.070865411105586,
+          "distance_m": 0.07537809395349038,
+          "abs_delta_m": 1.363096163720101e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            357956544052,
+            359234496002,
+            359745676852,
+            202852384539,
+            204130336308,
+            204641516036
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 359234511360,
+            "tag_poll": 202852399616,
+            "tag_probe1": 204641531392
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.75821432931,
+            "tof_ticks": -374.857261151,
+            "r1": 1277951950,
+            "d1": 1277951769,
+            "r2": 511179728,
+            "d2": 511180850,
+            "six_ts": [
+              357956544052,
+              359234496002,
+              359745676852,
+              202852384539,
+              204130336308,
+              204641516036
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951950,
+            "d1": 1277951769,
+            "r2": 511179728,
+            "d2": 511180850
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -374.8572611516069,
+          "distance_m": -1.7582143293109715,
+          "abs_delta_m": 9.71445146547012e-13,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 10,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            377125993012,
+            377764967905,
+            378915125812,
+            224264662450,
+            224903638068,
+            226053797394
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 377764983296,
+            "tag_poll": 224264677376,
+            "tag_probe1": 226053812736
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0954790966027,
+            "tof_ticks": 20.3564673846,
+            "r1": 638974893,
+            "d1": 638975618,
+            "r2": 1150159326,
+            "d2": 1150157907,
+            "six_ts": [
+              377125993012,
+              377764967905,
+              378915125812,
+              224264662450,
+              224903638068,
+              226053797394
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974893,
+            "d1": 638975618,
+            "r2": 1150159326,
+            "d2": 1150157907
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 20.356467375628558,
+          "distance_m": 0.09547909656072034,
+          "abs_delta_m": 4.1979655862611764e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            377125993012,
+            378403944806,
+            378915125812,
+            222021762485,
+            223299714100,
+            223810893958
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 378403959808,
+            "tag_poll": 222021777920,
+            "tag_probe1": 223810909184
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.8031075005,
+            "tof_ticks": -384.428637586,
+            "r1": 1277951794,
+            "d1": 1277951615,
+            "r2": 511179858,
+            "d2": 511181006,
+            "six_ts": [
+              377125993012,
+              378403944806,
+              378915125812,
+              222021762485,
+              223299714100,
+              223810893958
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951794,
+            "d1": 1277951615,
+            "r2": 511179858,
+            "d2": 511181006
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -384.42863759884176,
+          "distance_m": -1.8031075005651673,
+          "abs_delta_m": 6.516742701023759e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 11,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            396295441460,
+            396934416398,
+            398084574260,
+            243434082193,
+            244073057844,
+            245223217084
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 396934431744,
+            "tag_poll": 243434097152,
+            "tag_probe1": 245223232000
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0792305715504,
+            "tof_ticks": 16.8922267074,
+            "r1": 638974938,
+            "d1": 638975651,
+            "r2": 1150159240,
+            "d2": 1150157862,
+            "six_ts": [
+              396295441460,
+              396934416398,
+              398084574260,
+              243434082193,
+              244073057844,
+              245223217084
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974938,
+            "d1": 638975651,
+            "r2": 1150159240,
+            "d2": 1150157862
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 16.892226679974236,
+          "distance_m": 0.07923057142192558,
+          "abs_delta_m": 1.2847442554253519e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            396295441460,
+            397573393367,
+            398084574260,
+            241191139252,
+            242469090868,
+            242980270605
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 397573408256,
+            "tag_poll": 241191154688,
+            "tag_probe1": 242980285952
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.74146302782,
+            "tof_ticks": -371.285826833,
+            "r1": 1277951907,
+            "d1": 1277951616,
+            "r2": 511179737,
+            "d2": 511180893,
+            "six_ts": [
+              396295441460,
+              397573393367,
+              398084574260,
+              241191139252,
+              242469090868,
+              242980270605
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951907,
+            "d1": 1277951616,
+            "r2": 511179737,
+            "d2": 511180893
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -371.28582682056674,
+          "distance_m": -1.7414630277682537,
+          "abs_delta_m": 5.174638495475392e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 12,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            415464889396,
+            416103864359,
+            417254022196,
+            262603500915,
+            263242476596,
+            264392635831
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 416103879680,
+            "tag_poll": 262603515904,
+            "tag_probe1": 264392650752
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0884438009342,
+            "tof_ticks": 18.8565184752,
+            "r1": 638974963,
+            "d1": 638975681,
+            "r2": 1150159235,
+            "d2": 1150157837,
+            "six_ts": [
+              415464889396,
+              416103864359,
+              417254022196,
+              262603500915,
+              263242476596,
+              264392635831
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974963,
+            "d1": 638975681,
+            "r2": 1150159235,
+            "d2": 1150157837
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 18.85651847856316,
+          "distance_m": 0.08844380094992527,
+          "abs_delta_m": 1.5725268309729756e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            415464889396,
+            416742841301,
+            417254022196,
+            260360514479,
+            261638466100,
+            262149645829
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 416742856704,
+            "tag_poll": 260360529920,
+            "tag_probe1": 262149661184
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.76290466517,
+            "tof_ticks": -375.857256673,
+            "r1": 1277951905,
+            "d1": 1277951621,
+            "r2": 511179729,
+            "d2": 511180895,
+            "six_ts": [
+              415464889396,
+              416742841301,
+              417254022196,
+              260360514479,
+              261638466100,
+              262149645829
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951905,
+            "d1": 1277951621,
+            "r2": 511179729,
+            "d2": 511180895
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -375.8572566673145,
+          "distance_m": -1.7629046651459037,
+          "abs_delta_m": 2.4096280526464398e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 13,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            434634338356,
+            435273313616,
+            436423471156,
+            281772920885,
+            282411896884,
+            283562055785
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 435273328640,
+            "tag_poll": 281772936192,
+            "tag_probe1": 283562071040
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0257949107711,
+            "tof_ticks": 5.49956250618,
+            "r1": 638975260,
+            "d1": 638975999,
+            "r2": 1150158901,
+            "d2": 1150157540,
+            "six_ts": [
+              434634338356,
+              435273313616,
+              436423471156,
+              281772920885,
+              282411896884,
+              283562055785
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975260,
+            "d1": 638975999,
+            "r2": 1150158901,
+            "d2": 1150157540
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 5.499562483824226,
+          "distance_m": 0.025794910666249855,
+          "abs_delta_m": 1.0485014592664932e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            434634338356,
+            435912290415,
+            436423471156,
+            279529890640,
+            280807842356,
+            281319021908
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 435912305664,
+            "tag_poll": 279529905664,
+            "tag_probe1": 281319036928
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.76189992766,
+            "tof_ticks": -375.643043226,
+            "r1": 1277952059,
+            "d1": 1277951716,
+            "r2": 511179552,
+            "d2": 511180741,
+            "six_ts": [
+              434634338356,
+              435912290415,
+              436423471156,
+              279529890640,
+              280807842356,
+              281319021908
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952059,
+            "d1": 1277951716,
+            "r2": 511179552,
+            "d2": 511180741
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -375.6430432310956,
+          "distance_m": -1.7618999276841456,
+          "abs_delta_m": 2.4145574428757755e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 14,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            453803787316,
+            454442762495,
+            455592920116,
+            300942341278,
+            301581317172,
+            302731476231
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 454442777600,
+            "tag_poll": 300942356480,
+            "tag_probe1": 302731491328
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.126469729701,
+            "tof_ticks": 26.9637755216,
+            "r1": 638975179,
+            "d1": 638975894,
+            "r2": 1150159059,
+            "d2": 1150157621,
+            "six_ts": [
+              453803787316,
+              454442762495,
+              455592920116,
+              300942341278,
+              301581317172,
+              302731476231
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975179,
+            "d1": 638975894,
+            "r2": 1150159059,
+            "d2": 1150157621
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 26.963775504532514,
+          "distance_m": 0.1264697296212159,
+          "abs_delta_m": 7.978412375209132e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            453803787316,
+            455081739350,
+            455592920116,
+            298699266860,
+            299977218612,
+            300488398183
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 455081754624,
+            "tag_poll": 298699281920,
+            "tag_probe1": 300488413184
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.81282374348,
+            "tof_ticks": -386.500173558,
+            "r1": 1277952034,
+            "d1": 1277951752,
+            "r2": 511179571,
+            "d2": 511180766,
+            "six_ts": [
+              453803787316,
+              455081739350,
+              455592920116,
+              298699266860,
+              299977218612,
+              300488398183
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952034,
+            "d1": 1277951752,
+            "r2": 511179571,
+            "d2": 511180766
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -386.50017356977537,
+          "distance_m": -1.8128237435334622,
+          "abs_delta_m": 5.346212361700964e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 15,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            472973235252,
+            473612210112,
+            474762368052,
+            320111759826,
+            320750735412,
+            321900894745
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 473612225536,
+            "tag_poll": 320111775232,
+            "tag_probe1": 321900910080
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0721947839288,
+            "tof_ticks": 15.3921729119,
+            "r1": 638974860,
+            "d1": 638975586,
+            "r2": 1150159333,
+            "d2": 1150157940,
+            "six_ts": [
+              472973235252,
+              473612210112,
+              474762368052,
+              320111759826,
+              320750735412,
+              321900894745
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974860,
+            "d1": 638975586,
+            "r2": 1150159333,
+            "d2": 1150157940
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 15.392172935397962,
+          "distance_m": 0.07219478403888778,
+          "abs_delta_m": 1.1008778610932524e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            472973235252,
+            474251187161,
+            474762368052,
+            317868640795,
+            319146592308,
+            319657772003
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 474251202560,
+            "tag_poll": 317868656128,
+            "tag_probe1": 319657787392
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.73811282841,
+            "tof_ticks": -370.571552948,
+            "r1": 1277951909,
+            "d1": 1277951513,
+            "r2": 511179695,
+            "d2": 511180891,
+            "six_ts": [
+              472973235252,
+              474251187161,
+              474762368052,
+              317868640795,
+              319146592308,
+              319657772003
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277951909,
+            "d1": 1277951513,
+            "r2": 511179695,
+            "d2": 511180891
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -370.57155295512786,
+          "distance_m": -1.7381128284379568,
+          "abs_delta_m": 2.7956748027690992e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 16,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            492142684724,
+            492781660027,
+            493931817524,
+            339281180214,
+            339920156212,
+            341070315066
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 492781675008,
+            "tag_poll": 339281195520,
+            "tag_probe1": 341070330368
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0887798292999,
+            "tof_ticks": 18.928160863,
+            "r1": 638975303,
+            "d1": 638975998,
+            "r2": 1150158854,
+            "d2": 1150157497,
+            "six_ts": [
+              492142684724,
+              492781660027,
+              493931817524,
+              339281180214,
+              339920156212,
+              341070315066
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975303,
+            "d1": 638975998,
+            "r2": 1150158854,
+            "d2": 1150157497
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 18.92816087084589,
+          "distance_m": 0.08877982933659874,
+          "abs_delta_m": 3.669874126810413e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            492142684724,
+            493420636963,
+            493931817524,
+            337038016247,
+            338315968052,
+            338827147380
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 493420652032,
+            "tag_poll": 337038031360,
+            "tag_probe1": 338827162624
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.77463137238,
+            "tof_ticks": -378.357430443,
+            "r1": 1277952239,
+            "d1": 1277951805,
+            "r2": 511179328,
+            "d2": 511180561,
+            "six_ts": [
+              492142684724,
+              493420636963,
+              493931817524,
+              337038016247,
+              338315968052,
+              338827147380
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952239,
+            "d1": 1277951805,
+            "r2": 511179328,
+            "d2": 511180561
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -378.35743046431116,
+          "distance_m": -1.7746313724854994,
+          "abs_delta_m": 1.0549938700421535e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 17,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            511312133172,
+            511951108206,
+            513101265972,
+            358450599225,
+            359089574964,
+            360239734053
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 511951123456,
+            "tag_poll": 358450614272,
+            "tag_probe1": 360239749120
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0452258477027,
+            "tof_ticks": 9.64230419492,
+            "r1": 638975034,
+            "d1": 638975739,
+            "r2": 1150159089,
+            "d2": 1150157766,
+            "six_ts": [
+              511312133172,
+              511951108206,
+              513101265972,
+              358450599225,
+              359089574964,
+              360239734053
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975034,
+            "d1": 638975739,
+            "r2": 1150159089,
+            "d2": 1150157766
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 9.642304192681252,
+          "distance_m": 0.04522584769217232,
+          "abs_delta_m": 1.0527682892114143e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            511312133172,
+            512590085465,
+            513101265972,
+            356207389958,
+            357485341748,
+            357996521017
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 512590100480,
+            "tag_poll": 356207405056,
+            "tag_probe1": 357996536320
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.73677365687,
+            "tof_ticks": -370.286037033,
+            "r1": 1277952293,
+            "d1": 1277951790,
+            "r2": 511179269,
+            "d2": 511180507,
+            "six_ts": [
+              511312133172,
+              512590085465,
+              513101265972,
+              356207389958,
+              357485341748,
+              357996521017
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952293,
+            "d1": 1277951790,
+            "r2": 511179269,
+            "d2": 511180507
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -370.2860370065851,
+          "distance_m": -1.7367736567478247,
+          "abs_delta_m": 1.2217538092329505e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 18,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            530481581108,
+            531120556038,
+            532270713908,
+            377620018083,
+            378258993716,
+            379409152926
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 531120571392,
+            "tag_poll": 377620033024,
+            "tag_probe1": 379409167872
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0624793529501,
+            "tof_ticks": 13.3208100599,
+            "r1": 638974930,
+            "d1": 638975633,
+            "r2": 1150159210,
+            "d2": 1150157870,
+            "six_ts": [
+              530481581108,
+              531120556038,
+              532270713908,
+              377620018083,
+              378258993716,
+              379409152926
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974930,
+            "d1": 638975633,
+            "r2": 1150159210,
+            "d2": 1150157870
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 13.320810052664918,
+          "distance_m": 0.062479352916023134,
+          "abs_delta_m": 3.4076866328724975e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            530481581108,
+            531759533289,
+            532270713908,
+            375376763274,
+            376654714932,
+            377165894279
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 531759548416,
+            "tag_poll": 375376778240,
+            "tag_probe1": 377165909504
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.78032677592,
+            "tof_ticks": -379.571709804,
+            "r1": 1277952181,
+            "d1": 1277951658,
+            "r2": 511179347,
+            "d2": 511180619,
+            "six_ts": [
+              530481581108,
+              531759533289,
+              532270713908,
+              375376763274,
+              376654714932,
+              377165894279
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952181,
+            "d1": 1277951658,
+            "r2": 511179347,
+            "d2": 511180619
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -379.57170977644,
+          "distance_m": -1.7803267757966477,
+          "abs_delta_m": 1.2335243937400264e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 19,
+      "anchor_errors": 0,
+      "tag_errors": 512,
+      "modules": {
+        "A": {
+          "six_ts": [
+            549651030580,
+            550290005443,
+            551440163380,
+            396789437935,
+            397428413492,
+            398578572754
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 550290020864,
+            "tag_poll": 396789453312,
+            "tag_probe1": 398578588160
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.0634842856531,
+            "tof_ticks": 13.5350651222,
+            "r1": 638974863,
+            "d1": 638975557,
+            "r2": 1150159262,
+            "d2": 1150157937,
+            "six_ts": [
+              549651030580,
+              550290005443,
+              551440163380,
+              396789437935,
+              397428413492,
+              398578572754
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638974863,
+            "d1": 638975557,
+            "r2": 1150159262,
+            "d2": 1150157937
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 13.535065107996328,
+          "distance_m": 0.06348428558627131,
+          "abs_delta_m": 6.682869535534763e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            549651030580,
+            550928983096,
+            551440163380,
+            394546137168,
+            395824089140,
+            396335268155
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 550928998400,
+            "tag_poll": 394546152448,
+            "tag_probe1": 396335283200
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": false,
+            "d_m": -1.76123112256,
+            "tof_ticks": -375.500451709,
+            "r1": 1277952516,
+            "d1": 1277951972,
+            "r2": 511179015,
+            "d2": 511180284,
+            "six_ts": [
+              549651030580,
+              550928983096,
+              551440163380,
+              394546137168,
+              395824089140,
+              396335268155
+            ],
+            "cal_id": 0,
+            "ant_tx": 16436,
+            "ant_rx": 16436,
+            "range_sigma_m": null
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952516,
+            "d1": 1277951972,
+            "r2": 511179015,
+            "d2": 511180284
+          },
+          "pass": false,
+          "problem": "distance outside firmware validity limits",
+          "tof_ticks": -375.50045169657585,
+          "distance_m": -1.7612311225009116,
+          "abs_delta_m": 5.908828981660008e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    }
+  ]
+}

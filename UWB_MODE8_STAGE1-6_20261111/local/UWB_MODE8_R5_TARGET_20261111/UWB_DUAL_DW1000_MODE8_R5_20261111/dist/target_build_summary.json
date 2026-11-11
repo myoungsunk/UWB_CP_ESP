@@ -1,0 +1,95 @@
+{
+  "verified_utc": "2026-11-11T05:38:52.420039+00:00",
+  "question_id": "UWB-MODE8-SOURCE-HOST-QA-20261111",
+  "release": "D8_R5_SOURCE_20261111",
+  "source_archive": "UWB_DUAL_DW1000_MODE8_R5_SOURCE_HOST_REAUDIT_20261111.zip",
+  "source_archive_sha256": "2f837598ad45f6de0cdf4462bdde29238957aadaf188fad5851c2e6aa9dbc7c0",
+  "audited_files_reverified_after_build": 177,
+  "arduino_cli": "arduino-cli  Version: 1.5.1 Commit: 01f3d4f2b Date: 2026-06-05T10:22:12Z",
+  "core": "3.3.7",
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "target_build_pass": true,
+  "preflight_command": [
+    "python",
+    "-B",
+    "tools/offline_preflight.py",
+    "--out",
+    "dist/offline_preflight.json"
+  ],
+  "preflight_exit": 0,
+  "flash_preflight_pass": true,
+  "flash_performed": false,
+  "hardware_tested": false,
+  "research_governance_sha256": {
+    "COMMON_CONTRACT.md": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "ROLE_IMPLEMENTER.md": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "roles": {
+    "anchor": {
+      "compile_exit": 0,
+      "flash_preflight_pass": true,
+      "compile_warnings": 13,
+      "array_bounds_warnings": [
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\vendor\\anchor\\DW1000Ng\\src\\DW1000Ng.cpp:2419:37: warning: array subscript 8 is above array bounds of 'byte [1]' {aka 'unsigned char [1]'} [-Warray-bounds=]"
+      ],
+      "rc_phase_symbol_check": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2511\\bin\\xtensa-esp32-elf-nm.exe",
+        "-C",
+        "--defined-only",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.elf"
+      ],
+      "rc_phase_symbols": [],
+      "rc_phase_sections_discarded": true,
+      "esptool_image_info_exit": 0,
+      "esptool_checksum_valid": true,
+      "esptool_validation_hash_valid": true,
+      "flash_used_bytes": 388280,
+      "flash_max_bytes": 1310720,
+      "static_ram_used_bytes": 95932,
+      "static_ram_max_bytes": 327680,
+      "app": {
+        "filename": "ANCHOR_DUAL_DS_CIR.ino.bin",
+        "bytes": 388432,
+        "sha256": "a9c67adc701eae75a9851f906453e8e6bf851efb5706bab74170bd6c44592eb1"
+      },
+      "elf": {
+        "filename": "ANCHOR_DUAL_DS_CIR.ino.elf",
+        "bytes": 6270076,
+        "sha256": "d4b0258fa48fada1e7efb838317d0be843a699772ee882527a71de21d01f4791"
+      }
+    },
+    "tag": {
+      "compile_exit": 0,
+      "flash_preflight_pass": true,
+      "compile_warnings": 14,
+      "array_bounds_warnings": [
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\vendor\\tag\\DW1000Ng\\src\\DW1000Ng.cpp:2399:37: warning: array subscript 8 is above array bounds of 'byte [1]' {aka 'unsigned char [1]'} [-Warray-bounds=]"
+      ],
+      "rc_phase_symbol_check": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2511\\bin\\xtensa-esp32-elf-nm.exe",
+        "-C",
+        "--defined-only",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\tag\\TAG_DUAL_DS_CIR.ino.elf"
+      ],
+      "rc_phase_symbols": [],
+      "rc_phase_sections_discarded": true,
+      "esptool_image_info_exit": 0,
+      "esptool_checksum_valid": true,
+      "esptool_validation_hash_valid": true,
+      "flash_used_bytes": 392096,
+      "flash_max_bytes": 1310720,
+      "static_ram_used_bytes": 92900,
+      "static_ram_max_bytes": 327680,
+      "app": {
+        "filename": "TAG_DUAL_DS_CIR.ino.bin",
+        "bytes": 392240,
+        "sha256": "3b7918e7d9174d15369d50bb01660462a552dd42a3ffc8912ba3f1259ddead1a"
+      },
+      "elf": {
+        "filename": "TAG_DUAL_DS_CIR.ino.elf",
+        "bytes": 6290804,
+        "sha256": "5549a25ec34b758927137c3b246c09049dd1c05e17876b11502eb941bf1a0407"
+      }
+    }
+  }
+}

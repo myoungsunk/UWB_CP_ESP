@@ -1,0 +1,981 @@
+{
+  "question_id": "MODE8-STAGE5-CIR20",
+  "utc": "2026-11-11T10:27:00.549066+00:00",
+  "pass": false,
+  "session": 1588792285,
+  "stage": 5,
+  "config_id": 2187351378,
+  "count": 20,
+  "firmware": {
+    "anchor": "D8_R6_ANCHOR_STAGE5_20261111",
+    "tag": "D8_R5_TAG_STAGE5_20261111"
+  },
+  "problems": [],
+  "pair_audit": {
+    "pass": true,
+    "problems": [],
+    "details": {
+      "tag": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      },
+      "anchor": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      }
+    }
+  },
+  "governance_sha256": {
+    "common": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "collector_exit_code": 0,
+  "input_sha256": {
+    "tag.rfb8": "9c962988caa89c2eef9973564de196557e1a3ed07df7d3e88faa681d88ab1b4e",
+    "anchor.rfb8": "7e77da9db8d8c916953429ba9b4316afdaa9e08fa6ffb76546e331cf91cd4cd4",
+    "capture_receipt.json": "47d3449ebd3a65078f6baeba49a251b87ab8e95c869fca42e0a3a11f81994fc9"
+  },
+  "tag_delay_settings": {
+    "utc": "2026-11-11T10:17:44.460606+00:00",
+    "reference_m_approx": 0.8,
+    "baseline_session": 2041379429,
+    "baseline_verdict_sha256": "7e7a9478f9b3f4f329b0b2e9e492d034d18ea38d09492e10ca83ee300093b76f",
+    "baseline_verdict": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\stage4_20_default_20261111_191657_832\\stage4_distance_verdict.json",
+    "method": "Tag-only symmetric TX/RX adjustment. A one-tick reduction on both tag delays increases ToF by approximately one tick. Use the baseline median and nearest integer tick. Validate on a separate session.",
+    "modules": {
+      "A": {
+        "baseline_median_m": 0.06582913114215401,
+        "tag_delay_ticks": 16279,
+        "tag_delay_delta_ticks": -157,
+        "baseline_sample_sd_m": 0.08423371167470722
+      },
+      "B": {
+        "baseline_median_m": -1.7788186978872504,
+        "tag_delay_ticks": 15886,
+        "tag_delay_delta_ticks": -550,
+        "baseline_sample_sd_m": 0.1396584260341351
+      }
+    },
+    "cal_id": 0,
+    "scope": "Trial geometry only. Reported sample standard deviation is repeatability metadata, not absolute uncertainty."
+  },
+  "tag_delay_receipt_sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385",
+  "phase_coherent": false,
+  "absolute_axis_accuracy_validated": false,
+  "summary": {
+    "P1": {
+      "common_grids_verified": 20,
+      "CIR_slots_verified": 40,
+      "overlap_points_min": 986,
+      "overlap_points_max": 991,
+      "max_independent_range_delta_m": 1.1102230246251565e-16
+    },
+    "P2": {
+      "common_grids_verified": 0,
+      "CIR_slots_verified": 0,
+      "overlap_points_min": null,
+      "overlap_points_max": null,
+      "max_independent_range_delta_m": null
+    }
+  },
+  "transactions": [
+    {
+      "txn": 0,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              680149924404,
+              680788899595,
+              681939057204,
+              31699599682,
+              32338575255,
+              33488734394
+            ],
+            "range_m": 0.7055612785739854,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.890625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              680149924404,
+              681427877340,
+              681939057204,
+              29457096627,
+              30735048206,
+              31246227912
+            ],
+            "range_m": 0.6445874579987427,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.34375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.977158 m"
+      }
+    },
+    {
+      "txn": 1,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              699316493364,
+              699955468974,
+              701105626164,
+              50866133543,
+              51505109399,
+              52655268025
+            ],
+            "range_m": 0.8318670421847213,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              699316493364,
+              700594446621,
+              701105626164,
+              48623588167,
+              49901539854,
+              50412719208
+            ],
+            "range_m": 0.7353784150388682,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.46875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.828239 m"
+      }
+    },
+    {
+      "txn": 2,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              718485954100,
+              719124929877,
+              720275086900,
+              70035558363,
+              70674534295,
+              71824692684
+            ],
+            "range_m": 0.9104309390100132,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.171875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              718485954100,
+              719763907685,
+              720275086900,
+              67792970426,
+              69070922254,
+              69582101254
+            ],
+            "range_m": 0.8171235247675179,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.4375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.682838 m"
+      }
+    },
+    {
+      "txn": 3,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              737655414324,
+              738294390031,
+              739444547124,
+              89204983795,
+              89843959703,
+              90994118145
+            ],
+            "range_m": 0.8268419572469397,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              737655414324,
+              738933368032,
+              739444547124,
+              86962353227,
+              88240305166,
+              88751484073
+            ],
+            "range_m": 0.8754177102066162,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.609375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.776645 m"
+      }
+    },
+    {
+      "txn": 4,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              756824876084,
+              757463851564,
+              758614008884,
+              108374410485,
+              109013386135,
+              110163544801
+            ],
+            "range_m": 0.8710648730948106,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.25
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              756824876084,
+              758102829687,
+              758614008884,
+              106131736787,
+              107409688590,
+              107920867537
+            ],
+            "range_m": 0.787306046415664,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.484375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.732477 m"
+      }
+    },
+    {
+      "txn": 5,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              775994336820,
+              776633312426,
+              777783469620,
+              127543835205,
+              128182811031,
+              129332969536
+            ],
+            "range_m": 0.766369691072981,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.734375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              775994336820,
+              777272290403,
+              777783469620,
+              125301117716,
+              126579069454,
+              127090248432
+            ],
+            "range_m": 0.8358847615134735,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.59375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.787198 m"
+      }
+    },
+    {
+      "txn": 6,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              795163796532,
+              795802772075,
+              796952929332,
+              146713259178,
+              147352234903,
+              148502393459
+            ],
+            "range_m": 0.8136081799213064,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              795163796532,
+              796441750360,
+              796952929332,
+              144470497393,
+              145748449294,
+              146259627979
+            ],
+            "range_m": 0.8104218580843191,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.390625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.773127 m"
+      }
+    },
+    {
+      "txn": 7,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              814333258292,
+              814972233689,
+              816122391092,
+              165882684736,
+              166521660311,
+              167671819049
+            ],
+            "range_m": 0.8497906016069141,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              814333258292,
+              815611211856,
+              816122391092,
+              163639878013,
+              164917829646,
+              165429008568
+            ],
+            "range_m": 0.7678743037092005,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.21875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.702381 m"
+      }
+    },
+    {
+      "txn": 8,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              833502719540,
+              834141694888,
+              835291852340,
+              185052110209,
+              185691085719,
+              186841244476
+            ],
+            "range_m": 0.8487854786068436,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.921875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              833502719540,
+              834780673472,
+              835291852340,
+              182809258061,
+              184087209998,
+              184598388551
+            ],
+            "range_m": 0.8090812320667793,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.453125
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.679711 m"
+      }
+    },
+    {
+      "txn": 9,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              852672179252,
+              853311154687,
+              854461312052,
+              204221533508,
+              204860509079,
+              206010667652
+            ],
+            "range_m": 0.8067400828982447,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              852672179252,
+              853950133346,
+              854461312052,
+              201978635304,
+              203256587278,
+              203767765597
+            ],
+            "range_m": 0.7722274155794016,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.546875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.750848 m"
+      }
+    },
+    {
+      "txn": 10,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              871841641012,
+              872480616580,
+              873630773812,
+              223390959294,
+              224029934999,
+              225180093514
+            ],
+            "range_m": 0.8680498974767632,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.265625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              871841641012,
+              873119595107,
+              873630773812,
+              221148014654,
+              222425966606,
+              222937144967
+            ],
+            "range_m": 0.8596691767103639,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.328125
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.697300 m"
+      }
+    },
+    {
+      "txn": 11,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              891011102260,
+              891650077639,
+              892800235060,
+              242560384357,
+              243199359895,
+              244349518585
+            ],
+            "range_m": 0.8231561394148178,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              891011102260,
+              892289056102,
+              892800235060,
+              240317392713,
+              241595344398,
+              242106523009
+            ],
+            "range_m": 0.8640252989379611,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.234375
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.777035 m"
+      }
+    },
+    {
+      "txn": 12,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              910180562484,
+              910819538286,
+              911969695284,
+              261729807820,
+              262368783767,
+              263518942065
+            ],
+            "range_m": 0.8702279852821875,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              910180562484,
+              911458516202,
+              911969695284,
+              259486768604,
+              260764720142,
+              261275898878
+            ],
+            "range_m": 0.8811119737833988,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.6875
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.727396 m"
+      }
+    },
+    {
+      "txn": 13,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              929350024244,
+              929988999958,
+              931139157044,
+              280899232290,
+              281538208151,
+              282688366472
+            ],
+            "range_m": 0.812771008101113,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.984375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              929350024244,
+              930627978430,
+              931139157044,
+              278656145005,
+              279934096910,
+              280445275147
+            ],
+            "range_m": 0.8968562882326995,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.390625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.772345 m"
+      }
+    },
+    {
+      "txn": 14,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              948519484980,
+              949158460754,
+              950308617780,
+              300068656625,
+              300707632535,
+              301857790841
+            ],
+            "range_m": 0.8670452069904323,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.75
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              948519484980,
+              949797438884,
+              950308617780,
+              297825521014,
+              299103472654,
+              299614651157
+            ],
+            "range_m": 0.8586643387057291,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.421875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.730132 m"
+      }
+    },
+    {
+      "txn": 15,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              967688945716,
+              968327921244,
+              969478078516,
+              319238080191,
+              319877055895,
+              321027214395
+            ],
+            "range_m": 0.7631868994035493,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.90625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              967688945716,
+              968966899609,
+              969478078516,
+              316994895742,
+              318272847374,
+              318784025841
+            ],
+            "range_m": 0.777923074224672,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.609375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.818858 m"
+      }
+    },
+    {
+      "txn": 16,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              986858407476,
+              987497382965,
+              988647540276,
+              338407504664,
+              339046480279,
+              340196638812
+            ],
+            "range_m": 0.8335422035971753,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 751.421875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              986858407476,
+              988136361464,
+              988647540276,
+              336164270977,
+              337442222606,
+              337953400987
+            ],
+            "range_m": 0.8586637314898135,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.515625
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.724660 m"
+      }
+    },
+    {
+      "txn": 17,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1006027868724,
+              1006666844163,
+              1007817001524,
+              357576928553,
+              358215904151,
+              359366062835
+            ],
+            "range_m": 0.8683846220856019,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.78125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1006027868724,
+              1007305822447,
+              1007817001524,
+              355333645320,
+              356611596814,
+              357122775456
+            ],
+            "range_m": 0.7648577477617399,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.46875
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.772345 m"
+      }
+    },
+    {
+      "txn": 18,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1025197328948,
+              1025836304714,
+              1026986461748,
+              376746351642,
+              377385327511,
+              378535485747
+            ],
+            "range_m": 0.8514665734549847,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.78125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1025197328948,
+              1026475283309,
+              1026986461748,
+              374503018569,
+              375780970510,
+              376292148484
+            ],
+            "range_m": 0.8425808596685305,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.40625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.710589 m"
+      }
+    },
+    {
+      "txn": 19,
+      "P1": {
+        "pass": true,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1044366791220,
+              1045005766927,
+              1046155924020,
+              395915776089,
+              396554751895,
+              397704910199
+            ],
+            "range_m": 0.8650349968209397,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1044366791220,
+              1045644745625,
+              1046155924020,
+              393672392787,
+              394950344718,
+              395461522647
+            ],
+            "range_m": 0.8770881867229093,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.453125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "problem": "DS-TWR distance -0.691046 m"
+      }
+    }
+  ]
+}

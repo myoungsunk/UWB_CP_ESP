@@ -1,0 +1,92 @@
+{
+  "partial_poll_lost_0": {
+    "exit_code": 0,
+    "ranges_m": [
+      null,
+      5.112297798970316,
+      null,
+      null
+    ],
+    "common_grid_points": [
+      0,
+      0
+    ],
+    "raw_iq_matches": true,
+    "relative_axes_finite": true
+  },
+  "partial_poll_lost_1": {
+    "exit_code": 0,
+    "ranges_m": [
+      4.998370712704571,
+      null,
+      null,
+      null
+    ],
+    "common_grid_points": [
+      0,
+      0
+    ],
+    "raw_iq_matches": true,
+    "relative_axes_finite": true
+  },
+  "valid_anchor": {
+    "exit_code": 0,
+    "ranges_m": [
+      5.000715901691287,
+      5.109952642815762,
+      5.0011384518532775,
+      5.110397274032211
+    ],
+    "common_grid_points": [
+      993,
+      993
+    ],
+    "raw_iq_matches": true,
+    "relative_axes_finite": true
+  },
+  "bad_anchor_tx_0_planned": {
+    "exit_code": 0,
+    "ranges_m": [
+      5.000715901691287,
+      5.109952642815762,
+      null,
+      null
+    ],
+    "common_grid_points": [
+      993,
+      0
+    ],
+    "raw_iq_matches": true,
+    "relative_axes_finite": true
+  },
+  "bad_anchor_tx_1_type": {
+    "exit_code": 0,
+    "ranges_m": [
+      5.000715901691287,
+      5.109952642815762,
+      null,
+      null
+    ],
+    "common_grid_points": [
+      993,
+      0
+    ],
+    "raw_iq_matches": true,
+    "relative_axes_finite": true
+  },
+  "bad_anchor_tx_2_radio": {
+    "exit_code": 0,
+    "ranges_m": [
+      5.000715901691287,
+      5.109952642815762,
+      null,
+      null
+    ],
+    "common_grid_points": [
+      993,
+      0
+    ],
+    "raw_iq_matches": true,
+    "relative_axes_finite": true
+  }
+}

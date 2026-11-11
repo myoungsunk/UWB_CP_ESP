@@ -1,0 +1,109 @@
+{
+  "session": 488208352,
+  "source": "serial_hardware_capture",
+  "stage": 6,
+  "requested_count": 100,
+  "accuracy_validated": false,
+  "pass": false,
+  "tag_identity": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R5_TAG_STAGE6_RX_UARTFIX_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 1671542517,
+    "config_id": 3325958430,
+    "stage": 6,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "anchor_identity": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R6_ANCHOR_STAGE6_RX_UARTFIX_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 3201328331,
+    "config_id": 3325958430,
+    "stage": 6,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "error": "tag: hardware integrity fault",
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 0,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 1,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "anchor_capture": {
+    "port": "COM4",
+    "records": 0,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "shutdown": {
+    "pass": true,
+    "request": 96730775,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 488208352
+      },
+      "anchor": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 488208352
+      }
+    }
+  }
+}

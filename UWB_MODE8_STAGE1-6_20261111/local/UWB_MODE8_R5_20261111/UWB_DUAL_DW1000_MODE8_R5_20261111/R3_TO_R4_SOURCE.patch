@@ -1,0 +1,867 @@
+--- a/firmware/ANCHOR_DUAL_DS_CIR/app.hpp
++++ b/firmware/ANCHOR_DUAL_DS_CIR/app.hpp
+@@ -51,7 +51,7 @@
+  if(!s||!*s||*s=='-'||*s=='+'){return false;}
+  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
+ }
+-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R3_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
++static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
+ static void stop(uint32_t request=0){active=false;remaining=0;idleAll();emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)request);}
+ static void command(char*line){
+  char*save=nullptr;char*w[9]{};unsigned n=0;for(char*p=strtok_r(line," \t\r",&save);p;p=strtok_r(nullptr," \t\r",&save)){if(n==9){emit("{\"event\":\"ERROR\",\"reason\":\"TOO_MANY_TOKENS\"}");return;}w[n++]=p;}if(!n)return;
+--- a/firmware/ANCHOR_DUAL_DS_CIR/core.hpp
++++ b/firmware/ANCHOR_DUAL_DS_CIR/core.hpp
+@@ -36,8 +36,8 @@
+  for(unsigned i=0;i<7;++i)putLE(b+4+4*i,v[i],4);
+  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
+  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
+- // R3 contract adds fail-fast CIR handling and correlated STOP acknowledgements.
+- b[39]=3;
++ // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
++ b[39]=4;
+  return crc32(b,sizeof b);
+ }
+ inline const char* validate(const Config&c){
+--- a/firmware/ANCHOR_DUAL_DS_CIR/esp32_port.hpp
++++ b/firmware/ANCHOR_DUAL_DS_CIR/esp32_port.hpp
+@@ -147,7 +147,13 @@
+   if(f.type==Type::Poll)f.poll_tx=o.planned;
+   else if(f.type==Type::RespA||f.type==Type::RespB)f.tag_resp_tx=o.planned;
+   else f.probe_tx=o.planned;
+-  uint8_t data[AIR_BYTES],d[5];if(!encode(f,data))return false;putLE(d,dx,5);
++  // DW1000Ng::setTransmitData(data, AIR_BYTES) writes AIR_BYTES+2 bytes
++  // to TX_BUFFER when hardware FCS is enabled. The last two bytes are
++  // hardware-reserved FCS bytes; never read beyond a 96-byte stack array.
++  uint8_t data[AIR_BYTES+2]{},d[5];
++  static_assert(sizeof(data)>=AIR_BYTES+2,"DW1000 TX buffer requires FCS space");
++  if(!encode(f,data))return false;
++  putLE(d,dx,5);
+   const int64_t lead0=signed40(dx,system(i));if(lead0<int64_t(usTicks(cfg_.min_lead_us)))return false;
+   DW1000Ng::setDelayedTRX(d);DW1000Ng::setTransmitData(data,AIR_BYTES);
+   const int64_t lead=signed40(dx,system(i));o.lead_us=int32_t(double(lead)*1e6/HZ);
+--- a/firmware/ANCHOR_DUAL_DS_CIR/record_json.hpp
++++ b/firmware/ANCHOR_DUAL_DS_CIR/record_json.hpp
+@@ -22,7 +22,7 @@
+ inline void jsonFrame(Json&j,const Frame&f,bool valid){uint8_t b[AIR_BYTES];if(valid&&encode(f,b))j.hex(b,AIR_BYTES);else j.add("null");}
+ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes){
+  Json j(out,capacity);
+- j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R3_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
++ j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
+  r.anchor?"anchor":"tag",r.cfg.stage,(unsigned long)r.session,(unsigned long)r.txn,(unsigned long)r.boot,(unsigned long)r.peer_boot,(unsigned long)r.config,(unsigned long long)r.begin_us,(unsigned long long)r.end_us,r.complete?"true":"false",(unsigned long)r.errors,r.metadata_conflict?"true":"false",r.p1_tx_confirmed?"true":"false",r.response_mask,(unsigned long)r.cfg.period_us,(unsigned long)r.cfg.cir_hz,(unsigned long)r.cfg.baud,r.txn&1?"B,A":"A,B");
+  for(unsigned i=0;i<(r.anchor?3U:2U);++i){if(i)j.add(",");jsonTx(j,r.tx[i]);}j.add("],\"poll_rx\":[");
+  if(!r.anchor){for(unsigned i=0;i<2;++i){if(i)j.add(",");jsonRx(j,r.poll[i]);}}
+--- a/firmware/ANCHOR_DUAL_DS_CIR/rx_guard_policy.hpp
++++ b/firmware/ANCHOR_DUAL_DS_CIR/rx_guard_policy.hpp
+@@ -1,30 +1,30 @@
+-#pragma once
+-#include <stdint.h>
+-// Candidate policy; bit positions match the pinned DW1000NgRegisters.hpp.
+-namespace rxguard {
+-constexpr uint64_t statusBit(unsigned n){return uint64_t(1)<<n;}
+-constexpr uint64_t MASK40=0xffffffffffULL;
+-constexpr uint64_t DONE=statusBit(13)|statusBit(14);
+-constexpr uint64_t FAILED=statusBit(12)|statusBit(15)|statusBit(16)|statusBit(18);
+-constexpr uint64_t TIMEOUT=statusBit(17)|statusBit(21)|statusBit(26);
+-constexpr uint64_t PLL=statusBit(24)|statusBit(25);
+-constexpr uint64_t RX_CLEAR=statusBit(8)|statusBit(9)|statusBit(10)|statusBit(11)|DONE|FAILED|TIMEOUT|statusBit(20)|statusBit(29);
+-constexpr uint64_t TX_CLEAR=statusBit(3)|statusBit(4)|statusBit(5)|statusBit(6)|statusBit(7);
+-enum class Action { None, Done, Failed, Timeout, Untrusted, ClockFault, Overrun, FilterReject };
+-constexpr Action classify(uint64_t s){
+-  return s==MASK40 ? Action::Untrusted : (s&PLL) ? Action::ClockFault :
+-    (s&statusBit(20)) ? Action::Overrun : (s&FAILED) ? Action::Failed :
+-    (s&TIMEOUT) ? Action::Timeout : (s&statusBit(29)) ? Action::FilterReject :
+-    ((s&DONE)==DONE) ? Action::Done : Action::None;
+-}
+-constexpr bool goodClock(uint64_t a,uint64_t b){
+-  return a!=0 && b!=0 && a!=MASK40 && b!=MASK40 &&
+-    ((b-a)&MASK40)>0 && ((b-a)&MASK40)<statusBit(39);
+-}
+-constexpr bool goodSnapshot(uint32_t dev,uint16_t tx,uint16_t rx,uint16_t wanted,uint64_t a,uint64_t b){
+-  return dev==0xdeca0130UL && tx==wanted && rx==wanted && goodClock(a,b);
+-}
+-constexpr bool selftestReady(bool radio,bool power,bool clock,bool antenna,bool device,bool latched){
+-  return radio && power && clock && antenna && device && !latched;
+-}
+-}
++#pragma once
++#include <stdint.h>
++// Candidate policy; bit positions match the pinned DW1000NgRegisters.hpp.
++namespace rxguard {
++constexpr uint64_t statusBit(unsigned n){return uint64_t(1)<<n;}
++constexpr uint64_t MASK40=0xffffffffffULL;
++constexpr uint64_t DONE=statusBit(13)|statusBit(14);
++constexpr uint64_t FAILED=statusBit(12)|statusBit(15)|statusBit(16)|statusBit(18);
++constexpr uint64_t TIMEOUT=statusBit(17)|statusBit(21)|statusBit(26);
++constexpr uint64_t PLL=statusBit(24)|statusBit(25);
++constexpr uint64_t RX_CLEAR=statusBit(8)|statusBit(9)|statusBit(10)|statusBit(11)|DONE|FAILED|TIMEOUT|statusBit(20)|statusBit(29);
++constexpr uint64_t TX_CLEAR=statusBit(3)|statusBit(4)|statusBit(5)|statusBit(6)|statusBit(7);
++enum class Action { None, Done, Failed, Timeout, Untrusted, ClockFault, Overrun, FilterReject };
++constexpr Action classify(uint64_t s){
++  return s==MASK40 ? Action::Untrusted : (s&PLL) ? Action::ClockFault :
++    (s&statusBit(20)) ? Action::Overrun : (s&FAILED) ? Action::Failed :
++    (s&TIMEOUT) ? Action::Timeout : (s&statusBit(29)) ? Action::FilterReject :
++    ((s&DONE)==DONE) ? Action::Done : Action::None;
++}
++constexpr bool goodClock(uint64_t a,uint64_t b){
++  return a!=0 && b!=0 && a!=MASK40 && b!=MASK40 &&
++    ((b-a)&MASK40)>0 && ((b-a)&MASK40)<statusBit(39);
++}
++constexpr bool goodSnapshot(uint32_t dev,uint16_t tx,uint16_t rx,uint16_t wanted,uint64_t a,uint64_t b){
++  return dev==0xdeca0130UL && tx==wanted && rx==wanted && goodClock(a,b);
++}
++constexpr bool selftestReady(bool radio,bool power,bool clock,bool antenna,bool device,bool latched){
++  return radio && power && clock && antenna && device && !latched;
++}
++}
+--- a/firmware/TAG_DUAL_DS_CIR/app.hpp
++++ b/firmware/TAG_DUAL_DS_CIR/app.hpp
+@@ -51,7 +51,7 @@
+  if(!s||!*s||*s=='-'||*s=='+'){return false;}
+  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
+ }
+-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R3_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
++static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
+ static void stop(uint32_t request=0){active=false;remaining=0;idleAll();emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)request);}
+ static void command(char*line){
+  char*save=nullptr;char*w[9]{};unsigned n=0;for(char*p=strtok_r(line," \t\r",&save);p;p=strtok_r(nullptr," \t\r",&save)){if(n==9){emit("{\"event\":\"ERROR\",\"reason\":\"TOO_MANY_TOKENS\"}");return;}w[n++]=p;}if(!n)return;
+--- a/firmware/TAG_DUAL_DS_CIR/core.hpp
++++ b/firmware/TAG_DUAL_DS_CIR/core.hpp
+@@ -36,8 +36,8 @@
+  for(unsigned i=0;i<7;++i)putLE(b+4+4*i,v[i],4);
+  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
+  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
+- // R3 contract adds fail-fast CIR handling and correlated STOP acknowledgements.
+- b[39]=3;
++ // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
++ b[39]=4;
+  return crc32(b,sizeof b);
+ }
+ inline const char* validate(const Config&c){
+--- a/firmware/TAG_DUAL_DS_CIR/esp32_port.hpp
++++ b/firmware/TAG_DUAL_DS_CIR/esp32_port.hpp
+@@ -147,7 +147,13 @@
+   if(f.type==Type::Poll)f.poll_tx=o.planned;
+   else if(f.type==Type::RespA||f.type==Type::RespB)f.tag_resp_tx=o.planned;
+   else f.probe_tx=o.planned;
+-  uint8_t data[AIR_BYTES],d[5];if(!encode(f,data))return false;putLE(d,dx,5);
++  // DW1000Ng::setTransmitData(data, AIR_BYTES) writes AIR_BYTES+2 bytes
++  // to TX_BUFFER when hardware FCS is enabled. The last two bytes are
++  // hardware-reserved FCS bytes; never read beyond a 96-byte stack array.
++  uint8_t data[AIR_BYTES+2]{},d[5];
++  static_assert(sizeof(data)>=AIR_BYTES+2,"DW1000 TX buffer requires FCS space");
++  if(!encode(f,data))return false;
++  putLE(d,dx,5);
+   const int64_t lead0=signed40(dx,system(i));if(lead0<int64_t(usTicks(cfg_.min_lead_us)))return false;
+   DW1000Ng::setDelayedTRX(d);DW1000Ng::setTransmitData(data,AIR_BYTES);
+   const int64_t lead=signed40(dx,system(i));o.lead_us=int32_t(double(lead)*1e6/HZ);
+--- a/firmware/TAG_DUAL_DS_CIR/record_json.hpp
++++ b/firmware/TAG_DUAL_DS_CIR/record_json.hpp
+@@ -22,7 +22,7 @@
+ inline void jsonFrame(Json&j,const Frame&f,bool valid){uint8_t b[AIR_BYTES];if(valid&&encode(f,b))j.hex(b,AIR_BYTES);else j.add("null");}
+ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes){
+  Json j(out,capacity);
+- j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R3_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
++ j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
+  r.anchor?"anchor":"tag",r.cfg.stage,(unsigned long)r.session,(unsigned long)r.txn,(unsigned long)r.boot,(unsigned long)r.peer_boot,(unsigned long)r.config,(unsigned long long)r.begin_us,(unsigned long long)r.end_us,r.complete?"true":"false",(unsigned long)r.errors,r.metadata_conflict?"true":"false",r.p1_tx_confirmed?"true":"false",r.response_mask,(unsigned long)r.cfg.period_us,(unsigned long)r.cfg.cir_hz,(unsigned long)r.cfg.baud,r.txn&1?"B,A":"A,B");
+  for(unsigned i=0;i<(r.anchor?3U:2U);++i){if(i)j.add(",");jsonTx(j,r.tx[i]);}j.add("],\"poll_rx\":[");
+  if(!r.anchor){for(unsigned i=0;i<2;++i){if(i)j.add(",");jsonRx(j,r.poll[i]);}}
+--- a/firmware/TAG_DUAL_DS_CIR/rx_guard_policy.hpp
++++ b/firmware/TAG_DUAL_DS_CIR/rx_guard_policy.hpp
+@@ -1,30 +1,30 @@
+-#pragma once
+-#include <stdint.h>
+-// Candidate policy; bit positions match the pinned DW1000NgRegisters.hpp.
+-namespace rxguard {
+-constexpr uint64_t statusBit(unsigned n){return uint64_t(1)<<n;}
+-constexpr uint64_t MASK40=0xffffffffffULL;
+-constexpr uint64_t DONE=statusBit(13)|statusBit(14);
+-constexpr uint64_t FAILED=statusBit(12)|statusBit(15)|statusBit(16)|statusBit(18);
+-constexpr uint64_t TIMEOUT=statusBit(17)|statusBit(21)|statusBit(26);
+-constexpr uint64_t PLL=statusBit(24)|statusBit(25);
+-constexpr uint64_t RX_CLEAR=statusBit(8)|statusBit(9)|statusBit(10)|statusBit(11)|DONE|FAILED|TIMEOUT|statusBit(20)|statusBit(29);
+-constexpr uint64_t TX_CLEAR=statusBit(3)|statusBit(4)|statusBit(5)|statusBit(6)|statusBit(7);
+-enum class Action { None, Done, Failed, Timeout, Untrusted, ClockFault, Overrun, FilterReject };
+-constexpr Action classify(uint64_t s){
+-  return s==MASK40 ? Action::Untrusted : (s&PLL) ? Action::ClockFault :
+-    (s&statusBit(20)) ? Action::Overrun : (s&FAILED) ? Action::Failed :
+-    (s&TIMEOUT) ? Action::Timeout : (s&statusBit(29)) ? Action::FilterReject :
+-    ((s&DONE)==DONE) ? Action::Done : Action::None;
+-}
+-constexpr bool goodClock(uint64_t a,uint64_t b){
+-  return a!=0 && b!=0 && a!=MASK40 && b!=MASK40 &&
+-    ((b-a)&MASK40)>0 && ((b-a)&MASK40)<statusBit(39);
+-}
+-constexpr bool goodSnapshot(uint32_t dev,uint16_t tx,uint16_t rx,uint16_t wanted,uint64_t a,uint64_t b){
+-  return dev==0xdeca0130UL && tx==wanted && rx==wanted && goodClock(a,b);
+-}
+-constexpr bool selftestReady(bool radio,bool power,bool clock,bool antenna,bool device,bool latched){
+-  return radio && power && clock && antenna && device && !latched;
+-}
+-}
++#pragma once
++#include <stdint.h>
++// Candidate policy; bit positions match the pinned DW1000NgRegisters.hpp.
++namespace rxguard {
++constexpr uint64_t statusBit(unsigned n){return uint64_t(1)<<n;}
++constexpr uint64_t MASK40=0xffffffffffULL;
++constexpr uint64_t DONE=statusBit(13)|statusBit(14);
++constexpr uint64_t FAILED=statusBit(12)|statusBit(15)|statusBit(16)|statusBit(18);
++constexpr uint64_t TIMEOUT=statusBit(17)|statusBit(21)|statusBit(26);
++constexpr uint64_t PLL=statusBit(24)|statusBit(25);
++constexpr uint64_t RX_CLEAR=statusBit(8)|statusBit(9)|statusBit(10)|statusBit(11)|DONE|FAILED|TIMEOUT|statusBit(20)|statusBit(29);
++constexpr uint64_t TX_CLEAR=statusBit(3)|statusBit(4)|statusBit(5)|statusBit(6)|statusBit(7);
++enum class Action { None, Done, Failed, Timeout, Untrusted, ClockFault, Overrun, FilterReject };
++constexpr Action classify(uint64_t s){
++  return s==MASK40 ? Action::Untrusted : (s&PLL) ? Action::ClockFault :
++    (s&statusBit(20)) ? Action::Overrun : (s&FAILED) ? Action::Failed :
++    (s&TIMEOUT) ? Action::Timeout : (s&statusBit(29)) ? Action::FilterReject :
++    ((s&DONE)==DONE) ? Action::Done : Action::None;
++}
++constexpr bool goodClock(uint64_t a,uint64_t b){
++  return a!=0 && b!=0 && a!=MASK40 && b!=MASK40 &&
++    ((b-a)&MASK40)>0 && ((b-a)&MASK40)<statusBit(39);
++}
++constexpr bool goodSnapshot(uint32_t dev,uint16_t tx,uint16_t rx,uint16_t wanted,uint64_t a,uint64_t b){
++  return dev==0xdeca0130UL && tx==wanted && rx==wanted && goodClock(a,b);
++}
++constexpr bool selftestReady(bool radio,bool power,bool clock,bool antenna,bool device,bool latched){
++  return radio && power && clock && antenna && device && !latched;
++}
++}
+--- a/shared/app.hpp
++++ b/shared/app.hpp
+@@ -51,7 +51,7 @@
+  if(!s||!*s||*s=='-'||*s=='+'){return false;}
+  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
+ }
+-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R3_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
++static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
+ static void stop(uint32_t request=0){active=false;remaining=0;idleAll();emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)request);}
+ static void command(char*line){
+  char*save=nullptr;char*w[9]{};unsigned n=0;for(char*p=strtok_r(line," \t\r",&save);p;p=strtok_r(nullptr," \t\r",&save)){if(n==9){emit("{\"event\":\"ERROR\",\"reason\":\"TOO_MANY_TOKENS\"}");return;}w[n++]=p;}if(!n)return;
+--- a/shared/core.hpp
++++ b/shared/core.hpp
+@@ -36,8 +36,8 @@
+  for(unsigned i=0;i<7;++i)putLE(b+4+4*i,v[i],4);
+  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
+  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
+- // R3 contract adds fail-fast CIR handling and correlated STOP acknowledgements.
+- b[39]=3;
++ // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
++ b[39]=4;
+  return crc32(b,sizeof b);
+ }
+ inline const char* validate(const Config&c){
+--- a/shared/esp32_port.hpp
++++ b/shared/esp32_port.hpp
+@@ -147,7 +147,13 @@
+   if(f.type==Type::Poll)f.poll_tx=o.planned;
+   else if(f.type==Type::RespA||f.type==Type::RespB)f.tag_resp_tx=o.planned;
+   else f.probe_tx=o.planned;
+-  uint8_t data[AIR_BYTES],d[5];if(!encode(f,data))return false;putLE(d,dx,5);
++  // DW1000Ng::setTransmitData(data, AIR_BYTES) writes AIR_BYTES+2 bytes
++  // to TX_BUFFER when hardware FCS is enabled. The last two bytes are
++  // hardware-reserved FCS bytes; never read beyond a 96-byte stack array.
++  uint8_t data[AIR_BYTES+2]{},d[5];
++  static_assert(sizeof(data)>=AIR_BYTES+2,"DW1000 TX buffer requires FCS space");
++  if(!encode(f,data))return false;
++  putLE(d,dx,5);
+   const int64_t lead0=signed40(dx,system(i));if(lead0<int64_t(usTicks(cfg_.min_lead_us)))return false;
+   DW1000Ng::setDelayedTRX(d);DW1000Ng::setTransmitData(data,AIR_BYTES);
+   const int64_t lead=signed40(dx,system(i));o.lead_us=int32_t(double(lead)*1e6/HZ);
+--- a/shared/record_json.hpp
++++ b/shared/record_json.hpp
+@@ -22,7 +22,7 @@
+ inline void jsonFrame(Json&j,const Frame&f,bool valid){uint8_t b[AIR_BYTES];if(valid&&encode(f,b))j.hex(b,AIR_BYTES);else j.add("null");}
+ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes){
+  Json j(out,capacity);
+- j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R3_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
++ j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R4_SOURCE_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
+  r.anchor?"anchor":"tag",r.cfg.stage,(unsigned long)r.session,(unsigned long)r.txn,(unsigned long)r.boot,(unsigned long)r.peer_boot,(unsigned long)r.config,(unsigned long long)r.begin_us,(unsigned long long)r.end_us,r.complete?"true":"false",(unsigned long)r.errors,r.metadata_conflict?"true":"false",r.p1_tx_confirmed?"true":"false",r.response_mask,(unsigned long)r.cfg.period_us,(unsigned long)r.cfg.cir_hz,(unsigned long)r.cfg.baud,r.txn&1?"B,A":"A,B");
+  for(unsigned i=0;i<(r.anchor?3U:2U);++i){if(i)j.add(",");jsonTx(j,r.tx[i]);}j.add("],\"poll_rx\":[");
+  if(!r.anchor){for(unsigned i=0;i<2;++i){if(i)j.add(",");jsonRx(j,r.poll[i]);}}
+--- a/shared/rx_guard_policy.hpp
++++ b/shared/rx_guard_policy.hpp
+@@ -1,30 +1,30 @@
+-#pragma once
+-#include <stdint.h>
+-// Candidate policy; bit positions match the pinned DW1000NgRegisters.hpp.
+-namespace rxguard {
+-constexpr uint64_t statusBit(unsigned n){return uint64_t(1)<<n;}
+-constexpr uint64_t MASK40=0xffffffffffULL;
+-constexpr uint64_t DONE=statusBit(13)|statusBit(14);
+-constexpr uint64_t FAILED=statusBit(12)|statusBit(15)|statusBit(16)|statusBit(18);
+-constexpr uint64_t TIMEOUT=statusBit(17)|statusBit(21)|statusBit(26);
+-constexpr uint64_t PLL=statusBit(24)|statusBit(25);
+-constexpr uint64_t RX_CLEAR=statusBit(8)|statusBit(9)|statusBit(10)|statusBit(11)|DONE|FAILED|TIMEOUT|statusBit(20)|statusBit(29);
+-constexpr uint64_t TX_CLEAR=statusBit(3)|statusBit(4)|statusBit(5)|statusBit(6)|statusBit(7);
+-enum class Action { None, Done, Failed, Timeout, Untrusted, ClockFault, Overrun, FilterReject };
+-constexpr Action classify(uint64_t s){
+-  return s==MASK40 ? Action::Untrusted : (s&PLL) ? Action::ClockFault :
+-    (s&statusBit(20)) ? Action::Overrun : (s&FAILED) ? Action::Failed :
+-    (s&TIMEOUT) ? Action::Timeout : (s&statusBit(29)) ? Action::FilterReject :
+-    ((s&DONE)==DONE) ? Action::Done : Action::None;
+-}
+-constexpr bool goodClock(uint64_t a,uint64_t b){
+-  return a!=0 && b!=0 && a!=MASK40 && b!=MASK40 &&
+-    ((b-a)&MASK40)>0 && ((b-a)&MASK40)<statusBit(39);
+-}
+-constexpr bool goodSnapshot(uint32_t dev,uint16_t tx,uint16_t rx,uint16_t wanted,uint64_t a,uint64_t b){
+-  return dev==0xdeca0130UL && tx==wanted && rx==wanted && goodClock(a,b);
+-}
+-constexpr bool selftestReady(bool radio,bool power,bool clock,bool antenna,bool device,bool latched){
+-  return radio && power && clock && antenna && device && !latched;
+-}
+-}
++#pragma once
++#include <stdint.h>
++// Candidate policy; bit positions match the pinned DW1000NgRegisters.hpp.
++namespace rxguard {
++constexpr uint64_t statusBit(unsigned n){return uint64_t(1)<<n;}
++constexpr uint64_t MASK40=0xffffffffffULL;
++constexpr uint64_t DONE=statusBit(13)|statusBit(14);
++constexpr uint64_t FAILED=statusBit(12)|statusBit(15)|statusBit(16)|statusBit(18);
++constexpr uint64_t TIMEOUT=statusBit(17)|statusBit(21)|statusBit(26);
++constexpr uint64_t PLL=statusBit(24)|statusBit(25);
++constexpr uint64_t RX_CLEAR=statusBit(8)|statusBit(9)|statusBit(10)|statusBit(11)|DONE|FAILED|TIMEOUT|statusBit(20)|statusBit(29);
++constexpr uint64_t TX_CLEAR=statusBit(3)|statusBit(4)|statusBit(5)|statusBit(6)|statusBit(7);
++enum class Action { None, Done, Failed, Timeout, Untrusted, ClockFault, Overrun, FilterReject };
++constexpr Action classify(uint64_t s){
++  return s==MASK40 ? Action::Untrusted : (s&PLL) ? Action::ClockFault :
++    (s&statusBit(20)) ? Action::Overrun : (s&FAILED) ? Action::Failed :
++    (s&TIMEOUT) ? Action::Timeout : (s&statusBit(29)) ? Action::FilterReject :
++    ((s&DONE)==DONE) ? Action::Done : Action::None;
++}
++constexpr bool goodClock(uint64_t a,uint64_t b){
++  return a!=0 && b!=0 && a!=MASK40 && b!=MASK40 &&
++    ((b-a)&MASK40)>0 && ((b-a)&MASK40)<statusBit(39);
++}
++constexpr bool goodSnapshot(uint32_t dev,uint16_t tx,uint16_t rx,uint16_t wanted,uint64_t a,uint64_t b){
++  return dev==0xdeca0130UL && tx==wanted && rx==wanted && goodClock(a,b);
++}
++constexpr bool selftestReady(bool radio,bool power,bool clock,bool antenna,bool device,bool latched){
++  return radio && power && clock && antenna && device && !latched;
++}
++}
+--- a/tests/fixture_helpers.py
++++ b/tests/fixture_helpers.py
+@@ -34,7 +34,7 @@
+     responses = []
+     for radio in range(2):
+         if tag['stage'] == 2:
+-            responses.append({'ok': False, 'lde': False, 'hw': 0, 'air': ''})
++            responses.append({'ok': False, 'lde': False, 'radio': 255, 'type': 0, 'hw': 0, 'air': ''})
+             continue
+         response = poll[:]
+         response[5], response[28] = 2 + radio, radio
+@@ -43,7 +43,7 @@
+         response[57:62] = tag['poll_rx'][radio]['hw'].to_bytes(5, 'little')
+         response[62:67] = tag['tx'][radio]['actual'].to_bytes(5, 'little')
+         response[92:96] = zlib.crc32(response[:92]).to_bytes(4, 'little')
+-        responses.append({'ok': True, 'lde': True, 'hw': rx[radio], 'air': response.hex()})
++        responses.append({'ok': True, 'lde': True, 'radio': 0, 'type': 2+radio, 'hw': rx[radio], 'air': response.hex()})
+     return {
+         'schema': 'dual8.record.v1', 'role': 'anchor', 'mode': 8,
+         'stage': tag['stage'], 'period_us': tag['period_us'],
+@@ -53,9 +53,9 @@
+         'complete': True, 'errors': 0, 'metadata_conflict': False,
+         'frames': tag['frames'][:],
+         'tx': [
+-            {'ok': True, 'actual': to_ticks(poll, 32)},
+-            {'ok': True, 'actual': to_ticks(p1, 47)},
+-            {'ok': True, 'actual': to_ticks(p2, 47)},
++            {'ok': True, 'radio': 0, 'type': 1, 'planned': to_ticks(poll, 32), 'actual': to_ticks(poll, 32)},
++            {'ok': True, 'radio': 0, 'type': 4, 'planned': to_ticks(p1, 47), 'actual': to_ticks(p1, 47)},
++            {'ok': True, 'radio': 0, 'type': 5, 'planned': to_ticks(p2, 47), 'actual': to_ticks(p2, 47)},
+         ],
+         'response_rx': responses,
+         'calibration': [{'id': 0}],
+--- a/tests/test_core.cpp
++++ b/tests/test_core.cpp
+@@ -93,7 +93,7 @@
+  Record execute(){Record r;runAnchor(*this,cfg,77,0,101,0,r);return r;}
+ };
+ static void testsCore(){
+- Config c;CHECK(validate(c)==nullptr);CHECK(configId(c)==2480720268UL);Config bad=c;bad.period_us=200000;CHECK(validate(bad)!=nullptr);bad.baud=2000000;CHECK(validate(bad)==nullptr);bad.period_us=100000;CHECK(validate(bad)!=nullptr);
++ Config c;CHECK(validate(c)==nullptr);CHECK(configId(c)==230186031UL);Config bad=c;bad.period_us=200000;CHECK(validate(bad)!=nullptr);bad.baud=2000000;CHECK(validate(bad)==nullptr);bad.period_us=100000;CHECK(validate(bad)!=nullptr);
+  Frame f;f.session=77;f.boot=101;f.config=configId(c);f.poll_tx=MASK40;uint8_t wire[AIR_BYTES];CHECK(encode(f,wire));Frame g;CHECK(decode(wire,AIR_BYTES,g));CHECK(sameFrame(f,g));
+  for(size_t n=0;n<AIR_BYTES;++n)CHECK(!decode(wire,n,g));
+  for(unsigned bit=0;bit<AIR_BYTES*8;++bit){uint8_t b[AIR_BYTES];memcpy(b,wire,AIR_BYTES);b[bit/8]^=uint8_t(1U<<(bit%8));CHECK(!decode(b,AIR_BYTES,g));}
+--- a/tests/test_r4_regression.py
++++ b/tests/test_r4_regression.py
+@@ -0,0 +1,123 @@
++"""R4 targeted red-team regressions; no radio hardware required."""
++from __future__ import annotations
++import copy
++import json
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import tempfile
++import unittest
++import io
++from contextlib import redirect_stderr
++from unittest.mock import patch
++
++ROOT=Path(__file__).resolve().parents[1]
++sys.path.insert(0,str(ROOT/'tools'))
++sys.path.insert(0,str(ROOT/'tests'))
++from analyze import packet_arrays
++from capture_audit import verify_capture
++from fixture_helpers import synthetic_anchor
++from run_pair import cir_payload_integrity
++from source_contract import inputs,manifest,matches
++from offline_preflight import scan
++import upload
++
++
++class ContractRegressions(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.m=json.loads((ROOT/'evidence/host/synthetic_tag_record.json').read_text())
++        cls.raw=(ROOT/'evidence/host/SYNTHETIC_CIR_i16.raw').read_bytes()
++        cls.anchor=synthetic_anchor(cls.m)
++        cls.identity={role:{'role':role,'boot':cls.m['boot'] if role=='tag' else cls.m['peer_boot'],
++                            'config_id':cls.m['config'],'hw_ok':True,'fault_latched':False,
++                            'stage':cls.m['stage'],'period_us':cls.m['period_us']}
++                      for role in ('tag','anchor')}
++        cls.stats={role:{'capture_decoder':{k:0 for k in ('crc_errors','schema_errors',
++                        'sequence_gap_events','trailing_bytes','skipped_bytes')},
++                        'reader_error':None,'fault_events':0} for role in ('tag','anchor')}
++    def audit(self,m,anchor=None):
++        m['_raw_integrity_verified']=cir_payload_integrity(m,self.raw)
++        return verify_capture(session=self.m['session'],count=1,stage=self.m['stage'],
++                              period_us=self.m['period_us'],identities=self.identity,
++                              records={'tag':[m],'anchor':[anchor or self.anchor]},stats=self.stats)
++    def test_legitimate_capture_still_passes(self):
++        self.assertTrue(self.audit(copy.deepcopy(self.m)).passed)
++        arrays,rows=packet_arrays(self.m,self.raw,self.anchor)
++        self.assertTrue(all(r['axis_estimate_available'] for r in rows))
++    def test_adversarial_cir_slot_radio_and_probe_swap(self):
++        for slot,key,value in ((1,'radio',0),(3,'probe',1),(0,'slot',3)):
++            with self.subTest(slot=slot,key=key):
++                m=copy.deepcopy(self.m);m['cir'][slot][key]=value
++                self.assertFalse(self.audit(m).passed)
++                self.assertFalse(cir_payload_integrity(m,self.raw))
++                arrays,rows=packet_arrays(m,self.raw,self.anchor)
++                self.assertFalse(rows[slot]['axis_estimate_available'])
++                self.assertFalse(rows[slot]['cir_valid'])
++    def test_adversarial_rx_radio_or_type_swap(self):
++        for slot,key,value in ((3,'radio',0),(3,'type',4),(0,'type',5)):
++            with self.subTest(slot=slot,key=key):
++                m=copy.deepcopy(self.m);m['probe_rx'][slot][key]=value
++                self.assertFalse(self.audit(m).passed)
++                _,rows=packet_arrays(m,self.raw,self.anchor)
++                self.assertFalse(rows[slot]['axis_estimate_available'])
++    def test_poll_rx_type_and_radio_swap(self):
++        for key,value in (('radio',1),('type',4)):
++            m=copy.deepcopy(self.m);m['poll_rx'][0][key]=value
++            self.assertFalse(self.audit(m).passed)
++            _,rows=packet_arrays(m,self.raw,self.anchor)
++            self.assertFalse(any(r['axis_estimate_available'] for r in rows))
++    def test_anchor_tx_identity_and_response_identity(self):
++        for category,slot,key,value in (('tx',2,'radio',1),('tx',1,'type',5),
++                                        ('tx',0,'planned',999),('response_rx',1,'radio',1),
++                                        ('response_rx',0,'type',3)):
++            with self.subTest(category=category,slot=slot,key=key):
++                a=copy.deepcopy(self.anchor);a[category][slot][key]=value
++                self.assertFalse(self.audit(copy.deepcopy(self.m),anchor=a).passed)
++                _,rows=packet_arrays(self.m,self.raw,a)
++                if category == 'response_rx':
++                    self.assertFalse(rows[2+slot]['axis_estimate_available'])
++    def test_vendor_fcs_contract_and_fixed_buffer(self):
++        for role in ('tag','anchor'):
++            port=(ROOT/'shared/esp32_port.hpp').read_text()
++            vendor=(ROOT/f'vendor/{role}/DW1000Ng/src/DW1000Ng.cpp').read_text()
++            self.assertIn('n += 2',vendor[vendor.find('void setTransmitData(byte data[]'):][:450])
++            self.assertIn('uint8_t data[AIR_BYTES+2]',port)
++            self.assertNotIn('uint8_t data[AIR_BYTES],d[5]',port)
++    def test_stale_flash_artifact_refused(self):
++        # Prove the guard on a stale receipt, regardless of whether the developer
++        # later builds the real R4 release (which should be permitted).
++        with tempfile.TemporaryDirectory() as tmp:
++            root=Path(tmp)
++            for file in inputs(ROOT,'tag'):
++                target=root/file.relative_to(ROOT)
++                target.parent.mkdir(parents=True,exist_ok=True)
++                shutil.copyfile(file,target)
++            dist=root/'dist'
++            dist.mkdir()
++            (dist/'target_build_receipt.json').write_text(json.dumps({
++                'target_build':True,'fqbn':'esp32:esp32:esp32doit-devkit-v1',
++                'roles':{'tag':{'source_manifest':{},'artifacts':{}}}}))
++            self.assertFalse(scan(root)['flash_preflight_pass'])
++            err=io.StringIO()
++            with patch.object(upload,'ROOT',root), patch.object(sys,'argv',
++                     ['upload.py','--role','tag','--port','FAKE_PORT']), redirect_stderr(err):
++                with self.assertRaises(SystemExit) as exit_info:
++                    upload.main()
++            self.assertEqual(exit_info.exception.code,2)
++            self.assertIn('provenance',err.getvalue())
++    def test_source_hash_changes_on_edit(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            folder=Path(tmp)
++            for f in inputs(ROOT,'tag'):
++                dst=folder/f.relative_to(ROOT);dst.parent.mkdir(parents=True,exist_ok=True)
++                shutil.copyfile(f,dst)
++            original=manifest(folder,'tag')
++            self.assertTrue(matches(folder,'tag',original))
++            target=folder/'shared/esp32_port.hpp'
++            target.write_bytes(target.read_bytes()+b'\n// regression mutation\n')
++            self.assertFalse(matches(folder,'tag',original))
++
++if __name__=='__main__':
++    unittest.main()
+--- a/tools/analyze.py
++++ b/tools/analyze.py
+@@ -80,8 +80,10 @@
+                 tx[2]['actual'] != p2['probe_tx']):
+             return False
+         rx = anchor['response_rx']
+-        if len(rx) != 2 or not response_matches(rx[radio], meta['tx'][radio], meta['poll_rx'][radio],
+-                                               meta, radio, p2['poll_tx'], p2['resp_rx'][radio]):
++        if (len(rx) != 2 or rx[radio].get('radio') != 0 or
++                rx[radio].get('type') != 2 + radio or
++                not response_matches(rx[radio], meta['tx'][radio], meta['poll_rx'][radio],
++                                     meta, radio, p2['poll_tx'], p2['resp_rx'][radio])):
+             return False
+         if not all(anchor['frames'][j] == meta['frames'][j] for j in range(3)):
+             return False
+@@ -96,7 +98,11 @@
+     if o.get('ok') is not True or not o.get('air') or not meta['frames'][probe]:
+         return False
+     f = air_frame(o['air'])
++    cm = meta['cir'][slot]
+     return bool(f == frames[probe] and meta['frames'][probe] == o['air'] and
++                o.get('radio') == slot % 2 and o.get('type') == 3 + probe and
++                cm.get('slot') == slot and cm.get('radio') == slot % 2 and
++                cm.get('probe') == probe and
+                 f['type'] == (3 + probe) and same_identity(f, meta, peer=True) and
+                 f['peer_boot'] == (0 if meta['stage'] == 2 else meta['boot']))
+ 
+@@ -137,7 +143,10 @@
+     k = np.arange(992, dtype=np.float64)
+     frames = [air_frame(x) for x in meta['frames']]
+     poll, p1, p2 = frames
+-    poll_ok = bool(poll and poll['type'] == 1 and same_identity(poll, meta, peer=True))
++    poll_ok = bool(poll and poll['type'] == 1 and same_identity(poll, meta, peer=True)
++                   and all(o.get('radio') == i and o.get('type') == 1 and
++                           o.get('air') == meta['frames'][0]
++                           for i, o in enumerate(meta['poll_rx'])))
+     p1_ok = bool(p1 and p1['type'] == 4 and same_identity(p1, meta, peer=True) and
+                  p1['peer_boot'] == meta['boot'])
+     p2_ok = bool(p2 and p2['type'] == 5 and same_identity(p2, meta, peer=True) and
+@@ -190,7 +199,10 @@
+         slotraw = raw[slot * CIR_BYTES:(slot + 1) * CIR_BYTES]
+         crc_ok = bool(cm.get('present') and cm.get('bytes') == CIR_BYTES and
+                       (zlib.crc32(slotraw) & 0xffffffff) == cm.get('crc32'))
+-        valid[slot] = bool(cm.get('valid') and crc_ok and o.get('ok'))
++        valid[slot] = bool(cm.get('valid') and crc_ok and o.get('ok') and
++                           cm.get('slot') == slot and cm.get('radio') == radio and
++                           cm.get('probe') == probe and
++                           o.get('radio') == radio and o.get('type') == probe + 3)
+         fp_raw = o.get('fp_raw', -1)
+         nacc = o.get('nacc', 0)
+         fp_ok = bool(o.get('lde') and type(fp_raw) is int and type(nacc) is int and
+--- a/tools/build.py
++++ b/tools/build.py
+@@ -10,6 +10,7 @@
+ import sys
+ from datetime import datetime, timezone
+ from sync_shared import sync
++from source_contract import manifest
+ ROOT = Path(__file__).resolve().parents[1]
+ FQBN = "esp32:esp32:esp32doit-devkit-v1"
+ CORE = "3.3.7"
+@@ -58,6 +59,7 @@
+             sketch = ROOT/"firmware"/f"{role.upper()}_DUAL_DS_CIR"
+             build = ROOT/"build"/role
+             out = output/role
++            before_source = manifest(ROOT, role)
+             # Remove previous products: never let an old app image satisfy this run.
+             if build.exists(): shutil.rmtree(build)
+             if out.exists(): shutil.rmtree(out)
+@@ -68,10 +70,13 @@
+             with (out/"compile.log").open("w", encoding="utf-8") as f:
+                 f.write("COMMAND: "+json.dumps(cmd)+"\n");f.flush()
+                 run = subprocess.run(cmd, stdout=f, stderr=subprocess.STDOUT)
+-            result = {"command": cmd, "exit_code": run.returncode, "artifacts": {}}
++            result = {"command": cmd, "exit_code": run.returncode, "artifacts": {},
++                      "source_manifest": before_source}
+             receipt["roles"][role] = result
+             if run.returncode != 0:
+                 raise RuntimeError(f"{role} target compile failed; see {out/'compile.log'}")
++            if manifest(ROOT, role) != before_source:
++                raise RuntimeError(f"{role} source changed during target compile; no valid artifact")
+             # Retain the ELF/map from the build directory if CLI did not copy them.
+             for pattern in ("*.elf", "*.map"):
+                 for file in build.glob(pattern): shutil.copy2(file, out/file.name)
+--- a/tools/capture_audit.py
++++ b/tools/capture_audit.py
+@@ -105,6 +105,14 @@
+             if m.get('complete') is not True or m.get('errors') != 0 or m.get('metadata_conflict') is True:
+                 errors.append(f'{role.upper()}_INCOMPLETE_OR_ERROR_TXN_{tx}')
+             if role == 'tag':
++                # Each physical CIR slot belongs to exactly one radio/probe;
++                # metadata may not relabel A/B while keeping the air CRC valid.
++                cms = m.get('cir', [])
++                if not isinstance(cms, list) or len(cms) != 4 or any(
++                        not isinstance(c, dict) or c.get('slot') != s or
++                        c.get('radio') != s % 2 or c.get('probe') != s // 2 + 1
++                        for s, c in enumerate(cms)):
++                    errors.append(f'TAG_CIR_SLOT_IDENTITY_TXN_{tx}')
+                 if m.get('_raw_integrity_verified') is not True:
+                     errors.append(f'TAG_RAW_CIR_INTEGRITY_TXN_{tx}')
+                 if (stage >= 4 and (m.get('p1_tx_confirmed') is not True or
+@@ -180,6 +188,8 @@
+             for index, field_off in ((0, 32), (1, 47), (2, 47)):
+                 frame = rf_frames[index]
+                 if (not tt[index].get('ok') or frame is None or
++                        tt[index].get('radio') != 0 or tt[index].get('type') != (1, 4, 5)[index] or
++                        tt[index].get('planned') != tt[index].get('actual') or
+                         tt[index].get('actual') != int.from_bytes(frame[field_off:field_off+5], 'little')):
+                     errors.append(f'ANCHOR_TX_TIMESTAMP_MISMATCH_TXN_{txn}_INDEX_{index}')
+         if all(rf_frames) and stage >= 3:
+@@ -194,7 +204,10 @@
+                     arx = int.from_bytes(p1[37 + radio*5:42 + radio*5], 'little')
+                     tx = from_ranging[radio]
+                     if (tx.get('ok') is not True or tx.get('radio') != radio or
+-                            tx.get('type') != 2+radio or type(tx.get('actual')) is not int or
++                            tx.get('type') != 2+radio or
++                            receive_anchor[radio].get('radio') != 0 or
++                            receive_anchor[radio].get('type') != 2+radio or
++                            type(tx.get('actual')) is not int or
+                             tx.get('actual') != tx.get('planned') or
+                             not response_matches(receive_anchor[radio], tx, t['poll_rx'][radio],
+                                                  t, radio, poll_tx, arx)):
+@@ -205,11 +218,17 @@
+         for slot in range(4):
+             expected = _air(tf[1 + slot // 2])
+             got = _air(t['probe_rx'][slot].get('air'))
+-            if t['probe_rx'][slot].get('ok') is not True or got is None or got != expected:
++            rx = t['probe_rx'][slot]
++            if (rx.get('ok') is not True or rx.get('lde') is not True or
++                    rx.get('radio') != slot % 2 or rx.get('type') != 4 + slot // 2 or
++                    got is None or got != expected):
+                 errors.append(f'TAG_PROBE_AIR_MISMATCH_TXN_{txn}_SLOT_{slot}')
+         for radio in range(2):
+             got = _air(t['poll_rx'][radio].get('air'))
+-            if t['poll_rx'][radio].get('ok') is not True or got is None or got != rf_frames[0]:
++            rx = t['poll_rx'][radio]
++            if (rx.get('ok') is not True or rx.get('lde') is not True or
++                    rx.get('radio') != radio or rx.get('type') != 1 or
++                    got is None or got != rf_frames[0]):
+                 errors.append(f'TAG_POLL_AIR_MISMATCH_TXN_{txn}_RADIO_{radio}')
+         if stage >= 4 and all(rf_frames) and len(t.get('tx', [])) == 2:
+             p1 = rf_frames[1]
+--- a/tools/offline_preflight.py
++++ b/tools/offline_preflight.py
+@@ -0,0 +1,62 @@
++#!/usr/bin/env python3
++"""Offline upload-readiness check; never contacts devices or writes flash."""
++from __future__ import annotations
++import argparse
++from pathlib import Path
++import hashlib
++import json
++import struct
++import sys
++from source_contract import matches
++
++ROOT=Path(__file__).resolve().parents[1]
++
++
++def scan(root: Path = ROOT) -> dict:
++    path=root/'dist/target_build_receipt.json'
++    receipt=json.loads(path.read_text()) if path.is_file() else {}
++    result={'checks': {}, 'roles': {}, 'offline_only': True,
++            'actual_flash_verified': False, 'rf_tested': False}
++    result['checks']['target_receipt']=bool(receipt.get('target_build') is True)
++    result['checks']['fqbn']=receipt.get('fqbn') == 'esp32:esp32:esp32doit-devkit-v1'
++    result['checks']['core']=receipt.get('required_core') == '3.3.7'
++    for role in ('anchor','tag'):
++        info=receipt.get('roles', {}).get(role, {})
++        folder=root/'dist'/role
++        checks={'source_binding': matches(root,role,info.get('source_manifest'))}
++        for extension in ('bin','bootloader.bin','partitions.bin','elf'):
++            filename=f'{role.upper()}_DUAL_DS_CIR.ino.{extension}'
++            file=folder/filename
++            expected=info.get('artifacts',{}).get(filename,{})
++            data=file.read_bytes() if file.is_file() else b''
++            checks[f'{extension}_sha256']=bool(data and expected.get('bytes')==len(data)
++                                               and expected.get('sha256')==hashlib.sha256(data).hexdigest())
++            if extension == 'bin':
++                checks['esp32_app_image_header']=len(data)>256 and data[0]==0xe9 and data[1]>0
++            if extension == 'elf':
++                checks['xtensa_elf_header']=len(data)>52 and data[:4]==b'\x7fELF' and data[4]==1 and struct.unpack_from('<H',data,18)[0]==94
++        merged_file=folder/f'{role.upper()}_DUAL_DS_CIR.ino.merged.bin'
++        merged_meta=info.get('artifacts',{}).get(merged_file.name,{})
++        merged=merged_file.read_bytes() if merged_file.is_file() else b''
++        checks['merged_sha256']=bool(merged and len(merged)==merged_meta.get('bytes') and
++                                     hashlib.sha256(merged).hexdigest()==merged_meta.get('sha256'))
++        for offset,suffix in ((0x1000,'bootloader.bin'),(0x8000,'partitions.bin'),(0x10000,'bin')):
++            component=folder/f'{role.upper()}_DUAL_DS_CIR.ino.{suffix}'
++            data=component.read_bytes() if component.is_file() else b''
++            checks[f'merged_{suffix}_at_{offset:x}']=bool(merged and data and
++                    offset+len(data)<=len(merged) and merged[offset:offset+len(data)]==data)
++        result['roles'][role]={'checks':checks,'flash_preflight_pass':all(checks.values())}
++    result['flash_preflight_pass']=all(result['checks'].values()) and all(
++        result['roles'][role]['flash_preflight_pass'] for role in ('anchor','tag'))
++    return result
++
++if __name__=='__main__':
++    p=argparse.ArgumentParser(description=__doc__)
++    p.add_argument('--out',type=Path)
++    a=p.parse_args()
++    result=scan()
++    if a.out:
++        a.out.parent.mkdir(parents=True,exist_ok=True)
++        a.out.write_text(json.dumps(result,indent=2))
++    print(json.dumps(result,indent=2))
++    sys.exit(0 if result['flash_preflight_pass'] else 2)
+--- a/tools/run_pair.py
++++ b/tools/run_pair.py
+@@ -25,7 +25,8 @@
+     if not isinstance(cms, list) or len(cms) != 4:
+         return False
+     for slot, cm in enumerate(cms):
+-        if not isinstance(cm, dict) or cm.get('slot') != slot:
++        if (not isinstance(cm, dict) or cm.get('slot') != slot or
++                cm.get('radio') != slot % 2 or cm.get('probe') != slot // 2 + 1):
+             return False
+         data = raw[slot*CIR_BYTES:(slot+1)*CIR_BYTES]
+         if cm.get('present') is True:
+--- a/tools/source_contract.py
++++ b/tools/source_contract.py
+@@ -0,0 +1,33 @@
++"""Build-to-source binding for Mode-8 release artifacts (standard library only)."""
++from __future__ import annotations
++from pathlib import Path
++import hashlib
++import json
++
++
++def inputs(root: Path, role: str) -> list[Path]:
++    if role not in ('anchor', 'tag'):
++        raise ValueError('unknown role')
++    relative = ['shared', f'firmware/{role.upper()}_DUAL_DS_CIR', f'vendor/{role}/DW1000Ng']
++    paths: list[Path] = []
++    for dirname in relative:
++        folder = root / dirname
++        for file in folder.rglob('*'):
++            if file.is_file() and file.suffix.lower() in ('.cpp', '.h', '.hpp', '.ino', '.c', '.s', '.S'):
++                paths.append(file)
++    if not paths:
++        raise ValueError('compile inputs missing')
++    return sorted(paths, key=lambda p: p.relative_to(root).as_posix())
++
++
++def manifest(root: Path, role: str) -> dict:
++    hashes = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
++              for p in inputs(root, role)}
++    aggregate = hashlib.sha256(json.dumps(hashes, sort_keys=True,
++                                          separators=(',', ':')).encode()).hexdigest()
++    return {'sha256': aggregate, 'files': hashes}
++
++
++def matches(root: Path, role: str, expected: dict) -> bool:
++    return (isinstance(expected, dict) and
++            expected == manifest(root, role))
+--- a/tools/upload.py
++++ b/tools/upload.py
+@@ -9,6 +9,8 @@
+ import subprocess
+ import sys
+ ROOT = Path(__file__).resolve().parents[1]
++from source_contract import matches
++from offline_preflight import scan
+ 
+ def main() -> int:
+     p = argparse.ArgumentParser(description=__doc__)
+@@ -22,8 +24,14 @@
+     receipt = json.loads(receipt_path.read_text())
+     if not receipt.get("target_build") or a.role not in receipt.get("roles", {}):
+         p.error("Successful target build for this role required")
++    role_receipt = receipt["roles"][a.role]
++    if not matches(ROOT, a.role, role_receipt.get("source_manifest")):
++        p.error("Build source/hash provenance missing or changed. Recompile this role before flashing.")
++    offline = scan(ROOT)
++    if not offline.get('flash_preflight_pass'):
++        p.error('Both roles must pass offline image/hash/source preflight before any flash')
+     folder = ROOT/"dist"/a.role
+-    for name, meta in receipt["roles"][a.role]["artifacts"].items():
++    for name, meta in role_receipt["artifacts"].items():
+         file = folder/name
+         if not file.exists() or hashlib.sha256(file.read_bytes()).hexdigest() != meta["sha256"]:
+             p.error(f"Artifact changed: {name}")
+--- a/tools/usb_smoke.py
++++ b/tools/usb_smoke.py
+@@ -0,0 +1,67 @@
++#!/usr/bin/env python3
++"""Post-flash USB-only Mode-8 HELLO/SELFTEST. NO ranging or RF TX performed."""
++from __future__ import annotations
++import argparse
++import json
++import secrets
++import sys
++import time
++from pathlib import Path
++from rfb8 import Decoder
++
++def main()->int:
++    ap=argparse.ArgumentParser(description=__doc__)
++    ap.add_argument('--port', required=True)
++    ap.add_argument('--role', required=True, choices=['anchor','tag'])
++    ap.add_argument('--out',type=Path)
++    a=ap.parse_args()
++    import serial
++    result={'port':a.port,'role':a.role,'pass':False,'no_rf_tx_requested':True,
++            'actual_usb_hardware_test':True,'checks':{}}
++    try:
++        with serial.Serial(port=None,baudrate=921600,timeout=0.2,write_timeout=2) as ser:
++            ser.dtr=False;ser.rts=False;ser.port=a.port;ser.open()
++            time.sleep(1.0)
++            decoder=Decoder()
++            def command(name, match, timeout=8):
++                data=(name+'\n').encode('ascii')
++                if ser.write(data)!=len(data):
++                    raise OSError('Short USB serial write')
++                ser.flush();until=time.monotonic()+timeout
++                while time.monotonic()<until:
++                    for msg in decoder.feed(ser.read(4096)):
++                        m=msg.meta
++                        if m.get('event') in ('ERROR','HARDWARE_FAULT_LATCHED'):
++                            raise RuntimeError(str(m))
++                        if match(m):
++                            return m
++                raise TimeoutError(f'No valid response to {name}')
++            request=secrets.randbelow(0xffffffff-1)+1
++            command(f'STOP {request}',lambda m:m.get('event')=='STOPPED' and
++                    m.get('role')==a.role and m.get('stop_request')==request)
++            hello=command('HELLO',lambda m:m.get('event')=='HELLO' and m.get('role')==a.role)
++            result['hello']=hello
++            result['checks']['firmware']=hello.get('firmware')=='D8_R4_SOURCE_20261111'
++            result['checks']['mode']=hello.get('mode')==8 and hello.get('wire')=='RFB8'
++            result['checks']['config']=hello.get('config_id')==230186031
++            result['checks']['faults']=hello.get('hw_ok') is True and hello.get('fault_latched') is False
++            result['checks']['idle']=hello.get('active') is False
++            st=command('SELFTEST',lambda m:m.get('event')=='SELFTEST' and m.get('role')==a.role)
++            result['selftest']=st
++            result['checks']['selftest']=st.get('pass') is True
++            result['checks']['dev_a']=st.get('dev_a')==0xDECA0130
++            if a.role=='tag':
++                result['checks']['dev_b']=st.get('dev_b')==0xDECA0130
++            result['checks']['decoder']=not any(decoder.statistics()[k] for k in
++                ('crc_errors','schema_errors','sequence_gap_events','trailing_bytes'))
++            result['pass']=all(result['checks'].values())
++    except Exception as e:
++        result['error']=repr(e)
++    if a.out:
++        a.out.parent.mkdir(parents=True,exist_ok=True)
++        a.out.write_text(json.dumps(result,indent=2,ensure_ascii=False),encoding='utf-8')
++    print(json.dumps(result,indent=2,ensure_ascii=False))
++    return 0 if result['pass'] else 2
++
++if __name__=='__main__':
++    sys.exit(main())

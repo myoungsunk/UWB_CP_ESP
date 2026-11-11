@@ -1,0 +1,9 @@
+{
+  "created_utc": "2026-11-11T04:04:09.578525+00:00",
+  "target_build": false,
+  "hardware_tested": false,
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "required_core": "3.3.7",
+  "roles": {},
+  "error": "arduino-cli not installed/on PATH; see docs/BUILD_AND_FLASH_KO.md"
+}

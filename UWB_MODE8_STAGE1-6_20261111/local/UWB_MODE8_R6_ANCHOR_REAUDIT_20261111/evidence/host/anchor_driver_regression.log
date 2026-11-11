@@ -1,0 +1,2 @@
+HOST-ONLY COMMAND: ["/mnt/d/SLAM_bot/artifacts/UWB_MODE8_R6_ANCHOR_REAUDIT_20261111/build/host/test_anchor_pll_driver"]
+PASS PLL driver: INIT/OTP/trim/calibration/LDE/AUTO order, split writes, both SPI read modes and lost writes

@@ -1,0 +1,36 @@
+{
+  "question_id": "MODE8-STAGE6-CONTINUOUS",
+  "role": "IMPLEMENTER",
+  "workspace_revision_type": "source manifests; no Git HEAD found for the package",
+  "created_utc": "2026-11-11T11:10:50.592139+00:00",
+  "governance": {
+    "common_sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer_sha256": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "baseline": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\evidence\\stage5_execution.json",
+    "sha256": "4df6a68e619c5e8b7adf27d34073abc97f9079763a0e2649d2457debd538eaac"
+  },
+  "setup": "stationary approximately 0.8 m bench; existing temporary antenna delays; COM4 anchor and Pi USB tag",
+  "conditions": [
+    {
+      "period_us": 650000,
+      "baud": 921600,
+      "count": 100
+    },
+    {
+      "period_us": 200000,
+      "baud": 2000000,
+      "count": 100
+    },
+    {
+      "period_us": 150000,
+      "baud": 2000000,
+      "count": 100
+    }
+  ],
+  "method": "Both probes use separate POLL, RESPONSE A/B and actual probe TX. POLL2 at half period. Compare DS-TWR with exact integer input and independent power interpolation.",
+  "pass": "Each endpoint has exactly 100 complete matching records with identical RF identity, verified 400 raw CIR slots, P1 and P2 common A/B grids each 100/100, no capture CRC/schema/sequence errors or lost bytes, sent delta 100, no firmware drops or period_miss, handling time below nominal period and 99 anchor RF intervals within 4000 us of nominal, both SELFTEST and STOP receipts valid.",
+  "timing": "A positive single-interval jitter within tolerance is distinct from firmware deadline overrun.",
+  "claim_scope": "Applies to these static-board runs. Absolute delay/position accuracy, moving operation and A/B complex phase coherence are outside this verification."
+}

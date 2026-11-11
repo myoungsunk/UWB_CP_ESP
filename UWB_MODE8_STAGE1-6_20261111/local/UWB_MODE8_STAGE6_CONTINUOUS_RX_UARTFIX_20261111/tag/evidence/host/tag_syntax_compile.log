@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/bin/g++", "-std=c++11", "-DESP32", "-DARDUINO", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-Itests/stubs", "-Ivendor/tag/DW1000Ng/src", "-c", "firmware/TAG_DUAL_DS_CIR/app.cpp", "-o", "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_UARTFIX_20261111/tag/build/host/tag_syntax_ONLY.o"]

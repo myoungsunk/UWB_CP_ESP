@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-11T12:06:58.750506+00:00",
+  "baud": 2000000,
+  "repetitions": 12,
+  "expected_sha256": "3b5c891fedb55316d57597696afee8cec003c7dc9c67efc1691f60c3f7ee9ac4",
+  "anchor": {
+    "identity": {
+      "event": "HELLO",
+      "role": "anchor",
+      "firmware": "D8_R6_ANCHOR_STAGE6_RX_UARTFIX_20261111",
+      "mode": 8,
+      "wire": "RFB8",
+      "hw_ok": true,
+      "fault_latched": false,
+      "boot": 3201328331,
+      "config_id": 3325958430,
+      "stage": 6,
+      "period_us": 300000,
+      "baud": 921600,
+      "active": false,
+      "wifi_ota": false,
+      "cal_default_is_uncalibrated": true,
+      "drops": 0,
+      "sent": 200,
+      "period_miss": 0
+    },
+    "results": [
+      {
+        "burst_bytes": 0,
+        "idle_us": 0,
+        "bytes_expected": 267264,
+        "bytes_received": 267196,
+        "length_delta": -68,
+        "elapsed_s": 1.343916299752891,
+        "sha256": "26615e6b8287be088005645928978c36264cf4ccb4ae331df9de30449e558007",
+        "match": false,
+        "path": "anchor_burst0_gap0.bin"
+      },
+      {
+        "burst_bytes": 512,
+        "idle_us": 400,
+        "bytes_expected": 267264,
+        "bytes_received": 267201,
+        "length_delta": -63,
+        "elapsed_s": 1.5702117001637816,
+        "sha256": "5a6ca9536b4727ae8a349b3c2c9adfb3ff19fb56abe5ab9c8678452daa871745",
+        "match": false,
+        "path": "anchor_burst512_gap400.bin"
+      },
+      {
+        "burst_bytes": 96,
+        "idle_us": 160,
+        "bytes_expected": 267264,
+        "bytes_received": 267211,
+        "length_delta": -53,
+        "elapsed_s": 1.8353280001319945,
+        "sha256": "c3b095c6a2eb28b5d8fa463f0f337f2dba4b0edac401ee88a45114268d0ff25c",
+        "match": false,
+        "path": "anchor_burst96_gap160.bin"
+      },
+      {
+        "burst_bytes": 64,
+        "idle_us": 160,
+        "bytes_expected": 267264,
+        "bytes_received": 267189,
+        "length_delta": -75,
+        "elapsed_s": 2.096961500123143,
+        "sha256": "7dcfaa39f84f6a1e17a9783e47f00d039cd1557ebce5d91b1020618f2fa3a074",
+        "match": false,
+        "path": "anchor_burst64_gap160.bin"
+      }
+    ]
+  },
+  "production_profile_pass": false
+}

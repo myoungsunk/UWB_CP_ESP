@@ -1,0 +1,78 @@
+{
+  "source": "uploaded_R3_snapshot",
+  "offline_static_only": true,
+  "target_receipt_build_record": true,
+  "roles": {
+    "anchor": {
+      "bin": {
+        "bytes": 388400,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "bootloader.bin": {
+        "bytes": 23520,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "partitions.bin": {
+        "bytes": 3072,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "elf": {
+        "bytes": 6269908,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "merged.bin": {
+        "bytes": 4194304,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "esp_image_magic": true,
+      "elf_xtensa_32bit": true,
+      "merged_layout": {
+        "01000": true,
+        "08000": true,
+        "10000": true
+      }
+    },
+    "tag": {
+      "bin": {
+        "bytes": 392224,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "bootloader.bin": {
+        "bytes": 23520,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "partitions.bin": {
+        "bytes": 3072,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "elf": {
+        "bytes": 6290644,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "merged.bin": {
+        "bytes": 4194304,
+        "sha256_match": true,
+        "size_match": true
+      },
+      "esp_image_magic": true,
+      "elf_xtensa_32bit": true,
+      "merged_layout": {
+        "01000": true,
+        "08000": true,
+        "10000": true
+      }
+    }
+  },
+  "static_integrity_pass": true,
+  "r3_firmware_safety_approved": false,
+  "r4_source_build_completed": false
+}

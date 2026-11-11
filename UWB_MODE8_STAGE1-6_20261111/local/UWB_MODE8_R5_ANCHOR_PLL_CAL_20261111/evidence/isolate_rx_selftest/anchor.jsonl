@@ -1,0 +1,3 @@
+{"event": "STOPPED", "role": "anchor", "session": 1145858086, "stop_request": 1960823064, "physical_rf_off_confirmed": false}
+{"event": "STOPPED", "role": "anchor", "session": 1145858086, "stop_request": 1960823065, "physical_rf_off_confirmed": false}
+{"event": "PLLSTATUS", "role": "anchor", "boot": 254674407, "before": 8388610, "after": 8388610, "first_poll_pre_tx": 41943042, "rf_before": 1, "rf_after": 1, "ec_ctrl": 4, "acknowledged": false, "ready": true, "first_poll_checked": true}

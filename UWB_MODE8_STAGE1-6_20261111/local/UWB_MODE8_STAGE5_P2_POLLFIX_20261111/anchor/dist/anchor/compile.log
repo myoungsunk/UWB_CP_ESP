@@ -1,0 +1,61 @@
+COMMAND: ["C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe", "compile", "--fqbn", "esp32:esp32:esp32doit-devkit-v1", "--warnings", "all", "--library", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\anchor\\vendor\\anchor\\DW1000Ng", "--build-path", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\anchor\\build\\anchor", "--output-dir", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\anchor\\dist\\anchor", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\anchor\\firmware\\ANCHOR_DUAL_DS_CIR"]
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp: In function 'void DW1000Ng::printAccMem()':
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2088:22: warning: unused variable 'i0' [-Wunused-variable]
+ 2088 |                 int  i0=(int)getFP_val();
+      |                      ^~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp: In function 'void DW1000Ng::printAccMem1()':
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2137:30: warning: unused variable 'data' [-Wunused-variable]
+ 2137 |                         byte data = SPI.transfer(JUNK);
+      |                              ^~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2138:30: warning: unused variable 'message' [-Wunused-variable]
+ 2138 |                         char message[50];
+      |                              ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2148:30: warning: unused variable 'data' [-Wunused-variable]
+ 2148 |                         byte data = SPI.transfer(JUNK);
+      |                              ^~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2149:30: warning: unused variable 'message' [-Wunused-variable]
+ 2149 |                         char message[50];
+      |                              ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2126:22: warning: unused variable 'i0' [-Wunused-variable]
+ 2126 |                 int  i0=(int)getFP_val();
+      |                      ^~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp: In function 'float DW1000Ng::getFirstPathPower1()':
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2578:6: warning: unused variable 'message' [-Wunused-variable]
+ 2578 | char message[50];
+      |      ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp: In function 'float DW1000Ng::getNPower()':
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2631:26: warning: unused variable 'twoPower17' [-Wunused-variable]
+ 2631 |                 uint32_t twoPower17 = 131072;
+      |                          ^~~~~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2632:26: warning: variable 'C' set but not used [-Wunused-but-set-variable]
+ 2632 |                 uint16_t C, N;
+      |                          ^
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2633:26: warning: unused variable 'A' [-Wunused-variable]
+ 2633 |                 float    A, corrFac;
+      |                          ^
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2633:29: warning: unused variable 'corrFac' [-Wunused-variable]
+ 2633 |                 float    A, corrFac;
+      |                             ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp: At global scope:
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:1338:22: warning: 'void DW1000Ng::{anonymous}::_uploadConfigToAON()' defined but not used [-Wunused-function]
+ 1338 |                 void _uploadConfigToAON() {
+      |                      ^~~~~~~~~~~~~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp: In function 'uint8_t DW1000Ng::getRCphase()':
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2456:37: warning: array subscript 8 is above array bounds of 'byte [1]' {aka 'unsigned char [1]'} [-Warray-bounds=]
+ 2456 |                              data [8]=0;
+      |                              ~~~~~~~^
+D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\vendor\anchor\DW1000Ng\src\DW1000Ng.cpp:2453:22: note: while referencing 'data'
+ 2453 |                 byte data[LEN_RCphase_INDEX];
+      |                      ^~~~
+In file included from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/bt/include/esp32/include/esp_bt.h:16,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7\cores\esp32\esp32-hal-bt.c:30:
+C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esp32-libs/3.3.7/include/controller/esp32/esp_bredr_cfg.h:18:9: note: '#pragma message: BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)'
+   18 | #pragma message ("BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)")
+      |         ^~~~~~~
+In file included from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/bt/include/esp32/include/esp_bt.h:16,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7\cores\esp32\esp32-hal-misc.c:29:
+C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esp32-libs/3.3.7/include/controller/esp32/esp_bredr_cfg.h:18:9: note: '#pragma message: BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)'
+   18 | #pragma message ("BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)")
+      |         ^~~~~~~
+Sketch uses 400476 bytes (30%) of program storage space. Maximum is 1310720 bytes.
+Global variables use 99260 bytes (30%) of dynamic memory, leaving 228420 bytes for local variables. Maximum is 327680 bytes.

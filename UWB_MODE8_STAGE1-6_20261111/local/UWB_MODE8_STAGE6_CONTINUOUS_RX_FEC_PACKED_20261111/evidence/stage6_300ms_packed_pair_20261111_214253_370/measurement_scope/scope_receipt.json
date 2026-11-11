@@ -1,0 +1,67 @@
+{
+  "session": 2065936074,
+  "baud": 921600,
+  "requested_count": 100,
+  "streams": {
+    "anchor": {
+      "source_sha256": "a48047c4af86080635c39b02ca2387ff8fc472d429fb9c845fcf4269f2170f8a",
+      "scope_sha256": "96152db131aad2f0412f147221169e41aaba52cd88285fded34e60bab713f764",
+      "source_bytes": 462234,
+      "source_byte_range": [
+        1469,
+        461713
+      ],
+      "range_end_exclusive": true,
+      "sequence_range": [
+        356,
+        457
+      ],
+      "measurement_count": 100,
+      "source_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "scope_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "pre_start_baud_transition_sequence_gaps": []
+    },
+    "tag": {
+      "source_sha256": "854258d5a7b9256f37214aba34eb8b1c72d800811707f01121dbedf530f9b84c",
+      "scope_sha256": "39fd3e63e0a22eb9c87faf7b9346cc547c06fc61f7807a5bbd4f9cf60872fb6e",
+      "source_bytes": 2241928,
+      "source_byte_range": [
+        3449,
+        2240429
+      ],
+      "range_end_exclusive": true,
+      "sequence_range": [
+        8,
+        109
+      ],
+      "measurement_count": 100,
+      "source_decoder": {
+        "skipped_bytes": 934,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "scope_decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "pre_start_baud_transition_sequence_gaps": []
+    }
+  }
+}

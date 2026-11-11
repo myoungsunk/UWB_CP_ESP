@@ -1,0 +1,6748 @@
+{
+  "question_id": "MODE8-STAGE6-CONTINUOUS",
+  "utc": "2026-11-11T11:23:44.553426+00:00",
+  "pass": false,
+  "session": 577352612,
+  "stage": 6,
+  "config_id": 1451295887,
+  "count": 100,
+  "baud": 921600,
+  "transport": {
+    "anchor": {
+      "records": 100,
+      "complete": 100,
+      "decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "sent_delta": 100,
+      "drops_delta": 0,
+      "period_miss": 0,
+      "fault_events": 0,
+      "processing_us_min_max": [
+        183098,
+        183148
+      ]
+    },
+    "tag": {
+      "records": 100,
+      "complete": 74,
+      "decoder": {
+        "skipped_bytes": 0,
+        "crc_errors": 0,
+        "schema_errors": 0,
+        "sequence_gap_events": 0,
+        "trailing_bytes": 0
+      },
+      "sent_delta": 100,
+      "drops_delta": 0,
+      "period_miss": 0,
+      "fault_events": 0,
+      "processing_us_min_max": [
+        177599,
+        192312
+      ]
+    }
+  },
+  "cadence": {
+    "expected_period_us": 300000,
+    "interval_count": 99,
+    "interval_us_min_max": [
+      299932.7083333333,
+      300002.86057692306
+    ],
+    "max_abs_interval_error_us": 67.29166666668607,
+    "allowed_jitter_us": 4000,
+    "first_to_last_poll_s": 29.700206666666666
+  },
+  "firmware": {
+    "anchor": "D8_R6_ANCHOR_STAGE6_P2IOFIX_20261111",
+    "tag": "D8_R5_TAG_STAGE6_P2IOFIX_20261111"
+  },
+  "problems": [
+    "paired capture integrity gate",
+    "tag RFB8 continuity or record count"
+  ],
+  "pair_audit": {
+    "pass": false,
+    "problems": [
+      "PAIR_FRAME_MISMATCH_TXN_17_INDEX_2",
+      "PAIR_FRAME_MISMATCH_TXN_19_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_20_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_21_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_22_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_23_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_24_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_25_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_26_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_27_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_28_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_29_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_30_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_81_INDEX_2",
+      "PAIR_FRAME_MISMATCH_TXN_83_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_84_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_85_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_86_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_88_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_89_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_90_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_91_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_92_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_93_INDEX_1",
+      "PAIR_FRAME_MISMATCH_TXN_94_INDEX_1",
+      "TAG_CIR_INVALID_TXN_17",
+      "TAG_CIR_INVALID_TXN_19",
+      "TAG_CIR_INVALID_TXN_20",
+      "TAG_CIR_INVALID_TXN_21",
+      "TAG_CIR_INVALID_TXN_22",
+      "TAG_CIR_INVALID_TXN_23",
+      "TAG_CIR_INVALID_TXN_24",
+      "TAG_CIR_INVALID_TXN_25",
+      "TAG_CIR_INVALID_TXN_26",
+      "TAG_CIR_INVALID_TXN_27",
+      "TAG_CIR_INVALID_TXN_28",
+      "TAG_CIR_INVALID_TXN_29",
+      "TAG_CIR_INVALID_TXN_30",
+      "TAG_CIR_INVALID_TXN_56",
+      "TAG_CIR_INVALID_TXN_81",
+      "TAG_CIR_INVALID_TXN_83",
+      "TAG_CIR_INVALID_TXN_84",
+      "TAG_CIR_INVALID_TXN_85",
+      "TAG_CIR_INVALID_TXN_86",
+      "TAG_CIR_INVALID_TXN_88",
+      "TAG_CIR_INVALID_TXN_89",
+      "TAG_CIR_INVALID_TXN_90",
+      "TAG_CIR_INVALID_TXN_91",
+      "TAG_CIR_INVALID_TXN_92",
+      "TAG_CIR_INVALID_TXN_93",
+      "TAG_CIR_INVALID_TXN_94",
+      "TAG_DS_INVALID_TXN_17",
+      "TAG_DS_INVALID_TXN_19",
+      "TAG_DS_INVALID_TXN_20",
+      "TAG_DS_INVALID_TXN_21",
+      "TAG_DS_INVALID_TXN_22",
+      "TAG_DS_INVALID_TXN_23",
+      "TAG_DS_INVALID_TXN_24",
+      "TAG_DS_INVALID_TXN_25",
+      "TAG_DS_INVALID_TXN_26",
+      "TAG_DS_INVALID_TXN_27",
+      "TAG_DS_INVALID_TXN_28",
+      "TAG_DS_INVALID_TXN_29",
+      "TAG_DS_INVALID_TXN_30",
+      "TAG_DS_INVALID_TXN_81",
+      "TAG_DS_INVALID_TXN_83",
+      "TAG_DS_INVALID_TXN_84",
+      "TAG_DS_INVALID_TXN_85",
+      "TAG_DS_INVALID_TXN_86",
+      "TAG_DS_INVALID_TXN_88",
+      "TAG_DS_INVALID_TXN_89",
+      "TAG_DS_INVALID_TXN_90",
+      "TAG_DS_INVALID_TXN_91",
+      "TAG_DS_INVALID_TXN_92",
+      "TAG_DS_INVALID_TXN_93",
+      "TAG_DS_INVALID_TXN_94",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_17_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_17_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_19_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_19_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_20_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_20_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_21_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_21_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_22_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_22_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_23_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_23_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_24_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_24_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_25_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_25_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_26_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_26_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_27_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_27_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_28_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_28_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_29_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_29_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_30_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_30_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_81_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_81_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_83_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_83_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_84_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_84_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_85_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_85_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_86_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_86_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_88_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_88_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_89_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_89_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_90_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_90_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_91_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_91_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_92_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_92_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_93_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_93_RADIO_1",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_94_RADIO_0",
+      "TAG_DS_TIMESTAMPS_MISMATCH_TXN_94_RADIO_1",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_17",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_19",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_20",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_21",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_22",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_23",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_24",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_25",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_26",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_27",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_28",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_29",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_30",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_56",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_81",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_83",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_84",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_85",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_86",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_88",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_89",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_90",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_91",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_92",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_93",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_94",
+      "TAG_PROBE_AIR_MISMATCH_TXN_17_SLOT_2",
+      "TAG_PROBE_AIR_MISMATCH_TXN_17_SLOT_3",
+      "TAG_PROBE_AIR_MISMATCH_TXN_19_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_19_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_20_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_20_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_21_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_21_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_22_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_22_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_23_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_23_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_24_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_24_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_25_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_25_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_26_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_26_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_27_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_27_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_28_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_28_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_29_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_29_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_30_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_30_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_56_SLOT_3",
+      "TAG_PROBE_AIR_MISMATCH_TXN_81_SLOT_2",
+      "TAG_PROBE_AIR_MISMATCH_TXN_81_SLOT_3",
+      "TAG_PROBE_AIR_MISMATCH_TXN_83_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_83_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_84_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_84_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_85_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_85_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_86_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_86_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_88_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_88_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_89_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_89_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_90_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_90_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_91_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_91_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_92_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_92_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_93_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_93_SLOT_1",
+      "TAG_PROBE_AIR_MISMATCH_TXN_94_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_94_SLOT_1"
+    ],
+    "details": {
+      "tag": {
+        "records": 100,
+        "unique_txn": 100,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      },
+      "anchor": {
+        "records": 100,
+        "unique_txn": 100,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      }
+    }
+  },
+  "governance_sha256": {
+    "common": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "collector_exit_code": 2,
+  "input_sha256": {
+    "tag.rfb8": "40e2e34a8e98d98f3825f783982685a3ff4479558a920445c71d36535a515b9b",
+    "anchor.rfb8": "3129c64b7b222ff21b8bbe614cc5da1710032561ebfd014263e8822be7c5713d",
+    "capture_receipt.json": "113e834c185662c9825da24b4527351fc76aa85c81d39d067c11c169a55a2262",
+    "tag_post_status.json": "148b1d5db9b5b5d15e02997831f3cf006d19b20abd9aac1236436c8fac13c6df",
+    "anchor_post_status.json": "e3e89ebf88c1199649ddd4c5f58de3d2b82dd092d8feaefc7243b97baff1592e"
+  },
+  "tag_delay_settings": {
+    "utc": "2026-11-11T10:17:44.460606+00:00",
+    "reference_m_approx": 0.8,
+    "baseline_session": 2041379429,
+    "baseline_verdict_sha256": "7e7a9478f9b3f4f329b0b2e9e492d034d18ea38d09492e10ca83ee300093b76f",
+    "baseline_verdict": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\stage4_20_default_20261111_191657_832\\stage4_distance_verdict.json",
+    "method": "Tag-only symmetric TX/RX adjustment. A one-tick reduction on both tag delays increases ToF by approximately one tick. Use the baseline median and nearest integer tick. Validate on a separate session.",
+    "modules": {
+      "A": {
+        "baseline_median_m": 0.06582913114215401,
+        "tag_delay_ticks": 16279,
+        "tag_delay_delta_ticks": -157,
+        "baseline_sample_sd_m": 0.08423371167470722
+      },
+      "B": {
+        "baseline_median_m": -1.7788186978872504,
+        "tag_delay_ticks": 15886,
+        "tag_delay_delta_ticks": -550,
+        "baseline_sample_sd_m": 0.1396584260341351
+      }
+    },
+    "cal_id": 0,
+    "scope": "Trial geometry only. Reported sample standard deviation is repeatability metadata, not absolute uncertainty."
+  },
+  "tag_delay_receipt_sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385",
+  "phase_coherent": false,
+  "absolute_axis_accuracy_validated": false,
+  "summary": {
+    "P1": {
+      "common_grids_verified": 75,
+      "CIR_slots_verified": 150,
+      "signed_range_m_min_max": {
+        "A": [
+          0.6759130064785207,
+          0.8789380677770611
+        ],
+        "B": [
+          0.6298371834714189,
+          1.0898215791182995
+        ]
+      },
+      "overlap_points_min": 983,
+      "overlap_points_max": 991,
+      "max_independent_range_delta_m": 2.220446049250313e-16
+    },
+    "P2": {
+      "common_grids_verified": 74,
+      "CIR_slots_verified": 148,
+      "signed_range_m_min_max": {
+        "A": [
+          0.6390590680080429,
+          0.7697190171614277
+        ],
+        "B": [
+          0.6087359099959697,
+          0.8234785782273684
+        ]
+      },
+      "overlap_points_min": 984,
+      "overlap_points_max": 991,
+      "max_independent_range_delta_m": 1.1102230246251565e-16
+    }
+  },
+  "transactions": [
+    {
+      "txn": 0,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              787819917876,
+              788458892985,
+              789609050676,
+              32785121667,
+              33424097175,
+              34574256393
+            ],
+            "signed_range_m": 0.6774189278921039,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.75
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              787819917876,
+              789097871590,
+              789609050676,
+              30543979771,
+              31821931534,
+              32333110222
+            ],
+            "signed_range_m": 0.6405638809738997,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.4375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              797404557876,
+              798043533349,
+              799193690676,
+              42369749531,
+              43008725399,
+              44158884248
+            ],
+            "signed_range_m": 0.6792624939715375,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.234375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              797404557876,
+              798682511779,
+              799193690676,
+              40128582688,
+              41406534670,
+              41917713162
+            ],
+            "signed_range_m": 0.6087359099959697,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 1,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              806984898100,
+              807623873763,
+              808774030900,
+              51950076005,
+              52589051799,
+              53739210087
+            ],
+            "signed_range_m": 0.7665374814684829,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              806984898100,
+              808262852136,
+              808774030900,
+              49708883935,
+              50986835470,
+              51498013681
+            ],
+            "signed_range_m": 0.7494445116045031,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.609375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              816569538100,
+              817208513371,
+              818358670900,
+              61534701324,
+              62173676951,
+              63323835985
+            ],
+            "signed_range_m": 0.7238204176018799,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              816569538100,
+              817847491815,
+              818358670900,
+              59293483864,
+              60571435534,
+              61082614255
+            ],
+            "signed_range_m": 0.760502960123224,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 743.578125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 2,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              826154356276,
+              826793331978,
+              827943489076,
+              71119505457,
+              71758481303,
+              72908639550
+            ],
+            "signed_range_m": 0.7452634293888691,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.828125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              826154356276,
+              827432310446,
+              827943489076,
+              68878262617,
+              70156214286,
+              70667392360
+            ],
+            "signed_range_m": 0.7444185806246887,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.59375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              835738996276,
+              836377971525,
+              837528129076,
+              80704130830,
+              81343106455,
+              82493265533
+            ],
+            "signed_range_m": 0.71209442816115,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.6875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              835738996276,
+              837016950178,
+              837528129076,
+              78462862479,
+              79740814350,
+              80251992878
+            ],
+            "signed_range_m": 0.7410708963876614,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.5625
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      }
+    },
+    {
+      "txn": 3,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              845323811892,
+              845962787452,
+              847112944692,
+              90288932525,
+              90927908247,
+              92078066652
+            ],
+            "signed_range_m": 0.7315271220101551,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.421875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              845323811892,
+              846601766316,
+              847112944692,
+              88047638665,
+              89325590542,
+              89836768366
+            ],
+            "signed_range_m": 0.7819403255523698,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.0625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              854908451892,
+              855547427498,
+              856697584692,
+              99873557955,
+              100512533911,
+              101662692639
+            ],
+            "signed_range_m": 0.7571562370229051,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.21875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              854908451892,
+              856186405668,
+              856697584692,
+              97632238383,
+              98910190094,
+              99421368716
+            ],
+            "signed_range_m": 0.710248786577413,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.53125
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      }
+    },
+    {
+      "txn": 4,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              864493273140,
+              865132248488,
+              866282405940,
+              109458365301,
+              110097340823,
+              111247499455
+            ],
+            "signed_range_m": 0.725998806155991,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.84375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              864493273140,
+              865771227575,
+              866282405940,
+              107217020035,
+              108494971918,
+              109006149716
+            ],
+            "signed_range_m": 0.7601635455355581,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.40625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              874077913140,
+              874716888593,
+              875867045940,
+              119042990681,
+              119681966487,
+              120832125325
+            ],
+            "signed_range_m": 0.7166178328617738,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.1875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              874077913140,
+              875355866760,
+              875867045940,
+              116801619436,
+              118079570958,
+              118590749686
+            ],
+            "signed_range_m": 0.6486043970701871,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.4375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 5,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              883662731828,
+              884301707399,
+              885451864628,
+              128627795566,
+              129266771351,
+              130416929809
+            ],
+            "signed_range_m": 0.706735175895214,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              883662731828,
+              884940686179,
+              885451864628,
+              126386398391,
+              127664350222,
+              128175528127
+            ],
+            "signed_range_m": 0.7772503614148325,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.328125
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              893247371828,
+              893886347011,
+              895036504628,
+              138212420971,
+              138851396503,
+              140001555612
+            ],
+            "signed_range_m": 0.7234852030821992,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.546875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              893247371828,
+              894525325632,
+              895036504628,
+              135970997610,
+              137248949262,
+              137760127810
+            ],
+            "signed_range_m": 0.6914869668278008,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.25
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      }
+    },
+    {
+      "txn": 6,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              902832186932,
+              903471162533,
+              904621319732,
+              147797222034,
+              148436197783,
+              149586356168
+            ],
+            "signed_range_m": 0.7702226179681964,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.859375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              902832186932,
+              904110141556,
+              904621319732,
+              145555772439,
+              146833724430,
+              147344902021
+            ],
+            "signed_range_m": 0.784284310368528,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.421875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              912416826932,
+              913055802182,
+              914205959732,
+              157381847333,
+              158020822935,
+              159170982005
+            ],
+            "signed_range_m": 0.7424142583343913,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.5625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              912416826932,
+              913694780781,
+              914205959732,
+              155140371270,
+              156418322958,
+              156929501452
+            ],
+            "signed_range_m": 0.6824410784545115,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.40625
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 7,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              922001648180,
+              922640623862,
+              923790780980,
+              166966654531,
+              167605630359,
+              168755788596
+            ],
+            "signed_range_m": 0.7171212817365266,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.671875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              922001648180,
+              923279602666,
+              923790780980,
+              164725152004,
+              166003103758,
+              166514281460
+            ],
+            "signed_range_m": 0.8053911351299042,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.28125
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              931586288180,
+              932225263325,
+              933375420980,
+              176551280022,
+              177190255511,
+              178340414634
+            ],
+            "signed_range_m": 0.7109217002124152,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.640625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              931586288180,
+              932864242382,
+              933375420980,
+              174309750825,
+              175587702798,
+              176098880897
+            ],
+            "signed_range_m": 0.6576476653578945,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.359375
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      }
+    },
+    {
+      "txn": 8,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              941171106356,
+              941810081744,
+              942960239156,
+              186136084249,
+              186775059863,
+              187925218546
+            ],
+            "signed_range_m": 0.7238210686422357,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.640625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              941171106356,
+              942449060526,
+              942960239156,
+              183894528359,
+              185172480014,
+              185683658047
+            ],
+            "signed_range_m": 0.6851188722218908,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.328125
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              950755746356,
+              951394721577,
+              952544879156,
+              195720709455,
+              196359685015,
+              197509844058
+            ],
+            "signed_range_m": 0.7151097082238479,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.265625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              950755746356,
+              952033700521,
+              952544879156,
+              193479126636,
+              194757078542,
+              195268256649
+            ],
+            "signed_range_m": 0.6291704521958379,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.484375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 9,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              960340561460,
+              960979536986,
+              962129694260,
+              205305510613,
+              205944486295,
+              207094644772
+            ],
+            "signed_range_m": 0.77240013077112,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.546875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              960340561460,
+              961618516001,
+              962129694260,
+              203063900886,
+              204341852686,
+              204853030349
+            ],
+            "signed_range_m": 0.8382234444824075,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.421875
+          }
+        ],
+        "grid_points": 1000,
+        "overlap_points": 984
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              969925201460,
+              970564176606,
+              971714334260,
+              214890135928,
+              215529111447,
+              216679270600
+            ],
+            "signed_range_m": 0.6931652817916457,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              969925201460,
+              971203155375,
+              971714334260,
+              212648499092,
+              213926450702,
+              214437629117
+            ],
+            "signed_range_m": 0.7571512301467989,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.171875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 10,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              979510022708,
+              980148998433,
+              981299155508,
+              224474943010,
+              225113918871,
+              226264077120
+            ],
+            "signed_range_m": 0.7782634574408923,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              979510022708,
+              980787977467,
+              981299155508,
+              222233278993,
+              223511230990,
+              224022408380
+            ],
+            "signed_range_m": 0.7601612201206025,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.28125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              989094662708,
+              989733638238,
+              990883795508,
+              234059568142,
+              234698544023,
+              235848702766
+            ],
+            "signed_range_m": 0.7045571237927868,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.453125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              989094662708,
+              990372616751,
+              990883795508,
+              231817876782,
+              233095828494,
+              233607006744
+            ],
+            "signed_range_m": 0.7125921835886149,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.46875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 11,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              998679480884,
+              999318456336,
+              1000468613684,
+              243644372255,
+              244283347863,
+              245433506419
+            ],
+            "signed_range_m": 0.7765878113150115,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              998679480884,
+              999957435253,
+              1000468613684,
+              241402653588,
+              242680605198,
+              243191783000
+            ],
+            "signed_range_m": 0.7950057212053853,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.46875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1008264120884,
+              1008903096392,
+              1010053253684,
+              253228997665,
+              253867973527,
+              255018132292
+            ],
+            "signed_range_m": 0.7000342268546875,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.546875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1008264120884,
+              1009542074925,
+              1010053253684,
+              250987251522,
+              252265203214,
+              252776381441
+            ],
+            "signed_range_m": 0.6827747918858397,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.359375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 12,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1017848935988,
+              1018487911419,
+              1019638068788,
+              262813798767,
+              263452774295,
+              264602932832
+            ],
+            "signed_range_m": 0.8320345681789952,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1017848935988,
+              1019126890550,
+              1019638068788,
+              260572025134,
+              261849976846,
+              262361154385
+            ],
+            "signed_range_m": 0.7387200209535312,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.484375
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1027433575988,
+              1028072551329,
+              1029222708788,
+              272398423775,
+              273037399447,
+              274187558374
+            ],
+            "signed_range_m": 0.7305211608987494,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.328125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1027433575988,
+              1028711530340,
+              1029222708788,
+              270156622415,
+              271434574350,
+              271945752273
+            ],
+            "signed_range_m": 0.7400628469945212,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.359375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 13,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1037018397236,
+              1037657372771,
+              1038807530036,
+              281983230681,
+              282622206359,
+              283772364767
+            ],
+            "signed_range_m": 0.7417453856865546,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1037018397236,
+              1038296351593,
+              1038807530036,
+              279741401599,
+              281019353102,
+              281530530871
+            ],
+            "signed_range_m": 0.7832794693357013,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.078125
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1046603037236,
+              1047242012556,
+              1048392170036,
+              291567855865,
+              292206831511,
+              293356990485
+            ],
+            "signed_range_m": 0.7598358038869941,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.9375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1046603037236,
+              1047880991343,
+              1048392170036,
+              289325998923,
+              290603950606,
+              291115128771
+            ],
+            "signed_range_m": 0.7397287404829346,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.390625
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 985
+      }
+    },
+    {
+      "txn": 14,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1056187855412,
+              1056826830812,
+              1057976988212,
+              301152659820,
+              301791635351,
+              302941793878
+            ],
+            "signed_range_m": 0.7464355411646149,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.328125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1056187855412,
+              1057465810117,
+              1057976988212,
+              298910775010,
+              300188726798,
+              300699904189
+            ],
+            "signed_range_m": 0.7752369307169442,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.296875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1065772495412,
+              1066411470827,
+              1067561628212,
+              310737284755,
+              311376260503,
+              312526419330
+            ],
+            "signed_range_m": 0.7057294846986351,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.015625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1065772495412,
+              1067050449797,
+              1067561628212,
+              308495371852,
+              309773323790,
+              310284501633
+            ],
+            "signed_range_m": 0.6814329846256436,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.359375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 15,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1075357310516,
+              1075996285914,
+              1077146443316,
+              320322085735,
+              320961061271,
+              322111219821
+            ],
+            "signed_range_m": 0.753471042704399,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.6875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1075357310516,
+              1076635265014,
+              1077146443316,
+              318080144828,
+              319358096398,
+              319869274044
+            ],
+            "signed_range_m": 0.8630147927968118,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.40625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1084941950516,
+              1085580925790,
+              1086731083316,
+              329906711339,
+              330545686935,
+              331695845953
+            ],
+            "signed_range_m": 0.764191030300917,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1084941950516,
+              1086219904557,
+              1086731083316,
+              327664742342,
+              328942693902,
+              329453872118
+            ],
+            "signed_range_m": 0.7527948233021056,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.9375
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 985
+      }
+    },
+    {
+      "txn": 16,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1094526771764,
+              1095165747442,
+              1096315904564,
+              339491518431,
+              340130494359,
+              341280652738
+            ],
+            "signed_range_m": 0.6759130064785207,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.015625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1094526771764,
+              1095804726310,
+              1096315904564,
+              337249521315,
+              338527473166,
+              339038650718
+            ],
+            "signed_range_m": 0.6298371834714189,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.5625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              4599783988,
+              5238759468,
+              6388916788,
+              349076143714,
+              349715119511,
+              350865278281
+            ],
+            "signed_range_m": 0.73655197287288,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              4599783988,
+              5877738357,
+              6388916788,
+              346834118273,
+              348112070158,
+              348623247983
+            ],
+            "signed_range_m": 0.64927036612156,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.203125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 17,
+      "P1": {
+        "pass": false,
+        "problem": "P1 actual TX confirmation in P2"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      }
+    },
+    {
+      "txn": 18,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              33354056756,
+              33993032528,
+              35143189556,
+              377830370303,
+              378469346199,
+              379619504346
+            ],
+            "signed_range_m": 0.7502889539979739,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.140625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              33354056756,
+              34632011389,
+              35143189556,
+              375588259198,
+              376866210830,
+              377377388248
+            ],
+            "signed_range_m": 0.7561403822095568,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.46875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              42938696756,
+              43577672086,
+              44727829556,
+              387414995663,
+              388053971351,
+              389204130289
+            ],
+            "signed_range_m": 0.6898155294040901,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.25
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              42938696756,
+              44216651067,
+              44727829556,
+              385172856006,
+              386450807822,
+              386961985725
+            ],
+            "signed_range_m": 0.6901437717133695,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.296875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 19,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 20,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 21,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 22,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 23,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 24,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 25,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 26,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 27,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 28,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 29,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 30,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 31,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              282557017140,
+              283195992668,
+              284346149940,
+              627032923395,
+              627671899031,
+              628822057445
+            ],
+            "signed_range_m": 0.7936743365189346,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.4375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              282557017140,
+              283834972328,
+              284346149940,
+              624790045775,
+              626067997710,
+              626579174571
+            ],
+            "signed_range_m": 0.9216394239125356,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.140625
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              292141657140,
+              292780632611,
+              293930789940,
+              636617548387,
+              637256524183,
+              638406682940
+            ],
+            "signed_range_m": 0.7060646599115461,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.546875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              292141657140,
+              293419611796,
+              293930789940,
+              634374640752,
+              635652592654,
+              636163770113
+            ],
+            "signed_range_m": 0.6978467947864301,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.359375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 32,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              301726475316,
+              302365450921,
+              303515608116,
+              646202351773,
+              646841327511,
+              647991485862
+            ],
+            "signed_range_m": 0.76770996767406,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.453125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              301726475316,
+              303004430248,
+              303515608116,
+              643959414099,
+              645237365774,
+              645748542912
+            ],
+            "signed_range_m": 0.9594987510781248,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 743.46875
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              311311115316,
+              311950090698,
+              313100248116,
+              655786976471,
+              656425952151,
+              657576111016
+            ],
+            "signed_range_m": 0.7626837437587409,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.359375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              311311115316,
+              312589069679,
+              313100248116,
+              653544008644,
+              654821960206,
+              655333137981
+            ],
+            "signed_range_m": 0.7678684412108837,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.421875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 33,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              320895930420,
+              321534905943,
+              322685063220,
+              665371777300,
+              666010752919,
+              667160911336
+            ],
+            "signed_range_m": 0.8100905835522548,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.734375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              320895930420,
+              322173885560,
+              322685063220,
+              663128779418,
+              664406731278,
+              664917908189
+            ],
+            "signed_range_m": 0.9430812349167538,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.546875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              330480570420,
+              331119545674,
+              332269703220,
+              674956401979,
+              675595377559,
+              676745536528
+            ],
+            "signed_range_m": 0.7003687354307061,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.859375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              330480570420,
+              331758525046,
+              332269703220,
+              672713373877,
+              673991325710,
+              674502503180
+            ],
+            "signed_range_m": 0.692151302782489,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.40625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 34,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              340065392180,
+              340704368001,
+              341854524980,
+              684541209033,
+              685180184983,
+              686330343126
+            ],
+            "signed_range_m": 0.7804412948738013,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.453125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              340065392180,
+              341343347141,
+              341854524980,
+              682298150695,
+              683576102414,
+              684087279501
+            ],
+            "signed_range_m": 0.9125949531969847,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.421875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              349650032180,
+              350289007350,
+              351439164980,
+              694125834122,
+              694764809623,
+              695914968678
+            ],
+            "signed_range_m": 0.6945055906612564,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.578125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              349650032180,
+              350927986793,
+              351439164980,
+              691882745512,
+              693160697358,
+              693671874840
+            ],
+            "signed_range_m": 0.6730549716726999,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.46875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 35,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              359234850356,
+              359873826112,
+              361023983156,
+              703710637601,
+              704349613463,
+              705499771683
+            ],
+            "signed_range_m": 0.8251670775916286,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.28125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              359234850356,
+              360512805434,
+              361023983156,
+              701467518708,
+              702745470478,
+              703256647470
+            ],
+            "signed_range_m": 0.9936704345738218,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.6875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              368819490356,
+              369458465811,
+              370608623156,
+              713295262312,
+              713934238103,
+              715084396856
+            ],
+            "signed_range_m": 0.6727296112879833,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.484375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              368819490356,
+              370097445037,
+              370608623156,
+              711052113029,
+              712330064910,
+              712841242312
+            ],
+            "signed_range_m": 0.6750646674429005,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.34375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 36,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              378404305460,
+              379043281159,
+              380193438260,
+              722880062573,
+              723519038359,
+              724669196595
+            ],
+            "signed_range_m": 0.8194715879216109,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.78125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              378404305460,
+              379682260298,
+              380193438260,
+              720636882939,
+              721914834446,
+              722426011633
+            ],
+            "signed_range_m": 0.9337018391854176,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.109375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              387988945460,
+              388627920936,
+              389778078260,
+              732464687219,
+              733103662999,
+              734253821733
+            ],
+            "signed_range_m": 0.7226484597225494,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.5625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              387988945460,
+              389266900016,
+              389778078260,
+              730221477136,
+              731499428878,
+              732010606402
+            ],
+            "signed_range_m": 0.6794205256291832,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 37,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              397573767220,
+              398212742801,
+              399362900020,
+              742049494211,
+              742688469911,
+              743838628286
+            ],
+            "signed_range_m": 0.7888165362009513,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.953125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              397573767220,
+              398851722360,
+              399362900020,
+              739806253733,
+              741084205582,
+              741595382506
+            ],
+            "signed_range_m": 0.9722284931027552,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              407158407220,
+              407797382571,
+              408947540020,
+              751634118889,
+              752273094551,
+              753423253405
+            ],
+            "signed_range_m": 0.7079070622650491,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.3125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              407158407220,
+              408436361638,
+              408947540020,
+              749390847927,
+              750668799502,
+              751179977181
+            ],
+            "signed_range_m": 0.7273298217634715,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.546875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      }
+    },
+    {
+      "txn": 38,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              416743225396,
+              417382201166,
+              418532358196,
+              761218922513,
+              761857898391,
+              763008056581
+            ],
+            "signed_range_m": 0.8087508653466713,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.3125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              416743225396,
+              418021180727,
+              418532358196,
+              758975621137,
+              760253573134,
+              760764749880
+            ],
+            "signed_range_m": 1.0228162684935145,
+            "range_valid": true,
+            "axis_distance_delta_m": 2.220446049250313e-16,
+            "fp_index": 745.34375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              426327865396,
+              426966840737,
+              428116998196,
+              770803547364,
+              771442523031,
+              772592681911
+            ],
+            "signed_range_m": 0.6986938103685458,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              426327865396,
+              427605819829,
+              428116998196,
+              768560215461,
+              769838167054,
+              770349344719
+            ],
+            "signed_range_m": 0.7269947381638321,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 743.453125
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      }
+    },
+    {
+      "txn": 39,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              435912680500,
+              436551656055,
+              437701813300,
+              780388347642,
+              781027323287,
+              782177481710
+            ],
+            "signed_range_m": 0.8509637048511033,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.578125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              435912680500,
+              437190635741,
+              437701813300,
+              778144985202,
+              779422937102,
+              779934113918
+            ],
+            "signed_range_m": 0.9940044150445626,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.4375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              445497320500,
+              446136295812,
+              447286453300,
+              789972972315,
+              790611947927,
+              791762106808
+            ],
+            "signed_range_m": 0.7144399938088599,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.859375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              445497320500,
+              446775275100,
+              447286453300,
+              787729579278,
+              789007531022,
+              789518708513
+            ],
+            "signed_range_m": 0.7259888116265895,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.609375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 40,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              455082142260,
+              455721117682,
+              456871275060,
+              799557779291,
+              800196754839,
+              801346913365
+            ],
+            "signed_range_m": 0.7715624648281985,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.0625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              455082142260,
+              456360097088,
+              456871275060,
+              797314355702,
+              798592307214,
+              799103484397
+            ],
+            "signed_range_m": 0.9001993089620585,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.296875
+          }
+        ],
+        "grid_points": 1000,
+        "overlap_points": 984
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              464666782260,
+              465305757453,
+              466455915060,
+              809142403965,
+              809781379479,
+              810931538496
+            ],
+            "signed_range_m": 0.6970183648625652,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.734375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              464666782260,
+              465944737073,
+              466455915060,
+              806898949707,
+              808176901646,
+              808688078909
+            ],
+            "signed_range_m": 0.7129216940291613,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.296875
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 41,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              474251600436,
+              474890576022,
+              476040733236,
+              818727207614,
+              819366183319,
+              820516341687
+            ],
+            "signed_range_m": 0.7871414192265985,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              474251600436,
+              475529555285,
+              476040733236,
+              816483722745,
+              817761674254,
+              818272851420
+            ],
+            "signed_range_m": 0.9229808859286323,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.03125
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              483836240436,
+              484475215756,
+              485625373236,
+              828311832326,
+              828950807959,
+              830100966868
+            ],
+            "signed_range_m": 0.7249932559183468,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.671875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              483836240436,
+              485114195254,
+              485625373236,
+              826068316737,
+              827346268686,
+              827857445953
+            ],
+            "signed_range_m": 0.7246476232864154,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.359375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 42,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              493421056052,
+              494060031536,
+              495210188852,
+              837896633153,
+              838535608727,
+              839685767235
+            ],
+            "signed_range_m": 0.8626894620133165,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.78125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              493421056052,
+              494699011259,
+              495210188852,
+              835653086850,
+              836931038734,
+              837442215568
+            ],
+            "signed_range_m": 0.9551416036686092,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.46875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              503005696052,
+              503644671703,
+              504794828852,
+              847481257914,
+              848120233879,
+              849270392448
+            ],
+            "signed_range_m": 0.715948333141365,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.109375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              503005696052,
+              504283650677,
+              504794828852,
+              845237680876,
+              846515632654,
+              847026810084
+            ],
+            "signed_range_m": 0.6596534936569387,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.90625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      }
+    },
+    {
+      "txn": 43,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              512590517300,
+              513229493011,
+              514379650100,
+              857066064450,
+              857705040279,
+              858855198510
+            ],
+            "signed_range_m": 0.7785984885893754,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.578125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              512590517300,
+              513868472343,
+              514379650100,
+              854822456663,
+              856100408334,
+              856611585317
+            ],
+            "signed_range_m": 0.9628478381909306,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.046875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              522175157300,
+              522814132964,
+              523964290100,
+              866650688970,
+              867289664919,
+              868439823444
+            ],
+            "signed_range_m": 0.7337047438125816,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              522175157300,
+              523453112180,
+              523964290100,
+              864407050295,
+              865685002254,
+              866196179442
+            ],
+            "signed_range_m": 0.731012576329958,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.25
+          }
+        ],
+        "grid_points": 1000,
+        "overlap_points": 984
+      }
+    },
+    {
+      "txn": 44,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              531759975988,
+              532398951675,
+              533549108788,
+              876235492967,
+              876874468759,
+              878024627050
+            ],
+            "signed_range_m": 0.8283497020200266,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.765625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              531759975988,
+              533037931192,
+              533549108788,
+              873991823504,
+              875269775374,
+              875780952195
+            ],
+            "signed_range_m": 0.9357100127674571,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.390625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              541344615988,
+              541983591381,
+              543133748788,
+              885820117717,
+              886459093399,
+              887609252223
+            ],
+            "signed_range_m": 0.7511254343485507,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              541344615988,
+              542622570857,
+              543133748788,
+              883576417339,
+              884854369294,
+              885365546498
+            ],
+            "signed_range_m": 0.7346979558240158,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 45,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              550929431092,
+              551568406731,
+              552718563892,
+              895404918367,
+              896043894167,
+              897194052485
+            ],
+            "signed_range_m": 0.7263343723319141,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.0625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              550929431092,
+              552207386024,
+              552718563892,
+              893161187169,
+              894439138830,
+              894950315868
+            ],
+            "signed_range_m": 0.8013661307389803,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.53125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              560514071092,
+              561153046361,
+              562303203892,
+              904989543755,
+              905628519319,
+              906778678300
+            ],
+            "signed_range_m": 0.7697190171614277,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              560514071092,
+              561792025570,
+              562303203892,
+              902745781669,
+              904023733262,
+              904534910852
+            ],
+            "signed_range_m": 0.7068927511109182,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.40625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 46,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              570098892852,
+              570737868634,
+              571888025652,
+              914574350827,
+              915213326743,
+              916363484962
+            ],
+            "signed_range_m": 0.8038929832023392,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.390625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              570098892852,
+              571376847849,
+              571888025652,
+              912330557807,
+              913608509454,
+              914119686497
+            ],
+            "signed_range_m": 0.9715588926766555,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.609375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              579683532852,
+              580322508250,
+              581472665652,
+              924158975652,
+              924797951383,
+              925948110192
+            ],
+            "signed_range_m": 0.6764147634975166,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.484375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              579683532852,
+              580961487538,
+              581472665652,
+              921915151600,
+              923193103374,
+              923704280742
+            ],
+            "signed_range_m": 0.7015312153734761,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.5625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 47,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              589268351540,
+              589907327002,
+              591057484340,
+              933743779647,
+              934382755223,
+              935532913754
+            ],
+            "signed_range_m": 0.827344225042328,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.265625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              589268351540,
+              590546306871,
+              591057484340,
+              931499924552,
+              932777876494,
+              933289053201
+            ],
+            "signed_range_m": 0.9943386852022911,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.484375
+          }
+        ],
+        "grid_points": 1000,
+        "overlap_points": 983
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              598852991540,
+              599491967059,
+              600642124340,
+              943328404563,
+              943967380375,
+              945117539065
+            ],
+            "signed_range_m": 0.7383947568864618,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.75
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              598852991540,
+              600130946002,
+              600642124340,
+              941084518364,
+              942362469902,
+              942873647491
+            ],
+            "signed_range_m": 0.7045474764692736,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.390625
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 48,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              608437807156,
+              609076782847,
+              610226939956,
+              952913205319,
+              953552181143,
+              954702339336
+            ],
+            "signed_range_m": 0.7074055897993223,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.234375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              608437807156,
+              609715762469,
+              610226939956,
+              950669288016,
+              951947239950,
+              952458416571
+            ],
+            "signed_range_m": 0.8134244215267704,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.390625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              618022447156,
+              618661422632,
+              619811579956,
+              962497829983,
+              963136805783,
+              964286964541
+            ],
+            "signed_range_m": 0.7125976608360454,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.4375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              618022447156,
+              619300401960,
+              619811579956,
+              960253881495,
+              961531833358,
+              962043010629
+            ],
+            "signed_range_m": 0.7561398326524605,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.421875
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 49,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              627607268916,
+              628246244361,
+              629396401716,
+              972082637152,
+              972721612695,
+              973871771251
+            ],
+            "signed_range_m": 0.8581665375298959,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.53125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              627607268916,
+              628885223802,
+              629396401716,
+              969838657543,
+              971116609038,
+              971627786170
+            ],
+            "signed_range_m": 0.9621785447775002,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.5
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              637191908916,
+              637830884185,
+              638981041716,
+              981667261749,
+              982306237335,
+              983456396259
+            ],
+            "signed_range_m": 0.6888104409211987,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              637191908916,
+              638469863409,
+              638981041716,
+              979423250897,
+              980701202446,
+              981212379997
+            ],
+            "signed_range_m": 0.7062223734889878,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.546875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 50,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              646776727092,
+              647415702488,
+              648565859892,
+              991252065076,
+              991891040663,
+              993041199288
+            ],
+            "signed_range_m": 0.7347094929769109,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              646776727092,
+              648054681845,
+              648565859892,
+              989008023005,
+              990285974542,
+              990797151731
+            ],
+            "signed_range_m": 0.7176107163491016,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.265625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              656361367092,
+              657000342498,
+              658150499892,
+              1000836690095,
+              1001475665815,
+              1002625824627
+            ],
+            "signed_range_m": 0.7142726515938612,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.53125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              656361367092,
+              657639321729,
+              658150499892,
+              998592616769,
+              999870568462,
+              1000381745867
+            ],
+            "signed_range_m": 0.7028714102089276,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.390625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 51,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              665946182708,
+              666585158164,
+              667735315508,
+              1010421491015,
+              1011060466583,
+              1012210625178
+            ],
+            "signed_range_m": 0.8789380677770611,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.640625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              665946182708,
+              667224137658,
+              667735315508,
+              1008177386409,
+              1009455337998,
+              1009966515111
+            ],
+            "signed_range_m": 1.0174577337983468,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.078125
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              675530822708,
+              676169798197,
+              677319955508,
+              1020006115950,
+              1020645091735,
+              1021795250439
+            ],
+            "signed_range_m": 0.7204708460630272,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.96875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              675530822708,
+              676808777577,
+              677319955508,
+              1017761980036,
+              1019039931918,
+              1019551109093
+            ],
+            "signed_range_m": 0.735032619020393,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.546875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 52,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              685115644468,
+              685754620000,
+              686904777268,
+              1029590922998,
+              1030229898647,
+              1031380057020
+            ],
+            "signed_range_m": 0.7491159914322534,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.046875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              685115644468,
+              686393599738,
+              686904777268,
+              1027346755746,
+              1028624707598,
+              1029135884258
+            ],
+            "signed_range_m": 0.8328559879948992,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.625
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              694700284468,
+              695339260145,
+              696489417268,
+              1039175547807,
+              1039814523799,
+              1040964682369
+            ],
+            "signed_range_m": 0.7370549702920598,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              694700284468,
+              695978239272,
+              696489417268,
+              1036931349159,
+              1038209301006,
+              1038720478274
+            ],
+            "signed_range_m": 0.7618352060385656,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 53,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              704285103156,
+              704924078963,
+              706074235956,
+              1048760351715,
+              1049399327639,
+              1050549485809
+            ],
+            "signed_range_m": 0.8094209651285154,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              704285103156,
+              705563058492,
+              706074235956,
+              1046516121714,
+              1047794073614,
+              1048305250287
+            ],
+            "signed_range_m": 0.9772520265802364,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.203125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              713869743156,
+              714508718841,
+              715658875956,
+              1058344976297,
+              1058983952279,
+              1060134110793
+            ],
+            "signed_range_m": 0.7239890416760377,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 743.375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              713869743156,
+              715147697826,
+              715658875956,
+              1056100714807,
+              1057378666510,
+              1057889843847
+            ],
+            "signed_range_m": 0.6596527247825251,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.453125
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 54,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              723454558772,
+              724093534646,
+              725243691572,
+              1067929777048,
+              1068568753047,
+              1069718911025
+            ],
+            "signed_range_m": 0.6926647795049787,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.75
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              723454558772,
+              724732514163,
+              725243691572,
+              1065685484127,
+              1066963436046,
+              1067474612562
+            ],
+            "signed_range_m": 0.8305098022633313,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.5
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              733039198772,
+              733678174141,
+              734828331572,
+              1077514401507,
+              1078153377175,
+              1079303535998
+            ],
+            "signed_range_m": 0.7151101730194153,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.953125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              733039198772,
+              734317153715,
+              734828331572,
+              1075270077021,
+              1076548028942,
+              1077059206032
+            ],
+            "signed_range_m": 0.7400574756311276,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.46875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 55,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              742624020532,
+              743262996361,
+              744413153332,
+              1087099208638,
+              1087738184599,
+              1088888342753
+            ],
+            "signed_range_m": 0.7918321611960865,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              742624020532,
+              743901975908,
+              744413153332,
+              1084854852703,
+              1086132804622,
+              1086643981261
+            ],
+            "signed_range_m": 1.0013736065862906,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.546875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              752208660532,
+              752847636188,
+              753997793332,
+              1096683833276,
+              1097322809239,
+              1098472967780
+            ],
+            "signed_range_m": 0.7072377054292232,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.671875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              752208660532,
+              753486615322,
+              753997793332,
+              1094439445741,
+              1095717397518,
+              1096228574758
+            ],
+            "signed_range_m": 0.729002403344292,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.9375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 56,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              761793479220,
+              762432455102,
+              763582612020,
+              6757009322,
+              7395985303,
+              8546143316
+            ],
+            "signed_range_m": 0.7678779834610175,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.421875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              761793479220,
+              763071434295,
+              763582612020,
+              4512590217,
+              5790541838,
+              6301718648
+            ],
+            "signed_range_m": 0.7815978137521973,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.34375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      }
+    },
+    {
+      "txn": 57,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              780962934836,
+              781601910619,
+              782752067636,
+              25926434307,
+              26565410199,
+              27715568291
+            ],
+            "signed_range_m": 0.7360504224360234,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.53125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              780962934836,
+              782240890225,
+              782752067636,
+              23681951849,
+              24959903758,
+              25471080272
+            ],
+            "signed_range_m": 0.8291696595829487,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.46875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              790547574836,
+              791186550102,
+              792336707636,
+              35511059255,
+              36150034839,
+              37300193815
+            ],
+            "signed_range_m": 0.7283433649075859,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.21875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              790547574836,
+              791825529793,
+              792336707636,
+              33266545183,
+              34544497166,
+              35055674234
+            ],
+            "signed_range_m": 0.6944940384125808,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.25
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 58,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              800132396596,
+              800771372436,
+              801921529396,
+              45095866319,
+              45734842263,
+              46885000379
+            ],
+            "signed_range_m": 0.8114311881590787,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.78125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              800132396596,
+              801410351801,
+              801921529396,
+              42851320603,
+              44129272334,
+              44640449101
+            ],
+            "signed_range_m": 0.9407346354407118,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.421875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              809717036596,
+              810356011785,
+              811506169396,
+              54680490894,
+              55319466391,
+              56469625404
+            ],
+            "signed_range_m": 0.7099168574239894,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.671875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              809717036596,
+              810994991409,
+              811506169396,
+              52435913441,
+              53713865230,
+              54225042434
+            ],
+            "signed_range_m": 0.7145960942677957,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.375
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 985
+      }
+    },
+    {
+      "txn": 59,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              819301855796,
+              819940831474,
+              821090988596,
+              64265295448,
+              64904271255,
+              66054429449
+            ],
+            "signed_range_m": 0.7033852744402475,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 746.125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              819301855796,
+              820579810807,
+              821090988596,
+              62020686329,
+              63298637838,
+              63809814757
+            ],
+            "signed_range_m": 0.8891414829545471,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.546875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              828886495796,
+              829525471292,
+              830675628596,
+              73849920108,
+              74488895895,
+              75639054626
+            ],
+            "signed_range_m": 0.7564860595066694,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.265625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              828886495796,
+              830164450345,
+              830675628596,
+              71605279214,
+              72883230734,
+              73394408223
+            ],
+            "signed_range_m": 0.7531254341738367,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.578125
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 60,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              838471311412,
+              839110286803,
+              840260444212,
+              83434721148,
+              84073696663,
+              85223855271
+            ],
+            "signed_range_m": 0.8172933259324207,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.71875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              838471311412,
+              839749266584,
+              840260444212,
+              81190048592,
+              82468000270,
+              82979177151
+            ],
+            "signed_range_m": 1.0898215791182995,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.328125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              848055951412,
+              848694926610,
+              849845084212,
+              93019345796,
+              93658321303,
+              94808480309
+            ],
+            "signed_range_m": 0.7100843865131844,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.6875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              848055951412,
+              849333906223,
+              849845084212,
+              90774641401,
+              92052593166,
+              92563770398
+            ],
+            "signed_range_m": 0.7728906155013312,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.5625
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 984
+      }
+    },
+    {
+      "txn": 61,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              857640773172,
+              858279748803,
+              859429905972,
+              102604152933,
+              103243128727,
+              104393287004
+            ],
+            "signed_range_m": 0.6822785544240418,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              857640773172,
+              858918728150,
+              859429905972,
+              100359416785,
+              101637368334,
+              102148545239
+            ],
+            "signed_range_m": 0.7614969001661268,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.703125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              867225413172,
+              867864388554,
+              869014545972,
+              112188777680,
+              112827753367,
+              113977912169
+            ],
+            "signed_range_m": 0.6993640132304048,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              867225413172,
+              868503367793,
+              869014545972,
+              109944009652,
+              111221961230,
+              111733138622
+            ],
+            "signed_range_m": 0.7206274432428981,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.3125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 62,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              876810231860,
+              877449207582,
+              878599364660,
+              121773581867,
+              122412557719,
+              123562715985
+            ],
+            "signed_range_m": 0.7990350203982414,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              876810231860,
+              878088187130,
+              878599364660,
+              119528782037,
+              120806733838,
+              121317910576
+            ],
+            "signed_range_m": 0.9976888350796035,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.34375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              886394871860,
+              887033847435,
+              888184004660,
+              131358206479,
+              131997182359,
+              133147340979
+            ],
+            "signed_range_m": 0.7085776288532617,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              886394871860,
+              887672826409,
+              888184004660,
+              129113374705,
+              130391326222,
+              130902503660
+            ],
+            "signed_range_m": 0.6697038283242982,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.03125
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 63,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              895979687476,
+              896618663065,
+              897768820276,
+              140943007443,
+              141581983127,
+              142732141403
+            ],
+            "signed_range_m": 0.7487811037334342,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.53125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              895979687476,
+              897257642938,
+              897768820276,
+              138698143812,
+              139976095758,
+              140487272156
+            ],
+            "signed_range_m": 0.7812601957536268,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.78125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              905564327476,
+              906203302946,
+              907353460276,
+              150527632004,
+              151166607767,
+              152316766459
+            ],
+            "signed_range_m": 0.69902921298579,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.78125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              905564327476,
+              906842282329,
+              907353460276,
+              148282736403,
+              149560688142,
+              150071865281
+            ],
+            "signed_range_m": 0.73302190973952,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.359375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 64,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              915149149748,
+              915788125456,
+              916938282548,
+              160112439369,
+              160751415191,
+              161901573320
+            ],
+            "signed_range_m": 0.6966848429782085,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.859375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              915149149748,
+              916427104827,
+              916938282548,
+              157867511792,
+              159145463310,
+              159656640094
+            ],
+            "signed_range_m": 0.8164399932041725,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.6875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              924733789748,
+              925372764954,
+              926522922548,
+              169697064326,
+              170336039831,
+              171486198804
+            ],
+            "signed_range_m": 0.7042215045131834,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.171875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              924733789748,
+              926011744809,
+              926522922548,
+              167452104748,
+              168730056718,
+              169241233668
+            ],
+            "signed_range_m": 0.7494372671791024,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.40625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 65,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              934318608436,
+              934957584088,
+              936107741236,
+              179281868429,
+              179920844183,
+              181071002410
+            ],
+            "signed_range_m": 0.7499537743822605,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.515625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              934318608436,
+              935596563901,
+              936107741236,
+              177036876887,
+              178314828814,
+              178826005198
+            ],
+            "signed_range_m": 0.7775747505340422,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.8125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              943903248436,
+              944542223707,
+              945692381236,
+              188866493258,
+              189505468823,
+              190655627754
+            ],
+            "signed_range_m": 0.7310236532798734,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.765625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              943903248436,
+              945181203054,
+              945692381236,
+              186621469668,
+              187899421198,
+              188410598587
+            ],
+            "signed_range_m": 0.7407288447963968,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.265625
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 66,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              953488064052,
+              954127039496,
+              955277196852,
+              198451294069,
+              199090269591,
+              200240427989
+            ],
+            "signed_range_m": 0.7551464031090928,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.3125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              953488064052,
+              954766019450,
+              955277196852,
+              196206238425,
+              197484190222,
+              197995366694
+            ],
+            "signed_range_m": 0.8549659531441868,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.1875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              963072704052,
+              963711679439,
+              964861836852,
+              208035918549,
+              208674894231,
+              209825053033
+            ],
+            "signed_range_m": 0.7186279859361473,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              963072704052,
+              964350658999,
+              964861836852,
+              205790830761,
+              207068782606,
+              207579959673
+            ],
+            "signed_range_m": 0.7618337743606582,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.359375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      }
+    },
+    {
+      "txn": 67,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              972657526324,
+              973296501913,
+              974446659124,
+              217620725971,
+              218259701655,
+              219409859930
+            ],
+            "signed_range_m": 0.7479435410263096,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.265625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              972657526324,
+              973935481548,
+              974446659124,
+              215375606102,
+              216653557774,
+              217164734395
+            ],
+            "signed_range_m": 0.7802563037572583,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.390625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              982242166324,
+              982881141778,
+              984031299124,
+              227205350544,
+              227844326295,
+              228994485021
+            ],
+            "signed_range_m": 0.7080748422388619,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.0625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              982242166324,
+              983520121074,
+              984031299124,
+              224960198492,
+              226238150158,
+              226749327363
+            ],
+            "signed_range_m": 0.6509410801417692,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.390625
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 68,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              991826985524,
+              992465960961,
+              993616118324,
+              236790155130,
+              237429130647,
+              238579289047
+            ],
+            "signed_range_m": 0.7479433498809771,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.46875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              991826985524,
+              993104940915,
+              993616118324,
+              234544970980,
+              235822922766,
+              236334099238
+            ],
+            "signed_range_m": 0.845920248725846,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.8125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1001411625524,
+              1002050600808,
+              1003200758324,
+              246374779712,
+              247013755287,
+              248163914188
+            ],
+            "signed_range_m": 0.7213079703609913,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.171875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1001411625524,
+              1002689580467,
+              1003200758324,
+              244129563332,
+              245407515150,
+              245918692222
+            ],
+            "signed_range_m": 0.7789200332504957,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.4375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 69,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1010996441140,
+              1011635416628,
+              1012785573940,
+              255959580461,
+              256598556055,
+              257748714426
+            ],
+            "signed_range_m": 0.7271718086535495,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.765625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1010996441140,
+              1012274396462,
+              1012785573940,
+              253714331931,
+              254992283662,
+              255503460176
+            ],
+            "signed_range_m": 0.7913113815138322,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.59375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1020581081140,
+              1021220056568,
+              1022370213940,
+              265544204977,
+              266183180695,
+              267333339453
+            ],
+            "signed_range_m": 0.7236534640477764,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.6875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1020581081140,
+              1021859036205,
+              1022370213940,
+              263298924119,
+              264576876046,
+              265088052992
+            ],
+            "signed_range_m": 0.7809294985276772,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.34375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 70,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1030165903412,
+              1030804878871,
+              1031955036212,
+              275129012563,
+              275767988119,
+              276918146525
+            ],
+            "signed_range_m": 0.7457656757935919,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.5625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1030165903412,
+              1031443858737,
+              1031955036212,
+              272883699492,
+              274161651214,
+              274672827767
+            ],
+            "signed_range_m": 0.8697075516485197,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.328125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1039750543412,
+              1040389518756,
+              1041539676212,
+              284713637116,
+              285352612759,
+              286502771637
+            ],
+            "signed_range_m": 0.7402369855210895,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.8125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1039750543412,
+              1041028498420,
+              1041539676212,
+              282468291706,
+              283746243598,
+              284257420596
+            ],
+            "signed_range_m": 0.7578130711439323,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.15625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 71,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1049335362100,
+              1049974337804,
+              1051124494900,
+              294298441282,
+              294937417111,
+              296087575260
+            ],
+            "signed_range_m": 0.6935020800980771,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.421875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1049335362100,
+              1050613317229,
+              1051124494900,
+              292053063622,
+              293331015182,
+              293842191903
+            ],
+            "signed_range_m": 0.8000233472979821,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.078125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1058920002100,
+              1059558977765,
+              1060709134900,
+              303883065785,
+              304522041751,
+              305672200271
+            ],
+            "signed_range_m": 0.706232660995112,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.84375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1058920002100,
+              1060197957070,
+              1060709134900,
+              301637655738,
+              302915607566,
+              303426784578
+            ],
+            "signed_range_m": 0.7350313232675757,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 72,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1068504817716,
+              1069143793311,
+              1070293950516,
+              313467866820,
+              314106842519,
+              315257000777
+            ],
+            "signed_range_m": 0.725161825629404,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1068504817716,
+              1069782772907,
+              1070293950516,
+              311222424489,
+              312500376078,
+              313011552723
+            ],
+            "signed_range_m": 0.7986826902900728,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.515625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1078089457716,
+              1078728433281,
+              1079878590516,
+              323052491302,
+              323691467159,
+              324841625792
+            ],
+            "signed_range_m": 0.7306892861858144,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.734375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1078089457716,
+              1079367412795,
+              1079878590516,
+              320807016511,
+              322084968462,
+              322596145381
+            ],
+            "signed_range_m": 0.7524522170357181,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.546875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 73,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1087674279988,
+              1088313255390,
+              1089463412788,
+              332637298573,
+              333276274071,
+              334426432649
+            ],
+            "signed_range_m": 0.8435928842152054,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1087674279988,
+              1088952235250,
+              1089463412788,
+              330391791416,
+              331669743118,
+              332180919778
+            ],
+            "signed_range_m": 0.9146017475870508,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 743.75
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              1097258919988,
+              1097897895560,
+              1099048052788,
+              342221923351,
+              342860899223,
+              344011057842
+            ],
+            "signed_range_m": 0.7127654456525612,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.640625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              1097258919988,
+              1098536874864,
+              1099048052788,
+              339976383753,
+              341254335502,
+              341765512603
+            ],
+            "signed_range_m": 0.7166054245194478,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.515625
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 74,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              7332111412,
+              7971087067,
+              9121244212,
+              351806727747,
+              352445703575,
+              353595861839
+            ],
+            "signed_range_m": 0.6764156369396745,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.84375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              7332111412,
+              8610066737,
+              9121244212,
+              349561155769,
+              350839107598,
+              351350284145
+            ],
+            "signed_range_m": 0.7879616465325742,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.234375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              16916751412,
+              17555727013,
+              18705884212,
+              361391352319,
+              362030328215,
+              363180486802
+            ],
+            "signed_range_m": 0.7177908957047654,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 744.015625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              16916751412,
+              18194706157,
+              18705884212,
+              359145747872,
+              360423699470,
+              360934876681
+            ],
+            "signed_range_m": 0.6948292823016052,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.484375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 75,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              26501567028,
+              27140542908,
+              28290699828,
+              370976153000,
+              371615128983,
+              372765286966
+            ],
+            "signed_range_m": 0.7350455033673884,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.703125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              26501567028,
+              27779522547,
+              28290699828,
+              368730516108,
+              370008467982,
+              370519644342
+            ],
+            "signed_range_m": 0.8995235285228984,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.3125
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              36086207028,
+              36725182492,
+              37875339828,
+              380560777843,
+              381199753623,
+              382349912356
+            ],
+            "signed_range_m": 0.6936687426064346,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.546875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              36086207028,
+              37364162032,
+              37875339828,
+              378315108476,
+              379593060366,
+              380104237327
+            ],
+            "signed_range_m": 0.687792541534663,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.453125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 76,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              45671029300,
+              46310004834,
+              47460162100,
+              390145585410,
+              390784561047,
+              391934719342
+            ],
+            "signed_range_m": 0.7065678446109948,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.703125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              45671029300,
+              46948984884,
+              47460162100,
+              387899883592,
+              389177835534,
+              389689011775
+            ],
+            "signed_range_m": 0.8070557580172095,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.453125
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              55255669300,
+              55894644853,
+              57044802100,
+              399730209846,
+              400369185687,
+              401519344345
+            ],
+            "signed_range_m": 0.74760803173201,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              55255669300,
+              56533624458,
+              57044802100,
+              397484475416,
+              398762427406,
+              399273604223
+            ],
+            "signed_range_m": 0.7407256572800587,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.328125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 77,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              64840488500,
+              65479464340,
+              66629621300,
+              409315014092,
+              409953990039,
+              411104148073
+            ],
+            "signed_range_m": 0.738228177114826,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              64840488500,
+              66118443972,
+              66629621300,
+              407069247121,
+              408347198990,
+              408858375337
+            ],
+            "signed_range_m": 0.7708737792422398,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.234375
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              74425128500,
+              75064103876,
+              76214261300,
+              418899639005,
+              419538614679,
+              420688773491
+            ],
+            "signed_range_m": 0.7132675542942636,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              74425128500,
+              75703083607,
+              76214261300,
+              416653839450,
+              417931791374,
+              418442968267
+            ],
+            "signed_range_m": 0.7926549717096344,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.390625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 78,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              84009944116,
+              84648919932,
+              85799076916,
+              428484440048,
+              429123415959,
+              430273574014
+            ],
+            "signed_range_m": 0.7538068269089125,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.953125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              84009944116,
+              85287899692,
+              85799076916,
+              426238607946,
+              427516559886,
+              428027736151
+            ],
+            "signed_range_m": 0.8298376672065171,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.578125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              93594584116,
+              94233559398,
+              95383716916,
+              438069064505,
+              438708040087,
+              439858198946
+            ],
+            "signed_range_m": 0.670886692756469,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.390625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              93594584116,
+              94872538870,
+              95383716916,
+              435823199717,
+              437101151246,
+              437612328475
+            ],
+            "signed_range_m": 0.7923215888972601,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.515625
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 79,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              103179406388,
+              103818382075,
+              104968539188,
+              447653871704,
+              448292847511,
+              449443005691
+            ],
+            "signed_range_m": 0.7127660077283731,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              103179406388,
+              104457361636,
+              104968539188,
+              445407974290,
+              446685925902,
+              447197102520
+            ],
+            "signed_range_m": 0.8717179832239578,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.34375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              112764046388,
+              113403022048,
+              114553179188,
+              457238496194,
+              457877472151,
+              459027630707
+            ],
+            "signed_range_m": 0.7382275516151057,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              112764046388,
+              114042001262,
+              114553179188,
+              454992566094,
+              456270517774,
+              456781694914
+            ],
+            "signed_range_m": 0.8234785782273684,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.5
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 80,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              122348865588,
+              122987841453,
+              124137998388,
+              466823300523,
+              467462276503,
+              468612434461
+            ],
+            "signed_range_m": 0.6834515820101711,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.3125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              122348865588,
+              123626820791,
+              124137998388,
+              464577337800,
+              465855289358,
+              466366465953
+            ],
+            "signed_range_m": 0.7638396002050796,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.109375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              131933505588,
+              132572481079,
+              133722638388,
+              476407924860,
+              477046900631,
+              478197059319
+            ],
+            "signed_range_m": 0.7328668139506512,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              131933505588,
+              133211460636,
+              133722638388,
+              474161929384,
+              475439881230,
+              475951058137
+            ],
+            "signed_range_m": 0.7300052006285812,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.484375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      }
+    },
+    {
+      "txn": 81,
+      "P1": {
+        "pass": false,
+        "problem": "P1 actual TX confirmation in P2"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      }
+    },
+    {
+      "txn": 82,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              160687783988,
+              161326759654,
+              162476916788,
+              505162155674,
+              505801131415,
+              506951289576
+            ],
+            "signed_range_m": 0.7471061314058888,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.484375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              160687783988,
+              161965739188,
+              162476916788,
+              502916061681,
+              504194013198,
+              504705189801
+            ],
+            "signed_range_m": 0.7976771059063928,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.734375
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              170272423988,
+              170911399210,
+              172061556788,
+              514746780493,
+              515385756055,
+              516535915008
+            ],
+            "signed_range_m": 0.6390590680080429,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.859375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              170272423988,
+              171550378934,
+              172061556788,
+              512500653769,
+              513778605582,
+              514289782588
+            ],
+            "signed_range_m": 0.6787470260320014,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.40625
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 83,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 84,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 85,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 86,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 87,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              256535076404,
+              257174052098,
+              258324209204,
+              601009288808,
+              601648264599,
+              602798422771
+            ],
+            "signed_range_m": 0.7466035965757253,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              256535076404,
+              257813031786,
+              258324209204,
+              598762864960,
+              600040816654,
+              600551993101
+            ],
+            "signed_range_m": 0.844579707588102,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.421875
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              266119716404,
+              266758691935,
+              267908849204,
+              610593913396,
+              611232889239,
+              612383047902
+            ],
+            "signed_range_m": 0.6971866646811671,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.453125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              266119716404,
+              267397671580,
+              267908849204,
+              608347456565,
+              609625408526,
+              610136585304
+            ],
+            "signed_range_m": 0.737040009476896,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.46875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 88,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 89,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 90,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 91,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 92,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 93,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 94,
+      "P1": {
+        "pass": false,
+        "problem": "CIR slot mapping"
+      },
+      "P2": {
+        "pass": false,
+        "problem": "paired axis method"
+      }
+    },
+    {
+      "txn": 95,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              409890753588,
+              410529729454,
+              411679886388,
+              754364709310,
+              755003685271,
+              756153843296
+            ],
+            "signed_range_m": 0.7705581645777614,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              409890753588,
+              411168708931,
+              411679886388,
+              752117752236,
+              753395703822,
+              753906880335
+            ],
+            "signed_range_m": 0.9360418507135786,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.453125
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              419475393588,
+              420114369209,
+              421264526388,
+              763949333973,
+              764588309911,
+              765738468482
+            ],
+            "signed_range_m": 0.6879736672748008,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.765625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              419475393588,
+              420753348512,
+              421264526388,
+              761702343522,
+              762980295182,
+              763491472195
+            ],
+            "signed_range_m": 0.741396447937954,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.390625
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      }
+    },
+    {
+      "txn": 96,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              429060209716,
+              429699185340,
+              430849342516,
+              773534134973,
+              774173110679,
+              775323268948
+            ],
+            "signed_range_m": 0.7918319078203262,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              429060209716,
+              430338165035,
+              430849342516,
+              771287111125,
+              772565062670,
+              773076239217
+            ],
+            "signed_range_m": 0.9641841482143543,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.359375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              438644849716,
+              439283825390,
+              440433982516,
+              783118759365,
+              783757735319,
+              784907893803
+            ],
+            "signed_range_m": 0.7152783949742875,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              438644849716,
+              439922804957,
+              440433982516,
+              780871702101,
+              782149654030,
+              782660830713
+            ],
+            "signed_range_m": 0.7517802889392706,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.359375
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 984
+      }
+    },
+    {
+      "txn": 97,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              448229672500,
+              448868647976,
+              450018805300,
+              792703567099,
+              793342542743,
+              794492701218
+            ],
+            "signed_range_m": 0.7107554102712003,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.515625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              448229672500,
+              449507627782,
+              450018805300,
+              790456476483,
+              791734428174,
+              792245604706
+            ],
+            "signed_range_m": 0.7544586794602248,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              457814312500,
+              458453287887,
+              459603445300,
+              802288191723,
+              802927167383,
+              804077326164
+            ],
+            "signed_range_m": 0.7342067072897099,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 747.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              457814312500,
+              459092267669,
+              459603445300,
+              800041067682,
+              801319019534,
+              801830196288
+            ],
+            "signed_range_m": 0.7534557899436499,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.34375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      }
+    },
+    {
+      "txn": 98,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              467399131700,
+              468038107581,
+              469188264500,
+              811872995776,
+              812511971735,
+              813662129773
+            ],
+            "signed_range_m": 0.8196394017607672,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.6875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              467399131700,
+              468677087221,
+              469188264500,
+              809625838354,
+              810903790094,
+              811414966409
+            ],
+            "signed_range_m": 0.9186192136972381,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.484375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              476983771700,
+              477622747352,
+              478772904500,
+              821457619951,
+              822096595863,
+              823246754370
+            ],
+            "signed_range_m": 0.7462682040590933,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 742.890625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              476983771700,
+              478261726958,
+              478772904500,
+              819210428999,
+              820488380942,
+              820999557599
+            ],
+            "signed_range_m": 0.7387141374223702,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.578125
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      }
+    },
+    {
+      "txn": 99,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              486568587828,
+              487207563437,
+              488357720628,
+              831042420962,
+              831681396631,
+              832831554902
+            ],
+            "signed_range_m": 0.8141110984253593,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.328125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              486568587828,
+              487846543479,
+              488357720628,
+              828795196561,
+              830073148430,
+              830584324627
+            ],
+            "signed_range_m": 0.9393900628491783,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.515625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              496153227828,
+              496792203106,
+              497942360628,
+              840627045248,
+              841266020759,
+              842416179618
+            ],
+            "signed_range_m": 0.7685466523073725,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.515625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              496153227828,
+              497431183163,
+              497942360628,
+              838379787346,
+              839657739278,
+              840168915871
+            ],
+            "signed_range_m": 0.8194546408216399,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.578125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      }
+    }
+  ]
+}

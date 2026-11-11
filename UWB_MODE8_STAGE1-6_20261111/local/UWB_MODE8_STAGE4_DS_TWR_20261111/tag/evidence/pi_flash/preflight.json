@@ -1,0 +1,23 @@
+{
+  "common": {
+    "target_receipt": true,
+    "fqbn": true,
+    "core": true
+  },
+  "tag": {
+    "checks": {
+      "source_binding": true,
+      "bin_sha256": true,
+      "esp32_app_image_header": true,
+      "bootloader.bin_sha256": true,
+      "partitions.bin_sha256": true,
+      "elf_sha256": true,
+      "xtensa_elf_header": true,
+      "merged_sha256": true,
+      "merged_bootloader.bin_at_1000": true,
+      "merged_partitions.bin_at_8000": true,
+      "merged_bin_at_10000": true
+    },
+    "flash_preflight_pass": true
+  }
+}

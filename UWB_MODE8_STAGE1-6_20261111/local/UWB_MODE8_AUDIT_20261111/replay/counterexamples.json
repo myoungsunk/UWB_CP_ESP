@@ -1,0 +1,22 @@
+{
+  "p2_conflict": {
+    "metadata_conflict": true,
+    "p2_b_frame_matches_shared_frame": false,
+    "p2_b_axis_estimate_available": true,
+    "p2_b_range_m": 5.110397274032211,
+    "p2_b_method": "P2_DS_confirmed_by_anchor_log_correlated_with_P1"
+  },
+  "capture_false_pass": {
+    "exit_code": 0,
+    "reported_pass": true,
+    "requested_session": 77,
+    "injected_session": 76,
+    "injected_txns_per_role": [
+      0,
+      0
+    ],
+    "injected_boot": 999,
+    "anchor_sequence_gap_events": 1,
+    "tag_sequence_gap_events": 1
+  }
+}

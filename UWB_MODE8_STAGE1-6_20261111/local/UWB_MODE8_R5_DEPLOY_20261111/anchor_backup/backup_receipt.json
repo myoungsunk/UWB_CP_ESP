@@ -1,0 +1,21 @@
+{
+  "recorded_utc": "2026-11-11T05:52:44.7783774Z",
+  "question_id": "UWB-MODE8-SOURCE-HOST-QA-20261111",
+  "role": "anchor",
+  "port": "COM4",
+  "usb_location": "1-7",
+  "usb_vid_pid": "1A86:7523",
+  "mac": "28:56:2f:72:e7:18",
+  "role_evidence": "pre-flash serial replies contained role=anchor at 921600 baud",
+  "chip": "ESP32-D0WD-V3 v3.1",
+  "flash_encryption": false,
+  "secure_boot": false,
+  "address": "0x00000000",
+  "file": "anchor_pre_R5_full_flash_4MiB.bin",
+  "bytes": 4194304,
+  "sha256": "4443326863b71589103e966d3c9f6589133809c9b646af6fbc97c4e6aeb52340",
+  "board_digest_matched": true,
+  "source_verified_r5_zip_sha256": "2f837598ad45f6de0cdf4462bdde29238957aadaf188fad5851c2e6aa9dbc7c0",
+  "read_log": "read.log",
+  "verification_log": "verify.log"
+}

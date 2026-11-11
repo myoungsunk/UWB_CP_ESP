@@ -1,0 +1,261 @@
+{
+  "pass": true,
+  "scope": "BASELINE_AND_VENDOR_SOURCE_INTEGRITY",
+  "original_zip_sha256": "c0fff168193a5d78490e2fb736c7f189d83ee020c2612fed14ac38d9050f1542",
+  "original_zip_bytes": 284784,
+  "preserved_zip_identical": true,
+  "vendor_file_count": 50,
+  "vendor_checks": [
+    {
+      "file": "vendor/anchor/DW1000Ng/NOTICE.md",
+      "match": true,
+      "sha256": "8ee5221a397a2c281d4a59723919fc0ee6997aa765e2f271d724ab3c98f16ec3"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/library.properties",
+      "match": true,
+      "sha256": "2063303e591ef8ed051eab051e282ec043806b22a4b08e5344e7041c5d9b7849"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000Ng.cpp",
+      "match": true,
+      "sha256": "a727dad8e6281bd85f2e52a3dab6064067e36218e7fa510b9d6744206a80040f"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000Ng.hpp",
+      "match": true,
+      "sha256": "a22e97bb2908ebc72fd4cb3060f7369dab32d2cb4b4a809516e538b5ffae8abe"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgCompileOptions.hpp",
+      "match": true,
+      "sha256": "42d9029c872b3c19bf2ec288d111bb831b031384fe3ce024834e0b8e9df7cc59"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgConfiguration.hpp",
+      "match": true,
+      "sha256": "0b14b89127df5a4089e98451c388ea8d5d49a3e282e378307327befd5d7cf05b"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgConstants.hpp",
+      "match": true,
+      "sha256": "c935ad03917f2ccea5d9f598654bf41dd9290382ef9ad75fabaf0426f17e4085"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgRTLS.cpp",
+      "match": true,
+      "sha256": "8fb9921fb7bdaf0c58d2a092ef08655f8fb67c97f57680d4dcc409aca2f08f66"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgRTLS.hpp",
+      "match": true,
+      "sha256": "82664a494320b21ff573b5b7b65bde3e9d6226c38ec955cbc042392044102823"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgRanging.cpp",
+      "match": true,
+      "sha256": "4b07b49b448e6e5f04ffac7bb4fd351577bc74132e253778a736983e851d82b3"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgRanging.hpp",
+      "match": true,
+      "sha256": "ddb7719fde020fcf7b47fd4b1225d556d3e612e166e9a571130d4ac217b5b26a"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgRegisters.hpp",
+      "match": true,
+      "sha256": "4ae3a2fe97d636c8d9b1f0269729fa5b77b9a6f0f65d2d1480172d9da2ef79df"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgTime.cpp",
+      "match": true,
+      "sha256": "e460f4e39036b5f2d6a32007ad78c3493cfea3ccb23cf57f17600d4cab900207"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgTime.hpp",
+      "match": true,
+      "sha256": "934097833e2908abe26da389c74ba6b14eb284c74349b27248aa715d282edd28"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgUtils.cpp",
+      "match": true,
+      "sha256": "6dfba867a95ca095a45cfea9e3ad3106a191eaed8cb444f8851a663307456ed9"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/DW1000NgUtils.hpp",
+      "match": true,
+      "sha256": "4ebe908555d598afaae7cd1eca3fb56651c59f0e9c17fb272a0f0f466d43963c"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/SPIporting.cpp",
+      "match": true,
+      "sha256": "95dc3903cf8c4a552ecd49128e87970e6098f69f4de8932dc3147df04427e75f"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/SPIporting.hpp",
+      "match": true,
+      "sha256": "b4067c9e8279c12facfaac8472b0fa5d8d0213bdeceaeb99dc1e2a580d26a0e3"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/deprecated.hpp",
+      "match": true,
+      "sha256": "573e16eab576445a5adb78919666ea599ab46301f90d432c3aafa32429f07122"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/digitalWriteFast.h",
+      "match": true,
+      "sha256": "43b2b645dfdff858081d6ecdf58a1f24aabc44b20d44aad6c9dc503812ac6264"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/dw1000.h",
+      "match": true,
+      "sha256": "bddf7a8bc6ca293877c72c9eedeb3710cdca2fa0de94bf37e270abe9ac19cd04"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/libdw1000.h",
+      "match": true,
+      "sha256": "4f1b7cd017069082185c5967dc153f9ea355078f0210f3cd9a3e18b32de9075a"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/libdw1000Spi.h",
+      "match": true,
+      "sha256": "2922ae307d344ec185be71c5b58ac25159fc7771d525f5fd3d2b417715821cb6"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/libdw1000Types.h",
+      "match": true,
+      "sha256": "d3b0c706e729c5baf0c8de7c1f834d2705e1f2bac54e4b420f04d5c44e27f948"
+    },
+    {
+      "file": "vendor/anchor/DW1000Ng/src/require_cpp11.hpp",
+      "match": true,
+      "sha256": "96277f349e2c8660763ba2235ba5dff93afb6b41935828c618dabe44da923297"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/NOTICE.md",
+      "match": true,
+      "sha256": "8ee5221a397a2c281d4a59723919fc0ee6997aa765e2f271d724ab3c98f16ec3"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/library.properties",
+      "match": true,
+      "sha256": "2063303e591ef8ed051eab051e282ec043806b22a4b08e5344e7041c5d9b7849"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000Ng.cpp",
+      "match": true,
+      "sha256": "e67071404cfc056e6b9b4fe180bfc53042dd8e7eb67d749ed9d43488ff3e3ce9"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000Ng.hpp",
+      "match": true,
+      "sha256": "714b693af3d91ca7c29abd0b984488b10badc4cd881202def8c35ca733fde798"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgCompileOptions.hpp",
+      "match": true,
+      "sha256": "42d9029c872b3c19bf2ec288d111bb831b031384fe3ce024834e0b8e9df7cc59"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgConfiguration.hpp",
+      "match": true,
+      "sha256": "0b14b89127df5a4089e98451c388ea8d5d49a3e282e378307327befd5d7cf05b"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgConstants.hpp",
+      "match": true,
+      "sha256": "c935ad03917f2ccea5d9f598654bf41dd9290382ef9ad75fabaf0426f17e4085"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgRTLS.cpp",
+      "match": true,
+      "sha256": "8fb9921fb7bdaf0c58d2a092ef08655f8fb67c97f57680d4dcc409aca2f08f66"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgRTLS.hpp",
+      "match": true,
+      "sha256": "82664a494320b21ff573b5b7b65bde3e9d6226c38ec955cbc042392044102823"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgRanging.cpp",
+      "match": true,
+      "sha256": "4b07b49b448e6e5f04ffac7bb4fd351577bc74132e253778a736983e851d82b3"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgRanging.hpp",
+      "match": true,
+      "sha256": "ddb7719fde020fcf7b47fd4b1225d556d3e612e166e9a571130d4ac217b5b26a"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgRegisters.hpp",
+      "match": true,
+      "sha256": "4ae3a2fe97d636c8d9b1f0269729fa5b77b9a6f0f65d2d1480172d9da2ef79df"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgTime.cpp",
+      "match": true,
+      "sha256": "e460f4e39036b5f2d6a32007ad78c3493cfea3ccb23cf57f17600d4cab900207"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgTime.hpp",
+      "match": true,
+      "sha256": "934097833e2908abe26da389c74ba6b14eb284c74349b27248aa715d282edd28"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgUtils.cpp",
+      "match": true,
+      "sha256": "6dfba867a95ca095a45cfea9e3ad3106a191eaed8cb444f8851a663307456ed9"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/DW1000NgUtils.hpp",
+      "match": true,
+      "sha256": "4ebe908555d598afaae7cd1eca3fb56651c59f0e9c17fb272a0f0f466d43963c"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/SPIporting.cpp",
+      "match": true,
+      "sha256": "366e0edb7b6f084f1c3ec9286a83896d462477215e1e1b0864c452498155906a"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/SPIporting.hpp",
+      "match": true,
+      "sha256": "4024259c313c70e9cfa5810aa2c6fc2d4d035a338990b86d6a6d297608530293"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/deprecated.hpp",
+      "match": true,
+      "sha256": "573e16eab576445a5adb78919666ea599ab46301f90d432c3aafa32429f07122"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/digitalWriteFast.h",
+      "match": true,
+      "sha256": "43b2b645dfdff858081d6ecdf58a1f24aabc44b20d44aad6c9dc503812ac6264"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/dw1000.h",
+      "match": true,
+      "sha256": "bddf7a8bc6ca293877c72c9eedeb3710cdca2fa0de94bf37e270abe9ac19cd04"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/libdw1000.h",
+      "match": true,
+      "sha256": "4f1b7cd017069082185c5967dc153f9ea355078f0210f3cd9a3e18b32de9075a"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/libdw1000Spi.h",
+      "match": true,
+      "sha256": "2922ae307d344ec185be71c5b58ac25159fc7771d525f5fd3d2b417715821cb6"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/libdw1000Types.h",
+      "match": true,
+      "sha256": "d3b0c706e729c5baf0c8de7c1f834d2705e1f2bac54e4b420f04d5c44e27f948"
+    },
+    {
+      "file": "vendor/tag/DW1000Ng/src/require_cpp11.hpp",
+      "match": true,
+      "sha256": "96277f349e2c8660763ba2235ba5dff93afb6b41935828c618dabe44da923297"
+    }
+  ],
+  "rx_guard_policy_unmodified": true
+}

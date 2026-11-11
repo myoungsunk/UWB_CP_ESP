@@ -1,0 +1,75 @@
+{
+  "utc": "2026-11-11T11:58:26.856681+00:00",
+  "baud": 2000000,
+  "repetitions": 12,
+  "expected_sha256": "3b5c891fedb55316d57597696afee8cec003c7dc9c67efc1691f60c3f7ee9ac4",
+  "tag": {
+    "identity": {
+      "event": "HELLO",
+      "role": "tag",
+      "firmware": "D8_R5_TAG_STAGE6_RX_UARTFIX_20261111",
+      "mode": 8,
+      "wire": "RFB8",
+      "hw_ok": true,
+      "fault_latched": false,
+      "boot": 1934880161,
+      "config_id": 459867368,
+      "stage": 5,
+      "period_us": 300000,
+      "baud": 921600,
+      "active": false,
+      "wifi_ota": false,
+      "cal_default_is_uncalibrated": true,
+      "drops": 0,
+      "sent": 0,
+      "period_miss": 0
+    },
+    "results": [
+      {
+        "burst_bytes": 0,
+        "idle_us": 0,
+        "bytes_expected": 267264,
+        "bytes_received": 267192,
+        "length_delta": -72,
+        "elapsed_s": 1.36078210035339,
+        "sha256": "36186dada33a3652d434155092ff1eb78ed42044549e3e2249d911af75a0bd9c",
+        "match": false,
+        "path": "tag_burst0_gap0.bin"
+      },
+      {
+        "burst_bytes": 512,
+        "idle_us": 400,
+        "bytes_expected": 267264,
+        "bytes_received": 267192,
+        "length_delta": -72,
+        "elapsed_s": 1.5776124997064471,
+        "sha256": "b21f712f941cb872109b2b0a3e686772dcfa259b845e4ed8ae05887e3c063f39",
+        "match": false,
+        "path": "tag_burst512_gap400.bin"
+      },
+      {
+        "burst_bytes": 96,
+        "idle_us": 160,
+        "bytes_expected": 267264,
+        "bytes_received": 267202,
+        "length_delta": -62,
+        "elapsed_s": 1.840720500331372,
+        "sha256": "1c930beb7849170db69428a86b60b6114b86b79cdec7d22bf028824f8c017c66",
+        "match": false,
+        "path": "tag_burst96_gap160.bin"
+      },
+      {
+        "burst_bytes": 64,
+        "idle_us": 160,
+        "bytes_expected": 267264,
+        "bytes_received": 267217,
+        "length_delta": -47,
+        "elapsed_s": 2.0919120996259153,
+        "sha256": "71d20240cd703e94f930fa3c326d23d2025e8d76c48465ef86097c68be033ec0",
+        "match": false,
+        "path": "tag_burst64_gap160.bin"
+      }
+    ]
+  },
+  "production_profile_pass": false
+}

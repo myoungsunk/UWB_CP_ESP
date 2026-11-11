@@ -1,0 +1,52 @@
+{
+  "ok": true,
+  "processes": [
+    {
+      "id": "5c900aa1-832f-4b97-aee1-23465029b383",
+      "host": "Myoungsunkim",
+      "creator": "130f0cd3-caef-4a37-a050-a44a29aa6c78",
+      "request_id": "stage6-200ms-2mbps-1000",
+      "mode": "dedicated",
+      "state": "exited",
+      "job_name": "Local\\CodexManaged-5c900aa1-832f-4b97-aee1-23465029b383",
+      "pid": 35312,
+      "created": "134388759634601778",
+      "supervisor_pid": 71772,
+      "supervisor_created": "134388759633141915",
+      "launcher_pid": 68852,
+      "launcher_created": "134388759631248894",
+      "cwd": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_PACKED_20261111\\tag",
+      "grace": 20.0,
+      "keep_reason": null,
+      "stop_reason": null,
+      "exit_code": 2,
+      "termination": "natural",
+      "detail": null,
+      "started": "2026-11-11T13:06:03.296595+00:00",
+      "ended": "2026-11-11T13:09:46.645574+00:00",
+      "heartbeat": "2026-11-11T13:09:45.798636+00:00",
+      "owners": [
+        {
+          "run_id": "130f0cd3-caef-4a37-a050-a44a29aa6c78",
+          "thread_id": "01a1c89d-fe8e-7b92-b34a-ebfabe15f8b8",
+          "task_state": "completed",
+          "ownership": "released"
+        }
+      ],
+      "ref_count": 0,
+      "actual_process": {
+        "state": "absent",
+        "error": 87
+      },
+      "actual_supervisor": {
+        "state": "absent",
+        "error": 87
+      },
+      "job": {
+        "state": "absent",
+        "error": 2
+      },
+      "log_dir": "C:\\Users\\Myoungsun Kim\\.codex\\managed-processes\\runs\\5c900aa1-832f-4b97-aee1-23465029b383"
+    }
+  ]
+}

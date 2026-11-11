@@ -1,0 +1,5566 @@
+{
+  "platforms": [
+    {
+      "id": "arduino:avr",
+      "maintainer": "Arduino",
+      "website": "https://www.arduino.cc/",
+      "email": "packages@arduino.cc",
+      "indexed": true,
+      "releases": {
+        "1.6.2": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.2",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.3": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.3",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.4": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.4",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.5": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.5",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.6": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.6",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.7": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.7",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.8": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.8",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.9": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.9",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.10": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.10",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.11": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.11",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.12": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.12",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.13": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.13",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.14": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.14",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.15": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.15",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.16": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.16",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.17": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.17",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.18": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.18",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.19": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.19",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.20": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.20",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.21": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.21",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.22": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.22",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.6.23": {
+          "name": "Arduino AVR Boards",
+          "version": "1.6.23",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.1": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.1",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.2": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.2",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.3": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.3",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.4": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.4",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO Mini"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.5": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.5",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO Mini"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.6": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.6",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO Mini"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.8.7": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.7",
+          "types": [
+            "Arduino"
+          ],
+          "installed": true,
+          "boards": [
+            {
+              "name": "Arduino Gemma",
+              "fqbn": "arduino:avr:gemma"
+            },
+            {
+              "name": "Arduino Industrial 101",
+              "fqbn": "arduino:avr:chiwawa"
+            },
+            {
+              "name": "Arduino Ethernet",
+              "fqbn": "arduino:avr:ethernet"
+            },
+            {
+              "name": "LilyPad Arduino",
+              "fqbn": "arduino:avr:lilypad"
+            },
+            {
+              "name": "Arduino UNO WiFi",
+              "fqbn": "arduino:avr:unowifi"
+            },
+            {
+              "name": "Arduino Esplora",
+              "fqbn": "arduino:avr:esplora"
+            },
+            {
+              "name": "Arduino Mini",
+              "fqbn": "arduino:avr:mini"
+            },
+            {
+              "name": "Arduino Yún",
+              "fqbn": "arduino:avr:yun"
+            },
+            {
+              "name": "Arduino Nano",
+              "fqbn": "arduino:avr:nano"
+            },
+            {
+              "name": "Arduino Mega ADK",
+              "fqbn": "arduino:avr:megaADK"
+            },
+            {
+              "name": "Arduino Micro",
+              "fqbn": "arduino:avr:micro"
+            },
+            {
+              "name": "LilyPad Arduino USB",
+              "fqbn": "arduino:avr:LilyPadUSB"
+            },
+            {
+              "name": "Arduino Pro or Pro Mini",
+              "fqbn": "arduino:avr:pro"
+            },
+            {
+              "name": "Arduino Mega or Mega 2560",
+              "fqbn": "arduino:avr:mega"
+            },
+            {
+              "name": "Arduino Leonardo ETH",
+              "fqbn": "arduino:avr:leonardoeth"
+            },
+            {
+              "name": "Arduino NG or older",
+              "fqbn": "arduino:avr:atmegang"
+            },
+            {
+              "name": "Arduino Robot Control",
+              "fqbn": "arduino:avr:robotControl"
+            },
+            {
+              "name": "Arduino Robot Motor",
+              "fqbn": "arduino:avr:robotMotor"
+            },
+            {
+              "name": "Adafruit Circuit Playground",
+              "fqbn": "arduino:avr:circuitplay32u4cat"
+            },
+            {
+              "name": "Arduino Yún Mini",
+              "fqbn": "arduino:avr:yunmini"
+            },
+            {
+              "name": "Linino One",
+              "fqbn": "arduino:avr:one"
+            },
+            {
+              "name": "Arduino Fio",
+              "fqbn": "arduino:avr:fio"
+            },
+            {
+              "name": "Arduino UNO",
+              "fqbn": "arduino:avr:uno"
+            },
+            {
+              "name": "Arduino UNO Mini",
+              "fqbn": "arduino:avr:unomini"
+            },
+            {
+              "name": "Arduino Duemilanove or Diecimila",
+              "fqbn": "arduino:avr:diecimila"
+            },
+            {
+              "name": "Arduino Leonardo",
+              "fqbn": "arduino:avr:leonardo"
+            },
+            {
+              "name": "Arduino BT",
+              "fqbn": "arduino:avr:bt"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "compatible": true
+        },
+        "1.8.8": {
+          "name": "Arduino AVR Boards",
+          "version": "1.8.8",
+          "types": [
+            "Arduino"
+          ],
+          "boards": [
+            {
+              "name": "Arduino Yún"
+            },
+            {
+              "name": "Arduino UNO"
+            },
+            {
+              "name": "Arduino UNO Mini"
+            },
+            {
+              "name": "Arduino UNO WiFi"
+            },
+            {
+              "name": "Arduino Diecimila"
+            },
+            {
+              "name": "Arduino Nano"
+            },
+            {
+              "name": "Arduino Mega"
+            },
+            {
+              "name": "Arduino Mega ADK"
+            },
+            {
+              "name": "Arduino Leonardo"
+            },
+            {
+              "name": "Arduino Leonardo Ethernet"
+            },
+            {
+              "name": "Arduino Micro"
+            },
+            {
+              "name": "Arduino Esplora"
+            },
+            {
+              "name": "Arduino Mini"
+            },
+            {
+              "name": "Arduino Ethernet"
+            },
+            {
+              "name": "Arduino Fio"
+            },
+            {
+              "name": "Arduino BT"
+            },
+            {
+              "name": "Arduino LilyPad USB"
+            },
+            {
+              "name": "Arduino LilyPad"
+            },
+            {
+              "name": "Arduino Pro"
+            },
+            {
+              "name": "Arduino ATMegaNG"
+            },
+            {
+              "name": "Arduino Robot Control"
+            },
+            {
+              "name": "Arduino Robot Motor"
+            },
+            {
+              "name": "Arduino Gemma"
+            },
+            {
+              "name": "Adafruit Circuit Playground"
+            },
+            {
+              "name": "Arduino Yún Mini"
+            },
+            {
+              "name": "Arduino Industrial 101"
+            },
+            {
+              "name": "Linino One"
+            }
+          ],
+          "help": {
+            "online": "https://www.arduino.cc/en/Reference/HomePage"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        }
+      },
+      "installed_version": "1.8.7",
+      "latest_version": "1.8.8"
+    },
+    {
+      "id": "esp32:esp32",
+      "maintainer": "Espressif Systems",
+      "website": "https://github.com/espressif/arduino-esp32",
+      "email": "hristo@espressif.com",
+      "indexed": true,
+      "releases": {
+        "1.0.0": {
+          "name": "esp32",
+          "version": "1.0.0",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.0.1": {
+          "name": "esp32",
+          "version": "1.0.1",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.0.2": {
+          "name": "esp32",
+          "version": "1.0.2",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.0.3": {
+          "name": "esp32",
+          "version": "1.0.3",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            },
+            {
+              "name": "WEMOS D1 MINI ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.0.4": {
+          "name": "esp32",
+          "version": "1.0.4",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            },
+            {
+              "name": "WEMOS D1 MINI ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.0.5": {
+          "name": "esp32",
+          "version": "1.0.5",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            },
+            {
+              "name": "WEMOS D1 MINI ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "1.0.6": {
+          "name": "esp32",
+          "version": "1.0.6",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            },
+            {
+              "name": "WEMOS D1 MINI ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.0": {
+          "name": "esp32",
+          "version": "2.0.0",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Module"
+            },
+            {
+              "name": "WEMOS LoLin32"
+            },
+            {
+              "name": "WEMOS D1 MINI ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.1": {
+          "name": "esp32",
+          "version": "2.0.1",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.2": {
+          "name": "esp32",
+          "version": "2.0.2",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.3": {
+          "name": "esp32",
+          "version": "2.0.3",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.4": {
+          "name": "esp32",
+          "version": "2.0.4",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.5": {
+          "name": "esp32",
+          "version": "2.0.5",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.6": {
+          "name": "esp32",
+          "version": "2.0.6",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.7": {
+          "name": "esp32",
+          "version": "2.0.7",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.8": {
+          "name": "esp32",
+          "version": "2.0.8",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.9": {
+          "name": "esp32",
+          "version": "2.0.9",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.10": {
+          "name": "esp32",
+          "version": "2.0.10",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.11": {
+          "name": "esp32",
+          "version": "2.0.11",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.12": {
+          "name": "esp32",
+          "version": "2.0.12",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.13": {
+          "name": "esp32",
+          "version": "2.0.13",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.14": {
+          "name": "esp32",
+          "version": "2.0.14",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.15": {
+          "name": "esp32",
+          "version": "2.0.15",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.16": {
+          "name": "esp32",
+          "version": "2.0.16",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "2.0.17": {
+          "name": "esp32",
+          "version": "2.0.17",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.0": {
+          "name": "esp32",
+          "version": "3.0.0",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.1": {
+          "name": "esp32",
+          "version": "3.0.1",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.2": {
+          "name": "esp32",
+          "version": "3.0.2",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.3": {
+          "name": "esp32",
+          "version": "3.0.3",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.4": {
+          "name": "esp32",
+          "version": "3.0.4",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.5": {
+          "name": "esp32",
+          "version": "3.0.5",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.6": {
+          "name": "esp32",
+          "version": "3.0.6",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.0.7": {
+          "name": "esp32",
+          "version": "3.0.7",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.1.0": {
+          "name": "esp32",
+          "version": "3.1.0",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.1.1": {
+          "name": "esp32",
+          "version": "3.1.1",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.1.2": {
+          "name": "esp32",
+          "version": "3.1.2",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.1.3": {
+          "name": "esp32",
+          "version": "3.1.3",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.2.0": {
+          "name": "esp32",
+          "version": "3.2.0",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.2.1": {
+          "name": "esp32",
+          "version": "3.2.1",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.0": {
+          "name": "esp32",
+          "version": "3.3.0",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.1": {
+          "name": "esp32",
+          "version": "3.3.1",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.2": {
+          "name": "esp32",
+          "version": "3.3.2",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.3": {
+          "name": "esp32",
+          "version": "3.3.3",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.4": {
+          "name": "esp32",
+          "version": "3.3.4",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.5": {
+          "name": "esp32",
+          "version": "3.3.5",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C5 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.6": {
+          "name": "esp32",
+          "version": "3.3.6",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C5 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.7": {
+          "name": "esp32",
+          "version": "3.3.7",
+          "types": [
+            "ESP32"
+          ],
+          "installed": true,
+          "boards": [
+            {
+              "name": "Bee Data Logger",
+              "fqbn": "esp32:esp32:Bee_Data_Logger"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-1.46",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_146"
+            },
+            {
+              "name": "UM TinyS3",
+              "fqbn": "esp32:esp32:um_tinys3"
+            },
+            {
+              "name": "T-Beam",
+              "fqbn": "esp32:esp32:t-beam"
+            },
+            {
+              "name": "Deneyap Mini",
+              "fqbn": "esp32:esp32:deneyapmini"
+            },
+            {
+              "name": "unPhone 8",
+              "fqbn": "esp32:esp32:unphone8"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-4.3B",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_43B"
+            },
+            {
+              "name": "Turta IoT Node",
+              "fqbn": "esp32:esp32:turta_iot_node"
+            },
+            {
+              "name": "LOLIN S3 Mini Pro",
+              "fqbn": "esp32:esp32:lolin_s3_mini_pro"
+            },
+            {
+              "name": "WEMOS LOLIN32 Lite",
+              "fqbn": "esp32:esp32:lolin32-lite"
+            },
+            {
+              "name": "OLIMEX ESP32-C6-EVB",
+              "fqbn": "esp32:esp32:esp32c6-evb"
+            },
+            {
+              "name": "OROCA EduBot",
+              "fqbn": "esp32:esp32:oroca_edubot"
+            },
+            {
+              "name": "Deneyap Mini v2",
+              "fqbn": "esp32:esp32:deneyapminiv2"
+            },
+            {
+              "name": "SparkFun ESP32-S2 Thing Plus",
+              "fqbn": "esp32:esp32:sparkfun_esp32s2_thing_plus"
+            },
+            {
+              "name": "LOLIN D32 PRO",
+              "fqbn": "esp32:esp32:d32_pro"
+            },
+            {
+              "name": "ViraLink Gate32-1.1",
+              "fqbn": "esp32:esp32:viralink32g11"
+            },
+            {
+              "name": "DFRobot LoRaWAN ESP32-S3",
+              "fqbn": "esp32:esp32:dfrobot_lorawan_esp32s3"
+            },
+            {
+              "name": "WEMOS D1 R32",
+              "fqbn": "esp32:esp32:d1_uno32"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Matrix",
+              "fqbn": "esp32:esp32:ws_esp32_s3_matrix"
+            },
+            {
+              "name": "Aventen S3 Sync",
+              "fqbn": "esp32:esp32:aventen_s3_sync"
+            },
+            {
+              "name": "LOLIN S3",
+              "fqbn": "esp32:esp32:lolin_s3"
+            },
+            {
+              "name": "MH ET LIVE ESP32MiniKit",
+              "fqbn": "esp32:esp32:mhetesp32minikit"
+            },
+            {
+              "name": "DOIT ESPduino32",
+              "fqbn": "esp32:esp32:esp32doit-espduino"
+            },
+            {
+              "name": "M5Station",
+              "fqbn": "esp32:esp32:m5stack_station"
+            },
+            {
+              "name": "Heltec Wireless Mini Shell",
+              "fqbn": "esp32:esp32:heltec_wireless_mini_shell"
+            },
+            {
+              "name": "ATMegaZero ESP32-S2",
+              "fqbn": "esp32:esp32:atmegazero_esp32s2"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Relay-6CH",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_relay_6ch"
+            },
+            {
+              "name": "Deneyap Kart 1A v2",
+              "fqbn": "esp32:esp32:deneyapkart1Av2"
+            },
+            {
+              "name": "cezerio dev ESP32C6",
+              "fqbn": "esp32:esp32:cezerio_dev_esp32c6"
+            },
+            {
+              "name": "YelloByte YB-ESP32-S3-AMP (Rev.2)",
+              "fqbn": "esp32:esp32:yb_esp32s3_amp_v2"
+            },
+            {
+              "name": "Axiometa PIXIE M1",
+              "fqbn": "esp32:esp32:axiometa_pixie_m1"
+            },
+            {
+              "name": "ESP32 Wrover Module",
+              "fqbn": "esp32:esp32:esp32wrover"
+            },
+            {
+              "name": "DOIT ESP32 DEVKIT V1",
+              "fqbn": "esp32:esp32:esp32doit-devkit-v1"
+            },
+            {
+              "name": "Heltec WiFi LoRa 32(V2)",
+              "fqbn": "esp32:esp32:heltec_wifi_lora_32_V2"
+            },
+            {
+              "name": "MH ET LIVE ESP32DevKIT",
+              "fqbn": "esp32:esp32:mhetesp32devkit"
+            },
+            {
+              "name": "M5StampC3",
+              "fqbn": "esp32:esp32:m5stack_stamp_c3"
+            },
+            {
+              "name": "Silicognition wESP32",
+              "fqbn": "esp32:esp32:wesp32"
+            },
+            {
+              "name": "TTGO T-Watch",
+              "fqbn": "esp32:esp32:twatch"
+            },
+            {
+              "name": "uPesy ESP32C3 Mini",
+              "fqbn": "esp32:esp32:upesy_esp32c3_mini"
+            },
+            {
+              "name": "senseBox MCU-S2 ESP32-S2",
+              "fqbn": "esp32:esp32:sensebox_mcu_esp32s2"
+            },
+            {
+              "name": "Waveshare ESP32-S3-LCD-1.69",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_lcd_169"
+            },
+            {
+              "name": "Adafruit Metro ESP32-S2",
+              "fqbn": "esp32:esp32:adafruit_metro_esp32s2"
+            },
+            {
+              "name": "OLIMEX ESP32-POE",
+              "fqbn": "esp32:esp32:esp32-poe"
+            },
+            {
+              "name": "M5UnitCAM",
+              "fqbn": "esp32:esp32:m5stack_unit_cam"
+            },
+            {
+              "name": "WEMOS D1 MINI ESP32",
+              "fqbn": "esp32:esp32:d1_mini32"
+            },
+            {
+              "name": "Edgebox-ESP-100",
+              "fqbn": "esp32:esp32:Edgebox-ESP-100"
+            },
+            {
+              "name": "Geekble nano ESP32-S3",
+              "fqbn": "esp32:esp32:Geekble_Nano_ESP32S3"
+            },
+            {
+              "name": "CodeCell C3",
+              "fqbn": "esp32:esp32:codecell"
+            },
+            {
+              "name": "UM FeatherS2 Neo",
+              "fqbn": "esp32:esp32:um_feathers2neo"
+            },
+            {
+              "name": "Heltec Wireless Tracker",
+              "fqbn": "esp32:esp32:heltec_wireless_tracker"
+            },
+            {
+              "name": "Heltec Vision Master E290",
+              "fqbn": "esp32:esp32:heltec_vision_master_e290"
+            },
+            {
+              "name": "RoboHeart Hercules",
+              "fqbn": "esp32:esp32:roboheart_hercules"
+            },
+            {
+              "name": "Arduino Nesso N1",
+              "fqbn": "esp32:esp32:arduino_nesso_n1"
+            },
+            {
+              "name": "ESP32-WROOM-DA Module",
+              "fqbn": "esp32:esp32:esp32da"
+            },
+            {
+              "name": "ESP32 PICO-D4",
+              "fqbn": "esp32:esp32:pico32"
+            },
+            {
+              "name": "WEMOS LOLIN32",
+              "fqbn": "esp32:esp32:lolin32"
+            },
+            {
+              "name": "Silicognition ManT1S",
+              "fqbn": "esp32:esp32:mant1s"
+            },
+            {
+              "name": "HONEYLemon",
+              "fqbn": "esp32:esp32:honeylemon"
+            },
+            {
+              "name": "IOXESP32PS",
+              "fqbn": "esp32:esp32:ioxesp32ps"
+            },
+            {
+              "name": "ThingPulse ePulse Feather C6",
+              "fqbn": "esp32:esp32:epulse_feather_c6"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-AMOLED-1.91",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_amoled_191"
+            },
+            {
+              "name": "Hornbill ESP32 Minima",
+              "fqbn": "esp32:esp32:hornbill32minima"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S3 No PSRAM",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s3_nopsram"
+            },
+            {
+              "name": "OLIMEX ESP32-POE-ISO",
+              "fqbn": "esp32:esp32:esp32-poe-iso"
+            },
+            {
+              "name": "uPesy ESP32 Wroom DevKit",
+              "fqbn": "esp32:esp32:uPesy_wroom"
+            },
+            {
+              "name": "ESP32-S3 PowerFeather",
+              "fqbn": "esp32:esp32:esp32s3_powerfeather"
+            },
+            {
+              "name": "MakerGO ESP32 C6 SuperMini",
+              "fqbn": "esp32:esp32:makergo_c6_supermini"
+            },
+            {
+              "name": "YelloByte YB-ESP32-S3-DRV",
+              "fqbn": "esp32:esp32:yb_esp32s3_drv"
+            },
+            {
+              "name": "SparkFun Pro Micro - ESP32C3",
+              "fqbn": "esp32:esp32:sparkfun_pro_micro_esp32c3"
+            },
+            {
+              "name": "Adafruit MatrixPortal ESP32-S3",
+              "fqbn": "esp32:esp32:adafruit_matrixportal_esp32s3"
+            },
+            {
+              "name": "Heltec Wireless Bridge",
+              "fqbn": "esp32:esp32:heltec_wireless_bridge"
+            },
+            {
+              "name": "WiFiduinoV2",
+              "fqbn": "esp32:esp32:wifiduino32c3"
+            },
+            {
+              "name": "PandaByte x32 - ESP32",
+              "fqbn": "esp32:esp32:pandabyte_x32"
+            },
+            {
+              "name": "SparkFun ESP32 Thing Plus",
+              "fqbn": "esp32:esp32:esp32thing_plus"
+            },
+            {
+              "name": "Electronic SweetPeas - ESP320",
+              "fqbn": "esp32:esp32:esp320"
+            },
+            {
+              "name": "Adafruit Feather ESP32 V2",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32_v2"
+            },
+            {
+              "name": "Heltec E-Ink Driver",
+              "fqbn": "esp32:esp32:heltec_ht_de01"
+            },
+            {
+              "name": "unPhone 7",
+              "fqbn": "esp32:esp32:unphone7"
+            },
+            {
+              "name": "Namino Arancio",
+              "fqbn": "esp32:esp32:namino_arancio"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-4",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_4"
+            },
+            {
+              "name": "FED4",
+              "fqbn": "esp32:esp32:fed4"
+            },
+            {
+              "name": "UM SQUIXL",
+              "fqbn": "esp32:esp32:um_squixl"
+            },
+            {
+              "name": "D-duino-32",
+              "fqbn": "esp32:esp32:d-duino-32"
+            },
+            {
+              "name": "WeAct Studio ESP32C3",
+              "fqbn": "esp32:esp32:weact_studio_esp32c3"
+            },
+            {
+              "name": "CircuitART Zero S3",
+              "fqbn": "esp32:esp32:circuitart_zero_s3"
+            },
+            {
+              "name": "FoBE Quill ESP32S3 Mesh",
+              "fqbn": "esp32:esp32:fobe_quill_esp32s3_mesh"
+            },
+            {
+              "name": "Root Maker",
+              "fqbn": "esp32:esp32:rootmaker"
+            },
+            {
+              "name": "Adafruit pyCamera S3",
+              "fqbn": "esp32:esp32:adafruit_camera_esp32s3"
+            },
+            {
+              "name": "cezerio mini dev ESP32C6",
+              "fqbn": "esp32:esp32:cezerio_mini_dev_esp32c6"
+            },
+            {
+              "name": "4D Systems ESP32-P4 MIPI Displays",
+              "fqbn": "esp32:esp32:esp32p4_4ds_mipi"
+            },
+            {
+              "name": "ESP32S2 Native USB",
+              "fqbn": "esp32:esp32:esp32s2usb"
+            },
+            {
+              "name": "BharatPi LoRa Module",
+              "fqbn": "esp32:esp32:BharatPi-LoRa"
+            },
+            {
+              "name": "LOLIN D32",
+              "fqbn": "esp32:esp32:d32"
+            },
+            {
+              "name": "Dongsen Tech Pocket 32",
+              "fqbn": "esp32:esp32:pocket_32"
+            },
+            {
+              "name": "DFRobot Beetle ESP32-C6",
+              "fqbn": "esp32:esp32:dfrobot_beetle_esp32c6"
+            },
+            {
+              "name": "Adafruit Feather ESP32-C6",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32c6"
+            },
+            {
+              "name": "M5UnitCAMS3",
+              "fqbn": "esp32:esp32:m5stack_unit_cams3"
+            },
+            {
+              "name": "Heltec Wireless Stick Lite(V3)",
+              "fqbn": "esp32:esp32:heltec_wireless_stick_lite_V3"
+            },
+            {
+              "name": "Onehorse ESP32 Dev Module",
+              "fqbn": "esp32:esp32:onehorse32dev"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S3 Reverse TFT",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s3_reversetft"
+            },
+            {
+              "name": "M5StampS3",
+              "fqbn": "esp32:esp32:m5stack_stamp_s3"
+            },
+            {
+              "name": "M5Capsule",
+              "fqbn": "esp32:esp32:m5stack_capsule"
+            },
+            {
+              "name": "ALKS ESP32",
+              "fqbn": "esp32:esp32:alksesp32"
+            },
+            {
+              "name": "Sonoff DUALR3",
+              "fqbn": "esp32:esp32:sonoff_dualr3"
+            },
+            {
+              "name": "Arduino Nano ESP32",
+              "fqbn": "esp32:esp32:nano_nora"
+            },
+            {
+              "name": "Waveshare ESP32S3 Touch LCD 128",
+              "fqbn": "esp32:esp32:waveshare_esp32s3_touch_lcd_128"
+            },
+            {
+              "name": "UM EdgeS3[D]",
+              "fqbn": "esp32:esp32:um_edges3_d"
+            },
+            {
+              "name": "UM PROS3",
+              "fqbn": "esp32:esp32:um_pros3"
+            },
+            {
+              "name": "DFRobot Beetle ESP32-C3",
+              "fqbn": "esp32:esp32:dfrobot_beetle_esp32c3"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S3 TFT",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s3_tft"
+            },
+            {
+              "name": "OLIMEX ESP32-S2-DevKit-Lipo-USB",
+              "fqbn": "esp32:esp32:esp32s2-devkitlipo-usb"
+            },
+            {
+              "name": "Heltec Wireless Stick Lite / Wireless Shell",
+              "fqbn": "esp32:esp32:heltec_wireless_stick_lite"
+            },
+            {
+              "name": "XIAO_ESP32S3_PLUS",
+              "fqbn": "esp32:esp32:XIAO_ESP32S3_Plus"
+            },
+            {
+              "name": "LilyGo T3-S3",
+              "fqbn": "esp32:esp32:lilygo_t3s3"
+            },
+            {
+              "name": "LOLIN C3 Mini",
+              "fqbn": "esp32:esp32:lolin_c3_mini"
+            },
+            {
+              "name": "M5Fire",
+              "fqbn": "esp32:esp32:m5stack_fire"
+            },
+            {
+              "name": "uPesy ESP32 Wrover DevKit",
+              "fqbn": "esp32:esp32:uPesy_wrover"
+            },
+            {
+              "name": "ThingPulse ePulse Feather",
+              "fqbn": "esp32:esp32:epulse_feather"
+            },
+            {
+              "name": "Waveshare ESP32-C3-Zero",
+              "fqbn": "esp32:esp32:waveshare_esp32_c3_zero"
+            },
+            {
+              "name": "Waveshare ESP32-S3-LCD-1.46",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_lcd_146"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-AMOLED-1.43",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_amoled_143"
+            },
+            {
+              "name": "ESP32C6 Dev Module",
+              "fqbn": "esp32:esp32:esp32c6"
+            },
+            {
+              "name": "TTGO T7 V1.3 Mini32",
+              "fqbn": "esp32:esp32:ttgo-t7-v13-mini32"
+            },
+            {
+              "name": "SparkFun ESP32 MicroMod",
+              "fqbn": "esp32:esp32:esp32micromod"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-5",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_5"
+            },
+            {
+              "name": "OLIMEX ESP32-S2-DevKit-Lipo",
+              "fqbn": "esp32:esp32:esp32s2-devkitlipo"
+            },
+            {
+              "name": "M5StickCPlus",
+              "fqbn": "esp32:esp32:m5stack_stickc_plus"
+            },
+            {
+              "name": "Pycom GPy",
+              "fqbn": "esp32:esp32:gpy"
+            },
+            {
+              "name": "Bee Motion S3",
+              "fqbn": "esp32:esp32:Bee_Motion_S3"
+            },
+            {
+              "name": "Piranha ESP-32",
+              "fqbn": "esp32:esp32:piranha_esp-32"
+            },
+            {
+              "name": "INEX OpenKB",
+              "fqbn": "esp32:esp32:OpenKB"
+            },
+            {
+              "name": "CNRS AW2ETH",
+              "fqbn": "esp32:esp32:aw2eth"
+            },
+            {
+              "name": "Cytron Maker Feather AIoT S3",
+              "fqbn": "esp32:esp32:cytron_maker_feather_aiot_s3"
+            },
+            {
+              "name": "TTGO LoRa32-OLED",
+              "fqbn": "esp32:esp32:ttgo-lora32"
+            },
+            {
+              "name": "SparkFun ESP32 Thing Plus C",
+              "fqbn": "esp32:esp32:esp32thing_plus_c"
+            },
+            {
+              "name": "Nano32",
+              "fqbn": "esp32:esp32:nano32"
+            },
+            {
+              "name": "ESPea32",
+              "fqbn": "esp32:esp32:espea32"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S2 Reverse TFT",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s2_reversetft"
+            },
+            {
+              "name": "Heltec Wireless Paper",
+              "fqbn": "esp32:esp32:heltec_wireless_paper"
+            },
+            {
+              "name": "LoPy4",
+              "fqbn": "esp32:esp32:lopy4"
+            },
+            {
+              "name": "KITS ESP32 EDU",
+              "fqbn": "esp32:esp32:kits-edu"
+            },
+            {
+              "name": "ESP32 FM DevKit",
+              "fqbn": "esp32:esp32:fm-devkit"
+            },
+            {
+              "name": "UM FeatherS3 Neo",
+              "fqbn": "esp32:esp32:um_feathers3neo"
+            },
+            {
+              "name": "UM TinyS2",
+              "fqbn": "esp32:esp32:um_tinys2"
+            },
+            {
+              "name": "LilyGo T-Display-S3",
+              "fqbn": "esp32:esp32:lilygo_t_display_s3"
+            },
+            {
+              "name": "ViraLink Gate32-0.1",
+              "fqbn": "esp32:esp32:viralink32g01"
+            },
+            {
+              "name": "Deneyap Kart",
+              "fqbn": "esp32:esp32:deneyapkart"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-AMOLED-1.8",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_amoled_18"
+            },
+            {
+              "name": "Waveshare ESP32-S3-LCD-1.47",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_lcd_147"
+            },
+            {
+              "name": "ESP32S2 Dev Module",
+              "fqbn": "esp32:esp32:esp32s2"
+            },
+            {
+              "name": "SparkFun ESP32-S3 Thing Plus",
+              "fqbn": "esp32:esp32:sparkfun_esp32s3_thing_plus"
+            },
+            {
+              "name": "Adafruit Sparkle Motion (ESP32)",
+              "fqbn": "esp32:esp32:sparklemotion"
+            },
+            {
+              "name": "AirM2M_CORE_ESP32C3",
+              "fqbn": "esp32:esp32:AirM2M_CORE_ESP32C3"
+            },
+            {
+              "name": "TTGO T7 V1.4 Mini32",
+              "fqbn": "esp32:esp32:ttgo-t7-v14-mini32"
+            },
+            {
+              "name": "Heltec WiFi Kit 32",
+              "fqbn": "esp32:esp32:heltec_wifi_kit_32"
+            },
+            {
+              "name": "Namino Bianco",
+              "fqbn": "esp32:esp32:namino_bianco"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-4.3",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_43"
+            },
+            {
+              "name": "YelloByte YB-ESP32-S3-AMP",
+              "fqbn": "esp32:esp32:yb_esp32s3_amp"
+            },
+            {
+              "name": "kode dot",
+              "fqbn": "esp32:esp32:kodedot"
+            },
+            {
+              "name": "Soldered NULA DeepSleep ESP32S3",
+              "fqbn": "esp32:esp32:soldered_nula_deepsleep_esp32s3"
+            },
+            {
+              "name": "ESP32 Wrover Kit (all versions)",
+              "fqbn": "esp32:esp32:esp32wroverkit"
+            },
+            {
+              "name": "NodeMCU-32S",
+              "fqbn": "esp32:esp32:nodemcu-32s"
+            },
+            {
+              "name": "OLIMEX ESP32-EVB",
+              "fqbn": "esp32:esp32:esp32-evb"
+            },
+            {
+              "name": "OLIMEX ESP32-DevKit-LiPo",
+              "fqbn": "esp32:esp32:esp32-devkitlipo"
+            },
+            {
+              "name": "Franzininho WiFi MSC",
+              "fqbn": "esp32:esp32:franzininho_wifi_msc_esp32s2"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S2",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s2"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-2.1",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_21"
+            },
+            {
+              "name": "Soldered NULA Mini ESP32C6",
+              "fqbn": "esp32:esp32:soldered_nula_mini_esp32c6"
+            },
+            {
+              "name": "M5Cardputer",
+              "fqbn": "esp32:esp32:m5stack_cardputer"
+            },
+            {
+              "name": "ODROID ESP32",
+              "fqbn": "esp32:esp32:odroid_esp32"
+            },
+            {
+              "name": "Trueverit ESP32 Universal IoT Driver MK II",
+              "fqbn": "esp32:esp32:esp32-trueverit-iot-driver-mkii"
+            },
+            {
+              "name": "Connaxio's Espoir",
+              "fqbn": "esp32:esp32:connaxio_espoir"
+            },
+            {
+              "name": "AutosportLabs ESP-CAN-X2",
+              "fqbn": "esp32:esp32:aslcanx2"
+            },
+            {
+              "name": "Adafruit QT Py ESP32-C3",
+              "fqbn": "esp32:esp32:adafruit_qtpy_esp32c3"
+            },
+            {
+              "name": "LoPy",
+              "fqbn": "esp32:esp32:lopy"
+            },
+            {
+              "name": "WiFiduino32",
+              "fqbn": "esp32:esp32:wifiduino32"
+            },
+            {
+              "name": "XIAO_ESP32S3",
+              "fqbn": "esp32:esp32:XIAO_ESP32S3"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-AMOLED-2.41",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_amoled_241"
+            },
+            {
+              "name": "Pandabyte xC3m - ESP32C3",
+              "fqbn": "esp32:esp32:pandabyte_xc3m"
+            },
+            {
+              "name": "ESP32H2 Dev Module",
+              "fqbn": "esp32:esp32:esp32h2"
+            },
+            {
+              "name": "u-blox NINA-W10 series (ESP32)",
+              "fqbn": "esp32:esp32:nina_w10"
+            },
+            {
+              "name": "IOXESP32",
+              "fqbn": "esp32:esp32:ioxesp32"
+            },
+            {
+              "name": "ESP32C61 Dev Module",
+              "fqbn": "esp32:esp32:esp32c61"
+            },
+            {
+              "name": "Adafruit ESP32 Feather",
+              "fqbn": "esp32:esp32:featheresp32"
+            },
+            {
+              "name": "Nologo ESP32C3 Super Mini",
+              "fqbn": "esp32:esp32:nologo_esp32c3_super_mini"
+            },
+            {
+              "name": "Microduino-CoreESP32",
+              "fqbn": "esp32:esp32:CoreESP32"
+            },
+            {
+              "name": "BPI-Leaf-S3",
+              "fqbn": "esp32:esp32:bpi_leaf_s3"
+            },
+            {
+              "name": "MGBOT IOTIK 32A",
+              "fqbn": "esp32:esp32:mgbot-iotik32a"
+            },
+            {
+              "name": "ESP32-S3-USB-OTG",
+              "fqbn": "esp32:esp32:esp32s3usbotg"
+            },
+            {
+              "name": "ESP32P4 Core Board",
+              "fqbn": "esp32:esp32:esp32p4_core_board"
+            },
+            {
+              "name": "IntoRobot Fig",
+              "fqbn": "esp32:esp32:intorobot-fig"
+            },
+            {
+              "name": "AI Thinker ESP32-CAM",
+              "fqbn": "esp32:esp32:esp32cam"
+            },
+            {
+              "name": "RedPill(+) ESP32-S3",
+              "fqbn": "esp32:esp32:redpill_esp32s3"
+            },
+            {
+              "name": "Namino Rosso",
+              "fqbn": "esp32:esp32:namino_rosso"
+            },
+            {
+              "name": "Widora AIR",
+              "fqbn": "esp32:esp32:widora-air"
+            },
+            {
+              "name": "LOLIN C3 Pico",
+              "fqbn": "esp32:esp32:lolin_c3_pico"
+            },
+            {
+              "name": "Noduino Quantum",
+              "fqbn": "esp32:esp32:quantum"
+            },
+            {
+              "name": "Frog Board ESP32",
+              "fqbn": "esp32:esp32:frogboard"
+            },
+            {
+              "name": "uPesy EDU ESP32",
+              "fqbn": "esp32:esp32:uPesy_edu_esp32"
+            },
+            {
+              "name": "Bee Motion",
+              "fqbn": "esp32:esp32:Bee_Motion"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-AMOLED-2.06",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_amoled_206"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-7",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_7"
+            },
+            {
+              "name": "Adafruit Sparkle Motion Stick (ESP32)",
+              "fqbn": "esp32:esp32:sparklemotionstick"
+            },
+            {
+              "name": "WT32-ETH01 Ethernet Module",
+              "fqbn": "esp32:esp32:wt32-eth01"
+            },
+            {
+              "name": "Labplus mPython",
+              "fqbn": "esp32:esp32:mPython"
+            },
+            {
+              "name": "Crabik Slot ESP32-S3",
+              "fqbn": "esp32:esp32:crabik_slot_esp32_s3"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-1.85-BOX",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_185_box"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S2 TFT",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s2_tft"
+            },
+            {
+              "name": "M5Tough",
+              "fqbn": "esp32:esp32:m5stack_tough"
+            },
+            {
+              "name": "XIAO_ESP32C3",
+              "fqbn": "esp32:esp32:XIAO_ESP32C3"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-1.85",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_185"
+            },
+            {
+              "name": "DFRobot Romeo ESP32-S3",
+              "fqbn": "esp32:esp32:dfrobot_romeo_esp32s3"
+            },
+            {
+              "name": "Adafruit QT Py ESP32-S3 No PSRAM",
+              "fqbn": "esp32:esp32:adafruit_qtpy_esp32s3_nopsram"
+            },
+            {
+              "name": "M5Dial",
+              "fqbn": "esp32:esp32:m5stack_dial"
+            },
+            {
+              "name": "ProtoCentral HealthyPi 4",
+              "fqbn": "esp32:esp32:healthypi4"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-1.69",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_169"
+            },
+            {
+              "name": "Waveshare ESP32-S3-LCD-1.85",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_lcd_185"
+            },
+            {
+              "name": "Pandabyte xC5 - ESP32C5",
+              "fqbn": "esp32:esp32:pandabyte_xc5"
+            },
+            {
+              "name": "ESP32C3 Dev Module",
+              "fqbn": "esp32:esp32:esp32c3"
+            },
+            {
+              "name": "FireBeetle 2 ESP32-E",
+              "fqbn": "esp32:esp32:dfrobot_firebeetle2_esp32e"
+            },
+            {
+              "name": "Adafruit Feather ESP32-S3 2MB PSRAM",
+              "fqbn": "esp32:esp32:adafruit_feather_esp32s3"
+            },
+            {
+              "name": "Adafruit QT Py ESP32",
+              "fqbn": "esp32:esp32:adafruit_qtpy_esp32_pico"
+            },
+            {
+              "name": "M5Core",
+              "fqbn": "esp32:esp32:m5stack_core"
+            },
+            {
+              "name": "WT32-SC01 PLUS",
+              "fqbn": "esp32:esp32:wt32-sc01-plus"
+            },
+            {
+              "name": "uPesy ESP32S3 Basic",
+              "fqbn": "esp32:esp32:upesy_esp32s3_basic"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-2.8",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_28"
+            },
+            {
+              "name": "UM FeatherS2",
+              "fqbn": "esp32:esp32:um_feathers2"
+            },
+            {
+              "name": "UM OMGS3",
+              "fqbn": "esp32:esp32:um_omgs3"
+            },
+            {
+              "name": "microS2",
+              "fqbn": "esp32:esp32:micros2"
+            },
+            {
+              "name": "SparkFun ESP32-C6 Thing Plus",
+              "fqbn": "esp32:esp32:sparkfun_esp32c6_thing_plus"
+            },
+            {
+              "name": "M5StickC",
+              "fqbn": "esp32:esp32:m5stack_stickc"
+            },
+            {
+              "name": "Denky",
+              "fqbn": "esp32:esp32:ch_denky"
+            },
+            {
+              "name": "uPesy ESP32C3 Basic",
+              "fqbn": "esp32:esp32:upesy_esp32c3_basic"
+            },
+            {
+              "name": "Deneyap Kart G",
+              "fqbn": "esp32:esp32:deneyapkartg"
+            },
+            {
+              "name": "Adafruit Sparkle Motion Mini (ESP32)",
+              "fqbn": "esp32:esp32:sparklemotionmini"
+            },
+            {
+              "name": "Watchy",
+              "fqbn": "esp32:esp32:watchy"
+            },
+            {
+              "name": "Bee Motion Mini",
+              "fqbn": "esp32:esp32:Bee_Motion_Mini"
+            },
+            {
+              "name": "VALTRACK_V4_VTS_ESP32_C3",
+              "fqbn": "esp32:esp32:VALTRACK_V4_VTS_ESP32_C3"
+            },
+            {
+              "name": "Lion:Bit S3 STEM Dev Board",
+              "fqbn": "esp32:esp32:lionbits3"
+            },
+            {
+              "name": "Twin AIoT Module",
+              "fqbn": "esp32:esp32:twinaiot"
+            },
+            {
+              "name": "ESP32S3 Dev Module",
+              "fqbn": "esp32:esp32:esp32s3"
+            },
+            {
+              "name": "SparkFun LoRa Gateway 1-Channel",
+              "fqbn": "esp32:esp32:sparkfun_lora_gateway_1-channel"
+            },
+            {
+              "name": "u-blox NORA-W10 series (ESP32-S3)",
+              "fqbn": "esp32:esp32:nora_w10"
+            },
+            {
+              "name": "M5AtomS3",
+              "fqbn": "esp32:esp32:m5stack_atoms3"
+            },
+            {
+              "name": "M5PoECAM",
+              "fqbn": "esp32:esp32:m5stack_poe_cam"
+            },
+            {
+              "name": "M5StampPico",
+              "fqbn": "esp32:esp32:m5stack_stamp_pico"
+            },
+            {
+              "name": "IMBRIOS LOGSENS_V1P1",
+              "fqbn": "esp32:esp32:imbrios-logsens-v1p1"
+            },
+            {
+              "name": "Deneyap Kart 1A",
+              "fqbn": "esp32:esp32:deneyapkart1A"
+            },
+            {
+              "name": "SparkFun ESP32 Thing",
+              "fqbn": "esp32:esp32:esp32thing"
+            },
+            {
+              "name": "SparkFun ESP32 IoT RedBoard",
+              "fqbn": "esp32:esp32:sparkfun_esp32_iot_redboard"
+            },
+            {
+              "name": "M5Tab5",
+              "fqbn": "esp32:esp32:m5stack_tab5"
+            },
+            {
+              "name": "Franzininho WiFi",
+              "fqbn": "esp32:esp32:franzininho_wifi_esp32s2"
+            },
+            {
+              "name": "TAMC Termod S3",
+              "fqbn": "esp32:esp32:tamc_termod_s3"
+            },
+            {
+              "name": "XIAO_ESP32C6",
+              "fqbn": "esp32:esp32:XIAO_ESP32C6"
+            },
+            {
+              "name": "Geekble Mini ESP32-C3",
+              "fqbn": "esp32:esp32:Geekble_ESP32C3"
+            },
+            {
+              "name": "4D Systems ESP32-P4 Round MIPI Displays",
+              "fqbn": "esp32:esp32:esp32p4_4ds_mipi_round"
+            },
+            {
+              "name": "Pcbcupid GLYPH C3",
+              "fqbn": "esp32:esp32:Pcbcupid_GLYPH_C3"
+            },
+            {
+              "name": "MagicBit",
+              "fqbn": "esp32:esp32:magicbit"
+            },
+            {
+              "name": "XinaBox CW02",
+              "fqbn": "esp32:esp32:cw02"
+            },
+            {
+              "name": "Nologo ESP32S3 Pico",
+              "fqbn": "esp32:esp32:nologo_esp32s3_pico"
+            },
+            {
+              "name": "WiFiduino32S3",
+              "fqbn": "esp32:esp32:wifiduino32s3"
+            },
+            {
+              "name": "UM NanoS3",
+              "fqbn": "esp32:esp32:um_nanos3"
+            },
+            {
+              "name": "OLIMEX ESP32-GATEWAY",
+              "fqbn": "esp32:esp32:esp32-gateway"
+            },
+            {
+              "name": "Heltec WiFi LoRa 32(V3)",
+              "fqbn": "esp32:esp32:heltec_wifi_lora_32_V3"
+            },
+            {
+              "name": "BPI-BIT",
+              "fqbn": "esp32:esp32:bpi-bit"
+            },
+            {
+              "name": "YelloByte YB-ESP32-S3-AMP (Rev.3)",
+              "fqbn": "esp32:esp32:yb_esp32s3_amp_v3"
+            },
+            {
+              "name": "Adafruit QT Py ESP32-S2",
+              "fqbn": "esp32:esp32:adafruit_qtpy_esp32s2"
+            },
+            {
+              "name": "Adafruit Qualia ESP32-S3 RGB666",
+              "fqbn": "esp32:esp32:adafruit_qualia_s3_rgb666"
+            },
+            {
+              "name": "M5TimerCAM",
+              "fqbn": "esp32:esp32:m5stack_timer_cam"
+            },
+            {
+              "name": "Elecrow CrowPanel 7.0P",
+              "fqbn": "esp32:esp32:elecrow_crowpanel_7"
+            },
+            {
+              "name": "YelloByte YB-ESP32-S3-DAC",
+              "fqbn": "esp32:esp32:yb_esp32s3_dac"
+            },
+            {
+              "name": "OLIMEX ESP32-S3-DevKit-Lipo",
+              "fqbn": "esp32:esp32:esp32s3-devkitlipo"
+            },
+            {
+              "name": "OLIMEX ESP32-H2-DevKit-LiPo",
+              "fqbn": "esp32:esp32:esp32h2-devkitlipo"
+            },
+            {
+              "name": "Heltec Wireless Stick",
+              "fqbn": "esp32:esp32:heltec_wireless_stick"
+            },
+            {
+              "name": "ESPectro32",
+              "fqbn": "esp32:esp32:espectro32"
+            },
+            {
+              "name": "Senses's WEIZEN",
+              "fqbn": "esp32:esp32:sensesiot_weizen"
+            },
+            {
+              "name": "ATD3.5-S3",
+              "fqbn": "esp32:esp32:atd35s3"
+            },
+            {
+              "name": "UM FeatherS3",
+              "fqbn": "esp32:esp32:um_feathers3"
+            },
+            {
+              "name": "LOLIN S3 Mini",
+              "fqbn": "esp32:esp32:lolin_s3_mini"
+            },
+            {
+              "name": "OLIMEX ESP32-C3-DevKit-Lipo",
+              "fqbn": "esp32:esp32:esp32c3-devkitlipo"
+            },
+            {
+              "name": "M5NanoC6",
+              "fqbn": "esp32:esp32:m5stack_nanoc6"
+            },
+            {
+              "name": "MGBOT IOTIK 32B",
+              "fqbn": "esp32:esp32:mgbot-iotik32b"
+            },
+            {
+              "name": "Metro ESP-32",
+              "fqbn": "esp32:esp32:metro_esp-32"
+            },
+            {
+              "name": "Lion:Bit Dev Board",
+              "fqbn": "esp32:esp32:lionbit"
+            },
+            {
+              "name": "unPhone 9",
+              "fqbn": "esp32:esp32:unphone9"
+            },
+            {
+              "name": "WeMos WiFi\u0026Bluetooth Battery",
+              "fqbn": "esp32:esp32:WeMosBat"
+            },
+            {
+              "name": "M5DinMeter",
+              "fqbn": "esp32:esp32:m5stack_dinmeter"
+            },
+            {
+              "name": "Heltec Wireless Shell (V3)",
+              "fqbn": "esp32:esp32:heltec_wireless_shell_V3"
+            },
+            {
+              "name": "Heltec Vision Master E213",
+              "fqbn": "esp32:esp32:heltec_vision_master_e_213"
+            },
+            {
+              "name": "4D Systems gen4-ESP32 Modules (ESP32-S3)",
+              "fqbn": "esp32:esp32:gen4-ESP32-S3R8n16"
+            },
+            {
+              "name": "Pcbcupid GLYPH C6",
+              "fqbn": "esp32:esp32:Pcbcupid_GLYPH_C6"
+            },
+            {
+              "name": "PandaByte xS3 - ESP32S3",
+              "fqbn": "esp32:esp32:pandabyte_xs3"
+            },
+            {
+              "name": "UM TinyPICO",
+              "fqbn": "esp32:esp32:um_tinypico"
+            },
+            {
+              "name": "LOLIN S3 Pro",
+              "fqbn": "esp32:esp32:lolin_s3_pro"
+            },
+            {
+              "name": "Adafruit MagTag 2.9\"",
+              "fqbn": "esp32:esp32:adafruit_magtag29_esp32s2"
+            },
+            {
+              "name": "ESP32vn IoT Uno",
+              "fqbn": "esp32:esp32:esp32vn-iot-uno"
+            },
+            {
+              "name": "ThaiEasyElec's ESPino32",
+              "fqbn": "esp32:esp32:espino32"
+            },
+            {
+              "name": "Heltec Wireless Stick(V3)",
+              "fqbn": "esp32:esp32:heltec_wireless_stick_V3"
+            },
+            {
+              "name": "Huidu HD-WF4",
+              "fqbn": "esp32:esp32:huidu_hd_wf4"
+            },
+            {
+              "name": "BharatPi Node Wifi Module",
+              "fqbn": "esp32:esp32:BharatPi-Node-Wifi"
+            },
+            {
+              "name": "TTGO T-OI PLUS RISC-V ESP32-C3",
+              "fqbn": "esp32:esp32:ttgo-t-oi-plus"
+            },
+            {
+              "name": "LOLIN S2 PICO",
+              "fqbn": "esp32:esp32:lolin_s2_pico"
+            },
+            {
+              "name": "Adafruit FunHouse",
+              "fqbn": "esp32:esp32:adafruit_funhouse_esp32s2"
+            },
+            {
+              "name": "M5Paper",
+              "fqbn": "esp32:esp32:m5stack_paper"
+            },
+            {
+              "name": "WiPy 3.0",
+              "fqbn": "esp32:esp32:wipy3"
+            },
+            {
+              "name": "Alfredo NoU3",
+              "fqbn": "esp32:esp32:alfredo-nou3"
+            },
+            {
+              "name": "LilyGo T-Watch-S3",
+              "fqbn": "esp32:esp32:twatchs3"
+            },
+            {
+              "name": "Node32s",
+              "fqbn": "esp32:esp32:node32s"
+            },
+            {
+              "name": "DPU ESP32",
+              "fqbn": "esp32:esp32:dpu_esp32"
+            },
+            {
+              "name": "Pcbcupid GLYPH H2",
+              "fqbn": "esp32:esp32:Pcbcupid_GLYPH_H2"
+            },
+            {
+              "name": "LOLIN S2 Mini",
+              "fqbn": "esp32:esp32:lolin_s2_mini"
+            },
+            {
+              "name": "Heltec WiFi Kit 32(V3)",
+              "fqbn": "esp32:esp32:heltec_wifi_kit_32_V3"
+            },
+            {
+              "name": "Deneyap Kart v2",
+              "fqbn": "esp32:esp32:deneyapkartv2"
+            },
+            {
+              "name": "Bee S3",
+              "fqbn": "esp32:esp32:Bee_S3"
+            },
+            {
+              "name": "ATD1.47-S3",
+              "fqbn": "esp32:esp32:atd147_s3"
+            },
+            {
+              "name": "Waveshare ESP32-C6-Zero",
+              "fqbn": "esp32:esp32:waveshare_esp32_c6_zero"
+            },
+            {
+              "name": "LilyGo-T-LoRa-Pager",
+              "fqbn": "esp32:esp32:tlora_pager"
+            },
+            {
+              "name": "FireBeetle-ESP32",
+              "fqbn": "esp32:esp32:firebeetle32"
+            },
+            {
+              "name": "Trueverit ESP32 Universal IoT Driver",
+              "fqbn": "esp32:esp32:esp32-trueverit-iot-driver"
+            },
+            {
+              "name": "XIAO_ESP32C5",
+              "fqbn": "esp32:esp32:XIAO_ESP32C5"
+            },
+            {
+              "name": "ESP32S3 CAM LCD",
+              "fqbn": "esp32:esp32:esp32s3camlcd"
+            },
+            {
+              "name": "S.ODI Ultra v1",
+              "fqbn": "esp32:esp32:S_ODI_Ultra"
+            },
+            {
+              "name": "LilyGo T-Watch-Ultra",
+              "fqbn": "esp32:esp32:twatch_ultra"
+            },
+            {
+              "name": "Adafruit ItsyBitsy ESP32",
+              "fqbn": "esp32:esp32:adafruit_itsybitsy_esp32"
+            },
+            {
+              "name": "M5CoreS3",
+              "fqbn": "esp32:esp32:m5stack_cores3"
+            },
+            {
+              "name": "Heltec Capsule Sensor (V3)",
+              "fqbn": "esp32:esp32:heltec_capsule_sensor_V3"
+            },
+            {
+              "name": "Heltec Vision Master T190",
+              "fqbn": "esp32:esp32:heltec_vision_master_t190"
+            },
+            {
+              "name": "ESP-C3-M1-I-Kit",
+              "fqbn": "esp32:esp32:esp32c3m1IKit"
+            },
+            {
+              "name": "ESP32-2432S028R CYD",
+              "fqbn": "esp32:esp32:jczn_2432s028r"
+            },
+            {
+              "name": "YelloByte YB-ESP32-S3-ETH",
+              "fqbn": "esp32:esp32:yb_esp32s3_eth"
+            },
+            {
+              "name": "ESP32C5 Dev Module",
+              "fqbn": "esp32:esp32:esp32c5"
+            },
+            {
+              "name": "ESP32-S3-Box",
+              "fqbn": "esp32:esp32:esp32s3box"
+            },
+            {
+              "name": "DFRobot FireBeetle 2 ESP32-C6",
+              "fqbn": "esp32:esp32:dfrobot_firebeetle2_esp32c6"
+            },
+            {
+              "name": "Adafruit QT Py ESP32-S3 (4M Flash 2M PSRAM)",
+              "fqbn": "esp32:esp32:adafruit_qtpy_esp32s3_n4r2"
+            },
+            {
+              "name": "OLIMEX ESP32-SBC-FABGL",
+              "fqbn": "esp32:esp32:esp32-sbc-fabgl"
+            },
+            {
+              "name": "M5Core2",
+              "fqbn": "esp32:esp32:m5stack_core2"
+            },
+            {
+              "name": "VintLabs ESP32 Devkit",
+              "fqbn": "esp32:esp32:vintlabs-devkit-v1"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Zero",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_zero"
+            },
+            {
+              "name": "ESP32 Dev Module",
+              "fqbn": "esp32:esp32:esp32"
+            },
+            {
+              "name": "LilyGo T-Display",
+              "fqbn": "esp32:esp32:lilygo_t_display"
+            },
+            {
+              "name": "TTGO T1",
+              "fqbn": "esp32:esp32:ttgo-t1"
+            },
+            {
+              "name": "M5CoreInk",
+              "fqbn": "esp32:esp32:m5stack_coreink"
+            },
+            {
+              "name": "Heltec WiFi LoRa 32",
+              "fqbn": "esp32:esp32:heltec_wifi_lora_32"
+            },
+            {
+              "name": "MakerGO ESP32 C3 SuperMini",
+              "fqbn": "esp32:esp32:makergo_c3_supermini"
+            },
+            {
+              "name": "DPTechnics Walter",
+              "fqbn": "esp32:esp32:walter"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-LCD-5B",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_lcd_5B"
+            },
+            {
+              "name": "UM TinyC6",
+              "fqbn": "esp32:esp32:um_tinyc6"
+            },
+            {
+              "name": "M5StickCPlus2",
+              "fqbn": "esp32:esp32:m5stack_stickc_plus2"
+            },
+            {
+              "name": "senseBox Eye",
+              "fqbn": "esp32:esp32:sensebox_eye"
+            },
+            {
+              "name": "Huidu HD-WF2",
+              "fqbn": "esp32:esp32:huidu_hd_wf2"
+            },
+            {
+              "name": "CYOBOT V2 ESP32S3",
+              "fqbn": "esp32:esp32:cyobot_v2_esp32s3"
+            },
+            {
+              "name": "Axiometa Genesis One",
+              "fqbn": "esp32:esp32:axiometa_genesis_one"
+            },
+            {
+              "name": "ESP32P4 Dev Module",
+              "fqbn": "esp32:esp32:esp32p4"
+            },
+            {
+              "name": "SparkFun ESP32-C6 Qwiic Pocket",
+              "fqbn": "esp32:esp32:sparkfun_esp32c6_qwiic_pocket"
+            },
+            {
+              "name": "Department of Alchemy MiniMain ESP32-S2",
+              "fqbn": "esp32:esp32:department_of_alchemy_minimain_esp32s2"
+            },
+            {
+              "name": "IOXESP32-C6",
+              "fqbn": "esp32:esp32:ioxesp32c6"
+            },
+            {
+              "name": "RAKwireless RAK3112",
+              "fqbn": "esp32:esp32:rakwireless_rak3112"
+            },
+            {
+              "name": "PandaByte xC6 - ESP32C6",
+              "fqbn": "esp32:esp32:pandabyte_xc6"
+            },
+            {
+              "name": "ESP32S3 Dev Module Octal (WROOM2)",
+              "fqbn": "esp32:esp32:esp32s3-octal"
+            },
+            {
+              "name": "DFRobot Firebeetle 2 ESP32-S3",
+              "fqbn": "esp32:esp32:dfrobot_firebeetle2_esp32s3"
+            },
+            {
+              "name": "Fri3d Badge 2024 (ESP32-S3-WROOM-1)",
+              "fqbn": "esp32:esp32:fri3d_2024_esp32s3"
+            },
+            {
+              "name": "ET-Board",
+              "fqbn": "esp32:esp32:ET-Board"
+            },
+            {
+              "name": "BharatPi A7672S 4G Module",
+              "fqbn": "esp32:esp32:BharatPi-A7672S-4G"
+            },
+            {
+              "name": "UM BLING",
+              "fqbn": "esp32:esp32:um_bling"
+            },
+            {
+              "name": "Adafruit Metro ESP32-S3",
+              "fqbn": "esp32:esp32:adafruit_metro_esp32s3"
+            },
+            {
+              "name": "VALTRACK_V4_MFW_ESP32_C3",
+              "fqbn": "esp32:esp32:VALTRACK_V4_MFW_ESP32_C3"
+            },
+            {
+              "name": "Nebula S3",
+              "fqbn": "esp32:esp32:nebulas3"
+            },
+            {
+              "name": "Waveshare ESP32-S3-Touch-AMOLED-1.64",
+              "fqbn": "esp32:esp32:waveshare_esp32_s3_touch_amoled_164"
+            },
+            {
+              "name": "ESP32 Family Device",
+              "fqbn": "esp32:esp32:esp32_family"
+            },
+            {
+              "name": "ESP32C2 Dev Module",
+              "fqbn": "esp32:esp32:esp32c2"
+            },
+            {
+              "name": "LilyGo T-ETH-Lite",
+              "fqbn": "esp32:esp32:lilygo_t_eth_lite"
+            },
+            {
+              "name": "Hornbill ESP32 Dev",
+              "fqbn": "esp32:esp32:hornbill32dev"
+            },
+            {
+              "name": "M5Atom",
+              "fqbn": "esp32:esp32:m5stack_atom"
+            },
+            {
+              "name": "KB32-FT",
+              "fqbn": "esp32:esp32:kb32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "compatible": true
+        },
+        "3.3.8": {
+          "name": "esp32",
+          "version": "3.3.8",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C5 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.9": {
+          "name": "esp32",
+          "version": "3.3.9",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C5 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.10": {
+          "name": "esp32",
+          "version": "3.3.10",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C5 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        },
+        "3.3.11": {
+          "name": "esp32",
+          "version": "3.3.11",
+          "types": [
+            "ESP32"
+          ],
+          "boards": [
+            {
+              "name": "ESP32 Dev Board"
+            },
+            {
+              "name": "ESP32-C3 Dev Board"
+            },
+            {
+              "name": "ESP32-C5 Dev Board"
+            },
+            {
+              "name": "ESP32-C6 Dev Board"
+            },
+            {
+              "name": "ESP32-H2 Dev Board"
+            },
+            {
+              "name": "ESP32-P4 Dev Board"
+            },
+            {
+              "name": "ESP32-S2 Dev Board"
+            },
+            {
+              "name": "ESP32-S3 Dev Board"
+            },
+            {
+              "name": "Arduino Nano ESP32"
+            }
+          ],
+          "help": {
+            "online": "http://esp32.com"
+          },
+          "missing_metadata": true,
+          "compatible": true
+        }
+      },
+      "installed_version": "3.3.7",
+      "latest_version": "3.3.11"
+    }
+  ]
+}

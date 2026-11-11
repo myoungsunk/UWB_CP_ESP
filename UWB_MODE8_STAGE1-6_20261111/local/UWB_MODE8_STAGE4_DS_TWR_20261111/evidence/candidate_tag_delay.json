@@ -1,0 +1,24 @@
+{
+  "utc": "2026-11-11T10:17:44.460606+00:00",
+  "reference_m_approx": 0.8,
+  "baseline_session": 2041379429,
+  "baseline_verdict_sha256": "7e7a9478f9b3f4f329b0b2e9e492d034d18ea38d09492e10ca83ee300093b76f",
+  "baseline_verdict": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\stage4_20_default_20261111_191657_832\\stage4_distance_verdict.json",
+  "method": "Tag-only symmetric TX/RX adjustment. A one-tick reduction on both tag delays increases ToF by approximately one tick. Use the baseline median and nearest integer tick. Validate on a separate session.",
+  "modules": {
+    "A": {
+      "baseline_median_m": 0.06582913114215401,
+      "tag_delay_ticks": 16279,
+      "tag_delay_delta_ticks": -157,
+      "baseline_sample_sd_m": 0.08423371167470722
+    },
+    "B": {
+      "baseline_median_m": -1.7788186978872504,
+      "tag_delay_ticks": 15886,
+      "tag_delay_delta_ticks": -550,
+      "baseline_sample_sd_m": 0.1396584260341351
+    }
+  },
+  "cal_id": 0,
+  "scope": "Trial geometry only. Reported sample standard deviation is repeatability metadata, not absolute uncertainty."
+}

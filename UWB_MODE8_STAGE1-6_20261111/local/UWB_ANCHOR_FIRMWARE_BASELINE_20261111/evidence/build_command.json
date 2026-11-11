@@ -1,0 +1,13 @@
+[
+  "C:/Program Files/Arduino IDE/resources/app/lib/backend/resources/arduino-cli.exe",
+  "compile",
+  "--fqbn",
+  "esp32:esp32:esp32doit-devkit-v1",
+  "--library",
+  "D:/SLAM_bot/artifacts/UWB_PMSC_TRACE_20261106/vendor/DW1000Ng",
+  "--build-path",
+  "D:\\SLAM_bot\\artifacts\\UWB_LAZY_RELEASE_20261107_134517\\build_cache",
+  "--output-dir",
+  "D:\\SLAM_bot\\artifacts\\UWB_LAZY_RELEASE_20261107_134517\\app",
+  "D:\\SLAM_bot\\artifacts\\UWB_LAZY_RELEASE_20261107_134517\\source\\ANCHOR_RF_PLATFORM_V1"
+]

@@ -1,0 +1,6 @@
+COMMAND: g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie -Ishared -fsanitize=address,undefined tests/test_core.cpp -o ../replay/test_core
+COMMAND: ../replay/test_core ../replay
+tag_json_bytes=5423 sizeof_Record=18184
+wide_json_bytes=5740
+PASS checks=11413 (HOST SYNTHETIC ONLY)
+EXIT: 0

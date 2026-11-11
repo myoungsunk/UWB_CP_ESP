@@ -1,0 +1,270 @@
+{
+  "started": "2026-11-11T15:15:32.450288+09:00",
+  "port": "COM4",
+  "esp32_mac": "28:56:2f:73:06:54",
+  "spi_pins": {
+    "sck": 18,
+    "miso": 19,
+    "mosi": 23,
+    "A": {
+      "cs": 21,
+      "rst": 17
+    },
+    "B": {
+      "cs": 25,
+      "rst": 27
+    }
+  },
+  "expected_dev_id": "0xDECA0130",
+  "app_offset": "0x10000",
+  "commands": {
+    "diagnostic_image_info": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "image-info",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_ID_20261111\\dist\\TagABDevId.ino.bin"
+      ],
+      "exit_code": 0
+    },
+    "r5_before_diagnostic": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "verify-flash",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\tag\\TAG_DUAL_DS_CIR.ino.bin"
+      ],
+      "exit_code": 0
+    },
+    "temporary_diagnostic_write": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "write-flash",
+        "-z",
+        "--flash-mode",
+        "keep",
+        "--flash-freq",
+        "keep",
+        "--flash-size",
+        "keep",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_ID_20261111\\dist\\TagABDevId.ino.bin"
+      ],
+      "exit_code": 0
+    },
+    "temporary_diagnostic_verify": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "verify-flash",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_ID_20261111\\dist\\TagABDevId.ino.bin"
+      ],
+      "exit_code": 0
+    },
+    "restore_1_identity": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "flash-id"
+      ],
+      "exit_code": 0
+    },
+    "restore_1_write": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "write-flash",
+        "-z",
+        "--flash-mode",
+        "keep",
+        "--flash-freq",
+        "keep",
+        "--flash-size",
+        "keep",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\tag\\TAG_DUAL_DS_CIR.ino.bin"
+      ],
+      "exit_code": 0
+    },
+    "restore_1_verify": {
+      "command": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe",
+        "--chip",
+        "esp32",
+        "--port",
+        "COM4",
+        "--baud",
+        "460800",
+        "verify-flash",
+        "0x10000",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\tag\\TAG_DUAL_DS_CIR.ino.bin"
+      ],
+      "exit_code": 0
+    }
+  },
+  "readings": [
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "A",
+      "phase": "before_reset",
+      "spi_hz": 1000000,
+      "ids": [
+        "0xBC950360",
+        "0xFF010000",
+        "0xBD5BFFFF",
+        "0xFFFFFFBD",
+        "0x01002400"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "A",
+      "phase": "before_reset",
+      "spi_hz": 2000000,
+      "ids": [
+        "0x01BC5BBD",
+        "0x5B2F0D10",
+        "0x8019BC5B",
+        "0x2A5B0100",
+        "0x834B7AAD"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "B",
+      "phase": "before_reset",
+      "spi_hz": 1000000,
+      "ids": [
+        "0xBDBD376A",
+        "0xBDDFE7FF",
+        "0xBFF77769",
+        "0xBCDD2F66",
+        "0xFED5BB60"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "B",
+      "phase": "before_reset",
+      "spi_hz": 2000000,
+      "ids": [
+        "0xBCBF936A",
+        "0xFE957BEC",
+        "0xFFDF676D",
+        "0xFC972F64",
+        "0xBC9F0F6E"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "A",
+      "phase": "after_reset",
+      "spi_hz": 1000000,
+      "ids": [
+        "0xBC950360",
+        "0xFF010000",
+        "0xBD5BFFFF",
+        "0xFFFFFFBD",
+        "0x01002400"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "A",
+      "phase": "after_reset",
+      "spi_hz": 2000000,
+      "ids": [
+        "0x01BC5BBD",
+        "0x5B013439",
+        "0x8019BC5B",
+        "0x2A5B0100",
+        "0x834B7AAD"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "B",
+      "phase": "after_reset",
+      "spi_hz": 1000000,
+      "ids": [
+        "0xBDBD376A",
+        "0xBDDFE7FF",
+        "0xBFF77769",
+        "0xBCDD2F66",
+        "0xFED5BB60"
+      ]
+    },
+    {
+      "event": "DW1000_AB_DEV_ID",
+      "radio": "B",
+      "phase": "after_reset",
+      "spi_hz": 2000000,
+      "ids": [
+        "0xBCBF936A",
+        "0xFE957BEC",
+        "0xFFDF676D",
+        "0xFC972F64",
+        "0xBC9F0F6E"
+      ]
+    }
+  ],
+  "diagnostic_complete": true,
+  "restore_verified": true,
+  "errors": [],
+  "original_sha256": "3b7918e7d9174d15369d50bb01660462a552dd42a3ffc8912ba3f1259ddead1a",
+  "diagnostic_sha256": "b5a7808f2ef4de2e242b501b22516937f23a18df7be2d6a3cffe66f50da438f0",
+  "ids_match": {
+    "A": false,
+    "B": false
+  },
+  "restored_hello": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": false,
+    "fault_latched": true,
+    "boot": 3529223844,
+    "config_id": 230186031,
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "finished": "2026-11-11T15:16:00.960900+09:00"
+}

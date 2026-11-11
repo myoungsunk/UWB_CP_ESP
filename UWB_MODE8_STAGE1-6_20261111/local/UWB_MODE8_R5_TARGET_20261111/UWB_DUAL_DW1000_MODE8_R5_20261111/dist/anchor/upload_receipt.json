@@ -1,0 +1,18 @@
+{
+  "role": "anchor",
+  "port": "COM4",
+  "command": [
+    "C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe",
+    "upload",
+    "--fqbn",
+    "esp32:esp32:esp32doit-devkit-v1",
+    "--port",
+    "COM4",
+    "--input-dir",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\anchor",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\firmware\\ANCHOR_DUAL_DS_CIR"
+  ],
+  "exit_code": 0,
+  "independent_flash_readback_verified": false,
+  "hardware_rf_tested": false
+}

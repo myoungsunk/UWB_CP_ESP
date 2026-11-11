@@ -1,0 +1,21 @@
+{
+  "event": "HELLO",
+  "role": "tag",
+  "firmware": "D8_R5_TAG_STAGE6_RX_FEC_PACKED_20261111",
+  "mode": 8,
+  "wire": "RFB8",
+  "hw_ok": true,
+  "fault_latched": false,
+  "boot": 2300922472,
+  "config_id": 1597458596,
+  "stage": 6,
+  "period_us": 300000,
+  "baud": 921600,
+  "active": false,
+  "wifi_ota": false,
+  "cal_default_is_uncalibrated": true,
+  "drops": 0,
+  "sent": 100,
+  "period_miss": 0,
+  "writer_max_us": 163979
+}

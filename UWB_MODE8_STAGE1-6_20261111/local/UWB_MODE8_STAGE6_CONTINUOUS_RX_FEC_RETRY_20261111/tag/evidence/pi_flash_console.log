@@ -1,0 +1,104 @@
+{
+  "common": {
+    "target_receipt": true,
+    "fqbn": true,
+    "core": true
+  },
+  "tag": {
+    "checks": {
+      "source_binding": true,
+      "bin_sha256": true,
+      "esp32_app_image_header": true,
+      "bootloader.bin_sha256": true,
+      "partitions.bin_sha256": true,
+      "elf_sha256": true,
+      "xtensa_elf_header": true,
+      "merged_sha256": true,
+      "merged_bootloader.bin_at_1000": true,
+      "merged_partitions.bin_at_8000": true,
+      "merged_bin_at_10000": true
+    },
+    "flash_preflight_pass": true
+  }
+}
+prior.bin: OK
+new.bin: OK
+esptool v5.4.0
+Serial port /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Connecting......
+Connected to ESP32 on /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:73:06:54
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Verifying 0x61ee0 (401120) bytes at 0x00010000 in flash against 'prior.bin'...
+Verification successful (digest matched).
+
+Hard resetting via RTS pin...
+prior.bin: OK
+new.bin: OK
+esptool v5.4.0
+Serial port /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Connecting.........
+Connected to ESP32 on /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:73:06:54
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Flash will be erased from 0x00010000 to 0x00072fff...
+Compressed 402704 bytes to 191272...
+Writing at 0x0001bf9a ━━╸                              8.6% 16.00kB/186.79kB [0s] 
+Writing at 0x00032d48 ━━━━━                           17.1% 32.00kB/186.79kB [0s] 
+Writing at 0x00037ffc ━━━━━━━╸                        25.7% 48.00kB/186.79kB [1s] 
+Writing at 0x0003d831 ━━━━━━━━━━                      34.3% 64.00kB/186.79kB [1s] 
+Writing at 0x00042b35 ━━━━━━━━━━━━╸                   42.8% 80.00kB/186.79kB [2s] 
+Writing at 0x0004816a ━━━━━━━━━━━━━━━                 51.4% 96.00kB/186.79kB [2s] 
+Writing at 0x0004d93c ━━━━━━━━━━━━━━━━━╸              60.0% 112.00kB/186.79kB [3s] 
+Writing at 0x000541f9 ━━━━━━━━━━━━━━━━━━━━╸           68.5% 128.00kB/186.79kB [3s] 
+Writing at 0x00063229 ━━━━━━━━━━━━━━━━━━━━━━━         77.1% 144.00kB/186.79kB [4s] 
+Writing at 0x00068a42 ━━━━━━━━━━━━━━━━━━━━━━━━━╸      85.7% 160.00kB/186.79kB [4s] 
+Writing at 0x0006e491 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━    94.2% 176.00kB/186.79kB [4s] 
+Writing at 0x00072510 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.0% 186.79kB/186.79kB [5s] 
+Wrote 402704 bytes (191272 compressed) at 0x00010000 in 5.3 seconds (608.6 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Hard resetting via RTS pin...
+prior.bin: OK
+new.bin: OK
+esptool v5.4.0
+Serial port /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Connecting....
+Connected to ESP32 on /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:73:06:54
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Verifying 0x62510 (402704) bytes at 0x00010000 in flash against 'new.bin'...
+Verification successful (digest matched).
+
+Hard resetting via RTS pin...

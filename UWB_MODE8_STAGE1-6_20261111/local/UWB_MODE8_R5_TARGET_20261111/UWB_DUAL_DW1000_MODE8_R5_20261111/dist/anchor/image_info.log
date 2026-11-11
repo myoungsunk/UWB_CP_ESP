@@ -1,0 +1,48 @@
+COMMAND: ["C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esptool_py\\5.1.0\\esptool.exe", "--chip", "esp32", "image-info", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"]
+esptool v5.1.0
+Image size: 388432 bytes
+
+ESP32 Image Header
+==================
+Image version: 1
+Entry point: 0x40081bcc
+Segments: 6
+Flash size: 4MB
+Flash freq: 80m
+Flash mode: DIO
+
+ESP32 Extended Image Header
+===========================
+WP pin: 0xee (disabled)
+Flash pins drive settings: clk_drv: 0x0, q_drv: 0x0, d_drv: 0x0, cs0_drv: 0x0, hd_drv: 0x0, wp_drv: 0x0
+Chip ID: 0 (ESP32)
+Minimal chip revision: v0.0, (legacy min_rev = 0)
+Maximal chip revision: v655.35
+
+Segments Information
+====================
+Segment   Length   Load addr   File offs  Memory types
+-------  -------  ----------  ----------  ------------
+      0  0x13e58  0x3f400020  0x00000018  DROM
+      1  0x0c198  0x3ffbdb60  0x00013e78  BYTE_ACCESSIBLE, DRAM
+      2  0x27fd8  0x400d0020  0x00020018  IROM
+      3  0x0755c  0x3ffc9cf8  0x00047ff8  BYTE_ACCESSIBLE, DRAM
+      4  0x0f798  0x40080000  0x0004f55c  IRAM
+      5  0x00020  0x50000200  0x0005ecfc  RTC_DATA
+
+ESP32 Image Footer
+==================
+Checksum: 0xb3 (valid)
+Validation hash: b87e31c3ad009e7b2b369a3a11ac817f53eb7b24d966583ff753752a9d4afc83 (valid)
+
+Application Information
+=======================
+Project name: arduino-lib-builder
+App version: 8cabf2c
+Compile time: Feb 11 2026 19:51:20
+ELF file SHA256: d4b0258fa48fada1e7efb838317d0be843a699772ee882527a71de21d01f4791
+ESP-IDF: v5.5.2-729-g87912cd291
+Minimal eFuse block revision: 0.0
+Maximal eFuse block revision: 0.99
+MMU page size: 64 KB
+Secure version: 0

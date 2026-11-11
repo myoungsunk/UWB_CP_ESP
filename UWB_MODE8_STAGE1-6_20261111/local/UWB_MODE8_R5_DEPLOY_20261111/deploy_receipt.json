@@ -1,0 +1,57 @@
+{
+  "recorded_utc": "2026-11-11T06:02:43.122736+00:00",
+  "question_id": "UWB-MODE8-SOURCE-HOST-QA-20261111",
+  "release": "D8_R5_SOURCE_20261111",
+  "device_reported_firmware": "D8_R4_SOURCE_20261111",
+  "source_zip_sha256": "2f837598ad45f6de0cdf4462bdde29238957aadaf188fad5851c2e6aa9dbc7c0",
+  "core": "3.3.7",
+  "rf_tx_requested": false,
+  "rf_measurement_performed": false,
+  "anchor": {
+    "port": "COM4",
+    "mac": "28:56:2f:72:e7:18",
+    "backup_sha256": "4443326863b71589103e966d3c9f6589133809c9b646af6fbc97c4e6aeb52340",
+    "app_sha256": "a9c67adc701eae75a9851f906453e8e6bf851efb5706bab74170bd6c44592eb1",
+    "upload_pass": true,
+    "four_flash_regions_digest_matched": true,
+    "usb": {
+      "pass": true,
+      "boot": 2499673351,
+      "hw_ok": true,
+      "fault_latched": false,
+      "selftest_pass": true,
+      "dev_a": "0xDECA0130",
+      "dev_b": "0x00000000"
+    }
+  },
+  "tag": {
+    "host": "Raspberry Pi",
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "tty": "/dev/ttyUSB0",
+    "mac": "28:56:2f:73:06:54",
+    "app_sha256": "3b7918e7d9174d15369d50bb01660462a552dd42a3ffc8912ba3f1259ddead1a",
+    "upload_pass": true,
+    "four_flash_regions_digest_matched": true,
+    "usb": {
+      "pass": false,
+      "boot": 3019769086,
+      "hw_ok": false,
+      "fault_latched": true,
+      "selftest_pass": false,
+      "dev_a": "0x025CD6D9",
+      "dev_b": "0x00000000"
+    },
+    "usb_reset_retest": {
+      "pass": false,
+      "boot": 674540175,
+      "hw_ok": false,
+      "fault_latched": true,
+      "selftest_pass": false,
+      "dev_a": "0x782B07C0",
+      "dev_b": "0x00000000"
+    },
+    "init_stopped_at_radio": "A",
+    "radio_b_evaluation": "not_reached",
+    "expected_dev_id": "0xDECA0130"
+  }
+}

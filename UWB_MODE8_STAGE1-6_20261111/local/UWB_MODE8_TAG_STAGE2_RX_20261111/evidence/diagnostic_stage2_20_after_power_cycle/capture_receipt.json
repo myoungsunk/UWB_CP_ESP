@@ -1,0 +1,42 @@
+{
+  "session": 2465947693,
+  "source": "serial_hardware_capture",
+  "stage": 2,
+  "requested_count": 20,
+  "accuracy_validated": false,
+  "pass": false,
+  "error": "tag: SELFTEST failed: {'event': 'SELFTEST', 'role': 'tag', 'pass': False, 'faults': 1, 'dev_a': 3737780528, 'dev_b': 3737780528, 'ant_a_tx': 16436, 'ant_a_rx': 16436, 'ant_b_tx': 16436, 'ant_b_rx': 16436}",
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 0,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "shutdown": {
+    "pass": false,
+    "request": 1772109696,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 0
+      }
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "method": "same_fixture_and_mutations_loaded_against_original_R3_and_modified_R4_tools",
+  "R3": {
+    "clean": {
+      "capture_pass": true,
+      "axis_available": true,
+      "problems": []
+    },
+    "cir_radio": {
+      "capture_pass": true,
+      "axis_available": true,
+      "problems": []
+    },
+    "cir_probe": {
+      "capture_pass": true,
+      "axis_available": true,
+      "problems": []
+    },
+    "probe_rx_radio": {
+      "capture_pass": true,
+      "axis_available": true,
+      "problems": []
+    },
+    "probe_rx_type": {
+      "capture_pass": true,
+      "axis_available": true,
+      "problems": []
+    }
+  },
+  "R4": {
+    "clean": {
+      "capture_pass": true,
+      "axis_available": true,
+      "problems": []
+    },
+    "cir_radio": {
+      "capture_pass": false,
+      "axis_available": false,
+      "problems": [
+        "TAG_CIR_SLOT_IDENTITY_TXN_0"
+      ]
+    },
+    "cir_probe": {
+      "capture_pass": false,
+      "axis_available": false,
+      "problems": [
+        "TAG_CIR_SLOT_IDENTITY_TXN_0"
+      ]
+    },
+    "probe_rx_radio": {
+      "capture_pass": false,
+      "axis_available": false,
+      "problems": [
+        "TAG_PROBE_AIR_MISMATCH_TXN_0_SLOT_3"
+      ]
+    },
+    "probe_rx_type": {
+      "capture_pass": false,
+      "axis_available": false,
+      "problems": [
+        "TAG_PROBE_AIR_MISMATCH_TXN_0_SLOT_3"
+      ]
+    }
+  }
+}

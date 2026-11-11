@@ -1,0 +1,84 @@
+{
+  "utc": "2026-11-11T08:19:27.653375+00:00",
+  "port": "COM4",
+  "role": "anchor",
+  "mac": "28:56:2f:72:e7:18",
+  "flash_offset": "0x10000",
+  "application_bytes": 392304,
+  "written_app_sha256": "7448a52755023c41d1d760e86f65c1a70c8d6addc9f9322723feea263c134f06",
+  "source_manifest_sha256": "0262ec1e59437fe519fe25b1f3f8761524a439386c6bbc7616358890d51cf556",
+  "recovery_image": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin",
+  "recovery_app_sha256": "6ba6517b3504e1349f3c668636ec1d94b09f37ed47982edce66b54c492a73336",
+  "previous_r5_verified_on_device": true,
+  "esptool_version": "5.1.0",
+  "commands": {
+    "r5_preflash_verify": [
+      "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+      "--chip",
+      "esp32",
+      "--port",
+      "COM4",
+      "--baud",
+      "460800",
+      "verify-flash",
+      "0x10000",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"
+    ],
+    "r6_write": [
+      "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+      "--chip",
+      "esp32",
+      "--port",
+      "COM4",
+      "--baud",
+      "460800",
+      "write-flash",
+      "0x10000",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R6_ANCHOR_REAUDIT_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"
+    ],
+    "r6_verify": [
+      "C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esptool_py/5.1.0/esptool.exe",
+      "--chip",
+      "esp32",
+      "--port",
+      "COM4",
+      "--baud",
+      "460800",
+      "verify-flash",
+      "0x10000",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R6_ANCHOR_REAUDIT_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin"
+    ],
+    "usb_smoke": [
+      "py",
+      "-3",
+      "-B",
+      "-X",
+      "utf8",
+      "tools/usb_smoke.py",
+      "--role",
+      "anchor",
+      "--port",
+      "COM4"
+    ],
+    "usb_retry": [
+      "PLLSTATUS",
+      "RESET",
+      "SELFTEST",
+      "PLLSTATUS"
+    ]
+  },
+  "flash_written": true,
+  "flash_readback_verified": true,
+  "hello_firmware_verified": true,
+  "selftest_pass": false,
+  "selftest_pass_after_usb_reset": false,
+  "rf_tx_requested": false,
+  "evidence_sha256": {
+    "offline_preflight.json": "28633855cc8335adb7c467f68ffa2f06fb2430cd982206f5eed848db3e99964b",
+    "r5_preflash_verify.log": "e100989128a5e5448566b769ed9afabaf5de1dcbdeb1f7a985cce4e009aefa07",
+    "r6_write.log": "e93a9036cc91f13802c03feb335750a06bbafe77d1f06a3ccfd7a662aa1b5db0",
+    "r6_verify.log": "076683039f99ed07ecfba4b5f95c3785da96651b54de91231088376d9489363f",
+    "usb_smoke.json": "a1e23de8d85b61d60e231e577a11b692bca2a50c4499e25aba2fa0d0c1cb81b6",
+    "usb_retry.json": "8f0f5cc331401b78762d3755f8bf8a07c532257116668fe37f3f9b6644597a28"
+  }
+}

@@ -1,0 +1,4 @@
+HOST-ONLY COMMAND: ["/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE5_P2_RANGING_20261111/anchor/build/host/test_core", "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE5_P2_RANGING_20261111/anchor/evidence/host"]
+tag_json_bytes=5789 sizeof_Record=18728
+wide_json_bytes=6106
+PASS checks=11499 (HOST SYNTHETIC ONLY)

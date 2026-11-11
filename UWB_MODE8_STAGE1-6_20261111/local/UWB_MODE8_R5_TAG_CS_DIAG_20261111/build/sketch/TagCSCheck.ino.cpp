@@ -1,0 +1,158 @@
+#line 1 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+#include <Arduino.h>
+#include <SPI.h>
+#include <driver/gpio.h>
+#include <driver/pulse_cnt.h>
+
+constexpr uint8_t csA = 21;
+constexpr uint8_t csB = 25;
+constexpr gpio_num_t senseA = GPIO_NUM_32;
+constexpr gpio_num_t senseB = GPIO_NUM_33;
+constexpr gpio_num_t sck = GPIO_NUM_18;
+constexpr uint32_t spiHz = 1000000;
+constexpr int frameClocks = 8 + 32;
+
+struct Sense {
+  gpio_num_t pin;
+  pcnt_unit_handle_t clocks;
+  pcnt_unit_handle_t edges;
+};
+
+Sense a = {senseA, nullptr, nullptr};
+Sense b = {senseB, nullptr, nullptr};
+
+#line 23 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+pcnt_unit_handle_t startCounter(int edgePin, int gatePin, bool countFalling);
+#line 46 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+void startSense(Sense& sense);
+#line 51 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+void clearSense(const Sense& sense);
+#line 56 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+int count(pcnt_unit_handle_t counter);
+#line 62 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+int csLevels();
+#line 66 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+void checkCs(char radio, uint8_t cs);
+#line 105 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+void setup();
+#line 120 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+void loop();
+#line 23 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_DIAG_20261111\\TagCSCheck\\TagCSCheck.ino"
+pcnt_unit_handle_t startCounter(int edgePin, int gatePin, bool countFalling) {
+  pcnt_unit_config_t unitConfig = {};
+  unitConfig.low_limit = -32768;
+  unitConfig.high_limit = 32767;
+  pcnt_unit_handle_t unit;
+  ESP_ERROR_CHECK(pcnt_new_unit(&unitConfig, &unit));
+
+  pcnt_chan_config_t channelConfig = {};
+  channelConfig.edge_gpio_num = edgePin;
+  channelConfig.level_gpio_num = gatePin;
+  pcnt_channel_handle_t channel;
+  ESP_ERROR_CHECK(pcnt_new_channel(unit, &channelConfig, &channel));
+  ESP_ERROR_CHECK(pcnt_channel_set_edge_action(
+    channel, PCNT_CHANNEL_EDGE_ACTION_INCREASE,
+    countFalling ? PCNT_CHANNEL_EDGE_ACTION_INCREASE : PCNT_CHANNEL_EDGE_ACTION_HOLD));
+  ESP_ERROR_CHECK(pcnt_channel_set_level_action(
+    channel, gatePin < 0 ? PCNT_CHANNEL_LEVEL_ACTION_KEEP : PCNT_CHANNEL_LEVEL_ACTION_HOLD,
+    PCNT_CHANNEL_LEVEL_ACTION_KEEP));
+  ESP_ERROR_CHECK(pcnt_unit_enable(unit));
+  ESP_ERROR_CHECK(pcnt_unit_start(unit));
+  return unit;
+}
+
+void startSense(Sense& sense) {
+  sense.clocks = startCounter(sck, sense.pin, false);
+  sense.edges = startCounter(sense.pin, -1, true);
+}
+
+void clearSense(const Sense& sense) {
+  ESP_ERROR_CHECK(pcnt_unit_clear_count(sense.clocks));
+  ESP_ERROR_CHECK(pcnt_unit_clear_count(sense.edges));
+}
+
+int count(pcnt_unit_handle_t counter) {
+  int value;
+  ESP_ERROR_CHECK(pcnt_unit_get_count(counter, &value));
+  return value;
+}
+
+int csLevels() {
+  return 10 * gpio_get_level(senseA) + gpio_get_level(senseB);
+}
+
+void checkCs(char radio, uint8_t cs) {
+  SPI.beginTransaction(SPISettings(spiHz, MSBFIRST, SPI_MODE0));
+  clearSense(a);
+  clearSense(b);
+  const int idleBefore = csLevels();
+
+  digitalWrite(cs, LOW);
+  delayMicroseconds(2);
+  const int beforeHeader = csLevels();
+  SPI.transfer(0x00);
+  uint32_t devId = 0;
+  for (unsigned int index = 0; index < 4; ++index) {
+    devId |= static_cast<uint32_t>(SPI.transfer(0x00)) << (8 * index);
+  }
+  const int afterData = csLevels();
+  delayMicroseconds(2);
+  digitalWrite(cs, HIGH);
+  delayMicroseconds(2);
+  const int idleAfter = csLevels();
+  const int clocksA = count(a.clocks);
+  const int clocksB = count(b.clocks);
+  const int edgesA = count(a.edges);
+  const int edgesB = count(b.edges);
+  SPI.endTransaction();
+
+  const bool selectA = radio == 'A';
+  const int selectedLevels = selectA ? 1 : 10;
+  const bool pass = idleBefore == 11 && idleAfter == 11
+                    && beforeHeader == selectedLevels && afterData == selectedLevels
+                    && clocksA == (selectA ? frameClocks : 0)
+                    && clocksB == (selectA ? 0 : frameClocks)
+                    && edgesA == (selectA ? 2 : 0) && edgesB == (selectA ? 0 : 2);
+  Serial.printf("{\"event\":\"CS_CHECK\",\"selected\":\"%c\","
+                "\"dev_id\":\"0x%08lX\",\"levels\":[\"%02d\",\"%02d\",\"%02d\",\"%02d\"],"
+                "\"clocks\":[%d,%d],\"edges\":[%d,%d],\"cs_pass\":%s}\n",
+                radio, static_cast<unsigned long>(devId), idleBefore, beforeHeader,
+                afterData, idleAfter, clocksA, clocksB, edgesA, edgesB, pass ? "true" : "false");
+}
+
+void setup() {
+  Serial.begin(115200);
+  pinMode(csA, OUTPUT);
+  digitalWrite(csA, HIGH);
+  pinMode(csB, OUTPUT);
+  digitalWrite(csB, HIGH);
+  // Configure PCNT inputs first, then let SPI own the SCK output.
+  startSense(a);
+  startSense(b);
+  if (!SPI.begin(sck, 19, 23, -1)) {
+    ESP_ERROR_CHECK(ESP_FAIL);
+  }
+  ESP_ERROR_CHECK(gpio_input_enable(sck));
+}
+
+void loop() {
+  switch (Serial.read()) {
+    case 'H':
+      Serial.println("TAG_AB_CS_CHECK_V1");
+      break;
+    case 'A':
+      checkCs('A', csA);
+      break;
+    case 'B':
+      checkCs('B', csB);
+      break;
+    case 'I':
+      checkCs('A', csA);
+      checkCs('B', csB);
+      break;
+    default:
+      delay(2);
+      break;
+  }
+}
+

@@ -1,0 +1,1529 @@
+{
+  "session": 981264340,
+  "source": "serial_hardware_capture",
+  "stage": 6,
+  "requested_count": 100,
+  "accuracy_validated": false,
+  "pass": false,
+  "tag_identity": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R5_TAG_STAGE6_RX_FEC_RFRETRY_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 1695720461,
+    "config_id": 2242740637,
+    "stage": 6,
+    "period_us": 200000,
+    "baud": 2000000,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0,
+    "writer_max_us": 0
+  },
+  "anchor_identity": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R6_ANCHOR_STAGE6_RX_FEC_RFRETRY_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 1519453799,
+    "config_id": 2242740637,
+    "stage": 6,
+    "period_us": 200000,
+    "baud": 2000000,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 100,
+    "period_miss": 0,
+    "writer_max_us": 0
+  },
+  "error": "Paired record drain deadline; partial capture preserved",
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 94,
+    "complete": 93,
+    "reader_error": null,
+    "fault_events": 6,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 1768,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 1,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "uart_fragment_transport": {
+      "fragment_crc_errors": 663,
+      "discarded_bytes": 186878,
+      "fragment_records": 107,
+      "repaired_records": 95,
+      "repaired_data_fragments": 570,
+      "unrepairable_records": 0,
+      "repairs": [
+        {
+          "sequence": 11,
+          "data_indices": [
+            15,
+            20,
+            29,
+            42,
+            53,
+            78
+          ]
+        },
+        {
+          "sequence": 12,
+          "data_indices": [
+            0,
+            3,
+            11,
+            13,
+            70,
+            73
+          ]
+        },
+        {
+          "sequence": 13,
+          "data_indices": [
+            3,
+            28,
+            31,
+            33,
+            60,
+            62,
+            78
+          ]
+        },
+        {
+          "sequence": 14,
+          "data_indices": [
+            8,
+            11,
+            20,
+            26,
+            42,
+            49,
+            50,
+            54,
+            63,
+            81,
+            84,
+            87
+          ]
+        },
+        {
+          "sequence": 15,
+          "data_indices": [
+            2,
+            18,
+            48,
+            59,
+            87
+          ]
+        },
+        {
+          "sequence": 16,
+          "data_indices": [
+            4,
+            6,
+            16,
+            60,
+            80
+          ]
+        },
+        {
+          "sequence": 17,
+          "data_indices": [
+            12,
+            18,
+            31,
+            32,
+            50,
+            53,
+            68,
+            69,
+            85
+          ]
+        },
+        {
+          "sequence": 18,
+          "data_indices": [
+            3,
+            6,
+            25,
+            49,
+            57,
+            72
+          ]
+        },
+        {
+          "sequence": 19,
+          "data_indices": [
+            22,
+            32,
+            56,
+            61,
+            84
+          ]
+        },
+        {
+          "sequence": 20,
+          "data_indices": [
+            46,
+            51,
+            75,
+            80
+          ]
+        },
+        {
+          "sequence": 21,
+          "data_indices": [
+            5,
+            35,
+            49,
+            63,
+            69
+          ]
+        },
+        {
+          "sequence": 23,
+          "data_indices": [
+            7,
+            19,
+            38,
+            41,
+            42,
+            53,
+            68,
+            75
+          ]
+        },
+        {
+          "sequence": 24,
+          "data_indices": [
+            41,
+            76,
+            85
+          ]
+        },
+        {
+          "sequence": 25,
+          "data_indices": [
+            3,
+            25,
+            37,
+            56,
+            58,
+            74,
+            79,
+            87
+          ]
+        },
+        {
+          "sequence": 26,
+          "data_indices": [
+            10,
+            20,
+            34,
+            46,
+            48,
+            82,
+            86
+          ]
+        },
+        {
+          "sequence": 27,
+          "data_indices": [
+            18,
+            53
+          ]
+        },
+        {
+          "sequence": 28,
+          "data_indices": [
+            5,
+            28,
+            52,
+            58,
+            60
+          ]
+        },
+        {
+          "sequence": 29,
+          "data_indices": [
+            2,
+            13,
+            24,
+            25,
+            29,
+            52,
+            74,
+            79,
+            87
+          ]
+        },
+        {
+          "sequence": 30,
+          "data_indices": [
+            32,
+            53,
+            54,
+            57,
+            85
+          ]
+        },
+        {
+          "sequence": 31,
+          "data_indices": [
+            4,
+            9,
+            14,
+            22,
+            28,
+            49,
+            63
+          ]
+        },
+        {
+          "sequence": 33,
+          "data_indices": [
+            5,
+            19,
+            28,
+            49,
+            72,
+            80,
+            81
+          ]
+        },
+        {
+          "sequence": 34,
+          "data_indices": [
+            0,
+            1,
+            26,
+            32,
+            50,
+            71,
+            72,
+            79
+          ]
+        },
+        {
+          "sequence": 35,
+          "data_indices": [
+            40,
+            65,
+            72
+          ]
+        },
+        {
+          "sequence": 36,
+          "data_indices": [
+            8,
+            43,
+            44,
+            62,
+            78,
+            87
+          ]
+        },
+        {
+          "sequence": 37,
+          "data_indices": [
+            8,
+            25,
+            39
+          ]
+        },
+        {
+          "sequence": 38,
+          "data_indices": [
+            5,
+            19,
+            22,
+            23,
+            71,
+            75,
+            79
+          ]
+        },
+        {
+          "sequence": 39,
+          "data_indices": [
+            26,
+            27,
+            51,
+            53,
+            61,
+            79,
+            82,
+            83
+          ]
+        },
+        {
+          "sequence": 40,
+          "data_indices": [
+            22,
+            27,
+            32,
+            42,
+            50,
+            53
+          ]
+        },
+        {
+          "sequence": 41,
+          "data_indices": [
+            11,
+            17,
+            42,
+            63,
+            65,
+            68
+          ]
+        },
+        {
+          "sequence": 42,
+          "data_indices": [
+            13,
+            25,
+            36,
+            40,
+            53,
+            56,
+            62,
+            64,
+            65,
+            84
+          ]
+        },
+        {
+          "sequence": 43,
+          "data_indices": [
+            6,
+            8,
+            12
+          ]
+        },
+        {
+          "sequence": 44,
+          "data_indices": [
+            0,
+            7,
+            18,
+            38,
+            56,
+            61,
+            73,
+            76,
+            81
+          ]
+        },
+        {
+          "sequence": 45,
+          "data_indices": [
+            4,
+            27,
+            54,
+            59,
+            66,
+            70,
+            76
+          ]
+        },
+        {
+          "sequence": 47,
+          "data_indices": [
+            0,
+            23,
+            27,
+            30,
+            32,
+            47,
+            71
+          ]
+        },
+        {
+          "sequence": 48,
+          "data_indices": [
+            26,
+            27,
+            31,
+            36,
+            42,
+            50,
+            60,
+            85
+          ]
+        },
+        {
+          "sequence": 49,
+          "data_indices": [
+            5,
+            82
+          ]
+        },
+        {
+          "sequence": 50,
+          "data_indices": [
+            8,
+            21,
+            32,
+            66
+          ]
+        },
+        {
+          "sequence": 51,
+          "data_indices": [
+            6,
+            21,
+            42,
+            62,
+            71
+          ]
+        },
+        {
+          "sequence": 52,
+          "data_indices": [
+            10,
+            32,
+            42,
+            45,
+            46,
+            64
+          ]
+        },
+        {
+          "sequence": 53,
+          "data_indices": [
+            2,
+            67,
+            68,
+            72,
+            82
+          ]
+        },
+        {
+          "sequence": 54,
+          "data_indices": [
+            0,
+            6,
+            10,
+            32,
+            48,
+            57,
+            62,
+            86
+          ]
+        },
+        {
+          "sequence": 55,
+          "data_indices": [
+            19,
+            27,
+            34,
+            36,
+            42,
+            46,
+            57,
+            79
+          ]
+        },
+        {
+          "sequence": 56,
+          "data_indices": [
+            44,
+            58,
+            62,
+            72,
+            80,
+            81,
+            82
+          ]
+        },
+        {
+          "sequence": 57,
+          "data_indices": [
+            4,
+            18,
+            19,
+            25,
+            37,
+            40,
+            59,
+            63
+          ]
+        },
+        {
+          "sequence": 58,
+          "data_indices": [
+            19,
+            22,
+            23,
+            42,
+            68,
+            72,
+            78,
+            84,
+            87
+          ]
+        },
+        {
+          "sequence": 59,
+          "data_indices": [
+            33
+          ]
+        },
+        {
+          "sequence": 60,
+          "data_indices": [
+            15,
+            16,
+            19,
+            23,
+            39,
+            50,
+            60,
+            74
+          ]
+        },
+        {
+          "sequence": 62,
+          "data_indices": [
+            8,
+            18,
+            38,
+            51,
+            53,
+            67,
+            71,
+            73,
+            82
+          ]
+        },
+        {
+          "sequence": 63,
+          "data_indices": [
+            17,
+            22,
+            25,
+            33,
+            51,
+            65
+          ]
+        },
+        {
+          "sequence": 64,
+          "data_indices": [
+            12,
+            66,
+            81
+          ]
+        },
+        {
+          "sequence": 65,
+          "data_indices": [
+            24,
+            26,
+            64,
+            77
+          ]
+        },
+        {
+          "sequence": 66,
+          "data_indices": [
+            6,
+            16,
+            34,
+            45,
+            54,
+            61
+          ]
+        },
+        {
+          "sequence": 67,
+          "data_indices": [
+            0,
+            10,
+            31,
+            51,
+            53,
+            74,
+            79
+          ]
+        },
+        {
+          "sequence": 68,
+          "data_indices": [
+            20,
+            36,
+            38,
+            55,
+            61,
+            67,
+            76,
+            80
+          ]
+        },
+        {
+          "sequence": 69,
+          "data_indices": [
+            3,
+            6,
+            25,
+            33,
+            40,
+            63
+          ]
+        },
+        {
+          "sequence": 70,
+          "data_indices": [
+            14,
+            21,
+            29,
+            36,
+            45,
+            55,
+            68,
+            73
+          ]
+        },
+        {
+          "sequence": 71,
+          "data_indices": [
+            7,
+            8,
+            14,
+            24,
+            41,
+            50,
+            72,
+            78,
+            83
+          ]
+        },
+        {
+          "sequence": 72,
+          "data_indices": [
+            27,
+            34,
+            42,
+            57,
+            64,
+            75,
+            86
+          ]
+        },
+        {
+          "sequence": 73,
+          "data_indices": [
+            34,
+            45,
+            84
+          ]
+        },
+        {
+          "sequence": 74,
+          "data_indices": [
+            15,
+            25,
+            50,
+            55,
+            57
+          ]
+        },
+        {
+          "sequence": 76,
+          "data_indices": [
+            7,
+            13,
+            39,
+            61
+          ]
+        },
+        {
+          "sequence": 77,
+          "data_indices": [
+            2,
+            15,
+            16,
+            20,
+            57,
+            63,
+            76,
+            81
+          ]
+        },
+        {
+          "sequence": 78,
+          "data_indices": [
+            20,
+            22,
+            23,
+            33,
+            48,
+            50,
+            53,
+            77
+          ]
+        },
+        {
+          "sequence": 79,
+          "data_indices": [
+            9,
+            20,
+            21,
+            23,
+            32,
+            40,
+            42,
+            43,
+            63,
+            67,
+            77
+          ]
+        },
+        {
+          "sequence": 80,
+          "data_indices": [
+            18,
+            63,
+            69,
+            83
+          ]
+        },
+        {
+          "sequence": 81,
+          "data_indices": [
+            0,
+            20,
+            29,
+            31,
+            37,
+            51,
+            63,
+            69,
+            76
+          ]
+        },
+        {
+          "sequence": 82,
+          "data_indices": [
+            9,
+            30,
+            43,
+            46,
+            70,
+            83,
+            86
+          ]
+        },
+        {
+          "sequence": 83,
+          "data_indices": [
+            2,
+            4,
+            57,
+            58,
+            63,
+            64,
+            67,
+            70
+          ]
+        },
+        {
+          "sequence": 84,
+          "data_indices": [
+            23,
+            31,
+            52,
+            72,
+            76
+          ]
+        },
+        {
+          "sequence": 85,
+          "data_indices": [
+            24,
+            37,
+            39,
+            42,
+            47,
+            79,
+            81
+          ]
+        },
+        {
+          "sequence": 86,
+          "data_indices": [
+            2,
+            22,
+            26,
+            29,
+            31,
+            46,
+            54,
+            81,
+            83
+          ]
+        },
+        {
+          "sequence": 87,
+          "data_indices": [
+            17,
+            23,
+            30,
+            48,
+            63,
+            67,
+            68
+          ]
+        },
+        {
+          "sequence": 88,
+          "data_indices": [
+            13,
+            18,
+            43,
+            56,
+            61,
+            63
+          ]
+        },
+        {
+          "sequence": 89,
+          "data_indices": [
+            53,
+            66
+          ]
+        },
+        {
+          "sequence": 91,
+          "data_indices": [
+            8,
+            18,
+            23,
+            44,
+            46,
+            54,
+            64
+          ]
+        },
+        {
+          "sequence": 92,
+          "data_indices": [
+            7,
+            29,
+            34,
+            78,
+            81
+          ]
+        },
+        {
+          "sequence": 93,
+          "data_indices": [
+            14,
+            20,
+            45,
+            47,
+            72,
+            73,
+            77
+          ]
+        },
+        {
+          "sequence": 94,
+          "data_indices": [
+            44,
+            55,
+            73
+          ]
+        },
+        {
+          "sequence": 95,
+          "data_indices": [
+            6,
+            26,
+            46,
+            67,
+            71
+          ]
+        },
+        {
+          "sequence": 96,
+          "data_indices": [
+            23,
+            27,
+            28,
+            47,
+            50,
+            75
+          ]
+        },
+        {
+          "sequence": 97,
+          "data_indices": [
+            6
+          ]
+        },
+        {
+          "sequence": 98,
+          "data_indices": [
+            44,
+            59,
+            62,
+            82
+          ]
+        },
+        {
+          "sequence": 99,
+          "data_indices": [
+            14,
+            47,
+            67,
+            78
+          ]
+        },
+        {
+          "sequence": 100,
+          "data_indices": [
+            16,
+            39,
+            42,
+            50,
+            81
+          ]
+        },
+        {
+          "sequence": 101,
+          "data_indices": [
+            41
+          ]
+        },
+        {
+          "sequence": 102,
+          "data_indices": [
+            5,
+            7,
+            18,
+            38,
+            40,
+            47,
+            58,
+            62,
+            68,
+            71,
+            82,
+            86
+          ]
+        },
+        {
+          "sequence": 103,
+          "data_indices": [
+            27,
+            51,
+            85,
+            86
+          ]
+        },
+        {
+          "sequence": 104,
+          "data_indices": [
+            0,
+            65,
+            67,
+            85
+          ]
+        },
+        {
+          "sequence": 106,
+          "data_indices": [
+            1,
+            2,
+            10,
+            13,
+            15,
+            20,
+            35,
+            42,
+            43,
+            62,
+            79
+          ]
+        },
+        {
+          "sequence": 107,
+          "data_indices": [
+            42,
+            57,
+            74,
+            76,
+            81,
+            84
+          ]
+        },
+        {
+          "sequence": 108,
+          "data_indices": [
+            11,
+            20,
+            50,
+            56,
+            81
+          ]
+        },
+        {
+          "sequence": 109,
+          "data_indices": [
+            11,
+            38,
+            51,
+            58
+          ]
+        },
+        {
+          "sequence": 110,
+          "data_indices": [
+            2,
+            18,
+            27,
+            37,
+            52
+          ]
+        },
+        {
+          "sequence": 111,
+          "data_indices": [
+            0
+          ]
+        },
+        {
+          "sequence": 112,
+          "data_indices": [
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "anchor_capture": {
+    "port": "COM4",
+    "records": 100,
+    "complete": 94,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 819,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 1,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "uart_fragment_transport": {
+      "fragment_crc_errors": 227,
+      "discarded_bytes": 63434,
+      "fragment_records": 105,
+      "repaired_records": 49,
+      "repaired_data_fragments": 108,
+      "unrepairable_records": 0,
+      "repairs": [
+        {
+          "sequence": 133,
+          "data_indices": [
+            6
+          ]
+        },
+        {
+          "sequence": 134,
+          "data_indices": [
+            16
+          ]
+        },
+        {
+          "sequence": 135,
+          "data_indices": [
+            2
+          ]
+        },
+        {
+          "sequence": 136,
+          "data_indices": [
+            9,
+            10,
+            11,
+            14
+          ]
+        },
+        {
+          "sequence": 139,
+          "data_indices": [
+            0,
+            9
+          ]
+        },
+        {
+          "sequence": 140,
+          "data_indices": [
+            11
+          ]
+        },
+        {
+          "sequence": 143,
+          "data_indices": [
+            7,
+            8,
+            10,
+            12
+          ]
+        },
+        {
+          "sequence": 147,
+          "data_indices": [
+            13,
+            14,
+            15,
+            17
+          ]
+        },
+        {
+          "sequence": 148,
+          "data_indices": [
+            1
+          ]
+        },
+        {
+          "sequence": 149,
+          "data_indices": [
+            0
+          ]
+        },
+        {
+          "sequence": 150,
+          "data_indices": [
+            4,
+            8
+          ]
+        },
+        {
+          "sequence": 152,
+          "data_indices": [
+            4,
+            9,
+            11,
+            12,
+            13
+          ]
+        },
+        {
+          "sequence": 153,
+          "data_indices": [
+            6,
+            8
+          ]
+        },
+        {
+          "sequence": 155,
+          "data_indices": [
+            7
+          ]
+        },
+        {
+          "sequence": 156,
+          "data_indices": [
+            2,
+            4
+          ]
+        },
+        {
+          "sequence": 159,
+          "data_indices": [
+            0
+          ]
+        },
+        {
+          "sequence": 160,
+          "data_indices": [
+            14
+          ]
+        },
+        {
+          "sequence": 162,
+          "data_indices": [
+            1
+          ]
+        },
+        {
+          "sequence": 164,
+          "data_indices": [
+            12
+          ]
+        },
+        {
+          "sequence": 173,
+          "data_indices": [
+            5
+          ]
+        },
+        {
+          "sequence": 174,
+          "data_indices": [
+            12,
+            13,
+            14,
+            15
+          ]
+        },
+        {
+          "sequence": 175,
+          "data_indices": [
+            5
+          ]
+        },
+        {
+          "sequence": 176,
+          "data_indices": [
+            10,
+            11
+          ]
+        },
+        {
+          "sequence": 178,
+          "data_indices": [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          "sequence": 179,
+          "data_indices": [
+            0
+          ]
+        },
+        {
+          "sequence": 180,
+          "data_indices": [
+            8,
+            9,
+            10,
+            11,
+            12,
+            15
+          ]
+        },
+        {
+          "sequence": 181,
+          "data_indices": [
+            6,
+            8
+          ]
+        },
+        {
+          "sequence": 183,
+          "data_indices": [
+            14,
+            16
+          ]
+        },
+        {
+          "sequence": 185,
+          "data_indices": [
+            6,
+            9,
+            11,
+            13
+          ]
+        },
+        {
+          "sequence": 188,
+          "data_indices": [
+            12,
+            17
+          ]
+        },
+        {
+          "sequence": 190,
+          "data_indices": [
+            0,
+            12
+          ]
+        },
+        {
+          "sequence": 192,
+          "data_indices": [
+            10,
+            13,
+            16
+          ]
+        },
+        {
+          "sequence": 194,
+          "data_indices": [
+            17
+          ]
+        },
+        {
+          "sequence": 195,
+          "data_indices": [
+            2
+          ]
+        },
+        {
+          "sequence": 196,
+          "data_indices": [
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "sequence": 202,
+          "data_indices": [
+            10,
+            12
+          ]
+        },
+        {
+          "sequence": 204,
+          "data_indices": [
+            12,
+            13,
+            14
+          ]
+        },
+        {
+          "sequence": 205,
+          "data_indices": [
+            0,
+            3
+          ]
+        },
+        {
+          "sequence": 206,
+          "data_indices": [
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "sequence": 208,
+          "data_indices": [
+            15
+          ]
+        },
+        {
+          "sequence": 212,
+          "data_indices": [
+            3
+          ]
+        },
+        {
+          "sequence": 213,
+          "data_indices": [
+            7
+          ]
+        },
+        {
+          "sequence": 214,
+          "data_indices": [
+            2,
+            8
+          ]
+        },
+        {
+          "sequence": 216,
+          "data_indices": [
+            10,
+            15,
+            16
+          ]
+        },
+        {
+          "sequence": 220,
+          "data_indices": [
+            13,
+            14,
+            15,
+            16,
+            17
+          ]
+        },
+        {
+          "sequence": 222,
+          "data_indices": [
+            2,
+            3
+          ]
+        },
+        {
+          "sequence": 226,
+          "data_indices": [
+            11,
+            12,
+            13,
+            14,
+            15,
+            16
+          ]
+        },
+        {
+          "sequence": 228,
+          "data_indices": [
+            1
+          ]
+        },
+        {
+          "sequence": 234,
+          "data_indices": [
+            0
+          ]
+        }
+      ]
+    }
+  },
+  "shutdown": {
+    "pass": true,
+    "request": 2914658103,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 981264340
+      },
+      "anchor": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 981264340
+      }
+    }
+  }
+}

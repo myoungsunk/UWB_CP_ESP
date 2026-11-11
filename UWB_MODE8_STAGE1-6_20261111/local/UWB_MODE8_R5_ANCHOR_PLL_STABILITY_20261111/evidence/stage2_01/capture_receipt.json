@@ -1,0 +1,89 @@
+{
+  "session": 2163022701,
+  "source": "serial_hardware_capture",
+  "stage": 2,
+  "requested_count": 20,
+  "accuracy_validated": false,
+  "pass": false,
+  "tag_identity": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R4_SOURCE_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 2843879632,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "error": "anchor: hardware health failed; inspect wiring/power, do not repeatedly reset blindly",
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 0,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "anchor_capture": {
+    "port": "COM4",
+    "records": 0,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "shutdown": {
+    "pass": true,
+    "request": 2940898398,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 0
+      },
+      "anchor": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 0
+      }
+    }
+  }
+}

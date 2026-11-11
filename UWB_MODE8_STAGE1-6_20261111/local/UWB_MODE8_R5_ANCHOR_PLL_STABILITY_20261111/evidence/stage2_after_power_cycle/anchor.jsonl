@@ -1,0 +1,3 @@
+{"event": "STOPPED", "role": "anchor", "session": 0, "stop_request": 0, "physical_rf_off_confirmed": false}
+{"event": "HELLO", "role": "anchor", "firmware": "D8_R4_SOURCE_20261111", "mode": 8, "wire": "RFB8", "hw_ok": false, "fault_latched": true, "boot": 83345513, "config_id": 230186031, "stage": 5, "period_us": 300000, "baud": 921600, "active": false, "wifi_ota": false, "cal_default_is_uncalibrated": true, "drops": 0, "sent": 0, "period_miss": 0}
+{"event": "STOPPED", "role": "anchor", "session": 0, "stop_request": 2778190761, "physical_rf_off_confirmed": false}

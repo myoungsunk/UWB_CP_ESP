@@ -1,0 +1,56 @@
+{
+  "question_id": "MODE8-STAGE6-200MS-2MBPS-1000",
+  "utc": "2026-11-11T13:06:02.9711381Z",
+  "role": "IMPLEMENTER",
+  "deployment": "Existing verified COM4 anchor and Pi tag. No firmware change.",
+  "parent": {
+    "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_PACKED_20261111/evidence/stage6_fast_execution.json",
+    "sha256": "91812938133963a584b2e77691570d83183227e927c69384b005c9af76a63c62"
+  },
+  "governance": [
+    {
+      "path": "C:/Users/Myoungsun Kim/.codex/research-governance/COMMON_CONTRACT.md",
+      "sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb"
+    },
+    {
+      "path": "C:/Users/Myoungsun Kim/.codex/research-governance/ROLE_IMPLEMENTER.md",
+      "sha256": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RFRETRY_20261111/anchor/dist/target_build_receipt.json",
+      "sha256": "447629f5ab961be96b0921572450c3da2db8c18f893933dc3dd04449ffe4e5b5"
+    },
+    {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_PACKED_20261111/tag/dist/target_build_receipt.json",
+      "sha256": "2acb089cc06919ae93c797c4c36add002ef87a512f3cb8e15048a2a26f295477"
+    },
+    {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE4_DS_TWR_20261111/evidence/candidate_tag_delay.json",
+      "sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385"
+    }
+  ],
+  "command": [
+    "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_PACKED_20261111/tag/evidence/capture_tag_rx_status.py",
+    "--anchor",
+    "COM4",
+    "--stage",
+    "6",
+    "--period-us",
+    "200000",
+    "--baud",
+    "2000000",
+    "--count",
+    "1000",
+    "--out",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_PACKED_20261111/evidence/stage6_200ms_2mbps_1000_20261111_220602_883",
+    "--tag-delay-receipt",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE4_DS_TWR_20261111/evidence/candidate_tag_delay.json"
+  ],
+  "acceptance": "One session. Both roles 1000 complete ordered measurement records. P1 and P2 common axis and power grid verified 1000 each. Zero RFB8 CRC, sequence gaps, missing records, drops, period misses or unrecoverable USB records. Verify STOP and RF cadence; report outer USB fragment CRC counters and exact measured jitter."
+}

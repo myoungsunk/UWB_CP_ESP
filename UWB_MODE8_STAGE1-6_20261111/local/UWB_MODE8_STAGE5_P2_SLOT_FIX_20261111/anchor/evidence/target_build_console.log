@@ -1,0 +1,99 @@
+{
+  "created_utc": "2026-11-11T10:43:38.835904+00:00",
+  "target_build": true,
+  "hardware_tested": false,
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "required_core": "3.3.7",
+  "roles": {
+    "anchor": {
+      "command": [
+        "C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe",
+        "compile",
+        "--fqbn",
+        "esp32:esp32:esp32doit-devkit-v1",
+        "--warnings",
+        "all",
+        "--library",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_SLOT_FIX_20261111\\anchor\\vendor\\anchor\\DW1000Ng",
+        "--build-path",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_SLOT_FIX_20261111\\anchor\\build\\anchor",
+        "--output-dir",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_SLOT_FIX_20261111\\anchor\\dist\\anchor",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_SLOT_FIX_20261111\\anchor\\firmware\\ANCHOR_DUAL_DS_CIR"
+      ],
+      "exit_code": 0,
+      "artifacts": {
+        "ANCHOR_DUAL_DS_CIR.ino.bin": {
+          "bytes": 398256,
+          "sha256": "69aab64095cfc0bf37329fefe0559ef693febf5c324cd0642c8c65e368c79c68"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.bootloader.bin": {
+          "bytes": 23520,
+          "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.elf": {
+          "bytes": 6337248,
+          "sha256": "0a3717bdaf0afa54148703d726b439c1eb2847aed713afa910a1620d13bb655a"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.map": {
+          "bytes": 12943789,
+          "sha256": "a8473664fdb03c3e381a6899daeb5b551e250078dbc5cb6b2788833826535c89"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.merged.bin": {
+          "bytes": 4194304,
+          "sha256": "c7ff2fa343458f9e7ff780355b19e62dc1c023073f675253bdaa009a4bb10e52"
+        },
+        "ANCHOR_DUAL_DS_CIR.ino.partitions.bin": {
+          "bytes": 3072,
+          "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+        }
+      },
+      "source_manifest": {
+        "version": 2,
+        "sha256": "7a028cf1f3c5e84c9f4b065de71709cf444789a947590cc70fd24ce855e96428",
+        "files": {
+          "firmware/ANCHOR_DUAL_DS_CIR/ANCHOR_DUAL_DS_CIR.ino": "b02699e3b09b518896d6e9fb641c22c194f58f17ba4d6dc748464e948f26da0a",
+          "firmware/ANCHOR_DUAL_DS_CIR/app.cpp": "9bcf6fbe27d04c94dd33f9badd67c19f4de45934b541bd35d734bb7a75b0a71c",
+          "firmware/ANCHOR_DUAL_DS_CIR/app.hpp": "bcf07e0b5eedd9164db5cb421387b87c27065ff4560e2c8f17d22fbefd8e3051",
+          "firmware/ANCHOR_DUAL_DS_CIR/core.hpp": "ec5cd3a0e5b797c9f429d6487b6d479925d1ef5d030ddb5d2671101d43f932c8",
+          "firmware/ANCHOR_DUAL_DS_CIR/engine.hpp": "488de00a6e7ebda3f8880f8bfe71cc31357011d2efb6feec62c6b014fc0db050",
+          "firmware/ANCHOR_DUAL_DS_CIR/esp32_port.hpp": "57818ca0254980f75f4ed62bfe020cf5b0fa1dadc9031c6cb6f106b35b17ceb8",
+          "firmware/ANCHOR_DUAL_DS_CIR/record_json.hpp": "8a06663a0db4d8c69d2ed96f662112e13e132a91a21d1ac63679d77625011916",
+          "firmware/ANCHOR_DUAL_DS_CIR/rx_guard_policy.hpp": "68fb7a2d13677c0c74f1b8edd48aa0f9e327d43380e779738a65ee4b688c9b49",
+          "shared/app.hpp": "bcf07e0b5eedd9164db5cb421387b87c27065ff4560e2c8f17d22fbefd8e3051",
+          "shared/core.hpp": "ec5cd3a0e5b797c9f429d6487b6d479925d1ef5d030ddb5d2671101d43f932c8",
+          "shared/engine.hpp": "488de00a6e7ebda3f8880f8bfe71cc31357011d2efb6feec62c6b014fc0db050",
+          "shared/esp32_port.hpp": "57818ca0254980f75f4ed62bfe020cf5b0fa1dadc9031c6cb6f106b35b17ceb8",
+          "shared/record_json.hpp": "8a06663a0db4d8c69d2ed96f662112e13e132a91a21d1ac63679d77625011916",
+          "shared/rx_guard_policy.hpp": "68fb7a2d13677c0c74f1b8edd48aa0f9e327d43380e779738a65ee4b688c9b49",
+          "vendor/anchor/DW1000Ng/NOTICE.md": "8ee5221a397a2c281d4a59723919fc0ee6997aa765e2f271d724ab3c98f16ec3",
+          "vendor/anchor/DW1000Ng/library.properties": "2063303e591ef8ed051eab051e282ec043806b22a4b08e5344e7041c5d9b7849",
+          "vendor/anchor/DW1000Ng/src/DW1000Ng.cpp": "52eb547a65422dbe57a9134d97e465eab0c2e50cfc7b6d4c1370710dc47dc981",
+          "vendor/anchor/DW1000Ng/src/DW1000Ng.hpp": "ba04076ae49c3881c7aeec286a2c1fe1d2dd4c62ede1f3287e794f2e1f0471b4",
+          "vendor/anchor/DW1000Ng/src/DW1000NgCompileOptions.hpp": "42d9029c872b3c19bf2ec288d111bb831b031384fe3ce024834e0b8e9df7cc59",
+          "vendor/anchor/DW1000Ng/src/DW1000NgConfiguration.hpp": "0b14b89127df5a4089e98451c388ea8d5d49a3e282e378307327befd5d7cf05b",
+          "vendor/anchor/DW1000Ng/src/DW1000NgConstants.hpp": "c935ad03917f2ccea5d9f598654bf41dd9290382ef9ad75fabaf0426f17e4085",
+          "vendor/anchor/DW1000Ng/src/DW1000NgRTLS.cpp": "8fb9921fb7bdaf0c58d2a092ef08655f8fb67c97f57680d4dcc409aca2f08f66",
+          "vendor/anchor/DW1000Ng/src/DW1000NgRTLS.hpp": "82664a494320b21ff573b5b7b65bde3e9d6226c38ec955cbc042392044102823",
+          "vendor/anchor/DW1000Ng/src/DW1000NgRanging.cpp": "4b07b49b448e6e5f04ffac7bb4fd351577bc74132e253778a736983e851d82b3",
+          "vendor/anchor/DW1000Ng/src/DW1000NgRanging.hpp": "ddb7719fde020fcf7b47fd4b1225d556d3e612e166e9a571130d4ac217b5b26a",
+          "vendor/anchor/DW1000Ng/src/DW1000NgRegisters.hpp": "4ae3a2fe97d636c8d9b1f0269729fa5b77b9a6f0f65d2d1480172d9da2ef79df",
+          "vendor/anchor/DW1000Ng/src/DW1000NgTime.cpp": "e460f4e39036b5f2d6a32007ad78c3493cfea3ccb23cf57f17600d4cab900207",
+          "vendor/anchor/DW1000Ng/src/DW1000NgTime.hpp": "934097833e2908abe26da389c74ba6b14eb284c74349b27248aa715d282edd28",
+          "vendor/anchor/DW1000Ng/src/DW1000NgUtils.cpp": "6dfba867a95ca095a45cfea9e3ad3106a191eaed8cb444f8851a663307456ed9",
+          "vendor/anchor/DW1000Ng/src/DW1000NgUtils.hpp": "4ebe908555d598afaae7cd1eca3fb56651c59f0e9c17fb272a0f0f466d43963c",
+          "vendor/anchor/DW1000Ng/src/SPIporting.cpp": "95dc3903cf8c4a552ecd49128e87970e6098f69f4de8932dc3147df04427e75f",
+          "vendor/anchor/DW1000Ng/src/SPIporting.hpp": "b4067c9e8279c12facfaac8472b0fa5d8d0213bdeceaeb99dc1e2a580d26a0e3",
+          "vendor/anchor/DW1000Ng/src/deprecated.hpp": "573e16eab576445a5adb78919666ea599ab46301f90d432c3aafa32429f07122",
+          "vendor/anchor/DW1000Ng/src/digitalWriteFast.h": "43b2b645dfdff858081d6ecdf58a1f24aabc44b20d44aad6c9dc503812ac6264",
+          "vendor/anchor/DW1000Ng/src/dw1000.h": "bddf7a8bc6ca293877c72c9eedeb3710cdca2fa0de94bf37e270abe9ac19cd04",
+          "vendor/anchor/DW1000Ng/src/libdw1000.h": "4f1b7cd017069082185c5967dc153f9ea355078f0210f3cd9a3e18b32de9075a",
+          "vendor/anchor/DW1000Ng/src/libdw1000Spi.h": "2922ae307d344ec185be71c5b58ac25159fc7771d525f5fd3d2b417715821cb6",
+          "vendor/anchor/DW1000Ng/src/libdw1000Types.h": "d3b0c706e729c5baf0c8de7c1f834d2705e1f2bac54e4b420f04d5c44e27f948",
+          "vendor/anchor/DW1000Ng/src/require_cpp11.hpp": "96277f349e2c8660763ba2235ba5dff93afb6b41935828c618dabe44da923297"
+        }
+      }
+    }
+  },
+  "arduino_cli": "arduino-cli  Version: 1.5.1 Commit: 01f3d4f2b Date: 2026-06-05T10:22:12Z"
+}

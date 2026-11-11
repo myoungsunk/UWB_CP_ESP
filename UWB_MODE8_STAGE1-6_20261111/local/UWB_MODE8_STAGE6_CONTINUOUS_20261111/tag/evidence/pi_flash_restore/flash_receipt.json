@@ -1,0 +1,12 @@
+{
+  "utc": "2026-11-11T11:27:56.5437526+00:00",
+  "role": "tag",
+  "host": "slam-robot-tailscale",
+  "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+  "mac": "28:56:2f:73:06:54",
+  "offset": "0x10000",
+  "prior_app_sha256": "b0d27678cfdad9ab54b63b503fe7e4b30b33f6b6ef123025c8048bfa31588d2b",
+  "new_app_sha256": "4a9611ddae818acd3cf35c45898dd05a2e6a9ff5db01276e72473e583f6f7583",
+  "remote_staging": "/tmp/uwb-mode8-tag-stage6-stable-restore-20261111",
+  "verified": true
+}

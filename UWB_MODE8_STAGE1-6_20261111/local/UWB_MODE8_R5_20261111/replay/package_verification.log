@@ -1,0 +1,19 @@
+{
+  "pass": true,
+  "checked": 178,
+  "scope": "DELIVERED_SNAPSHOT_INTEGRITY_ONLY",
+  "failures": []
+}
+{
+  "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_20261111\\UWB_DUAL_DW1000_MODE8_R5_SOURCE_HOST_REAUDIT_20261111.zip",
+  "bytes": 1324386,
+  "sha256": "2f837598ad45f6de0cdf4462bdde29238957aadaf188fad5851c2e6aa9dbc7c0",
+  "zip_entries": 180,
+  "verified_payload_files": 178,
+  "baseline_preserved": {
+    "shared": 6,
+    "firmware": 16,
+    "vendor": 50
+  },
+  "archive_preflight_exit": 2
+}

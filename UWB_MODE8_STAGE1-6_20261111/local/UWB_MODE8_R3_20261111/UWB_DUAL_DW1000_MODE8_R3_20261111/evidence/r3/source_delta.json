@@ -1,0 +1,91 @@
+{
+  "r2_zip_sha256": "f2c8a34b993ca71d59eccf95e5c80edbe9430f0ee294967d337f4651f76876e4",
+  "unchanged_vendor_files": 50,
+  "baseline_zip_sha256": "c0fff168193a5d78490e2fb736c7f189d83ee020c2612fed14ac38d9050f1542",
+  "changed_source_files": {
+    "firmware/ANCHOR_DUAL_DS_CIR/app.hpp": {
+      "r2_sha256": "b1d0117045e2ca93b013c802c6cf0f775286993611db56352c7612d1edaa9c9f",
+      "r3_sha256": "42c4d761457c1f0c5746550d385496bb0888dd5cd97562619500651a455c0641"
+    },
+    "firmware/ANCHOR_DUAL_DS_CIR/core.hpp": {
+      "r2_sha256": "cbdce82069f9d371630678fcdadb161a0afa98a2d334d5ff170425400c2c49aa",
+      "r3_sha256": "1c0a0d1886c230417f5423972b1e7b988f4cb3510ec43a7ba7baa645927027b7"
+    },
+    "firmware/ANCHOR_DUAL_DS_CIR/engine.hpp": {
+      "r2_sha256": "a008c7211a449bd5494b9452663321963ccb2d2502518775b4c70d991046b8aa",
+      "r3_sha256": "7229ccec120821c9da8af96d61760f8ef79555d92711c46cda91bd341d95d541"
+    },
+    "firmware/ANCHOR_DUAL_DS_CIR/esp32_port.hpp": {
+      "r2_sha256": "45ac755bdc4afcc0377827c93c659d07b2e453a4915f272cb29856d00c72d0fa",
+      "r3_sha256": "0aceaa47ce3a75399481a20e0426fa67a04ffeb4df5c16ef466ed3d29b6dce55"
+    },
+    "firmware/ANCHOR_DUAL_DS_CIR/record_json.hpp": {
+      "r2_sha256": "471ef95fd9def8ff6e222816b1dc80eb9c0c7161db07f272223cc1615c68830c",
+      "r3_sha256": "5db2fe62aa788bc607694ea5d7e280e2c72bb48dd6a2b8c5b3b425f668a62078"
+    },
+    "firmware/TAG_DUAL_DS_CIR/app.hpp": {
+      "r2_sha256": "b1d0117045e2ca93b013c802c6cf0f775286993611db56352c7612d1edaa9c9f",
+      "r3_sha256": "42c4d761457c1f0c5746550d385496bb0888dd5cd97562619500651a455c0641"
+    },
+    "firmware/TAG_DUAL_DS_CIR/core.hpp": {
+      "r2_sha256": "cbdce82069f9d371630678fcdadb161a0afa98a2d334d5ff170425400c2c49aa",
+      "r3_sha256": "1c0a0d1886c230417f5423972b1e7b988f4cb3510ec43a7ba7baa645927027b7"
+    },
+    "firmware/TAG_DUAL_DS_CIR/engine.hpp": {
+      "r2_sha256": "a008c7211a449bd5494b9452663321963ccb2d2502518775b4c70d991046b8aa",
+      "r3_sha256": "7229ccec120821c9da8af96d61760f8ef79555d92711c46cda91bd341d95d541"
+    },
+    "firmware/TAG_DUAL_DS_CIR/esp32_port.hpp": {
+      "r2_sha256": "45ac755bdc4afcc0377827c93c659d07b2e453a4915f272cb29856d00c72d0fa",
+      "r3_sha256": "0aceaa47ce3a75399481a20e0426fa67a04ffeb4df5c16ef466ed3d29b6dce55"
+    },
+    "firmware/TAG_DUAL_DS_CIR/record_json.hpp": {
+      "r2_sha256": "471ef95fd9def8ff6e222816b1dc80eb9c0c7161db07f272223cc1615c68830c",
+      "r3_sha256": "5db2fe62aa788bc607694ea5d7e280e2c72bb48dd6a2b8c5b3b425f668a62078"
+    },
+    "shared/app.hpp": {
+      "r2_sha256": "b1d0117045e2ca93b013c802c6cf0f775286993611db56352c7612d1edaa9c9f",
+      "r3_sha256": "42c4d761457c1f0c5746550d385496bb0888dd5cd97562619500651a455c0641"
+    },
+    "shared/core.hpp": {
+      "r2_sha256": "cbdce82069f9d371630678fcdadb161a0afa98a2d334d5ff170425400c2c49aa",
+      "r3_sha256": "1c0a0d1886c230417f5423972b1e7b988f4cb3510ec43a7ba7baa645927027b7"
+    },
+    "shared/engine.hpp": {
+      "r2_sha256": "a008c7211a449bd5494b9452663321963ccb2d2502518775b4c70d991046b8aa",
+      "r3_sha256": "7229ccec120821c9da8af96d61760f8ef79555d92711c46cda91bd341d95d541"
+    },
+    "shared/esp32_port.hpp": {
+      "r2_sha256": "45ac755bdc4afcc0377827c93c659d07b2e453a4915f272cb29856d00c72d0fa",
+      "r3_sha256": "0aceaa47ce3a75399481a20e0426fa67a04ffeb4df5c16ef466ed3d29b6dce55"
+    },
+    "shared/record_json.hpp": {
+      "r2_sha256": "471ef95fd9def8ff6e222816b1dc80eb9c0c7161db07f272223cc1615c68830c",
+      "r3_sha256": "5db2fe62aa788bc607694ea5d7e280e2c72bb48dd6a2b8c5b3b425f668a62078"
+    },
+    "tests/fixture_helpers.py": {
+      "r2_sha256": "8afeaae74fd3f3625ae6c55dd1903cf4d4500d156a817451aa5a7efd2b56e680",
+      "r3_sha256": "e4f89bcbd4c55230f0e1184447dadbfff64ec941970debd5917281f34eb4e318"
+    },
+    "tests/test_adversarial.py": {
+      "r2_sha256": "ac2a9de72f9581792500dc75e253afa9ef54cec8842daf74e057695b337c107d",
+      "r3_sha256": "462db4153f4cffd3c0dca179cc2506cca0e899cb6bef611e4020594e6c9ddbe9"
+    },
+    "tests/test_core.cpp": {
+      "r2_sha256": "5e56f63e80bf53184a6c9d16ee8b518fcc7475043c54b7ec24de571372f0c26f",
+      "r3_sha256": "6149272efb68bc659e2e8ccb25ade51fa1279f27bbfd7b408312f202a60c0738"
+    },
+    "tools/analyze.py": {
+      "r2_sha256": "a4641f37f2fc93f1db5fcf03132fe688d883cc7be70014100facad02b554b7a4",
+      "r3_sha256": "ee60f9c3f0df6ee5f2661023611727b612132eeb3d1c886844b45c6dde1d1c1d"
+    },
+    "tools/capture_audit.py": {
+      "r2_sha256": "59bec1a8cf4d12746f4cbd687330223432d60b1fcb41e711bb592592e01d1627",
+      "r3_sha256": "4ef8aca84a9219b8180ad3815c9355da8d87e4cf2b0d08413375ff82db055e76"
+    },
+    "tools/run_pair.py": {
+      "r2_sha256": "d50e8abaffc32201db0714b7a9b28df5b3d1a9a0228a2f2410dfd86c9954375c",
+      "r3_sha256": "68d7046c1c186c44766ad4f9c734a8d20083a1ff83d354f62e71d10b7f7dc3e2"
+    }
+  }
+}

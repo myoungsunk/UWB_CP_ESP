@@ -1,0 +1,78 @@
+{
+  "release": "D8_DEV_20261111",
+  "created_utc": "2026-11-11T02:32:15.236216+00:00",
+  "status": [
+    "SOURCE_IMPLEMENTED",
+    "HOST_QA_PASS",
+    "ESP32_TARGET_BUILD_BLOCKED",
+    "HARDWARE_NOT_RUN"
+  ],
+  "flash_ready": false,
+  "target_build": false,
+  "hardware_tested": false,
+  "independent_audit": false,
+  "delivery_scope": "Separate USB serial Mode8 development sources; NOT full original Wi-Fi/TCP/OTA firmware integration",
+  "requested_deliverable_not_fulfilled": "No new ESP32 BIN/ELF/MAP or target compilation/memory report",
+  "host_evidence": {
+    "gcc_assertions": 11309,
+    "clang_assertions": 11309,
+    "python_unit_tests": 17,
+    "asan_ubsan_test_run": "PASS",
+    "upper_firmware_syntax_checks": "GCC and Clang pass for both roles using declaration stubs; no ESP32 SDK link"
+  },
+  "unmodified_vendor_files": 50,
+  "baseline_zip_sha256": "c0fff168193a5d78490e2fb736c7f189d83ee020c2612fed14ac38d9050f1542",
+  "target_build_receipt": "dist/target_build_receipt.json",
+  "host_qa_receipt": "evidence/host/host_qa_receipt.json",
+  "phase_status": {
+    "P0": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P1": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P2": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P3": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P4": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P5": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P6": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    }
+  },
+  "default_config": {
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "cir_spi_hz": 20000000,
+    "verify_cir_repeat": true
+  },
+  "nominal_air_timestamps_ms": [
+    0,
+    7,
+    14,
+    19,
+    51
+  ],
+  "not_claimed": [
+    "51ms end-to-end completion",
+    "19.6Hz full-data update rate",
+    "RF phase coherence",
+    "calibrated ranging accuracy",
+    "legacy mode regression compatibility"
+  ]
+}

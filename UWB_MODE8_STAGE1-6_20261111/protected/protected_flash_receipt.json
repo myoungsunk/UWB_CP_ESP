@@ -1,0 +1,8 @@
+{
+  "source_path": "D:/SLAM_bot/artifacts/UWB_MODE8_R5_DEPLOY_20261111/anchor_backup/anchor_pre_R5_full_flash_4MiB.bin",
+  "source_sha256": "4443326863b71589103e966d3c9f6589133809c9b646af6fbc97c4e6aeb52340",
+  "verified_recovered_sha256": "4443326863b71589103e966d3c9f6589133809c9b646af6fbc97c4e6aeb52340",
+  "protected_sha256": "5491c2d8fd6a7f0bac3627a0b4ab554f110a9bc26f00796eda97e0cbd991de64",
+  "protection": "Windows DPAPI CurrentUser",
+  "bytes": 4194304
+}

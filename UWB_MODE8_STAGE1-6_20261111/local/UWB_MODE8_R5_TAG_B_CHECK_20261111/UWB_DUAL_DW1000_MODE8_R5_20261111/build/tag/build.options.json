@@ -1,0 +1,9 @@
+{
+  "additionalFiles": "..\\..,..\\..,..\\..,..\\..,..\\..,..\\..,..\\..",
+  "compiler.optimization_flags": "-Os",
+  "customBuildProperties": "",
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "hardwareFolders": "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.3.7,C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.3.7",
+  "otherLibrariesFolders": "C:\\Users\\Myoungsun Kim\\Documents\\Arduino\\libraries",
+  "sketchLocation": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_B_CHECK_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\firmware\\TAG_DUAL_DS_CIR"
+}

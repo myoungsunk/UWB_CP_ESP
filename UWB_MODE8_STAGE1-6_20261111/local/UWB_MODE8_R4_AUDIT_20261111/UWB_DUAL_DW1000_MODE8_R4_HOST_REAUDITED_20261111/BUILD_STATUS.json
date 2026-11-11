@@ -1,0 +1,22 @@
+{
+  "release": "D8_R4_SOURCE_20261111",
+  "status": [
+    "SOURCE_FIXED",
+    "HOST_ADVERSARIAL_REAUDIT_PASS",
+    "ESP32_R4_TARGET_BUILD_NOT_RUN",
+    "HARDWARE_NOT_RUN"
+  ],
+  "host_gcc_assertions": 11413,
+  "host_clang_assertions": 11413,
+  "python_unittest_count": 62,
+  "offline_prior_r3_image_static_integrity": true,
+  "r4_firmware_binary_available": false,
+  "r4_target_build_receipt": "dist/target_build_receipt.json",
+  "original_r3_build_receipt": "evidence/r4/R3_original_target_build_receipt.json",
+  "independent_third_party_audit": false,
+  "limitations": [
+    "No Arduino CLI/Xtensa compiler in current runtime",
+    "Physical upload and USB/RF verification not run",
+    "51ms is nominal slot map, not measured full capture time"
+  ]
+}

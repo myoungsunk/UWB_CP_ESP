@@ -1,0 +1,2 @@
+stage2: B_poll_received=0 ErrPoll=1 complete=1
+P1 CIR integrity fault: A_latched=1 B_CIR_reads_after_fault=1 B_P2_arms_after_fault=1

@@ -1,0 +1,66 @@
+{
+  "question_id": "MODE8-STAGE6-FAST-RX-USB",
+  "role": "IMPLEMENTER",
+  "created_utc": "2026-11-11T11:51:35.1007533Z",
+  "parent_receipt": {
+    "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_IOFIX_20261111/evidence/stage6_execution.json",
+    "sha256": "6162757a0dd2a810dba66119c90bd13ab7b06f51f0d8d9b6e13eeb140d37fc11"
+  },
+  "governance": {
+    "common_sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer_sha256": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "revision": "Package source manifests, no Git repository",
+  "baseline_flash": "P2POLL Stage 6 firmware, 650 ms / 921600 verified twice",
+  "devices": "Stationary COM4 anchor and Pi tag, existing temporary antenna delays",
+  "conditions": [
+    {
+      "period_us": 300000,
+      "baud": 921600,
+      "count": 100
+    },
+    {
+      "period_us": 200000,
+      "baud": 2000000,
+      "count": 100
+    }
+  ],
+  "hypotheses": [
+    "A 1 ms RF-task scheduling delay can skip the 800 us post-quiet status sampling window. A DW1000 event can already be latched.",
+    "Both installed ESP32-to-host USB serial paths can delete bytes at 2 Mbps even with RF idle and known payloads. Transport fragments with independent CRCs and parity should recover the exact RFB8 record within the 200 ms cadence.",
+    "If anchor observes missing P2 RESPONSEs, a new POLL2 with fresh A/B RESPONSEs in the same transaction can recover one loss without mixing timestamps across attempts.",
+    "The earlier two missing 2 Mbps tag records followed explicit BACKPRESSURE_DROP_POLL events. One contiguous UART submission per encoded record should avoid inter-fragment driver wait overhead and free record slots within the cadence.",
+    "The 300 ms P1 A reply miss was an anchor PHY header error despite on-time confirmed A transmission. An on-air replacement POLL and two new replies preserve valid P1 provenance.",
+    "A single direct UART write still took up to 214972 us at 2 Mbps in the six-drop trial. Lossless signed IQ packing plus a buffered UART should lower producer occupancy while retaining exact RFB8 samples and CRC."
+  ],
+  "repair": "Short receive waits and hardware-timestamp-validated status drain protect the Stage 6 paired receivers. If anchor misses a response, P1 and P2 can each run one fresh exchange inside the original period, keeping first-attempt error bits and using only the selected exchange for ranging. At 2 Mbps, one contiguous UART write carries a full RFB8 record as CRC-checked and parity-protected fragments. The tag now also packs signed IQ samples when packing saves bytes, retaining the original RFB8 header, sample length and CRC. The host restores the original signed 16-bit words before accepting RFB8. The tag re-enables buffered UART writes.",
+  "acceptance": "In each condition, 100 matched complete records per endpoint, all 400 raw CIR slots, P1 and P2 independently verified common axes and power grids 100/100 each, zero CRC/schema/sequence gaps, firmware drops, faults or period misses, 99 RF cadence intervals within 4 ms of target, both SELFTEST and STOP confirmed. The 2 Mbps raw wire must replay byte-for-byte to the stored RFB8 files, and no record may be unrepairable. Corrected outer fragment CRCs are counted separately. Check initial POLL cadence against the actual initial POLL timestamps even when an exchange is retried.",
+  "limits": "Applies to these static 100-transaction trials and the installed USB paths. Absolute physical-axis accuracy and complex-phase coherence are outside scope.",
+  "final_revision_utc": "2026-11-11T12:40:04.875474+00:00",
+  "previous_trials": {
+    "stage6_300ms_p1_header_error": {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/evidence/stage6_final_300ms_20261111_211857_348/capture_receipt.json",
+      "sha256": "2aacd78920c647d04c960ea4d27200e4120e22c88a5768f13798e8ebb2f6f274"
+    },
+    "stage6_200ms_writer_backpressure": {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/evidence/stage6_final_200ms_20261111_211936_071/capture_receipt.json",
+      "sha256": "89836864c10e47345cfa59e746d3c8418e7f5e2d3ee11e57e4f699bf05d212b7"
+    },
+    "stage6_300ms_rf_pass": {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RFRETRY_20261111/evidence/stage6_300ms_rfretry_20261111_213345_974/capture_receipt.json",
+      "sha256": "28469ae8c2efe3a19d5ee2842510b28022fb923250dd7e0a9af0a9360c46f8bb"
+    },
+    "stage6_200ms_start_pll_fault": {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RFRETRY_20261111/evidence/stage6_200ms_rfretry_20261111_213424_222/capture_receipt.json",
+      "sha256": "c39271884716ded31b3d278a445a34ea4a06099de429d76886100cde92ed691a"
+    },
+    "stage6_200ms_single_write_over_budget": {
+      "path": "D:/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RFRETRY_20261111/evidence/stage6_200ms_rfretry_reset_20261111_213500_365/capture_receipt.json",
+      "sha256": "aa9184b3eaf537f63968f64493b542ccca0ec7b55dd9277cd595ecb141fa6c17"
+    }
+  },
+  "implementation_roles": {
+    "anchor": "prior RFRETRY binary, unchanged for the packing test",
+    "tag": "PACKED binary"
+  }
+}

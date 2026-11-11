@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/bin/python3", "tools/sync_shared.py", "--check"]

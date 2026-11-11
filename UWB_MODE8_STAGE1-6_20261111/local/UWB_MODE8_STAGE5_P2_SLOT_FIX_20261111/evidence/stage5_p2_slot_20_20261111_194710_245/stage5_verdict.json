@@ -1,0 +1,1721 @@
+{
+  "question_id": "MODE8-STAGE5-CIR20",
+  "utc": "2026-11-11T10:47:25.585990+00:00",
+  "pass": false,
+  "session": 1898970892,
+  "stage": 5,
+  "config_id": 1819161726,
+  "count": 20,
+  "firmware": {
+    "anchor": "D8_R6_ANCHOR_STAGE5_P2SLOT_20261111",
+    "tag": "D8_R5_TAG_STAGE5_P2SLOT_20261111"
+  },
+  "problems": [],
+  "pair_audit": {
+    "pass": true,
+    "problems": [],
+    "details": {
+      "tag": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      },
+      "anchor": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      }
+    }
+  },
+  "governance_sha256": {
+    "common": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "collector_exit_code": 0,
+  "input_sha256": {
+    "tag.rfb8": "4f3522bf2f90b220ee85a46987aa50a9cf932df9bd2ab7753432886a25dc53a4",
+    "anchor.rfb8": "28dee8ba03e12c6f9310261b914862dc30bd4a81245f9cfe104ef5d6d79af7eb",
+    "capture_receipt.json": "cc319356db7da97b9b61661b5cfc221cbf411d9cab85fca1319e5654f7fa4496"
+  },
+  "tag_delay_settings": {
+    "utc": "2026-11-11T10:17:44.460606+00:00",
+    "reference_m_approx": 0.8,
+    "baseline_session": 2041379429,
+    "baseline_verdict_sha256": "7e7a9478f9b3f4f329b0b2e9e492d034d18ea38d09492e10ca83ee300093b76f",
+    "baseline_verdict": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\stage4_20_default_20261111_191657_832\\stage4_distance_verdict.json",
+    "method": "Tag-only symmetric TX/RX adjustment. A one-tick reduction on both tag delays increases ToF by approximately one tick. Use the baseline median and nearest integer tick. Validate on a separate session.",
+    "modules": {
+      "A": {
+        "baseline_median_m": 0.06582913114215401,
+        "tag_delay_ticks": 16279,
+        "tag_delay_delta_ticks": -157,
+        "baseline_sample_sd_m": 0.08423371167470722
+      },
+      "B": {
+        "baseline_median_m": -1.7788186978872504,
+        "tag_delay_ticks": 15886,
+        "tag_delay_delta_ticks": -550,
+        "baseline_sample_sd_m": 0.1396584260341351
+      }
+    },
+    "cal_id": 0,
+    "scope": "Trial geometry only. Reported sample standard deviation is repeatability metadata, not absolute uncertainty."
+  },
+  "tag_delay_receipt_sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385",
+  "phase_coherent": false,
+  "absolute_axis_accuracy_validated": false,
+  "summary": {
+    "P1": {
+      "common_grids_verified": 20,
+      "CIR_slots_verified": 40,
+      "signed_range_m_min_max": {
+        "A": [
+          0.6177852090745278,
+          0.8569938576492538
+        ],
+        "B": [
+          0.5842792250521864,
+          0.8382230445442438
+        ]
+      },
+      "overlap_points_min": 985,
+      "overlap_points_max": 991,
+      "max_independent_range_delta_m": 1.1102230246251565e-16
+    },
+    "P2": {
+      "common_grids_verified": 0,
+      "CIR_slots_verified": 40,
+      "signed_range_m_min_max": {
+        "A": [
+          -0.9349271253495832,
+          -0.5967082460325089
+        ],
+        "B": [
+          0.24565539375207263,
+          0.7012042766204213
+        ]
+      },
+      "overlap_points_min": null,
+      "overlap_points_max": null,
+      "max_independent_range_delta_m": null
+    }
+  },
+  "transactions": [
+    {
+      "txn": 0,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              198552325172,
+              199191300733,
+              200341457972,
+              122443226541,
+              123082202519,
+              124232361299
+            ],
+            "signed_range_m": 0.6620088803978336,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.28125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              198552325172,
+              199830278706,
+              200341457972,
+              120200946290,
+              121478898190,
+              121990077185
+            ],
+            "signed_range_m": 0.6409002741635104,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.359375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 989
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              200341457972,
+              201555509909,
+              202386181172,
+              124232361299,
+              125446415255,
+              126277087228
+            ],
+            "signed_range_m": -0.9349271253495832,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 749.546875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              200341457972,
+              201875001490,
+              202386181172,
+              121990077185,
+              123523619342,
+              124034798710
+            ],
+            "signed_range_m": 0.24565539375207263,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.8125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 1,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              217717893684,
+              218356869253,
+              219507026484,
+              141608764978,
+              142247740823,
+              143397899373
+            ],
+            "signed_range_m": 0.6886436877924715,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.4375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              217717893684,
+              218995847533,
+              219507026484,
+              139366437955,
+              140644389902,
+              141155568441
+            ],
+            "signed_range_m": 0.5842792250521864,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.734375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              219507026484,
+              220721078782,
+              221551749684,
+              143397899373,
+              144611953559,
+              145442625172
+            ],
+            "signed_range_m": -0.8087258774551168,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 744.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              219507026484,
+              221040570071,
+              221551749684,
+              141155568441,
+              142689110542,
+              143200289846
+            ],
+            "signed_range_m": 0.32773638624817225,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.9375
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 2,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              236887351860,
+              237526327185,
+              238676484660,
+              160778192611,
+              161417168279,
+              162567327109
+            ],
+            "signed_range_m": 0.6177852090745278,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.5625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              236887351860,
+              238165305295,
+              238676484660,
+              158535818699,
+              159813770254,
+              160324949266
+            ],
+            "signed_range_m": 0.6683720705266686,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              238676484660,
+              239890536709,
+              240721207860,
+              162567327109,
+              163781381015,
+              164612052846
+            ],
+            "signed_range_m": -0.8223578059704634,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 747.453125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              238676484660,
+              240210028351,
+              240721207860,
+              160324949266,
+              161858491406,
+              162369670579
+            ],
+            "signed_range_m": 0.3183553252211343,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.890625
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 3,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              256056809012,
+              256695784325,
+              257845941812,
+              179947619687,
+              180586595223,
+              181736753979
+            ],
+            "signed_range_m": 0.7266686424696464,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.53125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              256056809012,
+              257334763040,
+              257845941812,
+              177705198667,
+              178983150606,
+              179494328970
+            ],
+            "signed_range_m": 0.7162783609237611,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 991
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              257845941812,
+              259059993910,
+              259890665012,
+              181736753979,
+              182950807959,
+              183781479808
+            ],
+            "signed_range_m": -0.7528820213530455,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 747.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              257845941812,
+              259379485619,
+              259890665012,
+              179494328970,
+              181027871246,
+              181539050313
+            ],
+            "signed_range_m": 0.32421806898880495,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.359375
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 4,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              275226267700,
+              275865243296,
+              277015400500,
+              199117047916,
+              199756023703,
+              200906182174
+            ],
+            "signed_range_m": 0.7732377450553366,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.328125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              275226267700,
+              276504221541,
+              277015400500,
+              196874579279,
+              198152530958,
+              198663709505
+            ],
+            "signed_range_m": 0.7584920447596069,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.234375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              277015400500,
+              278229452895,
+              279060123700,
+              200906182174,
+              202120236439,
+              202950907961
+            ],
+            "signed_range_m": -0.7832217637503447,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 750.5
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              277015400500,
+              278548944224,
+              279060123700,
+              198663709505,
+              200197251598,
+              200708430739
+            ],
+            "signed_range_m": 0.3670176158828617,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 734.390625
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 5,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              294395725876,
+              295034701311,
+              296184858676,
+              218286475496,
+              218925451159,
+              220075609798
+            ],
+            "signed_range_m": 0.7233186181288183,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.828125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              294395725876,
+              295673679641,
+              296184858676,
+              216043958661,
+              217321910286,
+              217833088885
+            ],
+            "signed_range_m": 0.7035480769721779,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.671875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              296184858676,
+              297398910884,
+              298229581876,
+              220075609798,
+              221289663895,
+              222120335580
+            ],
+            "signed_range_m": -0.8347429131832952,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 745.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              296184858676,
+              297718402401,
+              298229581876,
+              217833088885,
+              219366630926,
+              219877810059
+            ],
+            "signed_range_m": 0.38577896459718564,
+            "range_valid": true,
+            "axis_distance_delta_m": 5.551115123125783e-17,
+            "fp_index": 750.390625
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 6,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              313565183028,
+              314204158793,
+              315354315828,
+              237455902124,
+              238094878103,
+              239245036436
+            ],
+            "signed_range_m": 0.7645273806597805,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.171875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              313565183028,
+              314843136810,
+              315354315828,
+              235213336501,
+              236491288078,
+              237002466636
+            ],
+            "signed_range_m": 0.7068980865808073,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 741.40625
+          }
+        ],
+        "grid_points": 999,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              315354315828,
+              316568367865,
+              317399039028,
+              239245036436,
+              240459090327,
+              241289762330
+            ],
+            "signed_range_m": -0.5967082460325089,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 750.265625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              315354315828,
+              316887859624,
+              317399039028,
+              237002466636,
+              238536008718,
+              239047187926
+            ],
+            "signed_range_m": 0.6601649793260946,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.4375
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 7,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              332734641716,
+              333373617192,
+              334523774516,
+              256625330381,
+              257264306071,
+              258414464696
+            ],
+            "signed_range_m": 0.7670394953003101,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.609375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              332734641716,
+              334012595893,
+              334523774516,
+              254382715471,
+              255660667406,
+              256171845586
+            ],
+            "signed_range_m": 0.7601657465929862,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 743.375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              334523774516,
+              335737826770,
+              336568497716,
+              258414464696,
+              259628518807,
+              260459190441
+            ],
+            "signed_range_m": -0.8112176369169365,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 744.375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              334523774516,
+              336057318257,
+              336568497716,
+              256171845586,
+              257705387534,
+              258216566596
+            ],
+            "signed_range_m": 0.3529461749910641,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.28125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 8,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              351904099380,
+              352543074707,
+              353693232180,
+              275794757432,
+              276433733015,
+              277583891858
+            ],
+            "signed_range_m": 0.7615111596128344,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 748.140625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              351904099380,
+              353182053464,
+              353693232180,
+              273552092744,
+              274830044686,
+              275341222971
+            ],
+            "signed_range_m": 0.7132627536548468,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.140625
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              353693232180,
+              354907284236,
+              355737955380,
+              277583891858,
+              278797945751,
+              279628617699
+            ],
+            "signed_range_m": -0.6306398311243688,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 749.28125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              353693232180,
+              355226776415,
+              355737955380,
+              275341222971,
+              276874765326,
+              277385944063
+            ],
+            "signed_range_m": 0.7012042766204213,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.203125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 9,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              371073556532,
+              371712532065,
+              372862689332,
+              294964184084,
+              295603159959,
+              296753318618
+            ],
+            "signed_range_m": 0.6502831006086579,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.390625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              371073556532,
+              372351510267,
+              372862689332,
+              292721469271,
+              293999420942,
+              294510599550
+            ],
+            "signed_range_m": 0.6174466808028491,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.3125
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              372862689332,
+              374076741559,
+              374907412532,
+              296753318618,
+              297967372695,
+              298798044479
+            ],
+            "signed_range_m": -0.6332776839364342,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 746.96875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              372862689332,
+              374396233231,
+              374907412532,
+              294510599550,
+              296044141582,
+              296555320645
+            ],
+            "signed_range_m": 0.675994412487624,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.296875
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 10,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              390243015220,
+              390881990554,
+              392032148020,
+              314133612383,
+              314772587927,
+              315922746615
+            ],
+            "signed_range_m": 0.7069022520704852,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              390243015220,
+              391520969327,
+              392032148020,
+              311890846998,
+              313168798734,
+              313679976913
+            ],
+            "signed_range_m": 0.7276679842908513,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 743.359375
+          }
+        ],
+        "grid_points": 995,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              392032148020,
+              393246200223,
+              394076871220,
+              315922746615,
+              317136800663,
+              317967472476
+            ],
+            "signed_range_m": -0.6215518726450416,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 747.296875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              392032148020,
+              393565691879,
+              394076871220,
+              313679976913,
+              315213518862,
+              315724697926
+            ],
+            "signed_range_m": 0.6326085611669705,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.3125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 11,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              409412472884,
+              410051448262,
+              411201605684,
+              333303039267,
+              333942014871,
+              335092173606
+            ],
+            "signed_range_m": 0.7589986676599456,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.453125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              409412472884,
+              410690426904,
+              411201605684,
+              331060222796,
+              332338174478,
+              332849352784
+            ],
+            "signed_range_m": 0.7725619427522339,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.34375
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              411201605684,
+              412415657864,
+              413246328884,
+              335092173606,
+              336306227607,
+              337136899286
+            ],
+            "signed_range_m": -0.8173005031848624,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 745.203125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              411201605684,
+              412735150001,
+              413246328884,
+              332849352784,
+              334382895118,
+              334894073552
+            ],
+            "signed_range_m": 0.3728782455387516,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.34375
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 12,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              428581930036,
+              429220905718,
+              430371062836,
+              352472465430,
+              353111441303,
+              354261599695
+            ],
+            "signed_range_m": 0.7791008486666564,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.21875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              428581930036,
+              429859884224,
+              430371062836,
+              350229597415,
+              351507549198,
+              352018727287
+            ],
+            "signed_range_m": 0.7353731559865706,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.078125
+          }
+        ],
+        "grid_points": 994,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              430371062836,
+              431585115397,
+              432415786036,
+              354261599695,
+              355475654039,
+              356306325385
+            ],
+            "signed_range_m": -0.7142582238561825,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 747.875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              430371062836,
+              431904606924,
+              432415786036,
+              352018727287,
+              353552269326,
+              354063448000
+            ],
+            "signed_range_m": 0.43092198437475154,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 751.34375
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 13,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              447751388724,
+              448390364104,
+              449540521524,
+              371641893170,
+              372280868759,
+              373431027406
+            ],
+            "signed_range_m": 0.7125977654277766,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.203125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              447751388724,
+              449029342890,
+              449540521524,
+              369398973239,
+              370676924942,
+              371188103032
+            ],
+            "signed_range_m": 0.7390583158562175,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 750.21875
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 986
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              449540521524,
+              450754573877,
+              451585244724,
+              373431027406,
+              374645081495,
+              375475752976
+            ],
+            "signed_range_m": -0.771129101168421,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 750.234375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              449540521524,
+              451074065717,
+              451585244724,
+              371188103032,
+              372721645070,
+              373232823590
+            ],
+            "signed_range_m": 0.40688328797071066,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.8125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 14,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              466920846388,
+              467559821880,
+              468709979188,
+              390811319533,
+              391450295191,
+              392600453821
+            ],
+            "signed_range_m": 0.8569938576492538,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.5625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              466920846388,
+              468198800750,
+              468709979188,
+              388568347251,
+              389846299150,
+              390357477065
+            ],
+            "signed_range_m": 0.7742353098569851,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 739.359375
+          }
+        ],
+        "grid_points": 997,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              468709979188,
+              469924031507,
+              470754702388,
+              392600453821,
+              393814507927,
+              394645179457
+            ],
+            "signed_range_m": -0.798831742420439,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 750.625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              468709979188,
+              470243523494,
+              470754702388,
+              390357477065,
+              391891019278,
+              392402197671
+            ],
+            "signed_range_m": 0.3459083677518631,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 746.453125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 15,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              486090303540,
+              486729278976,
+              487879436340,
+              409980745496,
+              410619721111,
+              411769879735
+            ],
+            "signed_range_m": 0.7854658829142593,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.59375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              486090303540,
+              487368257830,
+              487879436340,
+              407737720545,
+              409015672334,
+              409526850298
+            ],
+            "signed_range_m": 0.7611694165029058,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.75
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 987
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              487879436340,
+              489093488656,
+              489924159540,
+              411769879735,
+              412983933847,
+              413814605389
+            ],
+            "signed_range_m": -0.7948743040777765,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 743.1875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              487879436340,
+              489412980635,
+              489924159540,
+              409526850298,
+              411060392462,
+              411571570879
+            ],
+            "signed_range_m": 0.3910530620221315,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.078125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 16,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              505259762228,
+              505898737576,
+              507048895028,
+              429150173041,
+              429789148567,
+              430939307204
+            ],
+            "signed_range_m": 0.7241561571420461,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 745.046875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              505259762228,
+              506537716711,
+              507048895028,
+              426907095147,
+              428185047054,
+              428696224757
+            ],
+            "signed_range_m": 0.6975133107071462,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.171875
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              507048895028,
+              508262947344,
+              509093618228,
+              430939307204,
+              432153361303,
+              432984032867
+            ],
+            "signed_range_m": -0.7518549828527943,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 751.40625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              507048895028,
+              508582439153,
+              509093618228,
+              428696224757,
+              430229766670,
+              430740945282
+            ],
+            "signed_range_m": 0.48251548598642907,
+            "range_valid": true,
+            "axis_distance_delta_m": 5.551115123125783e-17,
+            "fp_index": 750.25
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 17,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              524429220404,
+              525068195837,
+              526218353204,
+              448319599901,
+              448958575511,
+              450108734158
+            ],
+            "signed_range_m": 0.8052323558210805,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.828125
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              524429220404,
+              525707174502,
+              526218353204,
+              446076468693,
+              447354420238,
+              447865598383
+            ],
+            "signed_range_m": 0.7775862868018147,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 750.578125
+          }
+        ],
+        "grid_points": 998,
+        "overlap_points": 985
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              526218353204,
+              527432405549,
+              528263076404,
+              450108734158,
+              451322788247,
+              452153459697
+            ],
+            "signed_range_m": -0.8330563882951235,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 749.75
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              526218353204,
+              527751897464,
+              528263076404,
+              447865598383,
+              449399140366,
+              449910318788
+            ],
+            "signed_range_m": 0.42388532903848447,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 747.28125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 18,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              543598677556,
+              544237653177,
+              545387810356,
+              467489025634,
+              468128001431,
+              469278159815
+            ],
+            "signed_range_m": 0.7439231286151774,
+            "range_valid": true,
+            "axis_distance_delta_m": 1.1102230246251565e-16,
+            "fp_index": 749.09375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              543598677556,
+              544876631735,
+              545387810356,
+              465245840806,
+              466523792398,
+              467034970408
+            ],
+            "signed_range_m": 0.7099105147996932,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 748.59375
+          }
+        ],
+        "grid_points": 993,
+        "overlap_points": 990
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              545387810356,
+              546601862954,
+              547432533556,
+              469278159815,
+              470492214167,
+              471322885408
+            ],
+            "signed_range_m": -0.7813153412575866,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 746.359375
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              545387810356,
+              546921354734,
+              547432533556,
+              467034970408,
+              468568512526,
+              469079690791
+            ],
+            "signed_range_m": 0.34532137148047387,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.703125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    },
+    {
+      "txn": 19,
+      "P1": {
+        "pass": true,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              562768136244,
+              563407112083,
+              564557269044,
+              486658452888,
+              487297428887,
+              488447587047
+            ],
+            "signed_range_m": 0.7630199781649684,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 745.46875
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              562768136244,
+              564046090913,
+              564557269044,
+              484415214131,
+              485693166094,
+              486204343643
+            ],
+            "signed_range_m": 0.8382230445442438,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 749.515625
+          }
+        ],
+        "grid_points": 996,
+        "overlap_points": 988
+      },
+      "P2": {
+        "pass": false,
+        "cir_slots_verified": 2,
+        "range": [
+          {
+            "radio": "A",
+            "six_ts": [
+              564557269044,
+              565771321422,
+              566601992244,
+              488447587047,
+              489661641111,
+              490492312571
+            ],
+            "signed_range_m": -0.717922729723726,
+            "range_valid": false,
+            "axis_distance_delta_m": null,
+            "fp_index": 749.65625
+          },
+          {
+            "radio": "B",
+            "six_ts": [
+              564557269044,
+              566090813475,
+              566601992244,
+              486204343643,
+              487737885710,
+              488249063943
+            ],
+            "signed_range_m": 0.4432322829556354,
+            "range_valid": true,
+            "axis_distance_delta_m": 0.0,
+            "fp_index": 744.328125
+          }
+        ],
+        "problem": "DS-TWR distance outside bounds"
+      }
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+HOST-ONLY COMMAND: ["/mnt/data/mode8_r4_work/UWB_DUAL_DW1000_MODE8_R3_20261111/build/host/test_core_clang", "/mnt/data/mode8_r4_work/UWB_DUAL_DW1000_MODE8_R3_20261111/evidence/host/clang_fixture"]
+tag_json_bytes=5423 sizeof_Record=18184
+wide_json_bytes=5740
+PASS checks=11413 (HOST SYNTHETIC ONLY)

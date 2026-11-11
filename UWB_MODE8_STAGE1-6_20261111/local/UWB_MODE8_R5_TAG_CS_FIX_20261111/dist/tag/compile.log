@@ -1,0 +1,79 @@
+COMMAND: ["C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe", "compile", "--fqbn", "esp32:esp32:esp32doit-devkit-v1", "--warnings", "all", "--library", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_FIX_20261111\\vendor\\tag\\DW1000Ng", "--build-path", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_FIX_20261111\\build\\tag", "--output-dir", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_FIX_20261111\\dist\\tag", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_FIX_20261111\\firmware\\TAG_DUAL_DS_CIR"]
+In file included from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/esp_common/include/esp_macros.h:13,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/freertos/FreeRTOS-Kernel/portable/xtensa/include/freertos/portmacro.h:51,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/freertos/FreeRTOS-Kernel/include/freertos/portable.h:57,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/freertos/FreeRTOS-Kernel/include/freertos/FreeRTOS.h:69,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7\cores\esp32/Arduino.h:33,
+                 from D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\SPIporting.cpp:28:
+C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/esp_common/include/esp_assert.h:26:58: warning: 'void SPIporting::{anonymous}::failed_compile_time_assert()' declared 'static' but never defined [-Wunused-function]
+   26 |                 extern __attribute__((error(#MSG))) void failed_compile_time_assert(void);      \
+      |                                                          ^~~~~~~~~~~~~~~~~~~~~~~~~~
+C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/soc/esp32/include/soc/soc.h:33:38: note: in expansion of macro 'TRY_STATIC_ASSERT'
+   33 | #define ASSERT_IF_DPORT_REG(_r, OP)  TRY_STATIC_ASSERT(!IS_DPORT_REG(_r), (Cannot use OP for DPORT registers use DPORT_##OP));
+      |                                      ^~~~~~~~~~~~~~~~~
+C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/soc/esp32/include/soc/soc.h:46:13: note: in expansion of macro 'ASSERT_IF_DPORT_REG'
+   46 |             ASSERT_IF_DPORT_REG((_r), REG_READ);                                                                       \
+      |             ^~~~~~~~~~~~~~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\SPIporting.cpp:70:24: note: in expansion of macro 'REG_READ'
+   70 |             savedCtrl2=REG_READ(SPI_CTRL2_REG(3));
+      |                        ^~~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp: In function 'void DW1000Ng::printAccMem()':
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2031:22: warning: unused variable 'i0' [-Wunused-variable]
+ 2031 |                 int  i0=(int)getFP_val();
+      |                      ^~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp: In function 'void DW1000Ng::printAccMem1()':
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2080:30: warning: unused variable 'data' [-Wunused-variable]
+ 2080 |                         byte data = SPI.transfer(JUNK);
+      |                              ^~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2081:30: warning: unused variable 'message' [-Wunused-variable]
+ 2081 |                         char message[50];
+      |                              ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2091:30: warning: unused variable 'data' [-Wunused-variable]
+ 2091 |                         byte data = SPI.transfer(JUNK);
+      |                              ^~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2092:30: warning: unused variable 'message' [-Wunused-variable]
+ 2092 |                         char message[50];
+      |                              ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2069:22: warning: unused variable 'i0' [-Wunused-variable]
+ 2069 |                 int  i0=(int)getFP_val();
+      |                      ^~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp: In function 'float DW1000Ng::getFirstPathPower1()':
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2521:6: warning: unused variable 'message' [-Wunused-variable]
+ 2521 | char message[50];
+      |      ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp: In function 'float DW1000Ng::getNPower()':
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2574:26: warning: unused variable 'twoPower17' [-Wunused-variable]
+ 2574 |                 uint32_t twoPower17 = 131072;
+      |                          ^~~~~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2575:26: warning: variable 'C' set but not used [-Wunused-but-set-variable]
+ 2575 |                 uint16_t C, N;
+      |                          ^
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2576:26: warning: unused variable 'A' [-Wunused-variable]
+ 2576 |                 float    A, corrFac;
+      |                          ^
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2576:29: warning: unused variable 'corrFac' [-Wunused-variable]
+ 2576 |                 float    A, corrFac;
+      |                             ^~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp: At global scope:
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:1332:22: warning: 'void DW1000Ng::{anonymous}::_uploadConfigToAON()' defined but not used [-Wunused-function]
+ 1332 |                 void _uploadConfigToAON() {
+      |                      ^~~~~~~~~~~~~~~~~~
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp: In function 'uint8_t DW1000Ng::getRCphase()':
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2399:37: warning: array subscript 8 is above array bounds of 'byte [1]' {aka 'unsigned char [1]'} [-Warray-bounds=]
+ 2399 |                              data [8]=0;
+      |                              ~~~~~~~^
+D:\SLAM_bot\artifacts\UWB_MODE8_R5_TAG_CS_FIX_20261111\vendor\tag\DW1000Ng\src\DW1000Ng.cpp:2396:22: note: while referencing 'data'
+ 2396 |                 byte data[LEN_RCphase_INDEX];
+      |                      ^~~~
+In file included from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/bt/include/esp32/include/esp_bt.h:16,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7\cores\esp32\esp32-hal-bt.c:30:
+C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esp32-libs/3.3.7/include/controller/esp32/esp_bredr_cfg.h:18:9: note: '#pragma message: BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)'
+   18 | #pragma message ("BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)")
+      |         ^~~~~~~
+In file included from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\tools\esp32-libs\3.3.7/include/bt/include/esp32/include/esp_bt.h:16,
+                 from C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7\cores\esp32\esp32-hal-misc.c:29:
+C:/Users/Myoungsun Kim/AppData/Local/Arduino15/packages/esp32/tools/esp32-libs/3.3.7/include/controller/esp32/esp_bredr_cfg.h:18:9: note: '#pragma message: BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)'
+   18 | #pragma message ("BT: forcing BR/EDR max sync conn eff to 1 (Bluedroid HFP requires SCO/eSCO)")
+      |         ^~~~~~~
+Sketch uses 392108 bytes (29%) of program storage space. Maximum is 1310720 bytes.
+Global variables use 92900 bytes (28%) of dynamic memory, leaving 234780 bytes for local variables. Maximum is 327680 bytes.

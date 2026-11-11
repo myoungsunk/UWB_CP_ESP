@@ -1,0 +1,20 @@
+{
+  "event": "HELLO",
+  "role": "tag",
+  "firmware": "D8_R5_TAG_STAGE6_P2POLL_20261111",
+  "mode": 8,
+  "wire": "RFB8",
+  "hw_ok": true,
+  "fault_latched": false,
+  "boot": 1921359407,
+  "config_id": 2350632374,
+  "stage": 6,
+  "period_us": 200000,
+  "baud": 2000000,
+  "active": false,
+  "wifi_ota": false,
+  "cal_default_is_uncalibrated": true,
+  "drops": 0,
+  "sent": 100,
+  "period_miss": 0
+}

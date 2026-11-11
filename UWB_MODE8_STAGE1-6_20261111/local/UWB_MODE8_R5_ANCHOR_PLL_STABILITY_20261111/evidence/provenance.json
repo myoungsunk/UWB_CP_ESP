@@ -1,0 +1,110 @@
+{
+  "question_id": "UWB-MODE8-SOURCE-HOST-QA-20261111",
+  "created_utc": "2026-11-11T07:30:00.990276+00:00",
+  "scope": "Anchor first POLL CLKPLL_LL diagnosis and live Stage 2 retest",
+  "policy_sha256": {
+    "COMMON_CONTRACT.md": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "ROLE_IMPLEMENTER.md": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "vendor_erratum": "DW1000 Errata v1.4 SYSSTAT-1, https://www.qorvo.com/products/r/ra006714",
+  "source_manifest_sha256": "b22502a268b1b5d3d660a45c3669ef8b81e0e4d8682bcd8029b0c3d5c1bc9340",
+  "anchor_build_exit_code": 0,
+  "anchor_artifacts": {
+    "ANCHOR_DUAL_DS_CIR.ino.bin": {
+      "bytes": 390464,
+      "sha256": "6ba6517b3504e1349f3c668636ec1d94b09f37ed47982edce66b54c492a73336"
+    },
+    "ANCHOR_DUAL_DS_CIR.ino.bootloader.bin": {
+      "bytes": 23520,
+      "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+    },
+    "ANCHOR_DUAL_DS_CIR.ino.elf": {
+      "bytes": 6282340,
+      "sha256": "7e8884c60c483354924b573752b35ad5887be50f804974e9c9eae50c63fe710d"
+    },
+    "ANCHOR_DUAL_DS_CIR.ino.map": {
+      "bytes": 12922368,
+      "sha256": "1562ed019db609f2a60d170f8c24031d28932097d65d6f48f752d18f9626e4db"
+    },
+    "ANCHOR_DUAL_DS_CIR.ino.merged.bin": {
+      "bytes": 4194304,
+      "sha256": "3f6c4c74ed8b1f851d519f729d0a1f07b445f32183cde08b0c07f19398915e6e"
+    },
+    "ANCHOR_DUAL_DS_CIR.ino.partitions.bin": {
+      "bytes": 3072,
+      "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+    }
+  },
+  "tag_previously_verified_app_sha256": "bc1fd34a16850ded967adbed9525cc94293776543a9154a6094ca4516a66aa01",
+  "stage2_command": "py -3 -B -X utf8 'D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\run_split_pair.py' --out 'D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01' --stage 2 --count 20",
+  "stage2_exit_code": 2,
+  "stage2_session": 2163022701,
+  "stage2_period_us": 300000,
+  "stage2_pass": false,
+  "tag_selftest": {
+    "event": "SELFTEST",
+    "role": "tag",
+    "pass": true,
+    "faults": 0,
+    "dev_a": 3737780528,
+    "dev_b": 3737780528,
+    "ant_a_tx": 16436,
+    "ant_a_rx": 16436,
+    "ant_b_tx": 16436,
+    "ant_b_rx": 16436
+  },
+  "anchor_pll": {
+    "event": "PLLSTATUS",
+    "role": "anchor",
+    "boot": 428528939,
+    "before": 41943042,
+    "after": 41943042,
+    "first_poll_pre_tx": 0,
+    "rf_before": 3,
+    "rf_after": 3,
+    "ec_ctrl": 4,
+    "acknowledged": false,
+    "ready": false,
+    "first_poll_checked": false,
+    "first_poll_entry": 0,
+    "first_poll_after_idle": 0,
+    "first_poll_after_clear": 0,
+    "first_poll_after_schedule": 0,
+    "first_poll_after_buffer": 0,
+    "live_status_fast": 41943042,
+    "live_status_slow": 41943042,
+    "live_rf_fast": 3,
+    "live_rf_slow": 3,
+    "attempts": 2,
+    "retry_status": 41943042,
+    "retry_rf": 3
+  },
+  "observations": [
+    "First-POLL abort reproduced before TXSTRT, with no transmit timestamp.",
+    "The same SYS_STATUS and CPLLLOW were observed in idle at both 2 MHz and 20 MHz SPI.",
+    "Vendor PLL calibration alone did not resolve the idle event.",
+    "The stabilization build blocked Stage 2 in readiness; there were no RF records and both STOP requests were acknowledged."
+  ],
+  "unresolved": "Physical cause of the idle PLL status fault, and successful Stage 2 communication.",
+  "files_sha256": {
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\stage2_first\\capture_receipt.json": "dd793900a0c1635deafa3839faaaff4b5c95dc31179e4eaef0abe1ce22d60ce5",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\run_split_pair.py": "835a84de94e24f27f410c73548fc37965a6dbbe2fdfd4d2dc1b2f49f683630a9",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_FIX_20261111\\tools\\run_pair.py": "336a4251d61af0111455b6d97e49525106f4afb7036e39a64ea531d8627e7fde",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_FIX_20261111\\evidence\\stage2_01\\pll_after_stage2.json": "2f2dd6e95d29f23e8e4ea0c5550872ce99dc0e184c4b048f17006677461fd051",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_CAL_20261111\\evidence\\stage2_01\\pll_after_stage2.json": "a13e3fd4836c9b55e1c185621489f270be9ccf29684140053d0a2e9cf0fac4c0",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_CAL_20261111\\evidence\\isolate_rx_selftest_02\\diagnosis.json": "c1de638d92b80d308fb2d12cb8aea9fbeb859bb882075bee96ef8969ffab8585",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_TRACE_20261111\\evidence\\flash\\pll_before_stage2.json": "587397498ef4de79f0ce538d62e70ab1b3e7ad19e7008a697cc65301dd333db8",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_TRACE_20261111\\evidence\\idle_pll_timeline.json": "ea4d52fa18b140e48bd9973bf9b7abfab84ef465347487ec0b19b58d9af9419e",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_TRACE_20261111\\evidence\\pll_after_idle_timeline.json": "323452a54a3c31fdcdbac6080b5dce6bcbc886d88e8bcce37e6f223f8040a347",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\dist\\target_build_receipt.json": "4959ab5a29b0444de4da66714b8c3a4300535536c7fe1e6d5cd089209947bee5",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\flash\\flash_receipt.json": "988a44648057c0c586c9a76f30764f84bab587842bbb2e51d325927cbcda3b0f",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\flash\\pll_before_stage2.json": "873d66e77b41962bdf63f4775136f24803fcab5ee0c4fb9bfd4a852733795aa6",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\host\\python_tests_pll_stability.log": "b6f700db9a55a04a7bb1d92e0a2d166f291910b6722bf58b2e7ed3fedc0d6d8b",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01\\anchor.rfb8": "65b2d6e863668c44a79cf07177b9cf9ab370cc99ad94681e77232d931e9406a0",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01\\tag.rfb8": "38fd35f3b2b19e5a7bbf2d19b04733dc26d10ad41048cdd2663aec7fe925034e",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01\\anchor.jsonl": "8567372d06d58472c898bcac24f2c49b3c39808c6a159a3f452162161c41b85d",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01\\tag.jsonl": "150a3e83a91c489bca7303ef7216e9fd13a2bb046b2539ad79530b897b445e23",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01\\capture_receipt.json": "9fa16ba5218558ef788a979ea759bab84dc6a59e6914a6f7afa4045f12b63548",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111\\evidence\\stage2_01\\pll_after_stage2.json": "d1d280e39080bb4310f71ef9d258588e6cb1941f54210be1bc879e0366a3832d"
+  }
+}

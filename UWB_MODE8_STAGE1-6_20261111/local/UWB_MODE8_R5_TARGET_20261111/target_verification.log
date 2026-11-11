@@ -1,0 +1,121 @@
+{
+  "checks": {
+    "target_receipt": true,
+    "fqbn": true,
+    "core": true
+  },
+  "roles": {
+    "anchor": {
+      "checks": {
+        "source_binding": true,
+        "bin_sha256": true,
+        "esp32_app_image_header": true,
+        "bootloader.bin_sha256": true,
+        "partitions.bin_sha256": true,
+        "elf_sha256": true,
+        "xtensa_elf_header": true,
+        "merged_sha256": true,
+        "merged_bootloader.bin_at_1000": true,
+        "merged_partitions.bin_at_8000": true,
+        "merged_bin_at_10000": true
+      },
+      "flash_preflight_pass": true
+    },
+    "tag": {
+      "checks": {
+        "source_binding": true,
+        "bin_sha256": true,
+        "esp32_app_image_header": true,
+        "bootloader.bin_sha256": true,
+        "partitions.bin_sha256": true,
+        "elf_sha256": true,
+        "xtensa_elf_header": true,
+        "merged_sha256": true,
+        "merged_bootloader.bin_at_1000": true,
+        "merged_partitions.bin_at_8000": true,
+        "merged_bin_at_10000": true
+      },
+      "flash_preflight_pass": true
+    }
+  },
+  "offline_only": true,
+  "actual_flash_verified": false,
+  "rf_tested": false,
+  "flash_preflight_pass": true
+}
+
+{
+  "archive": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_ESP32_TARGET_BUILD_20261111.zip",
+  "bytes": 6430571,
+  "sha256": "23f809722594db32e9cbc3e705f538e668ac9038dc49a5c02c741267b8df2f72",
+  "entries": 19,
+  "archive_preflight_exit": 0,
+  "roles": {
+    "anchor": {
+      "compile_exit": 0,
+      "flash_preflight_pass": true,
+      "compile_warnings": 13,
+      "array_bounds_warnings": [
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\vendor\\anchor\\DW1000Ng\\src\\DW1000Ng.cpp:2419:37: warning: array subscript 8 is above array bounds of 'byte [1]' {aka 'unsigned char [1]'} [-Warray-bounds=]"
+      ],
+      "rc_phase_symbol_check": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2511\\bin\\xtensa-esp32-elf-nm.exe",
+        "-C",
+        "--defined-only",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.elf"
+      ],
+      "rc_phase_symbols": [],
+      "rc_phase_sections_discarded": true,
+      "esptool_image_info_exit": 0,
+      "esptool_checksum_valid": true,
+      "esptool_validation_hash_valid": true,
+      "flash_used_bytes": 388280,
+      "flash_max_bytes": 1310720,
+      "static_ram_used_bytes": 95932,
+      "static_ram_max_bytes": 327680,
+      "app": {
+        "filename": "ANCHOR_DUAL_DS_CIR.ino.bin",
+        "bytes": 388432,
+        "sha256": "a9c67adc701eae75a9851f906453e8e6bf851efb5706bab74170bd6c44592eb1"
+      },
+      "elf": {
+        "filename": "ANCHOR_DUAL_DS_CIR.ino.elf",
+        "bytes": 6270076,
+        "sha256": "d4b0258fa48fada1e7efb838317d0be843a699772ee882527a71de21d01f4791"
+      }
+    },
+    "tag": {
+      "compile_exit": 0,
+      "flash_preflight_pass": true,
+      "compile_warnings": 14,
+      "array_bounds_warnings": [
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\vendor\\tag\\DW1000Ng\\src\\DW1000Ng.cpp:2399:37: warning: array subscript 8 is above array bounds of 'byte [1]' {aka 'unsigned char [1]'} [-Warray-bounds=]"
+      ],
+      "rc_phase_symbol_check": [
+        "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2511\\bin\\xtensa-esp32-elf-nm.exe",
+        "-C",
+        "--defined-only",
+        "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TARGET_20261111\\UWB_DUAL_DW1000_MODE8_R5_20261111\\dist\\tag\\TAG_DUAL_DS_CIR.ino.elf"
+      ],
+      "rc_phase_symbols": [],
+      "rc_phase_sections_discarded": true,
+      "esptool_image_info_exit": 0,
+      "esptool_checksum_valid": true,
+      "esptool_validation_hash_valid": true,
+      "flash_used_bytes": 392096,
+      "flash_max_bytes": 1310720,
+      "static_ram_used_bytes": 92900,
+      "static_ram_max_bytes": 327680,
+      "app": {
+        "filename": "TAG_DUAL_DS_CIR.ino.bin",
+        "bytes": 392240,
+        "sha256": "3b7918e7d9174d15369d50bb01660462a552dd42a3ffc8912ba3f1259ddead1a"
+      },
+      "elf": {
+        "filename": "TAG_DUAL_DS_CIR.ino.elf",
+        "bytes": 6290804,
+        "sha256": "5549a25ec34b758927137c3b246c09049dd1c05e17876b11502eb941bf1a0407"
+      }
+    }
+  }
+}

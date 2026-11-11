@@ -1,0 +1,1 @@
+test_anchor_firmware_before: tests/test_anchor_firmware.cpp:61: void fake::expect_event(const char*): Assertion `std::strstr(event.text, text)' failed.

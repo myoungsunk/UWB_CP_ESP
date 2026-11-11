@@ -1,0 +1,1 @@
+{"port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0", "tty": "/dev/ttyUSB0", "baud": 921600, "received_bytes": 2157, "hello": [{"event": "ACK", "op": "HELLO", "request": 875219364, "role": "tag", "boot": 617010013, "firmware": "RF_PLATFORM_V1", "release": "R04", "profile": "RAWCAL_PAIR_R04_ABDIRECT", "hw_ok": false, "valid_frame": "RFB5"}]}

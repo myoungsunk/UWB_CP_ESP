@@ -1,0 +1,1360 @@
+{
+  "question": "Mode 8 Stage 3 tag A/B RESPONSE TX and matching anchor RX across 20 transactions",
+  "utc": "2026-11-11T10:09:13.319663+00:00",
+  "session": 3183590830,
+  "config_id": 430986652,
+  "count": 20,
+  "stage": 3,
+  "period_us": 300000,
+  "cir_hz": 20000000,
+  "collector_exit_code": 0,
+  "firmware": {
+    "tag": "D8_R5_TAG_STAGE3_20261111",
+    "anchor": "D8_R6_ANCHOR_STAGE3_RXCHECK_20261111"
+  },
+  "boot": {
+    "tag": 2680207313,
+    "anchor": 1595508760
+  },
+  "selftest": {
+    "tag": true,
+    "anchor": true
+  },
+  "firmware_flash_receipts": {
+    "tag": {
+      "utc": "2026-11-11T10:01:08.3511251+00:00",
+      "role": "tag",
+      "host": "slam-robot-tailscale",
+      "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+      "mac": "28:56:2f:73:06:54",
+      "offset": "0x10000",
+      "prior_app_sha256": "cd7d23f1fca4423b75ea4ef248384af1c4ebfc4f0341a0c5a5039453a70e8eda",
+      "new_app_sha256": "c47c5b7a307ee3f49cb0494a8c578b046b0526b05d49a545b42de147da837b0b",
+      "remote_staging": "/tmp/uwb-mode8-tag-stage3-20261111",
+      "verified": true
+    },
+    "anchor": {
+      "utc": "2026-11-11T10:08:54.7688451+00:00",
+      "port": "COM4",
+      "mac": "28:56:2f:72:e7:18",
+      "flash_offset": "0x10000",
+      "original_app_sha256": "6fcab6b9bbfeac58358b305b4dda9da262523f016bcbd60c7a33cdaf1e823145",
+      "written_app_sha256": "161cae1720cc337003d2d57799b8ac3dcbaa5873b83623947d4e0ab30e2dfa67",
+      "elf_sha256": "a2cbddca237d7cb48285ded0fc9dada23e4be39418350e61a19193d59f4ce3b2",
+      "esptool_version": "5.1.0",
+      "verified": true
+    }
+  },
+  "responses": {
+    "A": {
+      "tag_tx_ok": 20,
+      "anchor_rx_ok": 20,
+      "matched": 20
+    },
+    "B": {
+      "tag_tx_ok": 20,
+      "anchor_rx_ok": 20,
+      "matched": 20
+    }
+  },
+  "both_responses_matched": 20,
+  "response_pass": true,
+  "capture_pass": true,
+  "capture_audit": {
+    "pass": true,
+    "problems": [],
+    "details": {
+      "tag": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      },
+      "anchor": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      }
+    }
+  },
+  "complete_records": {
+    "tag": 20,
+    "anchor": 20
+  },
+  "stop_acknowledged": true,
+  "verification_issues": [],
+  "sha256": {
+    "tag.rfb8": "5aa518f70d5cae31e85f3575956eefda99b38ef4663a58f0be5b0e704d7c8600",
+    "anchor.rfb8": "f223954ec3a3820b11425ceebfb0c4608b2587ed67817ecfb7863082eb467cf0"
+  },
+  "pre_rfb8_serial_bytes": {
+    "tag": 934,
+    "anchor": 0
+  },
+  "collector_receipt_sha256": "5a5cb6cf3f2a70ab43761576335ed4a96df29a6700329c2a3d4ad34f575035c5",
+  "anchor_response_read_recoveries": {
+    "A": 0,
+    "B": 0
+  },
+  "min_tag_tx_lead_us": {
+    "A": 5254,
+    "B": 7672
+  },
+  "transactions": [
+    {
+      "txn": 0,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 735676121652,
+        "planned": 735676121652,
+        "actual": 735676121652,
+        "status": 8388850,
+        "lead_us": 3078,
+        "begin_us": 11876005,
+        "end_us": 11882232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5254,
+          "tag_tx_ticks": 35816391732,
+          "anchor_rx_ticks": 734525963025
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 8018,
+          "tag_tx_ticks": 34213747764,
+          "anchor_rx_ticks": 735164939222
+        }
+      ]
+    },
+    {
+      "txn": 1,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 754842942004,
+        "planned": 754842942004,
+        "actual": 754842942004,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 12175985,
+        "end_us": 12182232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5455,
+          "tag_tx_ticks": 54983196724,
+          "anchor_rx_ticks": 753692783518
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7965,
+          "tag_tx_ticks": 53380507188,
+          "anchor_rx_ticks": 754331759800
+        }
+      ]
+    },
+    {
+      "txn": 2,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 774012388404,
+        "planned": 774012388404,
+        "actual": 774012388404,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 12475985,
+        "end_us": 12482232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5446,
+          "tag_tx_ticks": 74152628276,
+          "anchor_rx_ticks": 772862230134
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7936,
+          "tag_tx_ticks": 72549893172,
+          "anchor_rx_ticks": 773501206349
+        }
+      ]
+    },
+    {
+      "txn": 3,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 793181834804,
+        "planned": 793181834804,
+        "actual": 793181834804,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 12775985,
+        "end_us": 12782232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5448,
+          "tag_tx_ticks": 93322058804,
+          "anchor_rx_ticks": 792031676269
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7919,
+          "tag_tx_ticks": 91719278132,
+          "anchor_rx_ticks": 792670652683
+        }
+      ]
+    },
+    {
+      "txn": 4,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 812351281204,
+        "planned": 812351281204,
+        "actual": 812351281204,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 13075985,
+        "end_us": 13082232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5471,
+          "tag_tx_ticks": 112491489844,
+          "anchor_rx_ticks": 811201122746
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7904,
+          "tag_tx_ticks": 110888663092,
+          "anchor_rx_ticks": 811840099050
+        }
+      ]
+    },
+    {
+      "txn": 5,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 831520728628,
+        "planned": 831520728628,
+        "actual": 831520728628,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 13375985,
+        "end_us": 13382232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5440,
+          "tag_tx_ticks": 131660920884,
+          "anchor_rx_ticks": 830370570393
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7889,
+          "tag_tx_ticks": 130058048052,
+          "anchor_rx_ticks": 831009546679
+        }
+      ]
+    },
+    {
+      "txn": 6,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 850690175540,
+        "planned": 850690175540,
+        "actual": 850690175540,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 13675985,
+        "end_us": 13682232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5441,
+          "tag_tx_ticks": 150830350900,
+          "anchor_rx_ticks": 849540017052
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7872,
+          "tag_tx_ticks": 149227431988,
+          "anchor_rx_ticks": 850178993701
+        }
+      ]
+    },
+    {
+      "txn": 7,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 869859622452,
+        "planned": 869859622452,
+        "actual": 869859622452,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 13975985,
+        "end_us": 13982232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5428,
+          "tag_tx_ticks": 169999781428,
+          "anchor_rx_ticks": 868709464246
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7857,
+          "tag_tx_ticks": 168396815412,
+          "anchor_rx_ticks": 869348440494
+        }
+      ]
+    },
+    {
+      "txn": 8,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 889029069364,
+        "planned": 889029069364,
+        "actual": 889029069364,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 14275985,
+        "end_us": 14282232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5409,
+          "tag_tx_ticks": 189169211444,
+          "anchor_rx_ticks": 887878910619
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7841,
+          "tag_tx_ticks": 187566199348,
+          "anchor_rx_ticks": 888517887630
+        }
+      ]
+    },
+    {
+      "txn": 9,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 908198516276,
+        "planned": 908198516276,
+        "actual": 908198516276,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 14575985,
+        "end_us": 14582232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5397,
+          "tag_tx_ticks": 208338641972,
+          "anchor_rx_ticks": 907048358083
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7825,
+          "tag_tx_ticks": 206735581748,
+          "anchor_rx_ticks": 907687334257
+        }
+      ]
+    },
+    {
+      "txn": 10,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 927367963188,
+        "planned": 927367963188,
+        "actual": 927367963188,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 14875985,
+        "end_us": 14882232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5474,
+          "tag_tx_ticks": 227508071476,
+          "anchor_rx_ticks": 926217804763
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7811,
+          "tag_tx_ticks": 225904964148,
+          "anchor_rx_ticks": 926856781591
+        }
+      ]
+    },
+    {
+      "txn": 11,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 946537410612,
+        "planned": 946537410612,
+        "actual": 946537410612,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 15175985,
+        "end_us": 15182232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5457,
+          "tag_tx_ticks": 246677500980,
+          "anchor_rx_ticks": 945387252376
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7795,
+          "tag_tx_ticks": 245074345524,
+          "anchor_rx_ticks": 946026229219
+        }
+      ]
+    },
+    {
+      "txn": 12,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 965706856500,
+        "planned": 965706856500,
+        "actual": 965706856500,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 15475985,
+        "end_us": 15482232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5441,
+          "tag_tx_ticks": 265846930484,
+          "anchor_rx_ticks": 964556697821
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7779,
+          "tag_tx_ticks": 264243726900,
+          "anchor_rx_ticks": 965195674724
+        }
+      ]
+    },
+    {
+      "txn": 13,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 984876303412,
+        "planned": 984876303412,
+        "actual": 984876303412,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 15775985,
+        "end_us": 15782232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5481,
+          "tag_tx_ticks": 285016359988,
+          "anchor_rx_ticks": 983726145133
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7765,
+          "tag_tx_ticks": 283413107764,
+          "anchor_rx_ticks": 984365122167
+        }
+      ]
+    },
+    {
+      "txn": 14,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 1004045750836,
+        "planned": 1004045750836,
+        "actual": 1004045750836,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 16075985,
+        "end_us": 16082232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5465,
+          "tag_tx_ticks": 304185788980,
+          "anchor_rx_ticks": 1002895592344
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7749,
+          "tag_tx_ticks": 302582487604,
+          "anchor_rx_ticks": 1003534569288
+        }
+      ]
+    },
+    {
+      "txn": 15,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 1023215198260,
+        "planned": 1023215198260,
+        "actual": 1023215198260,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 16375985,
+        "end_us": 16382232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5460,
+          "tag_tx_ticks": 323355217972,
+          "anchor_rx_ticks": 1022065039805
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7734,
+          "tag_tx_ticks": 321751867444,
+          "anchor_rx_ticks": 1022704016915
+        }
+      ]
+    },
+    {
+      "txn": 16,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 1042384645684,
+        "planned": 1042384645684,
+        "actual": 1042384645684,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 16675985,
+        "end_us": 16682232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5438,
+          "tag_tx_ticks": 342524647476,
+          "anchor_rx_ticks": 1041234487428
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7717,
+          "tag_tx_ticks": 340921246772,
+          "anchor_rx_ticks": 1041873464000
+        }
+      ]
+    },
+    {
+      "txn": 17,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 1061554093108,
+        "planned": 1061554093108,
+        "actual": 1061554093108,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 16975985,
+        "end_us": 16982232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5420,
+          "tag_tx_ticks": 361694076980,
+          "anchor_rx_ticks": 1060403934853
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7703,
+          "tag_tx_ticks": 360090626612,
+          "anchor_rx_ticks": 1061042911707
+        }
+      ]
+    },
+    {
+      "txn": 18,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 1080723540532,
+        "planned": 1080723540532,
+        "actual": 1080723540532,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 17275985,
+        "end_us": 17282232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5405,
+          "tag_tx_ticks": 380863506484,
+          "anchor_rx_ticks": 1079573382331
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7687,
+          "tag_tx_ticks": 379260005940,
+          "anchor_rx_ticks": 1080212359234
+        }
+      ]
+    },
+    {
+      "txn": 19,
+      "tag_errors": 0,
+      "anchor_errors": 0,
+      "anchor_response_trace": [
+        {
+          "slot": 0,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        },
+        {
+          "slot": 1,
+          "status_or": 8417026,
+          "last_failure": 0,
+          "failed_reads": 0,
+          "rejected_frames": 0,
+          "recovered_reads": 0,
+          "first_read_issue": 0,
+          "first_read_length": 0
+        }
+      ],
+      "anchor_probe1_tx": {
+        "attempted": true,
+        "ok": true,
+        "radio": 0,
+        "type": 4,
+        "requested": 381360180,
+        "planned": 381360180,
+        "actual": 381360180,
+        "status": 8388850,
+        "lead_us": 3065,
+        "begin_us": 17575985,
+        "end_us": 17582232
+      },
+      "responses": [
+        {
+          "radio": "A",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 5483,
+          "tag_tx_ticks": 400032935988,
+          "anchor_rx_ticks": 1098742829800
+        },
+        {
+          "radio": "B",
+          "tag_tx_ok": true,
+          "anchor_rx_ok": true,
+          "matched": true,
+          "tag_tx_lead_us": 7672,
+          "tag_tx_ticks": 398429384756,
+          "anchor_rx_ticks": 1099381806417
+        }
+      ]
+    }
+  ]
+}

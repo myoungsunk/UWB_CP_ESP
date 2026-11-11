@@ -1,0 +1,109 @@
+{
+  "session": 2813865899,
+  "source": "serial_hardware_capture",
+  "stage": 6,
+  "requested_count": 100,
+  "accuracy_validated": false,
+  "pass": false,
+  "tag_identity": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R5_TAG_STAGE6_P2IOFIX_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 1669236142,
+    "config_id": 2350632374,
+    "stage": 6,
+    "period_us": 200000,
+    "baud": 2000000,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "anchor_identity": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R6_ANCHOR_STAGE6_P2IOFIX_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 1706322589,
+    "config_id": 2350632374,
+    "stage": 6,
+    "period_us": 200000,
+    "baud": 2000000,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 200,
+    "period_miss": 0
+  },
+  "error": "Run deadline; partial capture preserved",
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 0,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 2223313,
+      "crc_errors": 100,
+      "schema_errors": 0,
+      "sequence_gap_events": 2,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 2222244,
+      "crc_errors": 100,
+      "schema_errors": 0,
+      "sequence_gap_events": 1,
+      "trailing_bytes": 0
+    }
+  },
+  "anchor_capture": {
+    "port": "COM4",
+    "records": 40,
+    "complete": 40,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 267288,
+      "crc_errors": 60,
+      "schema_errors": 0,
+      "sequence_gap_events": 25,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 267151,
+      "crc_errors": 60,
+      "schema_errors": 0,
+      "sequence_gap_events": 24,
+      "trailing_bytes": 0
+    }
+  },
+  "shutdown": {
+    "pass": true,
+    "request": 49576440,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 2813865899
+      },
+      "anchor": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 2813865899
+      }
+    }
+  }
+}

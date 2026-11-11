@@ -1,0 +1,2745 @@
+{
+  "question_id": "MODE8-STAGE4-DS20",
+  "utc": "2026-11-11T10:18:46.097458+00:00",
+  "governance_sha256": {
+    "common_sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "implementer_sha256": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "stage": 4,
+  "session": 1177082439,
+  "config_id": 266905776,
+  "count": 20,
+  "firmware": {
+    "anchor": "D8_R6_ANCHOR_STAGE4_20261111",
+    "tag": "D8_R5_TAG_STAGE4_20261111"
+  },
+  "input_sha256": {
+    "anchor": "19a45022a5ea4e791c5308a4bc34b95150ace7ad1a335af65d8ea99bc049c594",
+    "tag": "3caa8876624a929413a404201f7f821a60b2a0ab43385a3e3e6af000fc63c188"
+  },
+  "collector_receipt_sha256": "fe86aa63da6f853cb5d8d54082157b6772bb324d3ce9ef65a29b504c433c40b3",
+  "collector_exit_code": 0,
+  "pre_rfb8_serial_bytes": {
+    "anchor": 0,
+    "tag": 934
+  },
+  "period_us": 300000,
+  "cir_hz": 20000000,
+  "reference_m_approx": 0.8,
+  "tag_delay_ticks": [
+    16279,
+    15886
+  ],
+  "delay_fit": {
+    "utc": "2026-11-11T10:17:44.460606+00:00",
+    "reference_m_approx": 0.8,
+    "baseline_session": 2041379429,
+    "baseline_verdict_sha256": "7e7a9478f9b3f4f329b0b2e9e492d034d18ea38d09492e10ca83ee300093b76f",
+    "baseline_verdict": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\stage4_20_default_20261111_191657_832\\stage4_distance_verdict.json",
+    "method": "Tag-only symmetric TX/RX adjustment. A one-tick reduction on both tag delays increases ToF by approximately one tick. Use the baseline median and nearest integer tick. Validate on a separate session.",
+    "modules": {
+      "A": {
+        "baseline_median_m": 0.06582913114215401,
+        "tag_delay_ticks": 16279,
+        "tag_delay_delta_ticks": -157,
+        "baseline_sample_sd_m": 0.08423371167470722
+      },
+      "B": {
+        "baseline_median_m": -1.7788186978872504,
+        "tag_delay_ticks": 15886,
+        "tag_delay_delta_ticks": -550,
+        "baseline_sample_sd_m": 0.1396584260341351
+      }
+    },
+    "cal_id": 0,
+    "scope": "Trial geometry only. Reported sample standard deviation is repeatability metadata, not absolute uncertainty.",
+    "receipt_sha256": "6a23a7935689a5711025ce42dfe3492dbb8921846b0367c6508752ab43b4d385"
+  },
+  "range_accuracy_validated": false,
+  "max_allowed_abs_delta_m": 1e-06,
+  "result": {
+    "A": {
+      "valid": 20,
+      "recomputed": 20,
+      "median_m": 0.7951810560640595,
+      "min_m": 0.7511257358827511,
+      "max_m": 0.8613488236729068,
+      "max_abs_delta_m": 1.3789980268796853e-10
+    },
+    "B": {
+      "valid": 20,
+      "recomputed": 20,
+      "median_m": 0.814946196218024,
+      "min_m": 0.6656948575476659,
+      "max_m": 0.904229948879117,
+      "max_abs_delta_m": 1.3628675965549064e-10
+    }
+  },
+  "source": "Local DW1000 TX_TIME.actual and RX_TIME.hw; RX_RAWST is preserved as diagnostic data.",
+  "math": "r1=AR-AP, d1=TR-TP, r2=TF-TR, d2=AF-AR, each mod 2^40. ToF=(r1*r2-d1*d2)/(r1+d1+r2+d2).",
+  "pass": true,
+  "problems": [],
+  "pair_audit_problems": [],
+  "transactions": [
+    {
+      "txn": 0,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            972770753588,
+            973409728840,
+            974559886388,
+            33292695772,
+            33931671447,
+            35081830701
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 973409743872,
+            "tag_poll": 33292710912,
+            "tag_probe1": 35081845760
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.791160137703,
+            "tof_ticks": 168.678025999,
+            "r1": 638975252,
+            "d1": 638975675,
+            "r2": 1150159254,
+            "d2": 1150157548,
+            "six_ts": [
+              972770753588,
+              973409728840,
+              974559886388,
+              33292695772,
+              33931671447,
+              35081830701
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975252,
+            "d1": 638975675,
+            "r2": 1150159254,
+            "d2": 1150157548
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 168.67802602257436,
+          "distance_m": 0.7911601378126535,
+          "abs_delta_m": 1.096535084954553e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            972770753588,
+            974048706397,
+            974559886388,
+            31050196616,
+            32328148494,
+            32839328510
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 974048721408,
+            "tag_poll": 31050211328,
+            "tag_probe1": 32839343104
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.665694857582,
+            "tof_ticks": 141.928402536,
+            "r1": 1277952809,
+            "d1": 1277951878,
+            "r2": 511180016,
+            "d2": 511179991,
+            "six_ts": [
+              972770753588,
+              974048706397,
+              974559886388,
+              31050196616,
+              32328148494,
+              32839328510
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952809,
+            "d1": 1277951878,
+            "r2": 511180016,
+            "d2": 511179991
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 141.92840252918415,
+          "distance_m": 0.6656948575476659,
+          "abs_delta_m": 3.4334091125742816e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 1,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            991938026036,
+            992577001684,
+            993727158836,
+            52459936195,
+            53098912151,
+            54249070844
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 992577016832,
+            "tag_poll": 52459951104,
+            "tag_probe1": 54249085952
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.826339092308,
+            "tof_ticks": 176.178298494,
+            "r1": 638975648,
+            "d1": 638975956,
+            "r2": 1150158693,
+            "d2": 1150157152,
+            "six_ts": [
+              991938026036,
+              992577001684,
+              993727158836,
+              52459936195,
+              53098912151,
+              54249070844
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975648,
+            "d1": 638975956,
+            "r2": 1150158693,
+            "d2": 1150157152
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 176.17829850258352,
+          "distance_m": 0.8263390923501127,
+          "abs_delta_m": 4.211275772547651e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            991938026036,
+            993215979212,
+            993727158836,
+            50217398379,
+            51495350286,
+            52006529900
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 993215994368,
+            "tag_poll": 50217413120,
+            "tag_probe1": 52006544384
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.833541747026,
+            "tof_ticks": 177.71392892,
+            "r1": 1277953176,
+            "d1": 1277951907,
+            "r2": 511179614,
+            "d2": 511179624,
+            "six_ts": [
+              991938026036,
+              993215979212,
+              993727158836,
+              50217398379,
+              51495350286,
+              52006529900
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953176,
+            "d1": 1277951907,
+            "r2": 511179614,
+            "d2": 511179624
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 177.71392889116868,
+          "distance_m": 0.8335417468897133,
+          "abs_delta_m": 1.3628675965549064e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 2,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            1011107480628,
+            1011746455857,
+            1012896613428,
+            71629357935,
+            72268333463,
+            73418492566
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1011746470912,
+            "tag_poll": 71629372928,
+            "tag_probe1": 73418507776
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.832368554918,
+            "tof_ticks": 177.463800382,
+            "r1": 638975229,
+            "d1": 638975528,
+            "r2": 1150159103,
+            "d2": 1150157571,
+            "six_ts": [
+              1011107480628,
+              1011746455857,
+              1012896613428,
+              71629357935,
+              72268333463,
+              73418492566
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975229,
+            "d1": 638975528,
+            "r2": 1150159103,
+            "d2": 1150157571
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 177.46380038496346,
+          "distance_m": 0.832368554932785,
+          "abs_delta_m": 1.4785062063538135e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            1011107480628,
+            1012385433378,
+            1012896613428,
+            69386781189,
+            70664732686,
+            71175912701
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1012385448448,
+            "tag_poll": 69386796032,
+            "tag_probe1": 71175927296
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.780943433356,
+            "tof_ticks": 166.499789964,
+            "r1": 1277952750,
+            "d1": 1277951497,
+            "r2": 511180015,
+            "d2": 511180050,
+            "six_ts": [
+              1011107480628,
+              1012385433378,
+              1012896613428,
+              69386781189,
+              70664732686,
+              71175912701
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952750,
+            "d1": 1277951497,
+            "r2": 511180015,
+            "d2": 511180050
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 166.4997899685617,
+          "distance_m": 0.7809434333768873,
+          "abs_delta_m": 2.0887291896087845e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 3,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            1030276934708,
+            1030915909971,
+            1032066067508,
+            90798779144,
+            91437754775,
+            92587913873
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1030915924992,
+            "tag_poll": 90798794240,
+            "tag_probe1": 92587929600
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.752632495434,
+            "tof_ticks": 160.463801932,
+            "r1": 638975263,
+            "d1": 638975631,
+            "r2": 1150159098,
+            "d2": 1150157537,
+            "six_ts": [
+              1030276934708,
+              1030915909971,
+              1032066067508,
+              90798779144,
+              91437754775,
+              92587913873
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975263,
+            "d1": 638975631,
+            "r2": 1150159098,
+            "d2": 1150157537
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 160.46380190233114,
+          "distance_m": 0.7526324952961002,
+          "abs_delta_m": 1.3789980268796853e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            1030276934708,
+            1031554887774,
+            1032066067508,
+            88556163215,
+            89834115086,
+            90345294782
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1031554903040,
+            "tag_poll": 88556177920,
+            "tag_probe1": 90345309184
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.737054610433,
+            "tof_ticks": 157.142543989,
+            "r1": 1277953066,
+            "d1": 1277951871,
+            "r2": 511179696,
+            "d2": 511179734,
+            "six_ts": [
+              1030276934708,
+              1031554887774,
+              1032066067508,
+              88556163215,
+              89834115086,
+              90345294782
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953066,
+            "d1": 1277951871,
+            "r2": 511179696,
+            "d2": 511179734
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 157.1425439684401,
+          "distance_m": 0.7370546103359279,
+          "abs_delta_m": 9.707212811349564e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 4,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            1049446388276,
+            1050085363775,
+            1051235521076,
+            109968199794,
+            110607175575,
+            111757334368
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1050085379072,
+            "tag_poll": 109968215040,
+            "tag_probe1": 111757349376
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.824496158438,
+            "tof_ticks": 175.785378739,
+            "r1": 638975499,
+            "d1": 638975781,
+            "r2": 1150158793,
+            "d2": 1150157301,
+            "six_ts": [
+              1049446388276,
+              1050085363775,
+              1051235521076,
+              109968199794,
+              110607175575,
+              111757334368
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975499,
+            "d1": 638975781,
+            "r2": 1150158793,
+            "d2": 1150157301
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 175.78537875520982,
+          "distance_m": 0.8244961585144993,
+          "abs_delta_m": 7.64993624002841e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            1049446388276,
+            1050724341389,
+            1051235521076,
+            107725544233,
+            109003495950,
+            109514675592
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1050724356608,
+            "tag_poll": 107725558784,
+            "tag_probe1": 109514690048
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.860008678307,
+            "tof_ticks": 183.356768479,
+            "r1": 1277953113,
+            "d1": 1277951717,
+            "r2": 511179642,
+            "d2": 511179687,
+            "six_ts": [
+              1049446388276,
+              1050724341389,
+              1051235521076,
+              107725544233,
+              109003495950,
+              109514675592
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953113,
+            "d1": 1277951717,
+            "r2": 511179642,
+            "d2": 511179687
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 183.35676848138476,
+          "distance_m": 0.8600086783159357,
+          "abs_delta_m": 8.935741035998035e-12,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 5,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            1068615842868,
+            1069254818461,
+            1070404975668,
+            129137621447,
+            129776597399,
+            130926756149
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1069254833664,
+            "tag_poll": 129137636352,
+            "tag_probe1": 130926771200
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.751125736011,
+            "tof_ticks": 160.14255571,
+            "r1": 638975593,
+            "d1": 638975952,
+            "r2": 1150158750,
+            "d2": 1150157207,
+            "six_ts": [
+              1068615842868,
+              1069254818461,
+              1070404975668,
+              129137621447,
+              129776597399,
+              130926756149
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975593,
+            "d1": 638975952,
+            "r2": 1150158750,
+            "d2": 1150157207
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 160.1425556825237,
+          "distance_m": 0.7511257358827511,
+          "abs_delta_m": 1.2824885597950697e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            1068615842868,
+            1069893795683,
+            1070404975668,
+            126894925812,
+            128172877326,
+            128684057266
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1069893810688,
+            "tag_poll": 126894940672,
+            "tag_probe1": 128684071936
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.796354452737,
+            "tof_ticks": 169.78547159,
+            "r1": 1277952815,
+            "d1": 1277951514,
+            "r2": 511179940,
+            "d2": 511179985,
+            "six_ts": [
+              1068615842868,
+              1069893795683,
+              1070404975668,
+              126894925812,
+              128172877326,
+              128684057266
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952815,
+            "d1": 1277951514,
+            "r2": 511179940,
+            "d2": 511179985
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 169.78547158188726,
+          "distance_m": 0.7963544526975619,
+          "abs_delta_m": 3.943811943685205e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 6,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            1087785296948,
+            1088424272445,
+            1089574429748,
+            148307043384,
+            148946019223,
+            150096178069
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1088424287744,
+            "tag_poll": 148307058176,
+            "tag_probe1": 150096193024
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.776754947924,
+            "tof_ticks": 165.606790657,
+            "r1": 638975497,
+            "d1": 638975839,
+            "r2": 1150158846,
+            "d2": 1150157303,
+            "six_ts": [
+              1087785296948,
+              1088424272445,
+              1089574429748,
+              148307043384,
+              148946019223,
+              150096178069
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975497,
+            "d1": 638975839,
+            "r2": 1150158846,
+            "d2": 1150157303
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 165.60679064075055,
+          "distance_m": 0.7767549478466906,
+          "abs_delta_m": 7.730938111905061e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            1087785296948,
+            1089063250201,
+            1089574429748,
+            146064307280,
+            147342259214,
+            147853438662
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 1089063265280,
+            "tag_poll": 146064322048,
+            "tag_probe1": 147853453312
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.717957581816,
+            "tof_ticks": 153.070992686,
+            "r1": 1277953253,
+            "d1": 1277951934,
+            "r2": 511179448,
+            "d2": 511179547,
+            "six_ts": [
+              1087785296948,
+              1089063250201,
+              1089574429748,
+              146064307280,
+              147342259214,
+              147853438662
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953253,
+            "d1": 1277951934,
+            "r2": 511179448,
+            "d2": 511179547
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 153.07099269005286,
+          "distance_m": 0.7179575818344855,
+          "abs_delta_m": 1.8485546426916244e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 7,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            7443122740,
+            8082098337,
+            9232255540,
+            167476463639,
+            168115439511,
+            169265598152
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 8082113536,
+            "tag_poll": 167476478464,
+            "tag_probe1": 169265613312
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.789821311049,
+            "tof_ticks": 168.392583614,
+            "r1": 638975597,
+            "d1": 638975872,
+            "r2": 1150158641,
+            "d2": 1150157203,
+            "six_ts": [
+              7443122740,
+              8082098337,
+              9232255540,
+              167476463639,
+              168115439511,
+              169265598152
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975597,
+            "d1": 638975872,
+            "r2": 1150158641,
+            "d2": 1150157203
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 168.3925836037728,
+          "distance_m": 0.7898213110032481,
+          "abs_delta_m": 4.575184675559285e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            7443122740,
+            8721075957,
+            9232255540,
+            165233686361,
+            166511638030,
+            167022817473
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 8721091072,
+            "tag_poll": 165233700864,
+            "tag_probe1": 167022832128
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.802718761337,
+            "tof_ticks": 171.14236378,
+            "r1": 1277953217,
+            "d1": 1277951669,
+            "r2": 511179443,
+            "d2": 511179583,
+            "six_ts": [
+              7443122740,
+              8721075957,
+              9232255540,
+              165233686361,
+              166511638030,
+              167022817473
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953217,
+            "d1": 1277951669,
+            "r2": 511179443,
+            "d2": 511179583
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 171.14236377319506,
+          "distance_m": 0.8027187613060128,
+          "abs_delta_m": 3.098721279570782e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 8,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            26612577844,
+            27251553209,
+            28401710644,
+            186645885181,
+            187284860823,
+            188435019673
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 27251568128,
+            "tag_poll": 186645900288,
+            "tag_probe1": 188435034624
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.767541627586,
+            "tof_ticks": 163.642479498,
+            "r1": 638975365,
+            "d1": 638975642,
+            "r2": 1150158850,
+            "d2": 1150157435,
+            "six_ts": [
+              26612577844,
+              27251553209,
+              28401710644,
+              186645885181,
+              187284860823,
+              188435019673
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975365,
+            "d1": 638975642,
+            "r2": 1150158850,
+            "d2": 1150157435
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 163.64247950094165,
+          "distance_m": 0.767541627601467,
+          "abs_delta_m": 1.5467072067565368e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            26612577844,
+            27890531164,
+            28401710644,
+            184403066132,
+            185681017870,
+            186192197205
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 27890546176,
+            "tag_poll": 184403080704,
+            "tag_probe1": 186192211968
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.817124577671,
+            "tof_ticks": 174.213732705,
+            "r1": 1277953320,
+            "d1": 1277951738,
+            "r2": 511179335,
+            "d2": 511179480,
+            "six_ts": [
+              26612577844,
+              27890531164,
+              28401710644,
+              184403066132,
+              185681017870,
+              186192197205
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953320,
+            "d1": 1277951738,
+            "r2": 511179335,
+            "d2": 511179480
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 174.21373271651953,
+          "distance_m": 0.8171245777230778,
+          "abs_delta_m": 5.207778652760453e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 9,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            45782031924,
+            46421007630,
+            47571164724,
+            205815305635,
+            206454281623,
+            207604440133
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 46421022720,
+            "tag_poll": 205815320576,
+            "tag_probe1": 207604455424
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.760841873675,
+            "tof_ticks": 162.21406923,
+            "r1": 638975706,
+            "d1": 638975988,
+            "r2": 1150158510,
+            "d2": 1150157094,
+            "six_ts": [
+              45782031924,
+              46421007630,
+              47571164724,
+              205815305635,
+              206454281623,
+              207604440133
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975706,
+            "d1": 638975988,
+            "r2": 1150158510,
+            "d2": 1150157094
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 162.2140692263063,
+          "distance_m": 0.7608418736597042,
+          "abs_delta_m": 1.5295764654865707e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            45782031924,
+            47059985374,
+            47571164724,
+            203572444345,
+            204850396174,
+            205361575365
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 47060000768,
+            "tag_poll": 203572459008,
+            "tag_probe1": 205361589760
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.819804400074,
+            "tof_ticks": 174.785079935,
+            "r1": 1277953450,
+            "d1": 1277951829,
+            "r2": 511179191,
+            "d2": 511179350,
+            "six_ts": [
+              45782031924,
+              47059985374,
+              47571164724,
+              203572444345,
+              204850396174,
+              205361575365
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953450,
+            "d1": 1277951829,
+            "r2": 511179191,
+            "d2": 511179350
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 174.78507993298268,
+          "distance_m": 0.8198044000637504,
+          "abs_delta_m": 1.0249578963339445e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 10,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            64951484980,
+            65590460388,
+            66740617780,
+            224984726195,
+            225623701911,
+            226773860783
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 65590475776,
+            "tag_poll": 224984741376,
+            "tag_probe1": 226773875712
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.775247210399,
+            "tof_ticks": 165.285335901,
+            "r1": 638975408,
+            "d1": 638975716,
+            "r2": 1150158872,
+            "d2": 1150157392,
+            "six_ts": [
+              64951484980,
+              65590460388,
+              66740617780,
+              224984726195,
+              225623701911,
+              226773860783
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975408,
+            "d1": 638975716,
+            "r2": 1150158872,
+            "d2": 1150157392
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 165.2853358827862,
+          "distance_m": 0.7752472103149651,
+          "abs_delta_m": 8.403489015762489e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            64951484980,
+            66229438109,
+            66740617780,
+            222741822393,
+            224019773966,
+            224530953460
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 66229453312,
+            "tag_poll": 222741836800,
+            "tag_probe1": 224530968576
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.746099564291,
+            "tof_ticks": 159.070958844,
+            "r1": 1277953129,
+            "d1": 1277951573,
+            "r2": 511179494,
+            "d2": 511179671,
+            "six_ts": [
+              64951484980,
+              66229438109,
+              66740617780,
+              222741822393,
+              224019773966,
+              224530953460
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953129,
+            "d1": 1277951573,
+            "r2": 511179494,
+            "d2": 511179671
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 159.07095882233327,
+          "distance_m": 0.7460995641899758,
+          "abs_delta_m": 1.0102418901425381e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 11,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            84120940084,
+            84759915290,
+            85910072884,
+            244154148207,
+            244793123735,
+            245943282851
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 84759930368,
+            "tag_poll": 244154163200,
+            "tag_probe1": 245943298048
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.78931772992,
+            "tof_ticks": 168.285218408,
+            "r1": 638975206,
+            "d1": 638975528,
+            "r2": 1150159116,
+            "d2": 1150157594,
+            "six_ts": [
+              84120940084,
+              84759915290,
+              85910072884,
+              244154148207,
+              244793123735,
+              245943282851
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975206,
+            "d1": 638975528,
+            "r2": 1150159116,
+            "d2": 1150157594
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 168.28521838794114,
+          "distance_m": 0.7893177298258025,
+          "abs_delta_m": 9.419753865813618e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            84120940084,
+            85398893079,
+            85910072884,
+            241911201270,
+            243189152782,
+            243700332398
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 85398908416,
+            "tag_poll": 241911216128,
+            "tag_probe1": 243700346880
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.677084652151,
+            "tof_ticks": 144.356745388,
+            "r1": 1277952995,
+            "d1": 1277951512,
+            "r2": 511179616,
+            "d2": 511179805,
+            "six_ts": [
+              84120940084,
+              85398893079,
+              85910072884,
+              241911201270,
+              243189152782,
+              243700332398
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277952995,
+            "d1": 1277951512,
+            "r2": 511179616,
+            "d2": 511179805
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 144.35674538091254,
+          "distance_m": 0.6770846521197975,
+          "abs_delta_m": 3.120248504018264e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 12,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            103290394676,
+            103929369912,
+            105079527476,
+            263323569031,
+            263962544535,
+            265112703581
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 103929384960,
+            "tag_poll": 263323584000,
+            "tag_probe1": 265112718336
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.837226538814,
+            "tof_ticks": 178.499539033,
+            "r1": 638975236,
+            "d1": 638975504,
+            "r2": 1150159046,
+            "d2": 1150157564,
+            "six_ts": [
+              103290394676,
+              103929369912,
+              105079527476,
+              263323569031,
+              263962544535,
+              265112703581
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975236,
+            "d1": 638975504,
+            "r2": 1150159046,
+            "d2": 1150157564
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 178.49953905763917,
+          "distance_m": 0.8372265389294815,
+          "abs_delta_m": 1.154815132409226e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            103290394676,
+            104568347938,
+            105079527476,
+            261080578451,
+            262358530062,
+            262869709391
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 104568363008,
+            "tag_poll": 261080592896,
+            "tag_probe1": 262869724160
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.756149848477,
+            "tof_ticks": 161.213713536,
+            "r1": 1277953262,
+            "d1": 1277951611,
+            "r2": 511179329,
+            "d2": 511179538,
+            "six_ts": [
+              103290394676,
+              104568347938,
+              105079527476,
+              261080578451,
+              262358530062,
+              262869709391
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953262,
+            "d1": 1277951611,
+            "r2": 511179329,
+            "d2": 511179538
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 161.2137135201778,
+          "distance_m": 0.7561498484031579,
+          "abs_delta_m": 7.384204359084379e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 13,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            122459847732,
+            123098823420,
+            124248980532,
+            282492988388,
+            283131964311,
+            284282122851
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 123098838528,
+            "tag_poll": 282493003264,
+            "tag_probe1": 284282138112
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.841750473815,
+            "tof_ticks": 179.464057326,
+            "r1": 638975688,
+            "d1": 638975923,
+            "r2": 1150158540,
+            "d2": 1150157112,
+            "six_ts": [
+              122459847732,
+              123098823420,
+              124248980532,
+              282492988388,
+              283131964311,
+              284282122851
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975688,
+            "d1": 638975923,
+            "r2": 1150158540,
+            "d2": 1150157112
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 179.46405730621916,
+          "distance_m": 0.8417504737208884,
+          "abs_delta_m": 9.41116073960302e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            122459847732,
+            123737801065,
+            124248980532,
+            280249953735,
+            281527905294,
+            282039084554
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 123737816064,
+            "tag_poll": 280249968640,
+            "tag_probe1": 282039099904
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.841916062389,
+            "tof_ticks": 179.499361372,
+            "r1": 1277953333,
+            "d1": 1277951559,
+            "r2": 511179260,
+            "d2": 511179467,
+            "six_ts": [
+              122459847732,
+              123737801065,
+              124248980532,
+              280249953735,
+              281527905294,
+              282039084554
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953333,
+            "d1": 1277951559,
+            "r2": 511179260,
+            "d2": 511179467
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 179.49936139878352,
+          "distance_m": 0.8419160625139114,
+          "abs_delta_m": 1.249114145451813e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 14,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            141629302836,
+            142268278176,
+            143418435636,
+            301662409015,
+            302301384599,
+            303451543431
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 142268293120,
+            "tag_poll": 301662424064,
+            "tag_probe1": 303451558400
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.781277693032,
+            "tof_ticks": 166.571055261,
+            "r1": 638975340,
+            "d1": 638975584,
+            "r2": 1150158832,
+            "d2": 1150157460,
+            "six_ts": [
+              141629302836,
+              142268278176,
+              143418435636,
+              301662409015,
+              302301384599,
+              303451543431
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975340,
+            "d1": 638975584,
+            "r2": 1150158832,
+            "d2": 1150157460
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 166.57105527917622,
+          "distance_m": 0.7812776931159685,
+          "abs_delta_m": 8.39684988207523e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            141629302836,
+            142907256485,
+            143418435636,
+            299419329734,
+            300697281550,
+            301208460453
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 142907271680,
+            "tag_poll": 299419344384,
+            "tag_probe1": 301208475136
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.812767814735,
+            "tof_ticks": 173.284856064,
+            "r1": 1277953649,
+            "d1": 1277951816,
+            "r2": 511178903,
+            "d2": 511179151,
+            "six_ts": [
+              141629302836,
+              142907256485,
+              143418435636,
+              299419329734,
+              300697281550,
+              301208460453
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953649,
+            "d1": 1277951816,
+            "r2": 511178903,
+            "d2": 511179151
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 173.28485605897603,
+          "distance_m": 0.8127678147129703,
+          "abs_delta_m": 2.202971138842713e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 15,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            160798757428,
+            161437732922,
+            162587890228,
+            320831829175,
+            321470804887,
+            322620963554
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 161437748224,
+            "tag_poll": 320831844352,
+            "tag_probe1": 322620978688
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.811262820115,
+            "tof_ticks": 172.963986104,
+            "r1": 638975494,
+            "d1": 638975712,
+            "r2": 1150158667,
+            "d2": 1150157306,
+            "six_ts": [
+              160798757428,
+              161437732922,
+              162587890228,
+              320831829175,
+              321470804887,
+              322620963554
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975494,
+            "d1": 638975712,
+            "r2": 1150158667,
+            "d2": 1150157306
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 172.96398610429196,
+          "distance_m": 0.811262820117327,
+          "abs_delta_m": 2.327027459614328e-12,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            160798757428,
+            162076711213,
+            162587890228,
+            318588704896,
+            319866656782,
+            320377835534
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 162076726272,
+            "tag_poll": 318588719616,
+            "tag_probe1": 320377850368
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.831863737076,
+            "tof_ticks": 177.356171505,
+            "r1": 1277953785,
+            "d1": 1277951886,
+            "r2": 511178752,
+            "d2": 511179015,
+            "six_ts": [
+              160798757428,
+              162076711213,
+              162587890228,
+              318588704896,
+              319866656782,
+              320377835534
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953785,
+            "d1": 1277951886,
+            "r2": 511178752,
+            "d2": 511179015
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 177.35617151338425,
+          "distance_m": 0.8318637371157932,
+          "abs_delta_m": 3.9793168760127173e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 16,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            179968210996,
+            180607186681,
+            181757343796,
+            340001248252,
+            340640224151,
+            341790382657
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 180607201792,
+            "tag_poll": 340001263104,
+            "tag_probe1": 341790397440
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.842420555589,
+            "tof_ticks": 179.606921034,
+            "r1": 638975685,
+            "d1": 638975899,
+            "r2": 1150158506,
+            "d2": 1150157115,
+            "six_ts": [
+              179968210996,
+              180607186681,
+              181757343796,
+              340001248252,
+              340640224151,
+              341790382657
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975685,
+            "d1": 638975899,
+            "r2": 1150158506,
+            "d2": 1150157115
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 179.60692100549824,
+          "distance_m": 0.8424205554539705,
+          "abs_delta_m": 1.3502943208010265e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            179968210996,
+            181246164791,
+            181757343796,
+            337758078601,
+            339036030478,
+            339547209220
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 181246179840,
+            "tag_poll": 337758093312,
+            "tag_probe1": 339547224064
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.84459464491,
+            "tof_ticks": 180.070444255,
+            "r1": 1277953795,
+            "d1": 1277951877,
+            "r2": 511178742,
+            "d2": 511179005,
+            "six_ts": [
+              179968210996,
+              181246164791,
+              181757343796,
+              337758078601,
+              339036030478,
+              339547209220
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953795,
+            "d1": 1277951877,
+            "r2": 511178742,
+            "d2": 511179005
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 180.07044425059976,
+          "distance_m": 0.8445946448900468,
+          "abs_delta_m": 1.99532612654707e-11,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 17,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            199137666100,
+            199776641635,
+            200926798900,
+            359170668673,
+            359809644439,
+            360959803074
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 199776656896,
+            "tag_poll": 359170683904,
+            "tag_probe1": 360959818240
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.799201974338,
+            "tof_ticks": 170.392572858,
+            "r1": 638975535,
+            "d1": 638975766,
+            "r2": 1150158635,
+            "d2": 1150157265,
+            "six_ts": [
+              199137666100,
+              199776641635,
+              200926798900,
+              359170668673,
+              359809644439,
+              360959803074
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975535,
+            "d1": 638975766,
+            "r2": 1150158635,
+            "d2": 1150157265
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 170.3925728533094,
+          "distance_m": 0.7992019743154655,
+          "abs_delta_m": 2.253452979772419e-11,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            199137666100,
+            200415619948,
+            200926798900,
+            356927453297,
+            358205405198,
+            358716583867
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 200415634944,
+            "tag_poll": 356927468032,
+            "tag_probe1": 358716598272
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.830523306975,
+            "tof_ticks": 177.070387259,
+            "r1": 1277953848,
+            "d1": 1277951901,
+            "r2": 511178669,
+            "d2": 511178952,
+            "six_ts": [
+              199137666100,
+              200415619948,
+              200926798900,
+              356927453297,
+              358205405198,
+              358716583867
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953848,
+            "d1": 1277951901,
+            "r2": 511178669,
+            "d2": 511178952
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 177.07038723647668,
+          "distance_m": 0.8305233068698723,
+          "abs_delta_m": 1.0512768433557085e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 18,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            218307120692,
+            218946096147,
+            220096253492,
+            378340088522,
+            378979064215,
+            380129222972
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 218946111488,
+            "tag_poll": 378340103680,
+            "tag_probe1": 380129238016
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.82382612258,
+            "tof_ticks": 175.64252482,
+            "r1": 638975455,
+            "d1": 638975693,
+            "r2": 1150158757,
+            "d2": 1150157345,
+            "six_ts": [
+              218307120692,
+              218946096147,
+              220096253492,
+              378340088522,
+              378979064215,
+              380129222972
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975455,
+            "d1": 638975693,
+            "r2": 1150158757,
+            "d2": 1150157345
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 175.6425248421565,
+          "distance_m": 0.8238261226823085,
+          "abs_delta_m": 1.0230849500914019e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            218307120692,
+            219585074471,
+            220096253492,
+            376096827050,
+            377374778894,
+            377885957644
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 219585090048,
+            "tag_poll": 376096841728,
+            "tag_probe1": 377885972480
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.842584484044,
+            "tof_ticks": 179.641871137,
+            "r1": 1277953779,
+            "d1": 1277951844,
+            "r2": 511178750,
+            "d2": 511179021,
+            "six_ts": [
+              218307120692,
+              219585074471,
+              220096253492,
+              376096827050,
+              377374778894,
+              377885957644
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953779,
+            "d1": 1277951844,
+            "r2": 511178750,
+            "d2": 511179021
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 179.64187113890253,
+          "distance_m": 0.842584484052216,
+          "abs_delta_m": 8.215983449133546e-12,
+          "firmware_inputs_match": true
+        }
+      }
+    },
+    {
+      "txn": 19,
+      "anchor_errors": 0,
+      "tag_errors": 0,
+      "modules": {
+        "A": {
+          "six_ts": [
+            237476574260,
+            238115549624,
+            239265707060,
+            397509507401,
+            398148482967,
+            399298641795
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 238115564544,
+            "tag_poll": 397509522944,
+            "tag_probe1": 399298656768
+          },
+          "reported": {
+            "radio": 0,
+            "math_valid": true,
+            "d_m": 0.861348823537,
+            "tof_ticks": 183.64249199,
+            "r1": 638975364,
+            "d1": 638975566,
+            "r2": 1150158828,
+            "d2": 1150157436,
+            "six_ts": [
+              237476574260,
+              238115549624,
+              239265707060,
+              397509507401,
+              398148482967,
+              399298641795
+            ],
+            "cal_id": 0,
+            "ant_tx": 16279,
+            "ant_rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "tag_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16279,
+            "rx": 16279,
+            "range_sigma_m": 0.08423371
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 638975364,
+            "d1": 638975566,
+            "r2": 1150158828,
+            "d2": 1150157436
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 183.64249201900154,
+          "distance_m": 0.8613488236729068,
+          "abs_delta_m": 1.3590673031416145e-10,
+          "firmware_inputs_match": true
+        },
+        "B": {
+          "six_ts": [
+            237476574260,
+            238754527767,
+            239265707060,
+            395266199529,
+            396544151054,
+            397055330094
+          ],
+          "rx_raw_register_ticks": {
+            "anchor_response": 238754543104,
+            "tag_poll": 395266214400,
+            "tag_probe1": 397055344640
+          },
+          "reported": {
+            "radio": 1,
+            "math_valid": true,
+            "d_m": 0.904229948985,
+            "tof_ticks": 192.784893444,
+            "r1": 1277953507,
+            "d1": 1277951525,
+            "r2": 511179040,
+            "d2": 511179293,
+            "six_ts": [
+              237476574260,
+              238754527767,
+              239265707060,
+              395266199529,
+              396544151054,
+              397055330094
+            ],
+            "cal_id": 0,
+            "ant_tx": 15886,
+            "ant_rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "tag_calibration": {
+            "radio": 1,
+            "id": 0,
+            "tx": 15886,
+            "rx": 15886,
+            "range_sigma_m": 0.13965843
+          },
+          "anchor_calibration": {
+            "radio": 0,
+            "id": 0,
+            "tx": 16436,
+            "rx": 16436,
+            "range_sigma_m": null
+          },
+          "intervals": {
+            "r1": 1277953507,
+            "d1": 1277951525,
+            "r2": 511179040,
+            "d2": 511179293
+          },
+          "pass": true,
+          "problem": null,
+          "tof_ticks": 192.78489342133707,
+          "distance_m": 0.904229948879117,
+          "abs_delta_m": 1.0588296905922334e-10,
+          "firmware_inputs_match": true
+        }
+      }
+    }
+  ]
+}

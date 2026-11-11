@@ -1,0 +1,11 @@
+{
+  "utc": "2026-11-11T07:14:27.4248415+00:00",
+  "port": "COM4",
+  "mac": "28:56:2f:72:e7:18",
+  "flash_offset": "0x10000",
+  "original_app_sha256": "a9c67adc701eae75a9851f906453e8e6bf851efb5706bab74170bd6c44592eb1",
+  "written_app_sha256": "e631654dc98b21575e568f63604348e4b16539b4d3ac0a22b15de5f69e87ebf7",
+  "elf_sha256": "e2b95bba8ef69a511bccb1bbb42f09ea2d3e87584daa77976c88eec695992367",
+  "esptool_version": "5.1.0",
+  "verified": true
+}

@@ -1,0 +1,53 @@
+{
+  "created_utc": "2026-11-11T09:06:21.148399+00:00",
+  "scope": "one Mode 8 Stage 2 first POLL on COM4",
+  "session": 2733214490,
+  "anchor_boot": 2008208627,
+  "anchor_firmware": "D8_R6_ANCHOR_TRFIX_20261111",
+  "flash_verified": true,
+  "anchor_selftest_pass": true,
+  "first_poll_tx_ok": true,
+  "first_poll_planned_ticks": 344730492980,
+  "first_poll_actual_ticks": 344730492980,
+  "clkpll_ll_mask": "0x2000000",
+  "clkpll_ll_observed": false,
+  "sys_status": {
+    "first_poll_pre_tx": "0x800002",
+    "first_poll_entry": "0x800002",
+    "first_poll_after_idle": "0x800002",
+    "first_poll_after_clear": "0x800002",
+    "first_poll_after_schedule": "0x800002",
+    "first_poll_after_buffer": "0x800002",
+    "first_poll_tx_complete": "0x8000f2"
+  },
+  "paired_stage2_pass": false,
+  "tag_records": 0,
+  "tag_terminal_event": "SESSION_DEADLINE",
+  "stop_acknowledged_both": true,
+  "evidence": {
+    "usb": {
+      "file": "evidence/COM4/usb_smoke.json",
+      "sha256": "b31adeab5c0e7e78e78942292ca6cfd455905455458af5d444875112e68d2dd3"
+    },
+    "flash": {
+      "file": "evidence/COM4/flash_receipt.json",
+      "sha256": "d4e227932e2dd4b1ed00b0cec7c326ce3718a999646d9a449989c3a9f74fd09f"
+    },
+    "pll": {
+      "file": "evidence/COM4/pll_after_first_poll.json",
+      "sha256": "c0af49867b58be70877b221b8dc224449dfc65e6f86b5d219ba0df0e17c16b56"
+    },
+    "collector": {
+      "file": "evidence/stage2_first_poll/capture_receipt.json",
+      "sha256": "80a37914ff9274dc1b3d0b7bb0222696accafc125de45c40e11d885c36167c6b"
+    },
+    "anchor_stream": {
+      "file": "evidence/stage2_first_poll/anchor.jsonl",
+      "sha256": "93e1d2a725db470f33b1f59532751faf4e2dee785313e9206e060d4b4acc6c48"
+    },
+    "tag_stream": {
+      "file": "evidence/stage2_first_poll/tag.jsonl",
+      "sha256": "f73ba32987ce9bd4bbb70c64bcfaa01f0e490be9fc955cf9078107265bc7810e"
+    }
+  }
+}

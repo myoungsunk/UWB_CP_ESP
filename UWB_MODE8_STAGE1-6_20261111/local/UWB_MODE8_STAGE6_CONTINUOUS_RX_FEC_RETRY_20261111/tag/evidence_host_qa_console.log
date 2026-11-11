@@ -1,0 +1,129 @@
+{
+  "status": "PASS",
+  "scope": "HOST_ONLY",
+  "target_build": false,
+  "hardware_tested": false,
+  "sdk": "hand-written declaration stubs for syntax checks only",
+  "dw1000_headers": "actual unmodified role-specific vendored headers",
+  "results": [
+    {
+      "name": "compiler_version",
+      "command": [
+        "/usr/bin/g++",
+        "--version"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/compiler_version.log"
+    },
+    {
+      "name": "core_compile",
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "-Ishared",
+        "-fsanitize=address,undefined",
+        "tests/test_core.cpp",
+        "-o",
+        "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/tag/build/host/test_core"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/core_compile.log"
+    },
+    {
+      "name": "core_test",
+      "command": [
+        "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/tag/build/host/test_core",
+        "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/tag/evidence/host"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/core_test.log"
+    },
+    {
+      "name": "anchor_syntax_compile",
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++11",
+        "-DESP32",
+        "-DARDUINO",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "-Itests/stubs",
+        "-Ivendor/anchor/DW1000Ng/src",
+        "-c",
+        "firmware/ANCHOR_DUAL_DS_CIR/app.cpp",
+        "-o",
+        "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/tag/build/host/anchor_syntax_ONLY.o"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/anchor_syntax_compile.log"
+    },
+    {
+      "name": "tag_syntax_compile",
+      "command": [
+        "/usr/bin/g++",
+        "-std=c++11",
+        "-DESP32",
+        "-DARDUINO",
+        "-Wall",
+        "-Wextra",
+        "-Wpedantic",
+        "-Werror",
+        "-Itests/stubs",
+        "-Ivendor/tag/DW1000Ng/src",
+        "-c",
+        "firmware/TAG_DUAL_DS_CIR/app.cpp",
+        "-o",
+        "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RETRY_20261111/tag/build/host/tag_syntax_ONLY.o"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/tag_syntax_compile.log"
+    },
+    {
+      "name": "python_tools_tests",
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/python_tools_tests.log"
+    },
+    {
+      "name": "python_bytecode",
+      "command": [
+        "/usr/bin/python3",
+        "-m",
+        "compileall",
+        "-q",
+        "tools",
+        "tests"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/python_bytecode.log"
+    },
+    {
+      "name": "shared_headers",
+      "command": [
+        "/usr/bin/python3",
+        "tools/sync_shared.py",
+        "--check"
+      ],
+      "exit_code": 0,
+      "log": "evidence/host/shared_headers.log"
+    }
+  ]
+}

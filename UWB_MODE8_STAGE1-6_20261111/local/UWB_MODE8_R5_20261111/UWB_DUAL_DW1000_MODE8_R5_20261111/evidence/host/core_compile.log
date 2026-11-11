@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/bin/g++", "-std=c++11", "-O1", "-g", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-Ishared", "-fsanitize=address,undefined", "tests/test_core.cpp", "-o", "/mnt/data/mode8_r4_work/UWB_DUAL_DW1000_MODE8_R3_20261111/build/host/test_core"]

@@ -1,0 +1,12 @@
+g++ (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0
+PHY: init and SELFTEST passed with CHAN_CTRL ch2, requested ch5, CHAN_CTRL reads=0
+TX_GATE: RF_STATUS=0x03 SYS_STATUS=0x00800002 after buffer; TXSTRT=3 and complete=true
+TX_FAULT: SYS_STATUS=0x02800002 TXSTRT=0 errors=2 expected hardware bit=1; forced-off at SPI FAST=1
+PLLSTATUS: ready=true is emitted with fault latched and live RF_STATUS=0x03
+USB: invalid SET STAGE 7 produces no response
+USB: START 12 1 + NUL + ignored activates the session
+PLL startup policy checks passed
+Anchor application syntax check passed
+tag_json_bytes=5423 sizeof_Record=18184
+wide_json_bytes=5740
+PASS checks=11413 (HOST SYNTHETIC ONLY)

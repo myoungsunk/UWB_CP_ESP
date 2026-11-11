@@ -1,0 +1,70 @@
+{
+  "input_audit_zip_sha256": "1487772db1f16e93955994d692e35d93c67443d8099f8dc216abcbf628cb9926",
+  "original_package_sha256": "4a5f27ff6cc4f3bca5c1b7c27f5ff53e1acb80cbed36a5646ed027fd9864f11c",
+  "source": "Provided adversarial fixture; no RF hardware",
+  "previous_failure_reproduced": {
+    "p2_conflict": {
+      "metadata_conflict": true,
+      "p2_b_frame_matches_shared_frame": false,
+      "p2_b_axis_estimate_available": true,
+      "p2_b_range_m": 5.110397274032211,
+      "p2_b_method": "P2_DS_confirmed_by_anchor_log_correlated_with_P1"
+    },
+    "capture_false_pass": {
+      "exit_code": 0,
+      "reported_pass": true,
+      "requested_session": 77,
+      "injected_session": 76,
+      "injected_txns_per_role": [
+        0,
+        0
+      ],
+      "injected_boot": 999,
+      "anchor_sequence_gap_events": 1,
+      "tag_sequence_gap_events": 1
+    }
+  },
+  "repaired_p2_result": {
+    "metadata_conflict": true,
+    "p2_b_frame_matches_shared_frame": false,
+    "p2_b_axis_estimate_available": false,
+    "p2_b_range_m": null,
+    "p2_b_method": "relative_only",
+    "physical_axes_available": [
+      false,
+      false,
+      false,
+      false
+    ],
+    "relative_p2_b_available": true,
+    "common_p2_points": 0
+  },
+  "repaired_capture_result": {
+    "pass": false,
+    "problems": [
+      "ANCHOR_DUPLICATE_TXN_0",
+      "ANCHOR_INCOMPLETE_OR_ERROR_TXN_0",
+      "ANCHOR_PROVENANCE_MISMATCH_TXN_0",
+      "ANCHOR_STREAM_SEQUENCE_GAP_EVENTS",
+      "ANCHOR_TXN_COVERAGE_INVALID",
+      "ANCHOR_TXN_SEQUENCE_INVALID",
+      "MISSING_PAIR_TXN_1",
+      "PAIR_MISSING_FRAMES_TXN_0",
+      "TAG_CIR_INVALID_TXN_0",
+      "TAG_DS_INVALID_TXN_0",
+      "TAG_DUPLICATE_TXN_0",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_0",
+      "TAG_PROVENANCE_MISMATCH_TXN_0",
+      "TAG_RAW_CIR_INTEGRITY_TXN_0",
+      "TAG_STREAM_SEQUENCE_GAP_EVENTS",
+      "TAG_TXN_COVERAGE_INVALID",
+      "TAG_TXN_SEQUENCE_INVALID"
+    ]
+  },
+  "acceptance": {
+    "p2_b_axis_must_be_invalid": true,
+    "capture_must_fail": true,
+    "raw_relative_axis_still_available": true
+  },
+  "runner_in_memory_integration": "tests/test_adversarial.py: original bad run exit=2, matching two-transaction run exit=0"
+}

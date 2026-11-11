@@ -1,0 +1,257 @@
+[
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-baseline-control/new.bin",
+    "bytes": 392256,
+    "sha256": "bc1fd34a16850ded967adbed9525cc94293776543a9154a6094ca4516a66aa01"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-baseline-control/prior.bin",
+    "bytes": 393856,
+    "sha256": "a9b978e35894bcec102f70614d2cafd9ca542241d4b7ab27614c22f5f0fc8c7f"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-rxdiag/new.bin",
+    "bytes": 393856,
+    "sha256": "a9b978e35894bcec102f70614d2cafd9ca542241d4b7ab27614c22f5f0fc8c7f"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-rxdiag/prior.bin",
+    "bytes": 392256,
+    "sha256": "bc1fd34a16850ded967adbed9525cc94293776543a9154a6094ca4516a66aa01"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-rxrecovery/new.bin",
+    "bytes": 394752,
+    "sha256": "d03626f41feb1143f0cefd612a6f49c50d9f794002ac3a69a0f5acaabe33a83a"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-rxrecovery/prior.bin",
+    "bytes": 392256,
+    "sha256": "bc1fd34a16850ded967adbed9525cc94293776543a9154a6094ca4516a66aa01"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-stage2-spi/new.bin",
+    "bytes": 394096,
+    "sha256": "88c2cd7d1ed3744cae0280263996abf1ef93c52eb9b8075f207364a3d26dcbda"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-20261111-stage2-spi/prior.bin",
+    "bytes": 394752,
+    "sha256": "d03626f41feb1143f0cefd612a6f49c50d9f794002ac3a69a0f5acaabe33a83a"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-rxcheck-20261111/new.bin",
+    "bytes": 394576,
+    "sha256": "cd7d23f1fca4423b75ea4ef248384af1c4ebfc4f0341a0c5a5039453a70e8eda"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-rxcheck-20261111/prior.bin",
+    "bytes": 394096,
+    "sha256": "88c2cd7d1ed3744cae0280263996abf1ef93c52eb9b8075f207364a3d26dcbda"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-rxdiag-restore-20261111/new.bin",
+    "bytes": 393856,
+    "sha256": "a9b978e35894bcec102f70614d2cafd9ca542241d4b7ab27614c22f5f0fc8c7f"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-rxdiag-restore-20261111/prior.bin",
+    "bytes": 394096,
+    "sha256": "88c2cd7d1ed3744cae0280263996abf1ef93c52eb9b8075f207364a3d26dcbda"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-spi-retest-20261111/new.bin",
+    "bytes": 394096,
+    "sha256": "88c2cd7d1ed3744cae0280263996abf1ef93c52eb9b8075f207364a3d26dcbda"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-spi-retest-20261111/prior.bin",
+    "bytes": 393856,
+    "sha256": "a9b978e35894bcec102f70614d2cafd9ca542241d4b7ab27614c22f5f0fc8c7f"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage3-20261111/new.bin",
+    "bytes": 394672,
+    "sha256": "c47c5b7a307ee3f49cb0494a8c578b046b0526b05d49a545b42de147da837b0b"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage3-20261111/prior.bin",
+    "bytes": 394576,
+    "sha256": "cd7d23f1fca4423b75ea4ef248384af1c4ebfc4f0341a0c5a5039453a70e8eda"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage4-20261111/new.bin",
+    "bytes": 394912,
+    "sha256": "6d2f537d077f9fc3cd3f54d820e54cc2f2dfbc72877687c400e5f99bfafa505a"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage4-20261111/prior.bin",
+    "bytes": 394672,
+    "sha256": "c47c5b7a307ee3f49cb0494a8c578b046b0526b05d49a545b42de147da837b0b"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-20261111/new.bin",
+    "bytes": 394912,
+    "sha256": "45341d73c146a8f2325f054722cae16bc7a2b6bf521177274397abaffff8505f"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-20261111/prior.bin",
+    "bytes": 394912,
+    "sha256": "6d2f537d077f9fc3cd3f54d820e54cc2f2dfbc72877687c400e5f99bfafa505a"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-p2-20261111/new.bin",
+    "bytes": 396976,
+    "sha256": "4f7cef08076a8150d01ee59bd399f10035dd22bcf9a31c1fb5aff9410584c513"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-p2-20261111/prior.bin",
+    "bytes": 394912,
+    "sha256": "45341d73c146a8f2325f054722cae16bc7a2b6bf521177274397abaffff8505f"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-p2-pollfix-20261111/new.bin",
+    "bytes": 399504,
+    "sha256": "7198b8967a9315d0bf2cec48ede3751707fa38860b9a96b97214290ad9289d88"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-p2-pollfix-20261111/prior.bin",
+    "bytes": 397056,
+    "sha256": "21c9c511a9f908946d9650456a8ee170654d5f63397461776c402a94b608484c"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-p2-slot-20261111/new.bin",
+    "bytes": 397056,
+    "sha256": "21c9c511a9f908946d9650456a8ee170654d5f63397461776c402a94b608484c"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage5-p2-slot-20261111/prior.bin",
+    "bytes": 396976,
+    "sha256": "4f7cef08076a8150d01ee59bd399f10035dd22bcf9a31c1fb5aff9410584c513"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-continuous-20261111/new.bin",
+    "bytes": 399712,
+    "sha256": "4a9611ddae818acd3cf35c45898dd05a2e6a9ff5db01276e72473e583f6f7583"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-continuous-20261111/prior.bin",
+    "bytes": 399504,
+    "sha256": "7198b8967a9315d0bf2cec48ede3751707fa38860b9a96b97214290ad9289d88"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-iofix-20261111/new.bin",
+    "bytes": 399888,
+    "sha256": "b0d27678cfdad9ab54b63b503fe7e4b30b33f6b6ef123025c8048bfa31588d2b"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-iofix-20261111/prior.bin",
+    "bytes": 399712,
+    "sha256": "4a9611ddae818acd3cf35c45898dd05a2e6a9ff5db01276e72473e583f6f7583"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-fec-packed-20261111/new.bin",
+    "bytes": 403840,
+    "sha256": "dba9fb10a6fda80ed16d1057b66d280ea313a66d9171b1e811087b3a49aa2991"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-fec-packed-20261111/prior.bin",
+    "bytes": 403728,
+    "sha256": "c5587c2828b51fcc593d8c81162810c248ab1cd50b8610600c514aff663533b6"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-fec-retry-20261111/new.bin",
+    "bytes": 402704,
+    "sha256": "48e2cfe1f374ee488ef3722ca5321f62063dca2a660c9110296bd485e041dadf"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-fec-retry-20261111/prior.bin",
+    "bytes": 401120,
+    "sha256": "025cd26d2e3246b8c240aecc99fb646eea4b2119f3b2f79b8802eea63f8f542e"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-fec-rfretry-20261111/new.bin",
+    "bytes": 403728,
+    "sha256": "c5587c2828b51fcc593d8c81162810c248ab1cd50b8610600c514aff663533b6"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-fec-rfretry-20261111/prior.bin",
+    "bytes": 402704,
+    "sha256": "48e2cfe1f374ee488ef3722ca5321f62063dca2a660c9110296bd485e041dadf"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-uartfix-20261111/new.bin",
+    "bytes": 401120,
+    "sha256": "025cd26d2e3246b8c240aecc99fb646eea4b2119f3b2f79b8802eea63f8f542e"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-rx-uartfix-20261111/prior.bin",
+    "bytes": 399712,
+    "sha256": "4a9611ddae818acd3cf35c45898dd05a2e6a9ff5db01276e72473e583f6f7583"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-stable-restore-20261111/new.bin",
+    "bytes": 399712,
+    "sha256": "4a9611ddae818acd3cf35c45898dd05a2e6a9ff5db01276e72473e583f6f7583"
+  },
+  {
+    "path": "tmp/uwb-mode8-tag-stage6-stable-restore-20261111/prior.bin",
+    "bytes": 399888,
+    "sha256": "b0d27678cfdad9ab54b63b503fe7e4b30b33f6b6ef123025c8048bfa31588d2b"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/SHA256SUMS.txt",
+    "bytes": 525,
+    "sha256": "04c5d4a5c440a01d6b8fb5112192f2aa38a8d258160f46e085484b127be01af3"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/TAG_DUAL_DS_CIR.ino.bin",
+    "bytes": 392240,
+    "sha256": "3b7918e7d9174d15369d50bb01660462a552dd42a3ffc8912ba3f1259ddead1a"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/TAG_DUAL_DS_CIR.ino.bootloader.bin",
+    "bytes": 23520,
+    "sha256": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/TAG_DUAL_DS_CIR.ino.partitions.bin",
+    "bytes": 3072,
+    "sha256": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/boot_app0.bin",
+    "bytes": 8192,
+    "sha256": "f94c5d786a7a8fab06ac5d10e33bf37711a6697636dc037559ea19cc410a17f0"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/rfb8.py",
+    "bytes": 4017,
+    "sha256": "b3d98487bfe4e33c4d8aecdbae6b3903055194314640e2777a8b0e3e903f111d"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/tag_upload.log",
+    "bytes": 3470,
+    "sha256": "55c2e7608a4a330d558271015b8400daf8d1748200d909ef2243254b1557f0b9"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/tag_usb_reset_retest.json",
+    "bytes": 1431,
+    "sha256": "163c6c158d27ef59d78eefbe1480f0ac8b7d97b3363e81e9c7fe188343af998e"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/tag_usb_smoke.json",
+    "bytes": 1020,
+    "sha256": "0b2d1ffc5341191ad3ce841bce1d7ba353133fa7b40652d0ccc9f52f47129cbf"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/tag_verify.log",
+    "bytes": 1099,
+    "sha256": "1e925e92672e3dda2e3cd30c44abc2c78324b30a169753aafb66df49383ebf09"
+  },
+  {
+    "path": "home/ubuntu/uwb_mode8_r5_20261111.eocbBj/usb_smoke.py",
+    "bytes": 3269,
+    "sha256": "a8b909862ecd383bb04178091b83b2f8be709407607b4e735ad14c1a9dddb8b1"
+  }
+]

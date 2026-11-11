@@ -1,0 +1,21 @@
+COMMAND: esptool --chip esp32 --port COM4 --baud 921600 --after no-reset read-flash 0x0 0x400000 <local backup> --no-progress
+esptool v5.1.0
+Serial port COM4:
+Connecting.....
+Connected to ESP32 on COM4:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:72:e7:18
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 921600...
+Changed.
+
+Configuring flash size...
+Read 4194304 bytes from 0x00000000 in 54.3 seconds (617.6 kbit/s) to 'anchor_backup/anchor_pre_R5_full_flash_4MiB.partial.bin'.
+
+Staying in bootloader.
+EXIT: 0

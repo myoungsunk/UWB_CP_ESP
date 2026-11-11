@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/bin/g++", "-std=c++11", "-Ishared", "-fsyntax-only", "tests/test_pll_startup.cpp"]

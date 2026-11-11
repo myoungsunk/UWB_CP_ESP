@@ -1,0 +1,13 @@
+{
+  "status": "FAIL",
+  "scope": "HOST_ONLY",
+  "target_build": false,
+  "hardware_tested": false,
+  "sdk": "hand-written declaration stubs for syntax checks only",
+  "dw1000_headers": "actual unmodified role-specific vendored headers",
+  "results": [
+    {
+      "error": "g++ required for host QA"
+    }
+  ]
+}

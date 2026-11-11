@@ -1,0 +1,187 @@
+COMMAND: py -3 -B -X utf8=0 evidence/r5/against_r4.py <frozen R4 root>
+R4 tools path: D:\SLAM_bot\artifacts\UWB_MODE8_R4_AUDIT_20261111\UWB_DUAL_DW1000_MODE8_R4_HOST_REAUDITED_20261111\tools
+Locale: cp949 UTF-8 mode: 0
+test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) ... 
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='planned', assume_static=False) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='planned', assume_static=True) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=1, field='type', assume_static=False) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=1, field='type', assume_static=True) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=2, field='radio', assume_static=False) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=2, field='radio', assume_static=True) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=2, field='actual', assume_static=True) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='ok', assume_static=False) ... FAIL
+  test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='ok', assume_static=True) ... FAIL
+test_conflicting_poll_cannot_be_disguised_as_missed (test_r5_regression.AnalysisRegressions.test_conflicting_poll_cannot_be_disguised_as_missed) ... FAIL
+test_missing_poll_retains_other_radios_p1 (test_r5_regression.AnalysisRegressions.test_missing_poll_retains_other_radios_p1) ... 
+  test_missing_poll_retains_other_radios_p1 (test_r5_regression.AnalysisRegressions.test_missing_poll_retains_other_radios_p1) (lost=0) ... FAIL
+  test_missing_poll_retains_other_radios_p1 (test_r5_regression.AnalysisRegressions.test_missing_poll_retains_other_radios_p1) (lost=1) ... FAIL
+test_generated_exports_are_excluded_and_legacy_receipts_are_refused (test_r5_regression.BuildProvenanceRegressions.test_generated_exports_are_excluded_and_legacy_receipts_are_refused) ... FAIL
+test_sketch_overrides_invalidate_existing_images (test_r5_regression.BuildProvenanceRegressions.test_sketch_overrides_invalidate_existing_images) ... 
+  test_sketch_overrides_invalidate_existing_images (test_r5_regression.BuildProvenanceRegressions.test_sketch_overrides_invalidate_existing_images) (role='anchor', filename='partitions.csv') ... FAIL
+  test_sketch_overrides_invalidate_existing_images (test_r5_regression.BuildProvenanceRegressions.test_sketch_overrides_invalidate_existing_images) (role='tag', filename='bootloader.bin') ... FAIL
+test_vendor_fcs_contract_and_fixed_buffer (test_r4_regression.ContractRegressions.test_vendor_fcs_contract_and_fixed_buffer) ... ERROR
+
+======================================================================
+ERROR: test_vendor_fcs_contract_and_fixed_buffer (test_r4_regression.ContractRegressions.test_vendor_fcs_contract_and_fixed_buffer)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R4_AUDIT_20261111\UWB_DUAL_DW1000_MODE8_R4_HOST_REAUDITED_20261111\tests\test_r4_regression.py", line 84, in test_vendor_fcs_contract_and_fixed_buffer
+    vendor=(ROOT/f'vendor/{role}/DW1000Ng/src/DW1000Ng.cpp').read_text()
+  File "C:\Users\Myoungsun Kim\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 546, in read_text
+    return PathBase.read_text(self, encoding, errors, newline)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Myoungsun Kim\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py", line 633, in read_text
+    return f.read()
+           ~~~~~~^^
+UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 2306: illegal multibyte sequence
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='planned', assume_static=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='planned', assume_static=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=1, field='type', assume_static=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=1, field='type', assume_static=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=2, field='radio', assume_static=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=2, field='radio', assume_static=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=2, field='actual', assume_static=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='ok', assume_static=False)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse (test_r5_regression.AnalysisRegressions.test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse) (slot=0, field='ok', assume_static=True)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 73, in test_anchor_tx_slot_mutations_block_p2_with_or_without_static_reuse
+    self.assertTrue(all(row['range_m'] is None for row in rows[2:]))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_conflicting_poll_cannot_be_disguised_as_missed (test_r5_regression.AnalysisRegressions.test_conflicting_poll_cannot_be_disguised_as_missed)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 54, in test_conflicting_poll_cannot_be_disguised_as_missed
+    self.assertTrue(all(row['range_m'] is None for row in rows))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_missing_poll_retains_other_radios_p1 (test_r5_regression.AnalysisRegressions.test_missing_poll_retains_other_radios_p1) (lost=0)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 42, in test_missing_poll_retains_other_radios_p1
+    self.assertIsNotNone(rows[kept]['range_m'])
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_missing_poll_retains_other_radios_p1 (test_r5_regression.AnalysisRegressions.test_missing_poll_retains_other_radios_p1) (lost=1)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 42, in test_missing_poll_retains_other_radios_p1
+    self.assertIsNotNone(rows[kept]['range_m'])
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: unexpectedly None
+
+======================================================================
+FAIL: test_generated_exports_are_excluded_and_legacy_receipts_are_refused (test_r5_regression.BuildProvenanceRegressions.test_generated_exports_are_excluded_and_legacy_receipts_are_refused)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 166, in test_generated_exports_are_excluded_and_legacy_receipts_are_refused
+    self.assert_stale(root, 'anchor')
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 142, in assert_stale
+    self.assertFalse(result['flash_preflight_pass'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_sketch_overrides_invalidate_existing_images (test_r5_regression.BuildProvenanceRegressions.test_sketch_overrides_invalidate_existing_images) (role='anchor', filename='partitions.csv')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 129, in test_sketch_overrides_invalidate_existing_images
+    self.assert_stale(root, role)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 142, in assert_stale
+    self.assertFalse(result['flash_preflight_pass'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_sketch_overrides_invalidate_existing_images (test_r5_regression.BuildProvenanceRegressions.test_sketch_overrides_invalidate_existing_images) (role='tag', filename='bootloader.bin')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 129, in test_sketch_overrides_invalidate_existing_images
+    self.assert_stale(root, role)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "D:\SLAM_bot\artifacts\UWB_MODE8_R5_20261111\UWB_DUAL_DW1000_MODE8_R5_20261111\tests\test_r5_regression.py", line 142, in assert_stale
+    self.assertFalse(result['flash_preflight_pass'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 6 tests in 1.432s
+
+FAILED (failures=15, errors=1)
+Expected failures verified against frozen R4.
+EXIT: 0

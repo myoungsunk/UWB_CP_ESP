@@ -1,0 +1,37 @@
+prior.bin: OK
+new.bin: OK
+esptool v5.4.0
+Serial port /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Connecting....
+Connected to ESP32 on /dev/serial/by-id/usb-1a86_USB_Serial-if00-port0:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:73:06:54
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Flash will be erased from 0x00010000 to 0x00070fff...
+Compressed 394752 bytes to 187813...
+Writing at 0x0001bf88 ━━╸                              8.7% 16.00kB/183.41kB [0s] 
+Writing at 0x00032ea9 ━━━━━                           17.4% 32.00kB/183.41kB [0s] 
+Writing at 0x000381c1 ━━━━━━━╸                        26.2% 48.00kB/183.41kB [1s] 
+Writing at 0x0003d98c ━━━━━━━━━━                      34.9% 64.00kB/183.41kB [1s] 
+Writing at 0x00042cfb ━━━━━━━━━━━━━                   43.6% 80.00kB/183.41kB [2s] 
+Writing at 0x000482ca ━━━━━━━━━━━━━━━╸                52.3% 96.00kB/183.41kB [2s] 
+Writing at 0x0004dc19 ━━━━━━━━━━━━━━━━━━              61.1% 112.00kB/183.41kB [3s] 
+Writing at 0x0005611a ━━━━━━━━━━━━━━━━━━━━╸           69.8% 128.00kB/183.41kB [3s] 
+Writing at 0x0006268e ━━━━━━━━━━━━━━━━━━━━━━━╸        78.5% 144.00kB/183.41kB [4s] 
+Writing at 0x00067ce6 ━━━━━━━━━━━━━━━━━━━━━━━━━━      87.2% 160.00kB/183.41kB [4s] 
+Writing at 0x0006d9a9 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━╸   96.0% 176.00kB/183.41kB [4s] 
+Writing at 0x00070600 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 100.0% 183.41kB/183.41kB [5s] 
+Wrote 394752 bytes (187813 compressed) at 0x00010000 in 5.2 seconds (609.9 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Hard resetting via RTS pin...

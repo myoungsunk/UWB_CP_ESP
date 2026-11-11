@@ -1,0 +1,138 @@
+ANCHOR_DUAL_DS_CIR.ino.bin 400624 37d26ef7703a0ee67548f8c7c1840552f54ad326347a386753a71789a78af529
+ANCHOR_DUAL_DS_CIR.ino.elf 6340308 2caf44bcaa3f6f7a2acc187d8ba30f1e974dcb5a2d3f80ee3548eb2d1345c5e4
+Source manifest 7e6c6c812030bc397a81f27d473f5c0084d737ba7c9bdb2a8bebe24df8a176a5
+esptool v5.1.0
+Image size: 400624 bytes
+
+ESP32 Image Header
+==================
+Image version: 1
+Entry point: 0x40081c78
+Segments: 6
+Flash size: 4MB
+Flash freq: 80m
+Flash mode: DIO
+
+ESP32 Extended Image Header
+===========================
+WP pin: 0xee (disabled)
+Flash pins drive settings: clk_drv: 0x0, q_drv: 0x0, d_drv: 0x0, cs0_drv: 0x0, hd_drv: 0x0, wp_drv: 0x0
+Chip ID: 0 (ESP32)
+Minimal chip revision: v0.0, (legacy min_rev = 0)
+Maximal chip revision: v655.35
+
+Segments Information
+====================
+Segment   Length   Load addr   File offs  Memory types
+-------  -------  ----------  ----------  ------------
+      0  0x14730  0x3f400020  0x00000018  DROM
+      1  0x0b8c0  0x3ffbdb60  0x00014750  BYTE_ACCESSIBLE, DRAM
+      2  0x298ac  0x400d0020  0x00020018  IROM
+      3  0x08b34  0x3ffc9420  0x000498cc  BYTE_ACCESSIBLE, DRAM
+      4  0x0f890  0x40080000  0x00052408  IRAM
+      5  0x00020  0x50000200  0x00061ca0  RTC_DATA
+
+ESP32 Image Footer
+==================
+Checksum: 0xec (valid)
+Validation hash: 2b3c4f154b816c1d3a9d0c8f094bb79e6efe8805bcc03f08ca39b0fcdb45ca65 (valid)
+
+Application Information
+=======================
+Project name: arduino-lib-builder
+App version: 8cabf2c
+Compile time: Feb 11 2026 19:51:20
+ELF file SHA256: 2caf44bcaa3f6f7a2acc187d8ba30f1e974dcb5a2d3f80ee3548eb2d1345c5e4
+ESP-IDF: v5.5.2-729-g87912cd291
+Minimal eFuse block revision: 0.0
+Maximal eFuse block revision: 0.99
+MMU page size: 64 KB
+Secure version: 0
+esptool v5.1.0
+Serial port COM4:
+Connecting....
+Connected to ESP32 on COM4:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:72:e7:18
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Verifying 0x613b0 (398256) bytes at 0x00010000 in flash against 'D:/SLAM_bot/artifacts/UWB_MODE8_STAGE5_P2_SLOT_FIX_20261111/anchor/dist/anchor/ANCHOR_DUAL_DS_CIR.ino.bin'...
+Verification successful (digest matched).
+
+Hard resetting via RTS pin...
+esptool v5.1.0
+Serial port COM4:
+Connecting.....
+Connected to ESP32 on COM4:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:72:e7:18
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Flash will be erased from 0x00010000 to 0x00071fff...
+Compressed 400624 bytes to 189535...
+
+Writing at 0x00010000 [                              ]   0.0% 0/189535 bytes... 
+
+Writing at 0x0001bef2 [=>                            ]   8.6% 16384/189535 bytes... 
+
+Writing at 0x00032cd8 [====>                         ]  17.3% 32768/189535 bytes... 
+
+Writing at 0x00037ee5 [======>                       ]  25.9% 49152/189535 bytes... 
+
+Writing at 0x0003d68c [=========>                    ]  34.6% 65536/189535 bytes... 
+
+Writing at 0x000429e6 [===========>                  ]  43.2% 81920/189535 bytes... 
+
+Writing at 0x00047ff4 [==============>               ]  51.9% 98304/189535 bytes... 
+
+Writing at 0x0004d93b [=================>            ]  60.5% 114688/189535 bytes... 
+
+Writing at 0x00055bf9 [===================>          ]  69.2% 131072/189535 bytes... 
+
+Writing at 0x00063438 [======================>       ]  77.8% 147456/189535 bytes... 
+
+Writing at 0x00068bd7 [========================>     ]  86.4% 163840/189535 bytes... 
+
+Writing at 0x0006e842 [===========================>  ]  95.1% 180224/189535 bytes... 
+
+Writing at 0x00071cf0 [==============================] 100.0% 189535/189535 bytes... 
+Wrote 400624 bytes (189535 compressed) at 0x00010000 in 4.6 seconds (700.2 kbit/s).
+Hash of data verified.
+
+Hard resetting via RTS pin...
+esptool v5.1.0
+Serial port COM4:
+Connecting.....
+Connected to ESP32 on COM4:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:72:e7:18
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Verifying 0x61cf0 (400624) bytes at 0x00010000 in flash against 'D:\SLAM_bot\artifacts\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\anchor\dist\anchor\ANCHOR_DUAL_DS_CIR.ino.bin'...
+Verification successful (digest matched).
+
+Hard resetting via RTS pin...

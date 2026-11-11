@@ -1,0 +1,72 @@
+#line 1 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_LIVE_20261111\\TagABLive\\TagABLive.ino"
+#include <Arduino.h>
+#include <SPI.h>
+
+constexpr uint8_t csA = 21;
+constexpr uint8_t csB = 25;
+constexpr uint32_t spiHz = 1000000;
+
+#line 8 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_LIVE_20261111\\TagABLive\\TagABLive.ino"
+uint32_t readDeviceId(uint8_t cs);
+#line 22 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_LIVE_20261111\\TagABLive\\TagABLive.ino"
+void printDeviceId(char radio, uint8_t cs);
+#line 26 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_LIVE_20261111\\TagABLive\\TagABLive.ino"
+void setup();
+#line 35 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_LIVE_20261111\\TagABLive\\TagABLive.ino"
+void loop();
+#line 8 "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_AB_LIVE_20261111\\TagABLive\\TagABLive.ino"
+uint32_t readDeviceId(uint8_t cs) {
+  SPI.beginTransaction(SPISettings(spiHz, MSBFIRST, SPI_MODE0));
+  digitalWrite(cs, LOW);
+  delayMicroseconds(2);
+  SPI.transfer(0x00);
+  uint32_t id = 0;
+  for (unsigned int index = 0; index < 4; ++index) {
+    id |= static_cast<uint32_t>(SPI.transfer(0x00)) << (8 * index);
+  }
+  digitalWrite(cs, HIGH);
+  SPI.endTransaction();
+  return id;
+}
+
+void printDeviceId(char radio, uint8_t cs) {
+  Serial.printf(" %c=0x%08lX", radio, static_cast<unsigned long>(readDeviceId(cs)));
+}
+
+void setup() {
+  pinMode(csA, OUTPUT);
+  digitalWrite(csA, HIGH);
+  pinMode(csB, OUTPUT);
+  digitalWrite(csB, HIGH);
+  SPI.begin(18, 19, 23, -1);
+  Serial.begin(115200);
+}
+
+void loop() {
+  const int command = Serial.read();
+  switch (command) {
+    case 'H':
+      Serial.println("TAG_AB_DEV_ID_LIVE_V1");
+      break;
+    case 'A':
+      Serial.print("DEV_ID");
+      printDeviceId('A', csA);
+      Serial.println();
+      break;
+    case 'B':
+      Serial.print("DEV_ID");
+      printDeviceId('B', csB);
+      Serial.println();
+      break;
+    case 'I':
+      Serial.print("DEV_ID");
+      printDeviceId('A', csA);
+      printDeviceId('B', csB);
+      Serial.println();
+      break;
+    default:
+      delay(2);
+      break;
+  }
+}
+

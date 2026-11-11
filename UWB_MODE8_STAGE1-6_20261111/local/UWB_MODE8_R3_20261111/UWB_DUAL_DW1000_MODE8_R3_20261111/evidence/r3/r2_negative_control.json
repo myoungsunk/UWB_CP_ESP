@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "meaning": "All named regression tests failed as expected on frozen R2",
+  "tests_run": 5,
+  "assertion_failures_including_subtests": 8,
+  "failed_tests": [
+    "AdversarialAnalysis.test_both_p2_slots_missing_with_shared_frame_cannot_confirm_p1",
+    "AdversarialAnalysis.test_both_probes_reject_wrong_local_response_identity",
+    "AdversarialAnalysis.test_p1_calibration_requires_matching_anchor_record",
+    "AdversarialReceipt.test_stage2_accepts_unknown_tag_boot_on_anchor_only",
+    "GoodRunPairSmoke.test_final_stop_write_errors_fail_even_with_complete_records"
+  ]
+}

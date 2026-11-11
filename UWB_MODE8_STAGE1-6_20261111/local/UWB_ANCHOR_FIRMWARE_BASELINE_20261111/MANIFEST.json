@@ -1,0 +1,217 @@
+{
+  "created_kst": "2026-11-11T12:23:34.9980105+09:00",
+  "device_role": "anchor",
+  "baseline": "UWB_LAZY_RELEASE_20261107_134517",
+  "basis": "Last locally documented Anchor application write and successful flash verification",
+  "original_app": "D:\\SLAM_bot\\artifacts\\UWB_LAZY_RELEASE_20261107_134517\\app\\ANCHOR_RF_PLATFORM_V1.ino.bin",
+  "original_archive": "D:\\SLAM_bot\\artifacts\\UWB_LAZY_RELEASE_20261107_134517.zip",
+  "original_archive_sha256": "3f4a4b79b49666afcb78436dd9ea7e8806e08187d072ebeead2c087b8cf097b4",
+  "app_sha256": "9d2c082a72c5808dd179b1dce7a8a75320029c5104186a22cb2e594a573739b9",
+  "app_bytes": 1283328,
+  "verified_app_offset": "0x10000",
+  "historical_flash_verified_kst": "2026-11-07T13:54:23.0000000+09:00",
+  "historical_flash_verify_exit": 0,
+  "current_device_flash_readback": false,
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "esp32_core": "3.3.7",
+  "vendor_from_build_command": "D:\\SLAM_bot\\artifacts\\UWB_PMSC_TRACE_20261106\\vendor\\DW1000Ng",
+  "secret_bearing_files_protection": "Windows DPAPI CurrentUser",
+  "protected_files": [
+    {
+      "path": "recovery/ANCHOR_RF_PLATFORM_V1.ino.bin.dpapi",
+      "restored_file": "ANCHOR_RF_PLATFORM_V1.ino.bin",
+      "restored_bytes": 1283328,
+      "restored_sha256": "9d2c082a72c5808dd179b1dce7a8a75320029c5104186a22cb2e594a573739b9",
+      "decrypt_and_hash_verified": true
+    },
+    {
+      "path": "recovery/uwb_provision_key.hpp.dpapi",
+      "restored_file": "uwb_provision_key.hpp",
+      "restored_bytes": 607,
+      "restored_sha256": "c7e31a450b26febd5a440c9f834c413c17cf4909e6371cc941b38ac15ef1cbee",
+      "decrypt_and_hash_verified": true
+    }
+  ],
+  "files": {
+    "evidence/app_manifest.json": {
+      "bytes": 212,
+      "sha256": "634361b031db39e8e5dd4ddb783ab56035f08c648224210f952aa65a5eac52d3"
+    },
+    "evidence/build_command.json": {
+      "bytes": 518,
+      "sha256": "ea7a821be2bf14e00c129e1216a72238582ba81d83605004acc1286b49de46f3"
+    },
+    "evidence/partitions.json": {
+      "bytes": 680,
+      "sha256": "a17c661940e76ec7e1e34d479033e425d22fa84f99fe5437c38c6f842a45e5f6"
+    },
+    "evidence/verify_receipt.json": {
+      "bytes": 412,
+      "sha256": "7fdce102838d7c256dbee3a5791f192ec10172917048d974ff85398a5d877667"
+    },
+    "evidence/write_receipt.json": {
+      "bytes": 411,
+      "sha256": "f3544791bb22b9b6418bcd859b8f5a5afaf4037243258244564c3c0ca74565b2"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/ANCHOR_RF_PLATFORM_V1.ino": {
+      "bytes": 589,
+      "sha256": "11b8053a83f7db2682e5d4bc2fc917c33e7456de3e1a15b70c8ce22f368c7f6a"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/app.cpp": {
+      "bytes": 246,
+      "sha256": "eed7e660c46634b309c977ecb7f9529b3ffd1c9273fc2f0bec32ef2fc3d98c98"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/bench_impl.hpp": {
+      "bytes": 78076,
+      "sha256": "f1d3808861ec628e36bc588fe03bddb815d7be051eeb92652ecd5c5828d21955"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/ctrl_diag.hpp": {
+      "bytes": 14264,
+      "sha256": "c6ca0c1972cb6dffccef9d1e168a1b3bea5d31af6dfc11424b2834cf47df1fa2"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/ota_manager.hpp": {
+      "bytes": 7519,
+      "sha256": "098a066f98874d6a0caac124d6d8c2360dbb4509ee15dc551511c1686f646eea"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/platform_ext.hpp": {
+      "bytes": 14106,
+      "sha256": "07a91ed42cfd5f2ab39e1ff9390d4b402e71acdc3c79fd52553df175614f34c4"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/protocol.hpp": {
+      "bytes": 11804,
+      "sha256": "dcfb6ab3971c976d57db4a78118b1049445634823ff90e311bbee56f4806f522"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/recovery_r1j9.hpp": {
+      "bytes": 10474,
+      "sha256": "d4085a79a33657a2c43942bdd8c889741dd4c9baee3e476f7d859d0766ac798b"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/remote_compact.hpp": {
+      "bytes": 28174,
+      "sha256": "535478354e6185163bc9000123e830e11eb1e07c456fb0842148661841b6ce94"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/remote_v3.hpp": {
+      "bytes": 50642,
+      "sha256": "85f9741188588e216c8be3525781cde1b13c544df08fdf69519e0b87bd67741d"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/route_v1.hpp": {
+      "bytes": 63833,
+      "sha256": "3710b48ea1ce119260ca6693e0c22643bb833f1a352fb858bbf3af21564328bd"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/uwb_wifi_provision.hpp": {
+      "bytes": 25637,
+      "sha256": "90ca49f1fa4df462cb9c496aaecbaf863b72795df68dee00035abca1acc4b444"
+    },
+    "firmware/ANCHOR_RF_PLATFORM_V1/wifi_reconnect.hpp": {
+      "bytes": 2824,
+      "sha256": "739d922fe1b4a06c2198d8b1502265037e5d91c11fbfa839246232afdcda8036"
+    },
+    "recovery/ANCHOR_RF_PLATFORM_V1.ino.bin.dpapi": {
+      "bytes": 1283558,
+      "sha256": "a25f60478560767f558c1bcba348777e4c51284e4838da8d86d61b340ded2933"
+    },
+    "recovery/uwb_provision_key.hpp.dpapi": {
+      "bytes": 822,
+      "sha256": "6cd070c07abf5a82d139773652204be3e207717df3952be70ed89fda2cb88ede"
+    },
+    "vendor/DW1000Ng/library.properties": {
+      "bytes": 355,
+      "sha256": "2063303e591ef8ed051eab051e282ec043806b22a4b08e5344e7041c5d9b7849"
+    },
+    "vendor/DW1000Ng/NOTICE.md": {
+      "bytes": 863,
+      "sha256": "8ee5221a397a2c281d4a59723919fc0ee6997aa765e2f271d724ab3c98f16ec3"
+    },
+    "vendor/DW1000Ng/src/deprecated.hpp": {
+      "bytes": 1504,
+      "sha256": "573e16eab576445a5adb78919666ea599ab46301f90d432c3aafa32429f07122"
+    },
+    "vendor/DW1000Ng/src/digitalWriteFast.h": {
+      "bytes": 11354,
+      "sha256": "43b2b645dfdff858081d6ecdf58a1f24aabc44b20d44aad6c9dc503812ac6264"
+    },
+    "vendor/DW1000Ng/src/dw1000.h": {
+      "bytes": 8628,
+      "sha256": "bddf7a8bc6ca293877c72c9eedeb3710cdca2fa0de94bf37e270abe9ac19cd04"
+    },
+    "vendor/DW1000Ng/src/DW1000Ng.cpp": {
+      "bytes": 94699,
+      "sha256": "a727dad8e6281bd85f2e52a3dab6064067e36218e7fa510b9d6744206a80040f"
+    },
+    "vendor/DW1000Ng/src/DW1000Ng.hpp": {
+      "bytes": 19642,
+      "sha256": "a22e97bb2908ebc72fd4cb3060f7369dab32d2cb4b4a809516e538b5ffae8abe"
+    },
+    "vendor/DW1000Ng/src/DW1000NgCompileOptions.hpp": {
+      "bytes": 2514,
+      "sha256": "42d9029c872b3c19bf2ec288d111bb831b031384fe3ce024834e0b8e9df7cc59"
+    },
+    "vendor/DW1000Ng/src/DW1000NgConfiguration.hpp": {
+      "bytes": 2500,
+      "sha256": "0b14b89127df5a4089e98451c388ea8d5d49a3e282e378307327befd5d7cf05b"
+    },
+    "vendor/DW1000Ng/src/DW1000NgConstants.hpp": {
+      "bytes": 6031,
+      "sha256": "c935ad03917f2ccea5d9f598654bf41dd9290382ef9ad75fabaf0426f17e4085"
+    },
+    "vendor/DW1000Ng/src/DW1000NgRanging.cpp": {
+      "bytes": 4042,
+      "sha256": "4b07b49b448e6e5f04ffac7bb4fd351577bc74132e253778a736983e851d82b3"
+    },
+    "vendor/DW1000Ng/src/DW1000NgRanging.hpp": {
+      "bytes": 2492,
+      "sha256": "ddb7719fde020fcf7b47fd4b1225d556d3e612e166e9a571130d4ac217b5b26a"
+    },
+    "vendor/DW1000Ng/src/DW1000NgRegisters.hpp": {
+      "bytes": 12494,
+      "sha256": "4ae3a2fe97d636c8d9b1f0269729fa5b77b9a6f0f65d2d1480172d9da2ef79df"
+    },
+    "vendor/DW1000Ng/src/DW1000NgRTLS.cpp": {
+      "bytes": 22714,
+      "sha256": "8fb9921fb7bdaf0c58d2a092ef08655f8fb67c97f57680d4dcc409aca2f08f66"
+    },
+    "vendor/DW1000Ng/src/DW1000NgRTLS.hpp": {
+      "bytes": 9002,
+      "sha256": "82664a494320b21ff573b5b7b65bde3e9d6226c38ec955cbc042392044102823"
+    },
+    "vendor/DW1000Ng/src/DW1000NgTime.cpp": {
+      "bytes": 1401,
+      "sha256": "e460f4e39036b5f2d6a32007ad78c3493cfea3ccb23cf57f17600d4cab900207"
+    },
+    "vendor/DW1000Ng/src/DW1000NgTime.hpp": {
+      "bytes": 1280,
+      "sha256": "934097833e2908abe26da389c74ba6b14eb284c74349b27248aa715d282edd28"
+    },
+    "vendor/DW1000Ng/src/DW1000NgUtils.cpp": {
+      "bytes": 4144,
+      "sha256": "6dfba867a95ca095a45cfea9e3ad3106a191eaed8cb444f8851a663307456ed9"
+    },
+    "vendor/DW1000Ng/src/DW1000NgUtils.hpp": {
+      "bytes": 3423,
+      "sha256": "4ebe908555d598afaae7cd1eca3fb56651c59f0e9c17fb272a0f0f466d43963c"
+    },
+    "vendor/DW1000Ng/src/libdw1000.h": {
+      "bytes": 7557,
+      "sha256": "4f1b7cd017069082185c5967dc153f9ea355078f0210f3cd9a3e18b32de9075a"
+    },
+    "vendor/DW1000Ng/src/libdw1000Spi.h": {
+      "bytes": 1688,
+      "sha256": "2922ae307d344ec185be71c5b58ac25159fc7771d525f5fd3d2b417715821cb6"
+    },
+    "vendor/DW1000Ng/src/libdw1000Types.h": {
+      "bytes": 3609,
+      "sha256": "d3b0c706e729c5baf0c8de7c1f834d2705e1f2bac54e4b420f04d5c44e27f948"
+    },
+    "vendor/DW1000Ng/src/require_cpp11.hpp": {
+      "bytes": 1299,
+      "sha256": "96277f349e2c8660763ba2235ba5dff93afb6b41935828c618dabe44da923297"
+    },
+    "vendor/DW1000Ng/src/SPIporting.cpp": {
+      "bytes": 4426,
+      "sha256": "95dc3903cf8c4a552ecd49128e87970e6098f69f4de8932dc3147df04427e75f"
+    },
+    "vendor/DW1000Ng/src/SPIporting.hpp": {
+      "bytes": 2877,
+      "sha256": "b4067c9e8279c12facfaac8472b0fa5d8d0213bdeceaeb99dc1e2a580d26a0e3"
+    }
+  }
+}

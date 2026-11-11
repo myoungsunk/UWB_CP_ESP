@@ -1,0 +1,221 @@
+{
+  "session": 3885525246,
+  "source": "serial_hardware_capture",
+  "stage": 2,
+  "requested_count": 20,
+  "accuracy_validated": false,
+  "pass": false,
+  "tag_identity": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R5_TAG_STAGE2_RXCHECK_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 379593801,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "anchor_identity": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R6_ANCHOR_TRFIX_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 2131213901,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 83,
+    "period_miss": 0
+  },
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 20,
+    "complete": 0,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "anchor_capture": {
+    "port": "COM4",
+    "records": 20,
+    "complete": 20,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "shutdown": {
+    "pass": true,
+    "request": 2851374721,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 3885525246
+      },
+      "anchor": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 3885525246
+      }
+    }
+  },
+  "audit": {
+    "pass": false,
+    "problems": [
+      "TAG_CIR_INVALID_TXN_0",
+      "TAG_CIR_INVALID_TXN_1",
+      "TAG_CIR_INVALID_TXN_10",
+      "TAG_CIR_INVALID_TXN_11",
+      "TAG_CIR_INVALID_TXN_12",
+      "TAG_CIR_INVALID_TXN_13",
+      "TAG_CIR_INVALID_TXN_14",
+      "TAG_CIR_INVALID_TXN_15",
+      "TAG_CIR_INVALID_TXN_16",
+      "TAG_CIR_INVALID_TXN_17",
+      "TAG_CIR_INVALID_TXN_18",
+      "TAG_CIR_INVALID_TXN_19",
+      "TAG_CIR_INVALID_TXN_2",
+      "TAG_CIR_INVALID_TXN_3",
+      "TAG_CIR_INVALID_TXN_4",
+      "TAG_CIR_INVALID_TXN_5",
+      "TAG_CIR_INVALID_TXN_6",
+      "TAG_CIR_INVALID_TXN_7",
+      "TAG_CIR_INVALID_TXN_8",
+      "TAG_CIR_INVALID_TXN_9",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_0",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_1",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_10",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_11",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_12",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_13",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_14",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_15",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_16",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_17",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_18",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_19",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_2",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_3",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_4",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_5",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_6",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_7",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_8",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_9"
+    ],
+    "details": {
+      "tag": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      },
+      "anchor": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      }
+    }
+  }
+}

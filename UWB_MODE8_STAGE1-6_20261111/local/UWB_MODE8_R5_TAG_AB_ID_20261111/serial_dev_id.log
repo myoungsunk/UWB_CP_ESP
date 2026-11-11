@@ -1,0 +1,10 @@
+DW1000_AB_DIAG_BEGIN
+{"event":"DW1000_AB_DEV_ID","radio":"A","phase":"before_reset","spi_hz":1000000,"ids":["0xBC950360","0xFF010000","0xBD5BFFFF","0xFFFFFFBD","0x01002400"]}
+{"event":"DW1000_AB_DEV_ID","radio":"A","phase":"before_reset","spi_hz":2000000,"ids":["0x01BC5BBD","0x5B2F0D10","0x8019BC5B","0x2A5B0100","0x834B7AAD"]}
+{"event":"DW1000_AB_DEV_ID","radio":"B","phase":"before_reset","spi_hz":1000000,"ids":["0xBDBD376A","0xBDDFE7FF","0xBFF77769","0xBCDD2F66","0xFED5BB60"]}
+{"event":"DW1000_AB_DEV_ID","radio":"B","phase":"before_reset","spi_hz":2000000,"ids":["0xBCBF936A","0xFE957BEC","0xFFDF676D","0xFC972F64","0xBC9F0F6E"]}
+{"event":"DW1000_AB_DEV_ID","radio":"A","phase":"after_reset","spi_hz":1000000,"ids":["0xBC950360","0xFF010000","0xBD5BFFFF","0xFFFFFFBD","0x01002400"]}
+{"event":"DW1000_AB_DEV_ID","radio":"A","phase":"after_reset","spi_hz":2000000,"ids":["0x01BC5BBD","0x5B013439","0x8019BC5B","0x2A5B0100","0x834B7AAD"]}
+{"event":"DW1000_AB_DEV_ID","radio":"B","phase":"after_reset","spi_hz":1000000,"ids":["0xBDBD376A","0xBDDFE7FF","0xBFF77769","0xBCDD2F66","0xFED5BB60"]}
+{"event":"DW1000_AB_DEV_ID","radio":"B","phase":"after_reset","spi_hz":2000000,"ids":["0xBCBF936A","0xFE957BEC","0xFFDF676D","0xFC972F64","0xBC9F0F6E"]}
+DW1000_AB_DIAG_END

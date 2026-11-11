@@ -1,0 +1,3 @@
+M8-04: B_poll_received=0 ErrPoll=1 complete=0
+M8-03: A_latched=1 B_CIR_reads_after_fault=1 B_P2_arms_after_fault=1
+Stage 2 anchor: complete=1 peer_boot=0 P1_peer_boot=0 P2_peer_boot=0

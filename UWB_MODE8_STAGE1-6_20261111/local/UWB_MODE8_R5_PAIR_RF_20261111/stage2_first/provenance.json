@@ -1,0 +1,25 @@
+{
+  "question_id": "UWB-MODE8-SOURCE-HOST-QA-20261111",
+  "scope": "First live Mode 8 Stage 2 link check, IMPLEMENTER self-check",
+  "command": "py -3 -B -X utf8 ./run_split_pair.py --out ./stage2_first --stage 2 --count 20",
+  "exit_code": 1,
+  "period_us": 300000,
+  "policy_sha256": {
+    "COMMON_CONTRACT.md": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "ROLE_IMPLEMENTER.md": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da"
+  },
+  "previously_verified_app_sha256": {
+    "anchor": "a9c67adc701eae75a9851f906453e8e6bf851efb5706bab74170bd6c44592eb1",
+    "tag": "bc1fd34a16850ded967adbed9525cc94293776543a9154a6094ca4516a66aa01"
+  },
+  "files_sha256": {
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\run_split_pair.py": "835a84de94e24f27f410c73548fc37965a6dbbe2fdfd4d2dc1b2f49f683630a9",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_TAG_CS_FIX_20261111\\tools\\run_pair.py": "336a4251d61af0111455b6d97e49525106f4afb7036e39a64ea531d8627e7fde",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\stage2_first\\anchor.rfb8": "9c997dffce6867db3a1067d7ac0098eed3f2a75d311ade6f05eca8d14e86a091",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\stage2_first\\tag.rfb8": "713d68368d9c6ea9c94666d19cb0ca0f8a22190ea17400d24bd288cb8cf4154c",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\stage2_first\\anchor.jsonl": "3963afc835f4e6118cd705a55d498bac30c4e9934cd94e1e7a7e3f8f870874a3",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\stage2_first\\tag.jsonl": "db9c64584dfe0fe8b9b753ee3894e32d0cfae3c4a5e52b2053810556e1d7df29",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\stage2_first\\capture_receipt.json": "dd793900a0c1635deafa3839faaaff4b5c95dc31179e4eaef0abe1ce22d60ce5"
+  },
+  "observation": "Both HELLO and SELFTEST passed. First anchor POLL did not report successful TX. Anchor reported SYS_STATUS 0x02800002 and latched; both STOP acknowledgements received."
+}

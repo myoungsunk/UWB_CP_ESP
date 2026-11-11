@@ -1,0 +1,30 @@
+{
+  "utc": "2026-11-11T07:31:01.331999+00:00",
+  "scope": "Stage 2 retest after operator power cycle; same flashed anchor image",
+  "command": "py -3 -B -X utf8 'D:/SLAM_bot/artifacts/UWB_MODE8_R5_PAIR_RF_20261111/run_split_pair.py' --out 'D:/SLAM_bot/artifacts/UWB_MODE8_R5_ANCHOR_PLL_STABILITY_20261111/evidence/stage2_after_power_cycle' --stage 2 --count 20",
+  "exit_code": 2,
+  "anchor_boot_before_cycle": 428528939,
+  "anchor_boot_after_cycle": 83345513,
+  "tag_selftest": {
+    "event": "SELFTEST",
+    "role": "tag",
+    "pass": true,
+    "faults": 0,
+    "dev_a": 3737780528,
+    "dev_b": 3737780528,
+    "ant_a_tx": 16436,
+    "ant_a_rx": 16436,
+    "ant_b_tx": 16436,
+    "ant_b_rx": 16436
+  },
+  "files_sha256": {
+    "evidence\\provenance.json": "6caea757aa5f0f82820a493134cd14c522e5f7aa414be5cdebd2fbabb270d98c",
+    "evidence\\pll_after_power_cycle.json": "96232f8c6ffa43a9407fc83e2fba0825c06e270c03aee75efb75a0d6fa09b57b",
+    "evidence\\stage2_after_power_cycle\\anchor.rfb8": "ca0d1af769835f79b0b7f777b2385b4925dd20575c154551b305457426d76cd2",
+    "evidence\\stage2_after_power_cycle\\anchor.jsonl": "6c4e9f3b02f867943fa2aa36afb63c3e868c8bcc69810499fc29806f144aa3b2",
+    "evidence\\stage2_after_power_cycle\\tag.rfb8": "152996f8e2a469e91fa2a67416723c94b1bf9124d3e21894250c8170381183d3",
+    "evidence\\stage2_after_power_cycle\\tag.jsonl": "bc65f0166e3b7e58105e60ebc8cbd467e890f1909f07aa739ea0b03947a03a8b",
+    "evidence\\stage2_after_power_cycle\\capture_receipt.json": "66463577d62c299ebeeef620b6e7564f97b3cf0dbc00ca3724b39148d153a1a9",
+    "evidence\\stage2_after_power_cycle\\pll_after_stage2.json": "533a3a8b1e130cbd6557d066cbba28670e4ee01ad44367977bb10dde858469c0"
+  }
+}

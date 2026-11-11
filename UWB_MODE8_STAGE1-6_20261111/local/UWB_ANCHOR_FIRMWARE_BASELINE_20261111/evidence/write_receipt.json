@@ -1,0 +1,18 @@
+{
+  "command": [
+    "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "-m",
+    "esptool",
+    "--chip",
+    "esp32",
+    "--port",
+    "COM4",
+    "--baud",
+    "460800",
+    "write-flash",
+    "0x10000",
+    "D:\\SLAM_bot\\artifacts\\UWB_LAZY_RELEASE_20261107_134517\\app\\ANCHOR_RF_PLATFORM_V1.ino.bin"
+  ],
+  "exit": 0,
+  "time": 1794027260.0377133
+}

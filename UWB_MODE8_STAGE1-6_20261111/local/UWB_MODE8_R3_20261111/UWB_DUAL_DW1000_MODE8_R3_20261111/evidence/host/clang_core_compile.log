@@ -1,0 +1,1 @@
+HOST-ONLY COMMAND: ["/usr/local/swift/usr/bin/clang++", "-std=c++11", "-Wall", "-Wextra", "-Wpedantic", "-Werror", "-Ishared", "tests/test_core.cpp", "-o", "/mnt/data/UWB_DUAL_DW1000_MODE8_REAUDITED_20261111/build/host/test_core_clang"]

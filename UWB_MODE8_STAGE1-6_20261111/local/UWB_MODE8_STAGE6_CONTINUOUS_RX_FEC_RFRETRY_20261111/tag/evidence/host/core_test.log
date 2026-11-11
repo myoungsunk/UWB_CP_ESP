@@ -1,0 +1,4 @@
+HOST-ONLY COMMAND: ["/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RFRETRY_20261111/tag/build/host/test_core", "/mnt/d/SLAM_bot/artifacts/UWB_MODE8_STAGE6_CONTINUOUS_RX_FEC_RFRETRY_20261111/tag/evidence/host"]
+tag_json_bytes=6090 sizeof_Record=19200
+wide_json_bytes=6399
+PASS checks=11778 (HOST SYNTHETIC ONLY)

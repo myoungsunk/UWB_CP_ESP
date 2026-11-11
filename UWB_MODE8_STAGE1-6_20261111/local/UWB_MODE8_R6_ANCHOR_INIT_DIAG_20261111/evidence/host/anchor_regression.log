@@ -1,0 +1,7 @@
+HOST-ONLY COMMAND: ["/mnt/d/SLAM_bot/artifacts/UWB_MODE8_R6_ANCHOR_INIT_DIAG_20261111/build/host/test_anchor_firmware"]
+PASS A2: lost channel write and four other PHY mismatches rejected
+PASS PLL startup: single sticky acknowledgement, delayed loss, bounded retry, untrusted reads rejected
+PASS A1: unlatched CPLLLOW, CPLLHIGH, unlocked and invalid RF_STATUS block POLL
+PASS A3/A4: shutdown at 2 MHz, no diagnostic FAST read, live fault remains latched
+PASS A4: entry and probe hardware faults are recorded; P2 stays available for a non-hardware P1 failure
+PASS A5: invalid SET, NUL, embedded CR, non-ASCII, overlong and split CRLF

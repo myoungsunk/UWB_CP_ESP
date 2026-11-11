@@ -1,0 +1,6 @@
+TAG_DUAL_DS_CIR.ino.bootloader.bin: OK
+TAG_DUAL_DS_CIR.ino.partitions.bin: OK
+TAG_DUAL_DS_CIR.ino.bin: OK
+boot_app0.bin: OK
+usb_smoke.py: OK
+rfb8.py: OK

@@ -1,0 +1,195 @@
+{
+  "question_id": "MODE8-STAGE5-CIR20",
+  "created_utc": "2026-11-11T11:02:44.747994+00:00",
+  "pass": true,
+  "stage": 5,
+  "session": 2460283497,
+  "period_us": 650000,
+  "baud": 921600,
+  "config_id": 13159153,
+  "P1_to_P2_gap_ms_min_max": [
+    325.0,
+    325.0
+  ],
+  "independent_anchor_response_count": {
+    "P1": {
+      "A": 20,
+      "B": 20
+    },
+    "P2": {
+      "A": 20,
+      "B": 20
+    }
+  },
+  "POLL2_tag_receive_count": {
+    "A": 20,
+    "B": 20
+  },
+  "host_verification": {
+    "anchor": {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\anchor\\evidence\\host\\host_qa_receipt.json",
+      "sha256": "0f85bc1e96160466c5deef0deb849949743a3b91f446918700383e6c8d339a76"
+    },
+    "tag": {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\tag\\evidence\\host\\host_qa_receipt.json",
+      "sha256": "8fe69f148953c7e26057a969cbe3bdd02d8116e19d4c5548c449e4ac13557c53"
+    }
+  },
+  "target_build": {
+    "anchor": {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\anchor\\dist\\target_build_receipt.json",
+      "sha256": "61de88584337e84272ba30b5e76bad9a8b009250e58680a7572e16578fe8b566"
+    },
+    "tag": {
+      "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\tag\\dist\\target_build_receipt.json",
+      "sha256": "61c5a919c45e19ca0466efccadf495b66163556d29f0077acec3d8d30cc5ced2"
+    }
+  },
+  "flash": {
+    "anchor": {
+      "utc": "2026-11-11T10:59:26.7655957+00:00",
+      "port": "COM4",
+      "mac": "28:56:2f:72:e7:18",
+      "flash_offset": "0x10000",
+      "original_app_sha256": "69aab64095cfc0bf37329fefe0559ef693febf5c324cd0642c8c65e368c79c68",
+      "written_app_sha256": "37d26ef7703a0ee67548f8c7c1840552f54ad326347a386753a71789a78af529",
+      "elf_sha256": "2caf44bcaa3f6f7a2acc187d8ba30f1e974dcb5a2d3f80ee3548eb2d1345c5e4",
+      "esptool_version": "5.1.0",
+      "verified": true
+    },
+    "tag": {
+      "utc": "2026-11-11T10:59:32.4296997+00:00",
+      "role": "tag",
+      "host": "slam-robot-tailscale",
+      "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+      "mac": "28:56:2f:73:06:54",
+      "offset": "0x10000",
+      "prior_app_sha256": "21c9c511a9f908946d9650456a8ee170654d5f63397461776c402a94b608484c",
+      "new_app_sha256": "7198b8967a9315d0bf2cec48ede3751707fa38860b9a96b97214290ad9289d88",
+      "remote_staging": "/tmp/uwb-mode8-tag-stage5-p2-pollfix-20261111",
+      "verified": true
+    }
+  },
+  "original_negative_range_diagnosis": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_RANGING_20261111\\evidence\\p2_baseline_diagnosis.json",
+    "sha256": "542bc2a3268beede6cddb546dd4b214a3030c0ed53a16cbece6731d060d935cf"
+  },
+  "prior_hardware_experiments": [
+    {
+      "changes": "P1 used as P2 poll, A at 14ms",
+      "receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_RANGING_20261111\\evidence\\stage5_p2_20_20261111_194030_266\\capture_receipt.json",
+        "sha256": "3cb229a77d18347f66f0f03110764460c81ab5239226d19eeb05515bbfcf39c9"
+      }
+    },
+    {
+      "changes": "P1 used as P2 poll, A at 19ms",
+      "receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_SLOT_FIX_20261111\\evidence\\stage5_p2_slot_20_20261111_194710_245\\capture_receipt.json",
+        "sha256": "cc319356db7da97b9b61661b5cfc221cbf411d9cab85fca1319e5654f7fa4496"
+      }
+    },
+    {
+      "changes": "dedicated POLL2, 300ms transaction period",
+      "receipt": {
+        "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\evidence\\stage5_p2_pollfix_20_20261111_195936_777\\capture_receipt.json",
+        "sha256": "427dc8e5360fa1281b87e63d4d1ab6766f3efd20119714bef3f235d882880c23"
+      },
+      "anchor_errors": {
+        "0": 1,
+        "12": 19
+      },
+      "tag_errors": {
+        "0": 1,
+        "542": 18,
+        "574": 1
+      },
+      "late_tag_A_TX_lead_us_min_max": [
+        -102485,
+        -36526
+      ]
+    }
+  ],
+  "capture": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\evidence\\stage5_p2_pollfix_650ms_20_20261111_200112_766\\capture_receipt.json",
+    "sha256": "d95313670b66cedb4195a679a5c441032daf934ce1f7793a75b6c6f825bc221e",
+    "exit_code": 0,
+    "command": [
+      "py",
+      "-3",
+      "-B",
+      "-X",
+      "utf8",
+      "evidence/capture_tag_rx_status.py",
+      "--anchor",
+      "COM4",
+      "--stage",
+      "5",
+      "--period-us",
+      "650000",
+      "--count",
+      "20",
+      "--out",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\evidence\\stage5_p2_pollfix_650ms_20_20261111_200112_766",
+      "--tag-delay-receipt",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\candidate_tag_delay.json"
+    ]
+  },
+  "verification": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\evidence\\stage5_p2_pollfix_650ms_20_20261111_200112_766\\stage5_verdict.json",
+    "sha256": "965a7c3f6d7528ed6117dcd3268cb76cd863764e72aa66be34f0053113925e25",
+    "exit_code": 0,
+    "command": [
+      "py",
+      "-3",
+      "-B",
+      "-X",
+      "utf8",
+      "evidence/verify_stage5.py",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE5_P2_POLLFIX_20261111\\evidence\\stage5_p2_pollfix_650ms_20_20261111_200112_766",
+      "--collector-exit",
+      "0",
+      "--period-us",
+      "650000",
+      "--tag-delay-receipt",
+      "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE4_DS_TWR_20261111\\evidence\\candidate_tag_delay.json"
+    ]
+  },
+  "summary": {
+    "P1": {
+      "common_grids_verified": 20,
+      "CIR_slots_verified": 40,
+      "signed_range_m_min_max": {
+        "A": [
+          0.664354523501439,
+          0.7576579584083785
+        ],
+        "B": [
+          0.6620057720336795,
+          0.8459296601878115
+        ]
+      },
+      "overlap_points_min": 985,
+      "overlap_points_max": 991,
+      "max_independent_range_delta_m": 1.1102230246251565e-16
+    },
+    "P2": {
+      "common_grids_verified": 20,
+      "CIR_slots_verified": 40,
+      "signed_range_m_min_max": {
+        "A": [
+          0.84091185295811,
+          0.9595122028288193
+        ],
+        "B": [
+          0.668705726143713,
+          0.7913204982281334
+        ]
+      },
+      "overlap_points_min": 985,
+      "overlap_points_max": 991,
+      "max_independent_range_delta_m": 1.1102230246251565e-16
+    }
+  },
+  "absolute_axis_accuracy_validated": false
+}

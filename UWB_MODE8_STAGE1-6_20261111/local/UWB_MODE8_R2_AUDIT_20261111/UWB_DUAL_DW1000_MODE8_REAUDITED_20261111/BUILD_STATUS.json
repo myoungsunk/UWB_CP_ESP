@@ -1,0 +1,86 @@
+{
+  "release": "D8_R2_REAUDITED_20261111",
+  "created_utc": "2026-11-11T04:10:24.251253+00:00",
+  "status": [
+    "SOURCE_REPAIRED",
+    "HOST_ADVERSARIAL_REAUDIT_PASS",
+    "ESP32_TARGET_BUILD_BLOCKED",
+    "HARDWARE_NOT_RUN"
+  ],
+  "flash_ready": false,
+  "target_build": false,
+  "hardware_tested": false,
+  "independent_audit": false,
+  "delivery_scope": "Separate USB serial Mode8 development sources; NOT full original Wi-Fi/TCP/OTA firmware integration",
+  "requested_deliverable_not_fulfilled": "No new ESP32 BIN/ELF/MAP or target compilation/memory report",
+  "host_evidence": {
+    "gcc_assertions": 11342,
+    "clang_assertions": 11342,
+    "python_unit_tests": 42,
+    "asan_ubsan_test_run": "PASS in bounded host synthetic suite",
+    "upper_firmware_syntax_checks": "GCC and Clang pass for both roles using declaration stubs; no ESP32 SDK link",
+    "adversarial_replay": "Original two supplied counterexamples rejected by repaired code; positive controls accepted"
+  },
+  "unmodified_vendor_files": 50,
+  "baseline_zip_sha256": "c0fff168193a5d78490e2fb736c7f189d83ee020c2612fed14ac38d9050f1542",
+  "target_build_receipt": "dist/target_build_receipt.json",
+  "host_qa_receipt": "evidence/host/host_qa_receipt.json",
+  "phase_status": {
+    "P0": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P1": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P2": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P3": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P4": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P5": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    },
+    "P6": {
+      "source_implemented": true,
+      "physical_hardware_acceptance": "NOT_RUN"
+    }
+  },
+  "default_config": {
+    "stage": 5,
+    "period_us": 300000,
+    "baud": 921600,
+    "cir_spi_hz": 20000000,
+    "verify_cir_repeat": true
+  },
+  "nominal_air_timestamps_ms": [
+    0,
+    7,
+    14,
+    19,
+    51
+  ],
+  "not_claimed": [
+    "51ms end-to-end completion",
+    "19.6Hz full-data update rate",
+    "RF phase coherence",
+    "calibrated ranging accuracy",
+    "legacy mode regression compatibility"
+  ],
+  "source_repaired": true,
+  "security_scope": "Accidental mixing/stream corruption; CRC and identifiers do not authenticate malicious RF or USB senders",
+  "source_sha256_previous": "4a5f27ff6cc4f3bca5c1b7c27f5ff53e1acb80cbed36a5646ed027fd9864f11c",
+  "supplied_external_audit_sha256": "1487772db1f16e93955994d692e35d93c67443d8099f8dc216abcbf628cb9926",
+  "adversarial_reaudit_report": "docs/ADVERSARIAL_REAUDIT_R2_KO.md",
+  "default_stage5_config_id": 3839621402,
+  "rf_smart_tx_power": false
+}

@@ -1,0 +1,196 @@
+{
+  "session": 439053562,
+  "source": "serial_hardware_capture",
+  "stage": 2,
+  "requested_count": 20,
+  "accuracy_validated": false,
+  "pass": false,
+  "tag_identity": {
+    "event": "HELLO",
+    "role": "tag",
+    "firmware": "D8_R5_TAG_RXDIAG_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 412738363,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 0,
+    "period_miss": 0
+  },
+  "anchor_identity": {
+    "event": "HELLO",
+    "role": "anchor",
+    "firmware": "D8_R6_ANCHOR_TRFIX_20261111",
+    "mode": 8,
+    "wire": "RFB8",
+    "hw_ok": true,
+    "fault_latched": false,
+    "boot": 2008208627,
+    "config_id": 467706115,
+    "stage": 2,
+    "period_us": 300000,
+    "baud": 921600,
+    "active": false,
+    "wifi_ota": false,
+    "cal_default_is_uncalibrated": true,
+    "drops": 0,
+    "sent": 2,
+    "period_miss": 0
+  },
+  "tag_capture": {
+    "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "records": 20,
+    "complete": 15,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 934,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "anchor_capture": {
+    "port": "COM4",
+    "records": 20,
+    "complete": 20,
+    "reader_error": null,
+    "fault_events": 0,
+    "capture_overflow": false,
+    "decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    },
+    "capture_decoder": {
+      "skipped_bytes": 0,
+      "crc_errors": 0,
+      "schema_errors": 0,
+      "sequence_gap_events": 0,
+      "trailing_bytes": 0
+    }
+  },
+  "shutdown": {
+    "pass": true,
+    "request": 2446803180,
+    "roles": {
+      "tag": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 439053562
+      },
+      "anchor": {
+        "command_sent": true,
+        "acknowledged": true,
+        "session": 439053562
+      }
+    }
+  },
+  "audit": {
+    "pass": false,
+    "problems": [
+      "TAG_CIR_INVALID_TXN_12",
+      "TAG_CIR_INVALID_TXN_14",
+      "TAG_CIR_INVALID_TXN_15",
+      "TAG_CIR_INVALID_TXN_5",
+      "TAG_CIR_INVALID_TXN_6",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_12",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_14",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_15",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_5",
+      "TAG_INCOMPLETE_OR_ERROR_TXN_6",
+      "TAG_PROBE_AIR_MISMATCH_TXN_12_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_14_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_15_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_5_SLOT_0",
+      "TAG_PROBE_AIR_MISMATCH_TXN_6_SLOT_0"
+    ],
+    "details": {
+      "tag": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      },
+      "anchor": {
+        "records": 20,
+        "unique_txn": 20,
+        "received_txn_order": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19
+        ],
+        "decoder": {
+          "skipped_bytes": 0,
+          "crc_errors": 0,
+          "schema_errors": 0,
+          "sequence_gap_events": 0,
+          "trailing_bytes": 0
+        }
+      }
+    }
+  }
+}

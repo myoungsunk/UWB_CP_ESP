@@ -1,0 +1,31 @@
+{
+  "scope": "ESP32 Arduino GPIO initialization model, no physical measurements",
+  "baseline": {
+    "21": {
+      "output_entry": [
+        0
+      ],
+      "latch_at_spi_begin": 0
+    },
+    "25": {
+      "output_entry": [
+        0
+      ],
+      "latch_at_spi_begin": 0
+    }
+  },
+  "corrected": {
+    "21": {
+      "output_entry": [
+        1
+      ],
+      "latch_at_spi_begin": 1
+    },
+    "25": {
+      "output_entry": [
+        1
+      ],
+      "latch_at_spi_begin": 1
+    }
+  }
+}

@@ -1,0 +1,1416 @@
+--- a/shared/app.hpp
++++ b/shared/app.hpp
+@@ -50,9 +50,9 @@
+ static bool number(const char*s,uint32_t&v){
+  if(!s||!*s||*s=='-'||*s=='+'){return false;}
+  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
+ }
+-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_DEV_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
++static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"D8_R2_REAUDITED_20261111\",\"mode\":8,\"wire\":\"RFB8\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu}",role(),hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss);}
+ static void stop(){active=false;remaining=0;idleAll();emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session);}
+ static void command(char*line){
+  char*save=nullptr;char*w[9]{};unsigned n=0;for(char*p=strtok_r(line," \t\r",&save);p;p=strtok_r(nullptr," \t\r",&save)){if(n==9){emit("{\"event\":\"ERROR\",\"reason\":\"TOO_MANY_TOKENS\"}");return;}w[n++]=p;}if(!n)return;
+  if(!strcmp(w[0],"HELLO")||!strcmp(w[0],"STATUS")){hello();return;}
+--- a/shared/core.hpp
++++ b/shared/core.hpp
+@@ -35,8 +35,11 @@
+  const uint32_t v[]={c.period_us,c.reply_a_us,c.reply_b_us,c.probe1_us,c.probe_gap_us,c.grace_us,c.min_lead_us};
+  for(unsigned i=0;i<7;++i)putLE(b+4+4*i,v[i],4);
+  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
+  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
++ // R2 contract: smart TX power disabled at 850 kbps and fail-closed host
++ // collection/analysis. Keep R1's config ID distinct to reject mixed builds.
++ b[39]=2;
+  return crc32(b,sizeof b);
+ }
+ inline const char* validate(const Config&c){
+  if(c.stage<1||c.stage>6)return "STAGE_1_TO_6";
+@@ -128,18 +131,21 @@
+ inline bool coherentAnchorBlock(const Frame&a,const Frame&b){
+  return a.poll_tx==b.poll_tx&&a.resp_mask==b.resp_mask&&a.resp_rx[0]==b.resp_rx[0]&&a.resp_rx[1]==b.resp_rx[1]&&a.peer_boot==b.peer_boot;
+ }
+ inline void finalizeRanges(Record&r){
+- r.p1_tx_confirmed=r.have_probe_frame[0]&&r.have_probe_frame[1]&&!r.metadata_conflict&&
++ // A latched hardware fault, late deadline or metadata fault invalidates all
++ // physical ranges even if the on-air timestamp fields happen to look coherent.
++ const uint32_t fatal_integrity=ErrHardware|ErrMetadata|ErrLate;
++ r.p1_tx_confirmed=!(r.errors&fatal_integrity)&&r.have_probe_frame[0]&&r.have_probe_frame[1]&&!r.metadata_conflict&&
+    coherentAnchorBlock(r.probe_frame[0],r.probe_frame[1])&&((r.probe_frame[1].tx_ok_mask&3)==3)&&
+    r.probe_frame[1].prev_probe_actual==r.probe_frame[0].probe_tx;
+  for(unsigned i=0;i<2;++i){
+   r.range[i]=DsResult{};
+   if(r.cfg.stage<4||!r.p1_tx_confirmed||!r.poll[i].received||!r.poll[i].lde||!r.tx[i].ok||!r.probe[0][i].received||!r.probe[0][i].lde||!(r.probe_frame[0].resp_mask&(1U<<i)))continue;
+   const auto&f=r.probe_frame[0];auto&d=r.range_input[i];d.a_poll_tx=f.poll_tx;d.a_resp_rx=f.resp_rx[i];d.a_probe_tx=f.probe_tx;
+   d.t_poll_rx=r.poll[i].hw;d.t_resp_tx=r.tx[i].actual;d.t_probe_rx=r.probe[0][i].hw;r.range[i]=dsTwr(d);
+  }
+- r.complete=!r.metadata_conflict;
++ r.complete=r.errors==0&&!r.metadata_conflict;
+  for(unsigned s=0;s<4;++s)r.complete=r.complete&&r.cir_meta[s].valid;
+  if(r.cfg.stage>=3)r.complete=r.complete&&r.tx[0].ok&&r.tx[1].ok;
+  if(r.cfg.stage>=4)r.complete=r.complete&&r.range[0].valid&&r.range[1].valid;
+ }
+--- a/shared/engine.hpp
++++ b/shared/engine.hpp
+@@ -133,8 +133,8 @@
+   const uint64_t at=(r.tx[0].actual+usTicks(k?c.probe2_us():c.probe1_us))&MASK40;
+   if(!p.send(0,q,at,r.tx[k+1]))r.errors|=k?ErrProbe2:ErrProbe1;
+   r.probe_frame[k]=q;r.have_probe_frame[k]=r.tx[k+1].ok;
+  }
+- r.p1_tx_confirmed=r.tx[1].ok;r.complete=r.tx[0].ok&&r.tx[1].ok&&r.tx[2].ok&&(c.stage==2||r.response_mask==3);
++ r.p1_tx_confirmed=r.tx[1].ok;r.complete=r.errors==0&&r.tx[0].ok&&r.tx[1].ok&&r.tx[2].ok&&(c.stage==2||r.response_mask==3);
+  p.idle(0);r.end_us=p.nowUs();
+ }
+ } // namespace dual8
+--- a/shared/esp32_port.hpp
++++ b/shared/esp32_port.hpp
+@@ -86,9 +86,9 @@
+ #else
+    SPIporting::setSlowReadShiftFix(false);DW1000Ng::initializeNoInterrupt(uint8_t(i),pins(i).cs,pins(i).rst,SPI);
+ #endif
+    SPIporting::setSPIspeed(SPIClock::FAST);
+-   device_configuration_t dc={false,false,true,true,false,SFDMode::STANDARD_SFD,Channel::CHANNEL_5,DataRate::RATE_850KBPS,PulseFrequency::FREQ_16MHZ,PreambleLength::LEN_256,PreambleCode::CODE_3};
++   device_configuration_t dc={false,false,false,true,false,SFDMode::STANDARD_SFD,Channel::CHANNEL_5,DataRate::RATE_850KBPS,PulseFrequency::FREQ_16MHZ,PreambleLength::LEN_256,PreambleCode::CODE_3};
+    DW1000Ng::applyConfiguration(dc);DW1000Ng::disableFrameFiltering();DW1000Ng::setNetworkId(10);DW1000Ng::setDeviceAddress(uint16_t(DUAL8_ANCHOR?5:6+i));
+    DW1000Ng::setTxAntennaDelay(calibration_[i].tx);DW1000Ng::setRxAntennaDelay(calibration_[i].rx);DW1000Ng::setWait4Response(0);DW1000Ng::setDoubleBuffering(false);DW1000Ng::setReceiveFrameWaitTimeoutPeriod(0);
+    // Polling implementation: IRQ pins are inputs, not interrupt-owned SPI users.
+    uint8_t mask[4]{};write(0x0e,0xffff,mask,4);clear(rxguard::RX_CLEAR|rxguard::TX_CLEAR|(1ULL<<27)|(1ULL<<34));
+--- a/shared/record_json.hpp
++++ b/shared/record_json.hpp
+@@ -21,9 +21,9 @@
+ inline void jsonTx(Json&j,const Tx&o){j.add("{\"attempted\":%s,\"ok\":%s,\"radio\":%u,\"type\":%u,\"requested\":%llu,\"planned\":%llu,\"actual\":%llu,\"status\":%llu,\"lead_us\":%ld,\"begin_us\":%llu,\"end_us\":%llu}",o.attempted?"true":"false",o.ok?"true":"false",o.radio,o.type,(unsigned long long)o.requested,(unsigned long long)o.planned,(unsigned long long)o.actual,(unsigned long long)o.status,(long)o.lead_us,(unsigned long long)o.begin_us,(unsigned long long)o.end_us);}
+ inline void jsonFrame(Json&j,const Frame&f,bool valid){uint8_t b[AIR_BYTES];if(valid&&encode(f,b))j.hex(b,AIR_BYTES);else j.add("null");}
+ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes){
+  Json j(out,capacity);
+- j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_DEV_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
++ j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"D8_R2_REAUDITED_20261111\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
+  r.anchor?"anchor":"tag",r.cfg.stage,(unsigned long)r.session,(unsigned long)r.txn,(unsigned long)r.boot,(unsigned long)r.peer_boot,(unsigned long)r.config,(unsigned long long)r.begin_us,(unsigned long long)r.end_us,r.complete?"true":"false",(unsigned long)r.errors,r.metadata_conflict?"true":"false",r.p1_tx_confirmed?"true":"false",r.response_mask,(unsigned long)r.cfg.period_us,(unsigned long)r.cfg.cir_hz,(unsigned long)r.cfg.baud,r.txn&1?"B,A":"A,B");
+  for(unsigned i=0;i<(r.anchor?3U:2U);++i){if(i)j.add(",");jsonTx(j,r.tx[i]);}j.add("],\"poll_rx\":[");
+  if(!r.anchor){for(unsigned i=0;i<2;++i){if(i)j.add(",");jsonRx(j,r.poll[i]);}}
+  j.add("],\"response_rx\":[");
+--- /dev/null
++++ b/tests/fixture_helpers.py
+@@ -0,0 +1,48 @@
++"""Synthetic anchor record built from synthetic tag RF frames (tests only)."""
++import copy
++import zlib
++
++
++def frame_at(hexstr):
++    return bytearray.fromhex(hexstr)
++
++
++def reframe_txn(frame_hex, txn):
++    b = frame_at(frame_hex)
++    b[12:16] = txn.to_bytes(4, 'little')
++    b[92:96] = zlib.crc32(b[:92]).to_bytes(4, 'little')
++    return b.hex()
++
++
++def with_txn(m, txn):
++    v = copy.deepcopy(m)
++    v['txn'] = txn
++    v['frames'] = [reframe_txn(f, txn) if f is not None else None for f in v['frames']]
++    for kind in ('poll_rx', 'probe_rx'):
++        for r in v[kind]:
++            if r['ok']:
++                idx = 0 if kind == 'poll_rx' else 1 + v['probe_rx'].index(r) // 2
++                r['air'] = v['frames'][idx]
++    return v
++
++
++def synthetic_anchor(tag):
++    p1, p2 = frame_at(tag['frames'][1]), frame_at(tag['frames'][2])
++    poll = frame_at(tag['frames'][0])
++    to_ticks = lambda b, p: int.from_bytes(b[p:p+5], 'little')
++    rx = [to_ticks(p1, 37), to_ticks(p1, 42)]
++    return {
++        'schema': 'dual8.record.v1', 'role': 'anchor', 'mode': 8,
++        'stage': tag['stage'], 'period_us': tag['period_us'],
++        'session': tag['session'], 'txn': tag['txn'],
++        'boot': tag['peer_boot'], 'peer_boot': tag['boot'], 'config': tag['config'],
++        'complete': True, 'errors': 0, 'metadata_conflict': False,
++        'frames': tag['frames'][:],
++        'tx': [
++            {'ok': True, 'actual': to_ticks(poll, 32)},
++            {'ok': True, 'actual': to_ticks(p1, 47)},
++            {'ok': True, 'actual': to_ticks(p2, 47)},
++        ],
++        'response_rx': [{'ok': True, 'hw': x} for x in rx],
++        'calibration': [{'id': 0}],
++    }
+--- /dev/null
++++ b/tests/test_adversarial.py
+@@ -0,0 +1,344 @@
++"""Adversarial probes: repaired failures must fail closed (synthetic only)."""
++from __future__ import annotations
++import copy
++import json
++from pathlib import Path
++from queue import Queue, Empty
++import sys
++import tempfile
++from types import SimpleNamespace
++from unittest.mock import patch
++import unittest
++import zlib
++import numpy as np
++
++ROOT = Path(__file__).resolve().parents[1]
++sys.path.insert(0, str(ROOT/'tools'))
++from analyze import packet_arrays
++from rfb8 import encode, RAW_BYTES
++from capture_audit import verify_capture
++from fixture_helpers import synthetic_anchor, with_txn
++import run_pair
++
++
++def altered_frame(h, offset, data):
++    b = bytearray.fromhex(h)
++    b[offset:offset+len(data)] = data
++    b[92:96] = zlib.crc32(b[:92]).to_bytes(4, 'little')
++    return b.hex()
++
++
++def rows_for(meta):
++    raw = (ROOT/'evidence/host/SYNTHETIC_CIR_i16.raw').read_bytes()
++    anchor = synthetic_anchor(meta)
++    return packet_arrays(meta, raw, anchor)
++
++
++def all_invalid(arrays, rows):
++    return all(not r['axis_estimate_available'] for r in rows) and np.isnan(arrays['physical_estimate_s']).all()
++
++
++class AdversarialAnalysis(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.m = json.loads((ROOT/'evidence/host/synthetic_tag_record.json').read_text())
++        cls.raw = (ROOT/'evidence/host/SYNTHETIC_CIR_i16.raw').read_bytes()
++
++    def test_clean_both_radios_have_physical_axes(self):
++        arrays, rows = rows_for(self.m)
++        self.assertTrue(all(x['axis_estimate_available'] for x in rows))
++        self.assertGreater(arrays['common_p2_delay_s'].size, 992)
++
++    def test_reported_p2_collision_blocks_axes_and_common_grid(self):
++        m = copy.deepcopy(self.m)
++        b = bytearray.fromhex(m['probe_rx'][3]['air'])
++        b[42:47] = (int.from_bytes(b[42:47], 'little')+256).to_bytes(5, 'little')
++        b[92:96] = zlib.crc32(b[:92]).to_bytes(4, 'little')
++        m['probe_rx'][3]['air'] = b.hex()
++        m.update(metadata_conflict=True, p1_tx_confirmed=False, complete=False, errors=64)
++        for r in m['ranges']:
++            r.update(math_valid=False, d_m=None, six_ts=[0]*6)
++        arrays, rows = packet_arrays(m, self.raw, synthetic_anchor(self.m))
++        self.assertTrue(all_invalid(arrays, rows))
++        self.assertTrue(np.isfinite(arrays['relative_s']).all())
++        self.assertEqual(arrays['common_p2_delay_s'].size, 0)
++
++    def test_unreported_p2_collision_also_blocks_axes(self):
++        m = copy.deepcopy(self.m)
++        m['probe_rx'][3]['air'] = altered_frame(m['probe_rx'][3]['air'], 42, b'\x00'*5)
++        arrays, rows = packet_arrays(m, self.raw, synthetic_anchor(self.m))
++        self.assertTrue(all_invalid(arrays, rows))
++        self.assertFalse(rows[3]['frame_provenance_ok'])
++
++    def test_unreported_p1_collision_also_blocks_axes(self):
++        m = copy.deepcopy(self.m)
++        m['probe_rx'][1]['air'] = altered_frame(m['probe_rx'][1]['air'], 37, b'\x00'*5)
++        arrays, rows = packet_arrays(m, self.raw, synthetic_anchor(self.m))
++        self.assertTrue(all_invalid(arrays, rows))
++
++    def test_inconsistent_shared_p2_and_individual_received_frames(self):
++        m = copy.deepcopy(self.m)
++        m['frames'][2] = altered_frame(m['frames'][2], 42, b'\x00'*5)
++        arrays, rows = packet_arrays(m, self.raw, synthetic_anchor(m))
++        self.assertTrue(all_invalid(arrays, rows))
++
++    def test_flag_alone_blocks_p1_and_p2_physical_axes(self):
++        m = copy.deepcopy(self.m)
++        m['metadata_conflict'] = True
++        arrays, rows = rows_for(m)
++        self.assertTrue(all_invalid(arrays, rows))
++
++    def test_invalid_p1_six_ts_not_accepted(self):
++        m = copy.deepcopy(self.m)
++        m['ranges'][0]['six_ts'][1] += 256
++        arrays, rows = rows_for(m)
++        self.assertFalse(rows[0]['axis_estimate_available'])
++        self.assertTrue(rows[1]['axis_estimate_available'])
++
++    def test_missing_anchor_rx_evidence_blocks_p2_only(self):
++        anchor = synthetic_anchor(self.m)
++        anchor.pop('response_rx')
++        arrays, rows = packet_arrays(self.m, self.raw, anchor)
++        self.assertTrue(rows[0]['axis_estimate_available'])
++        self.assertTrue(rows[1]['axis_estimate_available'])
++        self.assertFalse(rows[2]['axis_estimate_available'])
++        self.assertFalse(rows[3]['axis_estimate_available'])
++
++    def test_changed_p2_actual_tx_blocks_p2_only(self):
++        anchor = synthetic_anchor(self.m)
++        anchor['tx'][2]['actual'] += 1
++        arrays, rows = packet_arrays(self.m, self.raw, anchor)
++        self.assertTrue(all(r['axis_estimate_available'] for r in rows[:2]))
++        self.assertTrue(all(not r['axis_estimate_available'] for r in rows[2:]))
++
++    def test_false_antenna_footprint_static_reuse_cannot_bypass_conflict(self):
++        m = copy.deepcopy(self.m)
++        m['metadata_conflict'] = True
++        arrays, rows = packet_arrays(m, self.raw, synthetic_anchor(m), assume_static=True)
++        self.assertTrue(all_invalid(arrays, rows))
++
++    def test_missing_one_p2_radio_keeps_other_partial_result(self):
++        m = copy.deepcopy(self.m)
++        m['probe_rx'][3].update(ok=False, air='')
++        m['cir'][3].update(valid=False, present=False)
++        arrays, rows = packet_arrays(m, self.raw, synthetic_anchor(m))
++        self.assertTrue(rows[0]['axis_estimate_available'])
++        self.assertTrue(rows[1]['axis_estimate_available'])
++        self.assertTrue(rows[2]['axis_estimate_available'])
++        self.assertFalse(rows[3]['axis_estimate_available'])
++
++
++class AdversarialReceipt(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.tag = json.loads((ROOT/'evidence/host/synthetic_tag_record.json').read_text())
++        cls.tag['_raw_integrity_verified'] = True  # independent known synthetic CIR fixture
++        cls.hellos = {
++            'tag': {'role': 'tag', 'boot': cls.tag['boot'], 'config_id': cls.tag['config'],
++                    'hw_ok': True, 'fault_latched': False, 'stage': 5, 'period_us': 300000},
++            'anchor': {'role': 'anchor', 'boot': cls.tag['peer_boot'], 'config_id': cls.tag['config'],
++                       'hw_ok': True, 'fault_latched': False, 'stage': 5, 'period_us': 300000}}
++        cls.stats = {role: {'capture_decoder': {k: 0 for k in
++                     ('crc_errors', 'schema_errors', 'sequence_gap_events', 'trailing_bytes', 'skipped_bytes')},
++                     'reader_error': None, 'fault_events': 0} for role in ('tag', 'anchor')}
++
++    def audit(self, tag=None, anchor=None, hello=None, stats=None, count=1):
++        tags = [self.tag] if tag is None else tag
++        anchors = [synthetic_anchor(x) for x in tags] if anchor is None else anchor
++        return verify_capture(session=self.tag['session'], count=count, stage=5, period_us=300000,
++                              identities=hello or self.hellos,
++                              records={'tag': tags, 'anchor': anchors}, stats=stats or self.stats)
++
++    def test_good_pair_and_two_sequential_txns(self):
++        self.assertTrue(self.audit().passed)
++        tags = [self.tag, with_txn(self.tag, 1)]
++        self.assertTrue(self.audit(tag=tags, count=2).passed)
++
++    def test_different_session_rejected(self):
++        t = copy.deepcopy(self.tag)
++        t['session'] = 76
++        self.assertFalse(self.audit(tag=[t]).passed)
++
++    def test_changed_boot_and_peer_boot_rejected(self):
++        t = copy.deepcopy(self.tag)
++        t['boot'] = 999
++        self.assertFalse(self.audit(tag=[t]).passed)
++        t = copy.deepcopy(self.tag)
++        t['peer_boot'] = 999
++        self.assertFalse(self.audit(tag=[t]).passed)
++
++    def test_duplicate_and_missing_transaction(self):
++        tags = [self.tag, self.tag]
++        a = self.audit(tag=tags, count=2)
++        self.assertFalse(a.passed)
++        self.assertTrue(any('DUPLICATE' in x for x in a.problems))
++        tags = [with_txn(self.tag, 1)]
++        self.assertFalse(self.audit(tag=tags, count=2).passed)
++
++    def test_out_of_order_and_extra(self):
++        tags = [with_txn(self.tag, 1), self.tag]
++        self.assertFalse(self.audit(tag=tags, count=2).passed)
++        self.assertFalse(self.audit(tag=[self.tag, self.tag]).passed)
++
++    def test_only_one_side(self):
++        self.assertFalse(self.audit(anchor=[]).passed)
++        self.assertFalse(self.audit(tag=[]).passed)
++
++    def test_incomplete_nonzero_errors_metadata_collision(self):
++        for key, value in [('complete', False), ('errors', 32), ('metadata_conflict', True)]:
++            t = copy.deepcopy(self.tag)
++            t[key] = value
++            self.assertFalse(self.audit(tag=[t]).passed)
++
++    def test_decoder_gaps_crc_trailing_and_fault_event(self):
++        for key in ('sequence_gap_events', 'crc_errors', 'schema_errors', 'trailing_bytes', 'skipped_bytes'):
++            stat = copy.deepcopy(self.stats)
++            stat['tag']['capture_decoder'][key] = 1
++            self.assertFalse(self.audit(stats=stat).passed)
++        stat = copy.deepcopy(self.stats)
++        stat['tag']['fault_events'] = 1
++        self.assertFalse(self.audit(stats=stat).passed)
++        stat = copy.deepcopy(self.stats)
++        stat['anchor']['reader_error'] = 'OSError'
++        self.assertFalse(self.audit(stats=stat).passed)
++
++    def test_wrong_counterpart_air_payload(self):
++        anchor = synthetic_anchor(self.tag)
++        anchor['frames'][2] = altered_frame(anchor['frames'][2], 42, b'\x00'*5)
++        self.assertFalse(self.audit(anchor=[anchor]).passed)
++
++    def test_record_air_different_than_shared_frame(self):
++        t = copy.deepcopy(self.tag)
++        t['probe_rx'][3]['air'] = altered_frame(t['probe_rx'][3]['air'], 42, b'\x00'*5)
++        self.assertFalse(self.audit(tag=[t]).passed)
++
++    def test_raw_cir_crc_mismatch_rejected(self):
++        t = copy.deepcopy(self.tag)
++        t['_raw_integrity_verified'] = False
++        self.assertFalse(self.audit(tag=[t]).passed)
++
++    def test_anchor_claims_wrong_actual_tx(self):
++        anchor = synthetic_anchor(self.tag)
++        anchor['tx'][2]['actual'] += 1
++        self.assertFalse(self.audit(anchor=[anchor]).passed)
++
++
++class AdversarialRunPair(unittest.TestCase):
++    class InMemorySerial:
++        def __init__(self, **_kwargs):
++            self.port = None
++            self.incoming = Queue()
++            self.sequence = 0
++            self.stage = 5
++            self.period = 300000
++
++        @property
++        def in_waiting(self):
++            return 65536
++
++        def open(self):
++            pass
++
++        def close(self):
++            pass
++
++        def flush(self):
++            pass
++
++        def read(self, _size):
++            try:
++                return self.incoming.get(timeout=0.02)
++            except Empty:
++                return b''
++
++        def push(self, meta, *, kind=1, raw=b''):
++            self.incoming.put(encode(meta, raw, kind=kind, sequence=self.sequence))
++            self.sequence += 1
++
++        def hello(self, *, active=False):
++            self.push({'event': 'HELLO', 'role': self.port, 'hw_ok': True,
++                       'boot': 101 if self.port == 'anchor' else 202,
++                       'config_id': 42, 'active': active,
++                       'stage': self.stage, 'period_us': self.period})
++
++        def write(self, data):
++            t = data.decode('ascii').split()
++            if t == ['STOP']:
++                self.push({'event': 'STOPPED', 'role': self.port})
++            elif t == ['HELLO']:
++                self.hello()
++            elif t == ['SELFTEST']:
++                self.push({'event': 'SELFTEST', 'role': self.port, 'pass': True})
++            elif t[:2] == ['SET', 'STAGE']:
++                self.stage = int(t[2]); self.hello()
++            elif t[:2] == ['SET', 'PERIOD_US']:
++                self.period = int(t[2]); self.hello()
++            elif t == ['START', '77', '2']:
++                self.hello(active=True)
++                raw = bytes(RAW_BYTES) if self.port == 'tag' else b''
++                record = {'schema': 'dual8.record.v1', 'mode': 8, 'role': self.port,
++                          'session': 76, 'txn': 0, 'boot': 999, 'config': 42,
++                          'complete': True}
++                self.push(record, kind=2, raw=raw)
++                self.sequence += 1
++                self.push(copy.copy(record), kind=2, raw=raw)
++            else:
++                raise AssertionError(t)
++            return len(data)
++
++    def test_original_false_pass_reproduction_is_rejected(self):
++        with tempfile.TemporaryDirectory(prefix='dual8-adversarial-') as tmp:
++            argv = ['run_pair.py', '--anchor', 'anchor', '--tag', 'tag', '--out', tmp, '--count', '2']
++            with patch.object(sys, 'argv', argv), \
++                 patch.dict(sys.modules, {'serial': SimpleNamespace(Serial=self.InMemorySerial)}), \
++                 patch.object(run_pair.secrets, 'randbelow', return_value=76), \
++                 patch('builtins.print'):
++                exit_code = run_pair.main()
++            result = json.loads((Path(tmp)/'capture_receipt.json').read_text())
++        self.assertEqual(exit_code, 2)
++        self.assertFalse(result['pass'])
++        self.assertGreater(result['tag_capture']['capture_decoder']['sequence_gap_events'], 0)
++        self.assertIn('audit', result)
++        self.assertFalse(result['audit']['pass'])
++
++
++class GoodRunPairSerial(AdversarialRunPair.InMemorySerial):
++    """Two complete transactions from matching boots, RF frames and serial IDs."""
++    def hello(self, *, active=False):
++        fixture = json.loads((ROOT/'evidence/host/synthetic_tag_record.json').read_text())
++        self.push({'event': 'HELLO', 'role': self.port, 'hw_ok': True,
++                   'boot': 101 if self.port == 'anchor' else 202,
++                   'config_id': fixture['config'], 'active': active,
++                   'stage': self.stage, 'period_us': self.period})
++
++    def write(self, data):
++        t = data.decode('ascii').split()
++        if t == ['START', '77', '2']:
++            self.hello(active=True)
++            source = json.loads((ROOT/'evidence/host/synthetic_tag_record.json').read_text())
++            raw = (ROOT/'evidence/host/SYNTHETIC_CIR_i16.raw').read_bytes()
++            for txn in (0, 1):
++                tag = with_txn(source, txn)
++                record = tag if self.port == 'tag' else synthetic_anchor(tag)
++                self.push(record, kind=2, raw=raw if self.port == 'tag' else b'')
++            return len(data)
++        return super().write(data)
++
++
++class GoodRunPairSmoke(unittest.TestCase):
++    def test_legitimate_hardware_capture_simulation_passes(self):
++        with tempfile.TemporaryDirectory(prefix='dual8-clean-pair-') as tmp:
++            argv = ['run_pair.py', '--anchor', 'anchor', '--tag', 'tag', '--out', tmp, '--count', '2']
++            with patch.object(sys, 'argv', argv), \
++                 patch.dict(sys.modules, {'serial': SimpleNamespace(Serial=GoodRunPairSerial)}), \
++                 patch.object(run_pair.secrets, 'randbelow', return_value=76), \
++                 patch('builtins.print'):
++                exit_code = run_pair.main()
++            result = json.loads((Path(tmp)/'capture_receipt.json').read_text())
++        self.assertEqual(exit_code, 0, result)
++        self.assertTrue(result['pass'])
++        self.assertTrue(result['audit']['pass'])
++
++
++if __name__ == "__main__":
++    unittest.main(verbosity=2)
+--- a/tests/test_core.cpp
++++ b/tests/test_core.cpp
+@@ -83,9 +83,9 @@
+  void relax()override{t+=25;}
+  Record execute(){Record r;runAnchor(*this,cfg,77,0,101,0,r);return r;}
+ };
+ static void testsCore(){
+- Config c;CHECK(validate(c)==nullptr);Config bad=c;bad.period_us=200000;CHECK(validate(bad)!=nullptr);bad.baud=2000000;CHECK(validate(bad)==nullptr);bad.period_us=100000;CHECK(validate(bad)!=nullptr);
++ Config c;CHECK(validate(c)==nullptr);CHECK(configId(c)==3839621402UL);Config bad=c;bad.period_us=200000;CHECK(validate(bad)!=nullptr);bad.baud=2000000;CHECK(validate(bad)==nullptr);bad.period_us=100000;CHECK(validate(bad)!=nullptr);
+  Frame f;f.session=77;f.boot=101;f.config=configId(c);f.poll_tx=MASK40;uint8_t wire[AIR_BYTES];CHECK(encode(f,wire));Frame g;CHECK(decode(wire,AIR_BYTES,g));CHECK(sameFrame(f,g));
+  for(size_t n=0;n<AIR_BYTES;++n)CHECK(!decode(wire,n,g));
+  for(unsigned bit=0;bit<AIR_BYTES*8;++bit){uint8_t b[AIR_BYTES];memcpy(b,wire,AIR_BYTES);b[bit/8]^=uint8_t(1U<<(bit%8));CHECK(!decode(b,AIR_BYTES,g));}
+  f.type=Type::RespA;f.radio=1;f.peer_boot=101;CHECK(!encode(f,wire));f.radio=0;CHECK(encode(f,wire));
+@@ -117,8 +117,10 @@
+  {SimTag q;q.conflict=true;auto x=q.execute();CHECK(x.metadata_conflict);CHECK(!x.range[0].valid&&!x.range[1].valid);}
+  {SimTag q;q.failTx[0]=true;auto x=q.execute();CHECK(!x.range[0].valid);CHECK(x.range[1].valid);}
+  {SimTag q;q.corruptCir=true;auto x=q.execute();CHECK(!x.complete);CHECK(x.range[0].valid);CHECK(x.errors&ErrCir);}
+  {SimTag q;q.cirCost=20000;auto x=q.execute();CHECK(x.errors&ErrLate);CHECK(!x.range[0].valid);}
++ {SimTag q;auto x=q.execute();x.errors|=ErrHardware;finalizeRanges(x);CHECK(!x.p1_tx_confirmed&&!x.range[0].valid&&!x.range[1].valid&&!x.complete);}
++ {SimTag q;auto x=q.execute();x.errors|=ErrLate;finalizeRanges(x);CHECK(!x.p1_tx_confirmed&&!x.range[0].valid&&!x.complete);}
+  {SimTag q;q.cfg.stage=2;auto x=q.execute();CHECK(x.complete);CHECK(!x.tx[0].attempted&&!x.tx[1].attempted);CHECK(!x.range[0].valid);}
+  {SimTag q;q.cfg.stage=3;auto x=q.execute();CHECK(x.complete);CHECK(x.tx[0].ok);CHECK(!x.range[0].valid);}
+  {SimAnchor q;auto x=q.execute();CHECK(x.complete);CHECK(q.txframes.size()==3);CHECK(q.txframes[2].tx_ok_mask==3);CHECK(q.txframes[2].prev_probe_actual==x.tx[1].actual);CHECK(fabs(double(diff40(x.tx[2].actual,x.tx[0].actual))*1e6/HZ-51000)<0.02);}
+  {SimAnchor q;q.lost[0]=true;auto x=q.execute();CHECK(x.response_mask==2);CHECK(!x.complete);CHECK(q.txframes.size()==3);}
+--- a/tests/test_tools.py
++++ b/tests/test_tools.py
+@@ -10,8 +10,9 @@
+ ROOT = Path(__file__).resolve().parents[1]
+ sys.path.insert(0, str(ROOT/"tools"))
+ from rfb8 import Decoder, encode, HEADER, RAW_BYTES
+ from analyze import packet_arrays, ds_twr, air_frame, C_AIR
++from fixture_helpers import synthetic_anchor
+ 
+ class ToolsTests(unittest.TestCase):
+     @classmethod
+     def setUpClass(cls):
+@@ -90,26 +91,21 @@
+         self.assertTrue(np.isnan(arrays["relative_s"][0]).all())
+         self.assertFalse(rows[0]["axis_estimate_available"])
+ 
+     def test_anchor_log_confirms_p2_only_when_exact(self):
+-        p2=air_frame(self.meta["frames"][2])
+-        anchor={"session":self.meta["session"],"txn":self.meta["txn"],"boot":self.meta["peer_boot"],
+-                "peer_boot":self.meta["boot"],"config":self.meta["config"],"tx":[{}, {}, {"ok":True,"actual":p2["probe_tx"]}],
+-                "calibration":[{"id":0}]}
+-        arrays,rows=packet_arrays(self.meta,self.raw,anchor)
+-        self.assertTrue(np.isfinite(arrays["physical_estimate_s"][2:]).all())
+-        self.assertIn("correlated_with_P1",rows[2]["axis_method"])
+-        anchor["tx"][2]["actual"]+=1
+-        arrays,_=packet_arrays(self.meta,self.raw,anchor)
+-        self.assertTrue(np.isnan(arrays["physical_estimate_s"][2:]).all())
++        anchor = synthetic_anchor(self.meta)
++        arrays, rows = packet_arrays(self.meta, self.raw, anchor)
++        self.assertTrue(np.isfinite(arrays['physical_estimate_s'][2:]).all())
++        self.assertIn('complete_anchor_log', rows[2]['axis_method'])
++        anchor['tx'][2]['actual'] += 1
++        arrays, _ = packet_arrays(self.meta, self.raw, anchor)
++        self.assertTrue(np.isnan(arrays['physical_estimate_s'][2:]).all())
+ 
+     def test_wrong_anchor_boot_not_joined(self):
+-        p2=air_frame(self.meta["frames"][2])
+-        anchor={"session":self.meta["session"],"txn":self.meta["txn"],"boot":999,
+-                "peer_boot":self.meta["boot"],"config":self.meta["config"],"tx":[{}, {}, {"ok":True,"actual":p2["probe_tx"]}],
+-                "calibration":[{"id":0}]}
+-        arrays,_=packet_arrays(self.meta,self.raw,anchor)
+-        self.assertTrue(np.isnan(arrays["physical_estimate_s"][2:]).all())
++        anchor = synthetic_anchor(self.meta)
++        anchor['boot'] = 999
++        arrays, _ = packet_arrays(self.meta, self.raw, anchor)
++        self.assertTrue(np.isnan(arrays['physical_estimate_s'][2:]).all())
+ 
+     def test_fp_fractional_grid_and_normalization(self):
+         arrays,_=packet_arrays(self.meta,self.raw)
+         for i in range(4):
+--- a/tools/analyze.py
++++ b/tools/analyze.py
+@@ -1,14 +1,19 @@
+ #!/usr/bin/env python3
+-"""Export raw CIR, relative axes and explicitly qualified physical-delay ESTIMATES.
+-No A/B coherent phase alignment. No unmarked reuse of P1 distance for P2.
++"""Fail-closed Mode 8 CIR/DS analysis with per-slot RF provenance checks.
++
++Raw CIR and FP-relative axes remain available for a received packet even when
++transaction metadata is untrusted. Physical axes are NOT generated when the
++captured P1/P2 frames, firmware time intervals, or anchor log disagree.
++Do not infer phase coherence or treat a distance-based axis as ground truth.
+ """
+ from __future__ import annotations
+ import argparse
+ import csv
+ import json
+ from pathlib import Path
+ from fractions import Fraction
++import math
+ import zlib
+ import numpy as np
+ from rfb8 import read_file, Decoder, CIR_BYTES, RAW_BYTES
+ 
+@@ -18,155 +23,282 @@
+ SAMPLE_S = 1.0 / 998400000
+ 
+ 
+ def ds_twr(six: list[int]) -> tuple[float, bool]:
+-    if len(six) != 6 or any(not isinstance(x, int) or x < 0 or x > MASK40 for x in six):
+-        return float("nan"), False
++    if len(six) != 6 or any(type(x) is not int or x < 0 or x > MASK40 for x in six):
++        return float('nan'), False
+     ap, ar, af, tp, tr, tf = six
+     r1, d1, r2, d2 = ((ar-ap) & MASK40, (tr-tp) & MASK40,
+                      (tf-tr) & MASK40, (af-ar) & MASK40)
+     if any(x <= 0 or x > HZ // 2 for x in (r1, d1, r2, d2)):
+-        return float("nan"), False
+-    # Exact integer products and rational division: independent of C++ double products.
+-    tof = Fraction(r1*r2-d1*d2, r1+r2+d1+d2)
++        return float('nan'), False
++    tof = Fraction(r1 * r2 - d1 * d2, r1 + r2 + d1 + d2)
+     distance = float(tof / HZ) * C_AIR
+     return distance, bool(np.isfinite(distance) and 0 <= distance <= 300)
+ 
+ 
+ def air_frame(hex_bytes: str | None) -> dict | None:
+     if not hex_bytes:
+         return None
+     b = bytes.fromhex(hex_bytes)
+-    if len(b) != 96 or b[:4] != b"FCB8" or b[4] != 1:
+-        raise ValueError("Bad air frame")
+-    if int.from_bytes(b[92:], "little") != zlib.crc32(b[:92]) & 0xffffffff:
+-        raise ValueError("Bad air CRC")
+-    read = lambda offset, n=5: int.from_bytes(b[offset:offset+n], "little")
+-    return {"type": b[5], "session": read(8, 4), "txn": read(12, 4),
+-            "config": read(16, 4), "boot": read(20, 4), "peer_boot": read(24, 4),
+-            "mask": b[29], "tx_ok_mask": b[30], "poll_tx": read(32),
+-            "resp_rx": [read(37), read(42)], "probe_tx": read(47),
+-            "prev_probe_actual": read(52)}
++    if (len(b) != 96 or b[:4] != b'FCB8' or b[4] != 1
++            or int.from_bytes(b[6:8], 'little') != 96 or any(b[75:92])):
++        raise ValueError('Bad air frame header/reserved bytes')
++    if int.from_bytes(b[92:96], 'little') != zlib.crc32(b[:92]) & 0xffffffff:
++        raise ValueError('Bad air CRC')
++    read = lambda offset, n=5: int.from_bytes(b[offset:offset+n], 'little')
++    return {'type': b[5], 'radio': b[28], 'stage': b[31],
++            'session': read(8, 4), 'txn': read(12, 4),
++            'config': read(16, 4), 'boot': read(20, 4), 'peer_boot': read(24, 4),
++            'mask': b[29], 'tx_ok_mask': b[30], 'poll_tx': read(32),
++            'resp_rx': [read(37), read(42)], 'probe_tx': read(47),
++            'prev_probe_actual': read(52)}
++
++
++def same_identity(f: dict | None, meta: dict, *, peer: bool) -> bool:
++    return bool(f is not None and
++                all(f.get(k) == meta.get(k) for k in ('session', 'txn', 'config', 'stage')) and
++                f['boot'] == meta['peer_boot' if peer else 'boot'] and
++                f['peer_boot'] in ((meta['boot'], 0) if peer else (meta['peer_boot'],)))
++
++
++def anchor_matches(anchor: dict | None, meta: dict, p1: dict, p2: dict, radio: int) -> bool:
++    """Require two-sided provenance, not just a plausible TX tick in a loose log."""
++    if not anchor:
++        return False
++    try:
++        if (anchor.get('role') != 'anchor' or anchor.get('metadata_conflict') is True or
++                anchor.get('errors', 0) & (1 | 16 | 32 | 64) or
++                any(anchor[k] != meta[k] for k in ('session', 'txn', 'config', 'stage')) or
++                anchor['boot'] != meta['peer_boot'] or anchor['peer_boot'] != meta['boot']):
++            return False
++        tx = anchor['tx']
++        if len(tx) < 3 or not all(tx[j]['ok'] for j in (0, 1, 2)):
++            return False
++        if (tx[0]['actual'] != p2['poll_tx'] or
++                tx[1]['actual'] != p1['probe_tx'] or
++                tx[2]['actual'] != p2['probe_tx']):
++            return False
++        rx = anchor['response_rx']
++        if len(rx) != 2 or not rx[radio]['ok'] or rx[radio]['hw'] != p2['resp_rx'][radio]:
++            return False
++        if not all(anchor['frames'][j] == meta['frames'][j] for j in range(3)):
++            return False
++        return True
++    except (KeyError, IndexError, TypeError, ValueError):
++        return False
++
++
++def _slot_provenance(meta: dict, frames: list[dict | None], slot: int) -> bool:
++    probe = slot // 2 + 1
++    o = meta['probe_rx'][slot]
++    if not o.get('ok') or not o.get('air') or not meta['frames'][probe]:
++        return False
++    f = air_frame(o['air'])
++    return bool(f == frames[probe] and meta['frames'][probe] == o['air'] and
++                f['type'] == (3 + probe) and same_identity(f, meta, peer=True) and
++                f['peer_boot'] == meta['boot'])
++
++
++def _anchor_block_agrees(p1: dict | None, p2: dict | None) -> bool:
++    if not p1 or not p2:
++        return False
++    return bool(p1['type'] == 4 and p2['type'] == 5 and
++                p1['poll_tx'] == p2['poll_tx'] and
++                p1['resp_rx'] == p2['resp_rx'] and
++                p1['mask'] == p2['mask'] and
++                p1['peer_boot'] == p2['peer_boot'] and
++                p2['prev_probe_actual'] == p1['probe_tx'] and
++                p1['tx_ok_mask'] & 1 and p2['tx_ok_mask'] & 3 == 3)
+ 
+ 
+ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
+                   assume_static: bool = False, max_speed: float | None = None) -> tuple[dict, list[dict]]:
+-    if len(raw) != RAW_BYTES or len(meta.get("cir", [])) != 4:
+-        raise ValueError("Four fixed CIR slots required")
+-    iq = np.frombuffer(raw, dtype="<i2").reshape(4, 992, 2).copy()
+-    cir = iq[:, :, 0].astype(np.float64) + 1j*iq[:, :, 1]
+-    normalized = np.full_like(cir, np.nan + 1j*np.nan)
++    if len(raw) != RAW_BYTES or len(meta.get('cir', [])) != 4:
++        raise ValueError('Four fixed CIR slots required')
++    if len(meta.get('probe_rx', [])) != 4 or len(meta.get('poll_rx', [])) != 2 or len(meta.get('ranges', [])) != 2:
++        raise ValueError('Incorrect receiver/DS data shapes')
++    if len(meta.get('tx', [])) != 2 or len(meta.get('frames', [])) != 3:
++        raise ValueError('Incorrect TX/frame data shapes')
++    if max_speed is not None and (not math.isfinite(max_speed) or max_speed < 0):
++        raise ValueError('max_speed must be finite and nonnegative')
++    if (meta.get('role') != 'tag' or meta.get('mode') != 8 or
++            meta.get('schema') != 'dual8.record.v1'):
++        raise ValueError('Unexpected tag record')
++    iq = np.frombuffer(raw, dtype='<i2').reshape(4, 992, 2).copy()
++    cir = iq[:, :, 0].astype(np.float64) + 1j * iq[:, :, 1]
++    normalized = np.full_like(cir, np.nan + 1j * np.nan)
+     relative = np.full((4, 992), np.nan)
+     physical = np.full((4, 992), np.nan)
+     valid = np.zeros(4, dtype=bool)
+     calibrated = np.zeros(4, dtype=bool)
+     rows: list[dict] = []
+     k = np.arange(992, dtype=np.float64)
+-    frames = meta["frames"]
+-    p1, p2 = air_frame(frames[1]), air_frame(frames[2])
++    frames = [air_frame(x) for x in meta['frames']]
++    poll, p1, p2 = frames
++    poll_ok = bool(poll and poll['type'] == 1 and same_identity(poll, meta, peer=True))
++    p1_ok = bool(p1 and p1['type'] == 4 and same_identity(p1, meta, peer=True) and
++                 p1['peer_boot'] == meta['boot'])
++    p2_ok = bool(p2 and p2['type'] == 5 and same_identity(p2, meta, peer=True) and
++                 p2['peer_boot'] == meta['boot'])
++    coherent = bool(poll_ok and p1_ok and p2_ok and _anchor_block_agrees(p1, p2) and
++                    p1['poll_tx'] == poll['poll_tx'] and
++                    meta.get('p1_tx_confirmed') is True and
++                    meta.get('metadata_conflict') is False and not meta.get('errors', 0) & (1 | 64 | 256))
++    slot_ok = [_slot_provenance(meta, frames, s) for s in range(4)]
++    # Even when firmware neglected its conflict flag, a mismatched received RF
++    # frame makes the whole transaction's cross-radio physical timing untrusted.
++    all_received_match = all(not meta['probe_rx'][s].get('ok') or slot_ok[s] for s in range(4))
++    coherent = coherent and all_received_match
++
++    # P1 DS is valid only if its timestamp evidence is the same as the P1/P2
++    # over-air frames and local hardware events. Never trust math_valid alone.
++    p1_results: list[tuple[float, bool]] = []
++    for radio in range(2):
++        fw = meta['ranges'][radio]
++        po, tx, rx = meta['poll_rx'][radio], meta['tx'][radio], meta['probe_rx'][radio]
++        expected = ([p1['poll_tx'], p1['resp_rx'][radio], p1['probe_tx'],
++                     po['hw'], tx['actual'], rx['hw']] if coherent else None)
++        evidence_ok = bool(coherent and slot_ok[radio] and fw.get('math_valid') is True and
++                           p1['mask'] & (1 << radio) and
++                           po.get('ok') and po.get('lde') and tx.get('ok') and
++                           rx.get('ok') and rx.get('lde') and
++                           po.get('air') == meta['frames'][0] and
++                           tx.get('type') == 2 + radio and tx.get('radio') == radio and
++                           fw.get('radio') == radio and fw.get('six_ts') == expected)
++        if evidence_ok:
++            d, ok = ds_twr(expected)
++            claimed = fw.get('d_m')
++            if ok and (type(claimed) not in (int, float) or not math.isfinite(claimed)
++                       or abs(d - claimed) > 1e-6):
++                raise ValueError('Firmware/independent P1 DS calculation mismatch')
++            p1_results.append((d, ok))
++        else:
++            p1_results.append((float('nan'), False))
++
+     for slot in range(4):
+         radio, probe = slot % 2, slot // 2 + 1
+-        o, cm = meta["probe_rx"][slot], meta["cir"][slot]
+-        slotraw = raw[slot*CIR_BYTES:(slot+1)*CIR_BYTES]
+-        crc_ok = bool(cm["present"] and (zlib.crc32(slotraw) & 0xffffffff) == cm["crc32"])
+-        valid[slot] = bool(cm["valid"] and crc_ok and o["ok"])
+-        fp_ok = bool(o["lde"] and o["nacc"] > 0 and 0 <= o["fp_raw"] / 64 < 992)
+-        distance = np.nan
++        o, cm = meta['probe_rx'][slot], meta['cir'][slot]
++        slotraw = raw[slot * CIR_BYTES:(slot + 1) * CIR_BYTES]
++        crc_ok = bool(cm.get('present') and cm.get('bytes') == CIR_BYTES and
++                      (zlib.crc32(slotraw) & 0xffffffff) == cm.get('crc32'))
++        valid[slot] = bool(cm.get('valid') and crc_ok and o.get('ok'))
++        fp_raw = o.get('fp_raw', -1)
++        nacc = o.get('nacc', 0)
++        fp_ok = bool(o.get('lde') and type(fp_raw) is int and type(nacc) is int and
++                     nacc > 0 and 0 <= fp_raw / 64 < 992)
++        distance = float('nan')
+         range_ok = False
+-        method = "relative_only"
+-        fw = meta["ranges"][radio]
+-        if probe == 1 and fw["math_valid"] and meta["p1_tx_confirmed"]:
+-            distance, range_ok = ds_twr(fw["six_ts"])
+-            if not range_ok or abs(distance-fw["d_m"]) > 1e-6:
+-                raise ValueError("Firmware/independent DS calculation mismatch")
+-            method = "P1_DS_confirmed_by_P2"
+-        elif probe == 2 and anchor is not None and p2 is not None:
+-            tx = anchor["tx"][2]
+-            matching = (anchor["session"] == meta["session"] and anchor["txn"] == meta["txn"]
+-                        and anchor["boot"] == meta["peer_boot"] and anchor["peer_boot"] == meta["boot"]
+-                        and anchor["config"] == meta["config"])
+-            if matching and tx["ok"] and tx["actual"] == p2["probe_tx"] and p2["mask"] & (1 << radio):
+-                po, rt = meta["poll_rx"][radio], meta["tx"][radio]
+-                if po["ok"] and po["lde"] and rt["ok"] and o["ok"] and o["lde"]:
+-                    six = [p2["poll_tx"], p2["resp_rx"][radio], tx["actual"], po["hw"], rt["actual"], o["hw"]]
++        method = 'relative_only'
++        fw = meta['ranges'][radio]
++        if valid[slot] and fp_ok and slot_ok[slot] and coherent:
++            if probe == 1:
++                distance, range_ok = p1_results[radio]
++                if range_ok:
++                    method = 'P1_DS_confirmed_by_P2'
++            elif p2['mask'] & (1 << radio) and anchor_matches(anchor, meta, p1, p2, radio):
++                po, rt = meta['poll_rx'][radio], meta['tx'][radio]
++                if (po.get('ok') and po.get('lde') and rt.get('ok') and
++                        o.get('ok') and o.get('lde') and
++                        po.get('air') == meta['frames'][0]):
++                    six = [p2['poll_tx'], p2['resp_rx'][radio], p2['probe_tx'],
++                           po['hw'], rt['actual'], o['hw']]
+                     distance, range_ok = ds_twr(six)
+-                    method = "P2_DS_confirmed_by_anchor_log_correlated_with_P1"
+-        if probe == 2 and not range_ok and assume_static and fw["math_valid"] and meta["p1_tx_confirmed"]:
+-            distance, range_ok = ds_twr(fw["six_ts"])
+-            method = "P1_distance_reused_EXPLICIT_STATIC_ASSUMPTION"
++                    if range_ok:
++                        method = 'P2_DS_confirmed_by_complete_anchor_log'
++            if probe == 2 and not range_ok and assume_static and p1_results[radio][1]:
++                distance, range_ok = p1_results[radio]
++                method = 'P1_distance_reused_EXPLICIT_STATIC_ASSUMPTION'
+         if valid[slot] and fp_ok:
+-            relative[slot] = (k-o["fp_raw"]/64)*SAMPLE_S
+-            normalized[slot] = cir[slot]/o["nacc"]
++            relative[slot] = (k - fp_raw / 64) * SAMPLE_S
++            normalized[slot] = cir[slot] / nacc
+             if range_ok:
+-                physical[slot] = relative[slot] + distance/C_AIR
+-        anchor_cal = anchor.get("calibration", [{}])[0] if anchor else {}
+-        calibrated[slot] = bool(range_ok and fw.get("cal_id", 0) and anchor_cal.get("id", 0))
+-        # A documented uncertainty floor only; FP detection/NLoS/hardware/systematic terms are unknown.
+-        sigma = fw.get("range_sigma_m")
+-        sigma_ns = sigma/C_AIR*1e9 if sigma is not None and np.isfinite(sigma) else None
+-        movement = (max_speed * 0.032 if probe == 2 and "STATIC_ASSUMPTION" in method
+-                    and max_speed is not None else None)
+-        rows.append({"session": meta["session"], "txn": meta["txn"], "slot": slot,
+-                     "radio": "AB"[radio], "probe": probe, "cir_valid": bool(valid[slot]),
+-                     "crc_ok": crc_ok, "fp_index": o["fp_raw"]/64, "fp_basic_quality": fp_ok,
+-                     "range_m": float(distance) if range_ok else None, "axis_method": method,
+-                     "axis_estimate_available": bool(valid[slot] and fp_ok and range_ok),
+-                     "both_endpoints_calibrated": bool(calibrated[slot]),
+-                     "axis_not_ground_truth": True, "range_sigma_floor_ns": sigma_ns,
+-                     "unknown_fp_bias_and_covariance": True,
+-                     "static_reuse_motion_bound_m": movement,
+-                     "rx_dbm_raw": o.get("rx_dbm"), "fp_dbm_raw": o.get("fp_dbm")})
+-    arrays = {"iq_int16": iq, "cir_raw": cir, "cir_nacc_normalized": normalized,
+-              "raw_index": np.arange(992), "relative_s": relative, "physical_estimate_s": physical,
+-              "cir_valid": valid, "both_endpoints_calibrated": calibrated}
+-    # Resample POWER only onto a common coordinate grid; do not manufacture an
+-    # inter-radio phase reference by interpolating or rotating the complex CIR.
++                physical[slot] = relative[slot] + distance / C_AIR
++        acal = anchor.get('calibration', [{}])[0] if anchor and anchor.get('calibration') else {}
++        calibrated[slot] = bool(range_ok and fw.get('cal_id', 0) and acal.get('id', 0))
++        sigma = fw.get('range_sigma_m')
++        sigma_ns = sigma / C_AIR * 1e9 if type(sigma) in (int, float) and math.isfinite(sigma) else None
++        gap_s = ((p2['probe_tx'] - p1['probe_tx']) & MASK40) / HZ if coherent else None
++        movement = (max_speed * gap_s if probe == 2 and 'STATIC_ASSUMPTION' in method
++                    and max_speed is not None and gap_s is not None else None)
++        rows.append({'session': meta['session'], 'txn': meta['txn'], 'slot': slot,
++                     'radio': 'AB'[radio], 'probe': probe, 'cir_valid': bool(valid[slot]),
++                     'crc_ok': crc_ok, 'frame_provenance_ok': bool(slot_ok[slot]),
++                     'transaction_coherent': bool(coherent),
++                     'fp_index': fp_raw / 64 if fp_ok else None,
++                     'fp_basic_quality': fp_ok,
++                     'range_m': float(distance) if range_ok else None, 'axis_method': method,
++                     'axis_estimate_available': bool(valid[slot] and fp_ok and range_ok),
++                     'both_endpoints_calibrated': bool(calibrated[slot]),
++                     'axis_not_ground_truth': True, 'range_sigma_floor_ns': sigma_ns,
++                     'unknown_fp_bias_and_covariance': True,
++                     'static_reuse_motion_bound_m': movement,
++                     'rx_dbm_raw': o.get('rx_dbm'), 'fp_dbm_raw': o.get('fp_dbm')})
++    arrays = {'iq_int16': iq, 'cir_raw': cir, 'cir_nacc_normalized': normalized,
++              'raw_index': np.arange(992), 'relative_s': relative, 'physical_estimate_s': physical,
++              'cir_valid': valid, 'both_endpoints_calibrated': calibrated}
+     for probe in (1, 2):
+-        pair = slice(2*(probe-1), 2*probe)
++        pair = slice(2 * (probe - 1), 2 * probe)
+         axes = physical[pair]
+         if np.isfinite(axes).all():
+             lo, hi = axes.min(), axes.max()
+-            count = int(np.ceil((hi-lo)/SAMPLE_S))+1
++            count = int(np.ceil((hi - lo) / SAMPLE_S)) + 1
+             if count > 4096:
+-                raise ValueError("Unreasonable common-delay extent")
+-            grid = lo + np.arange(count)*SAMPLE_S
+-            power = np.abs(normalized[pair])**2
++                raise ValueError('Unreasonable common-delay extent')
++            grid = lo + np.arange(count) * SAMPLE_S
++            power = np.abs(normalized[pair]) ** 2
+             interpolated = np.array([np.interp(grid, axes[i], power[i], left=np.nan, right=np.nan)
+                                      for i in (0, 1)])
+         else:
+             grid = np.empty(0, dtype=float)
+             interpolated = np.empty((2, 0), dtype=float)
+-        arrays[f"common_p{probe}_delay_s"] = grid
+-        arrays[f"common_p{probe}_power_norm"] = interpolated
++        arrays[f'common_p{probe}_delay_s'] = grid
++        arrays[f'common_p{probe}_power_norm'] = interpolated
+     return arrays, rows
+ 
+ 
+ def main() -> None:
+     p = argparse.ArgumentParser(description=__doc__)
+-    p.add_argument("tag", type=Path)
+-    p.add_argument("--anchor", type=Path)
+-    p.add_argument("--out", type=Path, required=True)
+-    p.add_argument("--assume-static", action="store_true")
+-    p.add_argument("--max-speed-mps", type=float)
++    p.add_argument('tag', type=Path)
++    p.add_argument('--anchor', type=Path)
++    p.add_argument('--out', type=Path, required=True)
++    p.add_argument('--assume-static', action='store_true')
++    p.add_argument('--max-speed-mps', type=float)
+     args = p.parse_args()
+-    if args.max_speed_mps is not None and args.max_speed_mps < 0:
+-        p.error("max speed must be nonnegative")
++    if args.max_speed_mps is not None and (not math.isfinite(args.max_speed_mps) or args.max_speed_mps < 0):
++        p.error('max speed must be finite and nonnegative')
+     args.out.mkdir(parents=True, exist_ok=True)
+     anchor_index = {}
++    anchor_decoder = Decoder()
++    seen_anchor_transactions = set()
+     if args.anchor:
+-        for packet in read_file(args.anchor):
++        for packet in read_file(args.anchor, anchor_decoder):
+             m = packet.meta
+-            if packet.kind == 2 and m["role"] == "anchor":
+-                anchor_index[(m["session"], m["txn"], m["boot"])] = m
++            if packet.kind == 2 and m['role'] == 'anchor':
++                key = (m['session'], m['txn'], m['boot'], m['peer_boot'])
++                tx_key = (m['session'], m['txn'])
++                if tx_key in seen_anchor_transactions:
++                    raise ValueError(f'Duplicate anchor transaction {tx_key}; refuse ambiguous join')
++                seen_anchor_transactions.add(tx_key)
++                anchor_index[key] = m
++        astats = anchor_decoder.statistics()
++        if any(astats[k] for k in ('crc_errors', 'schema_errors', 'sequence_gap_events', 'trailing_bytes')):
++            raise ValueError(f'Anchor RFB8 integrity incomplete: {astats}')
+     decoder = Decoder()
+     records = 0
+-    with (args.out / "observations.csv").open("w", newline="", encoding="utf-8-sig") as csvfile:
++    seen = set()
++    with (args.out / 'observations.csv').open('w', newline='', encoding='utf-8-sig') as csvfile:
+         writer = None
+         for packet in read_file(args.tag, decoder):
+             m = packet.meta
+-            if packet.kind != 2 or m["role"] != "tag":
++            if packet.kind != 2 or m['role'] != 'tag':
+                 continue
+-            anchor = anchor_index.get((m["session"], m["txn"], m["peer_boot"]))
++            key = (m['session'], m['txn'], m['boot'], m['peer_boot'])
++            tx_key = (m['session'], m['txn'])
++            if tx_key in seen:
++                raise ValueError(f'Duplicate tag transaction {tx_key}; refuse ambiguous analysis')
++            seen.add(tx_key)
++            anchor = anchor_index.get((m['session'], m['txn'], m['peer_boot'], m['boot']))
+             arrays, rows = packet_arrays(m, packet.raw, anchor, args.assume_static, args.max_speed_mps)
+             name = f"s{m['session']}_t{m['txn']}_b{m['boot']}.npz"
+             np.savez_compressed(args.out / name, **arrays,
+                                 metadata_json=np.array(json.dumps(m, ensure_ascii=False)))
+@@ -174,13 +306,19 @@
+                 writer = csv.DictWriter(csvfile, fieldnames=list(rows[0]))
+                 writer.writeheader()
+             writer.writerows(rows)
+             records += 1
+-    report = {"records": records, "decoder": decoder.statistics(),
+-              "assume_static": args.assume_static, "phase_coherent": False,
+-              "p2_without_anchor_log": "relative_only_unless_explicit_static_assumption",
+-              "warning": "Physical axes are estimates using DS-TWR and FP; not ground truth or clock synchronization."}
+-    (args.out/"analysis_receipt.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
++    stats = decoder.statistics()
++    if any(stats[k] for k in ('crc_errors', 'schema_errors', 'sequence_gap_events', 'trailing_bytes')):
++        raise ValueError(f'Tag RFB8 integrity incomplete: {stats}')
++    report = {'records': records, 'decoder': stats,
++              'anchor_decoder': anchor_decoder.statistics() if args.anchor else None,
++              'collection_completeness_verified': False,
++              'assume_static': args.assume_static, 'phase_coherent': False,
++              'p2_without_anchor_log': 'relative_only_unless_explicit_static_assumption',
++              'warning': 'Physical axes are estimates using DS-TWR and FP; not ground truth or clock synchronization.'}
++    (args.out / 'analysis_receipt.json').write_text(json.dumps(report, indent=2), encoding='utf-8')
+     print(json.dumps(report, indent=2))
+ 
+-if __name__ == "__main__":
++
++if __name__ == '__main__':
+     main()
+--- /dev/null
++++ b/tools/capture_audit.py
+@@ -0,0 +1,215 @@
++#!/usr/bin/env python3
++"""Independent fail-closed final receipt check for a Mode-8 paired capture.
++
++A record count is *not* proof of complete collection: bind every record to the
++requested session, each board's actual HELLO boot ID, peer boot, monotonically
++numbered unique transactions and the matching counterpart's RF frames.
++"""
++from __future__ import annotations
++from dataclasses import dataclass
++import struct
++import math
++from fractions import Fraction
++import zlib
++
++
++@dataclass(frozen=True)
++class CaptureAudit:
++    passed: bool
++    problems: list[str]
++    details: dict
++
++
++def _air(value) -> bytes | None:
++    if not isinstance(value, str):
++        return None
++    try:
++        b = bytes.fromhex(value)
++    except ValueError:
++        return None
++    if (len(b) != 96 or b[:4] != b'FCB8' or b[4] != 1 or
++            struct.unpack_from('<H', b, 6)[0] != 96 or any(b[75:92]) or
++            struct.unpack_from('<I', b, 92)[0] != zlib.crc32(b[:92]) & 0xffffffff):
++        return None
++    return b
++
++
++def verify_capture(*, session: int, count: int, stage: int, period_us: int,
++                   identities: dict, records: dict, stats: dict) -> CaptureAudit:
++    errors = []
++    detail = {}
++    expected_roles = ('tag', 'anchor')
++    if not 0 < session <= 0xffffffff or count < 1:
++        errors.append('INVALID_REQUEST')
++    try:
++        config = identities['tag']['config_id']
++        if not config or identities['anchor']['config_id'] != config:
++            errors.append('IDENTITY_CONFIG_MISMATCH')
++        boots = {role: identities[role]['boot'] for role in expected_roles}
++        if any(type(boots[r]) is not int or not 0 < boots[r] <= 0xffffffff for r in expected_roles):
++            errors.append('INVALID_IDENTITY_BOOT')
++        for role in expected_roles:
++            h = identities[role]
++            if (h.get('role') != role or h.get('hw_ok') is not True or
++                    h.get('fault_latched') is True or h.get('stage') != stage or
++                    h.get('period_us') != period_us):
++                errors.append(f'{role.upper()}_HELLO_MISMATCH')
++    except (KeyError, TypeError, ValueError):
++        config, boots = None, {}
++        errors.append('MISSING_DEVICE_IDENTITIES')
++
++    indexed = {}
++    for role in expected_roles:
++        rows = records.get(role, [])
++        if len(rows) != count:
++            errors.append(f'{role.upper()}_COUNT_EXPECTED_{count}_ACTUAL_{len(rows)}')
++        indices = []
++        lookup = {}
++        for index, m in enumerate(rows):
++            if not isinstance(m, dict):
++                errors.append(f'{role.upper()}_RECORD_NOT_OBJECT_{index}')
++                continue
++            tx = m.get('txn')
++            indices.append(tx)
++            if type(tx) is not int or not 0 <= tx < count:
++                errors.append(f'{role.upper()}_OUT_OF_RANGE_TXN_{index}')
++                continue
++            if tx in lookup:
++                errors.append(f'{role.upper()}_DUPLICATE_TXN_{tx}')
++            lookup[tx] = m
++            if (m.get('schema') != 'dual8.record.v1' or m.get('mode') != 8 or
++                    m.get('role') != role or m.get('session') != session or
++                    m.get('boot') != boots.get(role) or
++                    m.get('peer_boot') != boots.get('anchor' if role == 'tag' else 'tag') or
++                    m.get('config') != config or m.get('stage') != stage or
++                    m.get('period_us') != period_us):
++                errors.append(f'{role.upper()}_PROVENANCE_MISMATCH_TXN_{tx}')
++            if m.get('complete') is not True or m.get('errors') != 0 or m.get('metadata_conflict') is True:
++                errors.append(f'{role.upper()}_INCOMPLETE_OR_ERROR_TXN_{tx}')
++            if role == 'tag':
++                if m.get('_raw_integrity_verified') is not True:
++                    errors.append(f'TAG_RAW_CIR_INTEGRITY_TXN_{tx}')
++                if (stage >= 4 and (m.get('p1_tx_confirmed') is not True or
++                                    len(m.get('ranges', [])) != 2 or
++                                    not all(x.get('math_valid') is True for x in m['ranges']))):
++                    errors.append(f'TAG_DS_INVALID_TXN_{tx}')
++                if (len(m.get('cir', [])) != 4 or
++                        not all(c.get('valid') is True for c in m['cir'])):
++                    errors.append(f'TAG_CIR_INVALID_TXN_{tx}')
++        # No hidden extra records, no duplicate, no gaps and no out-of-order txn.
++        if indices != list(range(count)):
++            errors.append(f'{role.upper()}_TXN_SEQUENCE_INVALID')
++        if set(lookup) != set(range(count)):
++            errors.append(f'{role.upper()}_TXN_COVERAGE_INVALID')
++        indexed[role] = lookup
++        ds = stats.get(role, {})
++        stream = ds.get('capture_decoder', ds.get('decoder', {}))
++        for field in ('crc_errors', 'schema_errors', 'sequence_gap_events', 'trailing_bytes', 'skipped_bytes'):
++            if stream.get(field, 0):
++                errors.append(f'{role.upper()}_STREAM_{field.upper()}')
++        if ds.get('reader_error'):
++            errors.append(f'{role.upper()}_READER_ERROR')
++        if ds.get('fault_events'):
++            errors.append(f'{role.upper()}_FAULT_EVENT')
++        detail[role] = {'records': len(rows), 'unique_txn': len(lookup),
++                        'received_txn_order': indices, 'decoder': stream}
++
++    # Compare both endpoints' actual on-air Poll and Probe payloads, not merely
++    # JSON counters. A valid RFB8 CRC can enclose inconsistent RF metadata.
++    for txn in range(count):
++        a = indexed.get('anchor', {}).get(txn)
++        t = indexed.get('tag', {}).get(txn)
++        if a is None or t is None:
++            errors.append(f'MISSING_PAIR_TXN_{txn}')
++            continue
++        af, tf = a.get('frames'), t.get('frames')
++        if not isinstance(af, list) or not isinstance(tf, list) or len(af) != 3 or len(tf) != 3:
++            errors.append(f'PAIR_MISSING_FRAMES_TXN_{txn}')
++            continue
++        rf_frames = [_air(f) for f in af]
++        for index, expected_type in enumerate((1, 4, 5)):
++            ab, tb = rf_frames[index], _air(tf[index])
++            if ab is None or ab != tb or tb[5] != expected_type:
++                errors.append(f'PAIR_FRAME_MISMATCH_TXN_{txn}_INDEX_{index}')
++            if ab is not None:
++                # Wrapper identity alone is not trusted; cross-check each RF frame.
++                if (ab[5] != expected_type or ab[31] != stage or
++                        int.from_bytes(ab[8:12], 'little') != session or
++                        int.from_bytes(ab[12:16], 'little') != txn or
++                        int.from_bytes(ab[16:20], 'little') != config or
++                        int.from_bytes(ab[20:24], 'little') != boots.get('anchor') or
++                        int.from_bytes(ab[24:28], 'little') != (0 if index == 0 else boots.get('tag'))):
++                    errors.append(f'PAIR_RF_IDENTITY_MISMATCH_TXN_{txn}_INDEX_{index}')
++        if all(rf_frames):
++            poll, p1, p2 = rf_frames
++            if (p1[32:37] != poll[32:37] or p2[32:37] != poll[32:37] or
++                    p1[37:47] != p2[37:47] or p1[29] != p2[29] or
++                    p2[52:57] != p1[47:52] or p2[30] & 3 != 3 or
++                    (stage >= 3 and p1[29] != 3)):
++                errors.append(f'PAIR_RF_ANCHOR_BLOCK_INCOHERENT_TXN_{txn}')
++        # Independent endpoint timing evidence for every RF packet included.
++        tt = a.get('tx', [])
++        if len(tt) != 3:
++            errors.append(f'ANCHOR_TX_SHAPE_TXN_{txn}')
++        else:
++            for index, field_off in ((0, 32), (1, 47), (2, 47)):
++                frame = rf_frames[index]
++                if (not tt[index].get('ok') or frame is None or
++                        tt[index].get('actual') != int.from_bytes(frame[field_off:field_off+5], 'little')):
++                    errors.append(f'ANCHOR_TX_TIMESTAMP_MISMATCH_TXN_{txn}_INDEX_{index}')
++        if all(rf_frames) and stage >= 3:
++            from_ranging = t.get('tx', [])
++            receive_anchor = a.get('response_rx', [])
++            if len(from_ranging) != 2 or len(receive_anchor) != 2:
++                errors.append(f'RESPONSE_SHAPE_TXN_{txn}')
++            else:
++                p1 = rf_frames[1]
++                for radio in range(2):
++                    arx = int.from_bytes(p1[37 + radio*5:42 + radio*5], 'little')
++                    if (not receive_anchor[radio].get('ok') or
++                            receive_anchor[radio].get('hw') != arx or
++                            not from_ranging[radio].get('ok') or
++                            from_ranging[radio].get('radio') != radio or
++                            from_ranging[radio].get('type') != 2+radio):
++                        errors.append(f'RESPONSE_TIMESTAMP_MISMATCH_TXN_{txn}_RADIO_{radio}')
++        if len(t.get('probe_rx', [])) != 4 or len(t.get('poll_rx', [])) != 2:
++            errors.append(f'TAG_RECEIVE_SHAPE_TXN_{txn}')
++            continue
++        for slot in range(4):
++            expected = _air(tf[1 + slot // 2])
++            got = _air(t['probe_rx'][slot].get('air'))
++            if not t['probe_rx'][slot].get('ok') or got is None or got != expected:
++                errors.append(f'TAG_PROBE_AIR_MISMATCH_TXN_{txn}_SLOT_{slot}')
++        for radio in range(2):
++            if _air(t['poll_rx'][radio].get('air')) != _air(tf[0]):
++                errors.append(f'TAG_POLL_AIR_MISMATCH_TXN_{txn}_RADIO_{radio}')
++        if stage >= 4 and all(rf_frames) and len(t.get('tx', [])) == 2:
++            p1 = rf_frames[1]
++            rf_poll = int.from_bytes(p1[32:37], 'little')
++            rf_probe = int.from_bytes(p1[47:52], 'little')
++            for radio in range(2):
++                rr = t.get('ranges', [])
++                if len(rr) != 2:
++                    errors.append(f'TAG_RANGES_SHAPE_TXN_{txn}')
++                    break
++                expected = [rf_poll, int.from_bytes(p1[37+5*radio:42+5*radio], 'little'), rf_probe,
++                            t['poll_rx'][radio].get('hw'), t['tx'][radio].get('actual'),
++                            t['probe_rx'][radio].get('hw')]
++                if (rr[radio].get('radio') != radio or rr[radio].get('six_ts') != expected or
++                        not all(type(x) is int and 0 <= x <= (1 << 40)-1 for x in expected)):
++                    errors.append(f'TAG_DS_TIMESTAMPS_MISMATCH_TXN_{txn}_RADIO_{radio}')
++                    continue
++                ap, ar, af, tp, tr, tfp = expected
++                r1, d1, r2, d2 = ((ar-ap) & ((1 << 40)-1), (tr-tp) & ((1 << 40)-1),
++                                   (tfp-tr) & ((1 << 40)-1), (af-ar) & ((1 << 40)-1))
++                if any(v == 0 or v > 63897600000 // 2 for v in (r1, d1, r2, d2)):
++                    errors.append(f'TAG_DS_INTERVAL_INVALID_TXN_{txn}_RADIO_{radio}')
++                    continue
++                independent = float(Fraction(r1*r2-d1*d2, r1+d1+r2+d2) /
++                                    63897600000) * 299702547.0
++                claimed = rr[radio].get('d_m')
++                if (type(claimed) not in (int, float) or not math.isfinite(claimed) or
++                        not math.isfinite(independent) or
++                        not 0 <= independent <= 300 or abs(independent - claimed) > 1e-6):
++                    errors.append(f'TAG_DS_RANGE_MISMATCH_TXN_{txn}_RADIO_{radio}')
++    return CaptureAudit(not errors, sorted(set(errors)), detail)
+--- a/tools/host_qa.py
++++ b/tools/host_qa.py
+@@ -37,9 +37,9 @@
+             run("clang_core_compile",[clang,"-std=c++11","-Wall","-Wextra","-Wpedantic","-Werror","-Ishared","tests/test_core.cpp","-o",str(build/"test_core_clang")])
+             run("clang_core_test",[str(build/"test_core_clang"),str(clang_ev)])
+             for role in ("anchor","tag"):
+                 run("clang_"+role+"_syntax",[clang,"-std=c++11","-DESP32","-DARDUINO","-Wall","-Wextra","-Wpedantic","-Werror","-Itests/stubs",f"-Ivendor/{role}/DW1000Ng/src","-fsyntax-only",f"firmware/{role.upper()}_DUAL_DS_CIR/app.cpp"])
+-        run("python_tools_tests",[sys.executable,"-m","unittest","discover","-s","tests","-p","test_tools.py","-v"])
++        run("python_tools_tests",[sys.executable,"-m","unittest","discover","-s","tests","-p","test_*.py","-v"])
+         run("python_bytecode",[sys.executable,"-m","compileall","-q","tools","tests"])
+         run("shared_headers",[sys.executable,"tools/sync_shared.py","--check"])
+         status="PASS"
+     except Exception as e:
+--- a/tools/run_pair.py
++++ b/tools/run_pair.py
+@@ -3,14 +3,43 @@
+ from __future__ import annotations
+ import argparse
+ from collections import deque
+ import json
++import zlib
+ from pathlib import Path
+ import secrets
+ import threading
+ import time
+ import sys
+-from rfb8 import Decoder
++from rfb8 import Decoder, CIR_BYTES, RAW_BYTES
++from capture_audit import verify_capture
++
++def cir_payload_integrity(meta: dict, raw: bytes) -> bool:
++    """RFB8 CRC authenticates only envelope integrity; verify each CIR slot too."""
++    if meta.get('role') == 'anchor':
++        return len(raw) == 0
++    if meta.get('role') != 'tag' or len(raw) != RAW_BYTES:
++        return False
++    cms = meta.get('cir')
++    if not isinstance(cms, list) or len(cms) != 4:
++        return False
++    for slot, cm in enumerate(cms):
++        if not isinstance(cm, dict) or cm.get('slot') != slot:
++            return False
++        data = raw[slot*CIR_BYTES:(slot+1)*CIR_BYTES]
++        if cm.get('present') is True:
++            if (cm.get('bytes') != CIR_BYTES or cm.get('crc32') !=
++                    zlib.crc32(data) & 0xffffffff):
++                return False
++            if cm.get('valid') is True and (not any(data) or all(x == 255 for x in data)):
++                return False
++        elif cm.get('present') is False:
++            if cm.get('valid') is not False or any(data):
++                return False
++        else:
++            return False
++    return True
++
+ 
+ class Link:
+     def __init__(self, name: str, device: str, directory: Path):
+         import serial
+@@ -23,8 +52,13 @@
+         self.decoder = Decoder()
+         self.condition = threading.Condition()
+         self.events: deque[dict] = deque(maxlen=512)
+         self.records = self.complete = 0
++        self.capture_records: list[dict] = []
++        self.capture_active = False
++        self.capture_baseline: dict = {}
++        self.fault_events = 0
++        self.capture_overflow = False
+         self.exception: str | None = None
+         self.closing = threading.Event()
+         self.raw = (directory/f"{name}.rfb8").open("wb")
+         self.meta = (directory/f"{name}.jsonl").open("w", encoding="utf-8")
+@@ -37,22 +71,42 @@
+                 data = self.serial.read(max(1, min(self.serial.in_waiting, 65536)))
+                 if not data:
+                     continue
+                 self.raw.write(data)
+-                for packet in self.decoder.feed(data):
+-                    m = packet.meta
+-                    self.meta.write(json.dumps(m, ensure_ascii=False)+"\n")
+-                    with self.condition:
+-                        if packet.kind == 2:
++                with self.condition:
++                    for packet in self.decoder.feed(data):
++                        m = packet.meta
++                        self.meta.write(json.dumps(m, ensure_ascii=False)+"\n")
++                        if packet.kind == 2 and self.capture_active:
++                            m = dict(m)
++                            m['_raw_integrity_verified'] = cir_payload_integrity(m, packet.raw)
+                             self.records += 1
+                             self.complete += bool(m.get("complete"))
+-                        else:
++                            if len(self.capture_records) < 100000:
++                                self.capture_records.append(m)
++                            else:
++                                self.capture_overflow = True
++                        elif packet.kind == 1:
+                             self.events.append(m)
++                            if (self.capture_active and
++                                    m.get('event') in ('ERROR', 'HARDWARE_FAULT_LATCHED', 'SESSION_DEADLINE',
++                                                       'SERIALIZE_OVERFLOW', 'BACKPRESSURE_DROP_POLL',
++                                                       'BACKPRESSURE_NO_RF')):
++                                self.fault_events += 1
+                         self.condition.notify_all()
+         except Exception as e:
+             self.exception = repr(e)
+             with self.condition:
+                 self.condition.notify_all()
++
++    def begin_capture(self) -> None:
++        with self.condition:
++            self.capture_records.clear()
++            self.records = self.complete = 0
++            self.fault_events = 0
++            self.capture_overflow = False
++            self.capture_baseline = self.decoder.statistics()
++            self.capture_active = True
+ 
+     def send(self, command: str) -> None:
+         if "\n" in command or len(command) > 180:
+             raise ValueError("Invalid serial command")
+@@ -84,10 +138,17 @@
+         self.raw.flush(); self.raw.close()
+         self.meta.flush(); self.meta.close()
+ 
+     def stats(self) -> dict:
+-        return {"port": self.device, "records": self.records, "complete": self.complete,
+-                "reader_error": self.exception, "decoder": self.decoder.statistics()}
++        with self.condition:
++            current = self.decoder.statistics()
++            base = self.capture_baseline
++            delta = {k: (v - base.get(k, 0) if k != 'trailing_bytes' else v)
++                     for k, v in current.items()}
++            return {"port": self.device, "records": self.records, "complete": self.complete,
++                    "reader_error": self.exception, "fault_events": self.fault_events,
++                    "capture_overflow": self.capture_overflow,
++                    "decoder": current, "capture_decoder": delta}
+ 
+ 
+ def main() -> int:
+     p = argparse.ArgumentParser(description=__doc__)
+@@ -98,9 +159,9 @@
+     p.add_argument("--stage", type=int, choices=range(2, 7), default=5)
+     p.add_argument("--period-us", type=int, default=300000)
+     p.add_argument("--baud", type=int, choices=(921600, 2000000), default=921600)
+     args = p.parse_args()
+-    if not 1 <= args.count <= 1000000 or not 100000 <= args.period_us <= 5000000:
++    if not 1 <= args.count <= 100000 or not 100000 <= args.period_us <= 5000000:
+         p.error("count or period out of bounds")
+     if args.anchor == args.tag:
+         p.error("anchor and tag require different serial ports")
+     args.out.mkdir(parents=True, exist_ok=True)
+@@ -139,8 +200,10 @@
+             receipt[name+"_identity"] = h
+         tag, anchor = links
+         if receipt["tag_identity"]["config_id"] != receipt["anchor_identity"]["config_id"]:
+             raise RuntimeError("Paired config IDs do not match")
++        for link in links:
++            link.begin_capture()
+         tag.send(f"START {session} {args.count}")
+         tag.wait(lambda m: m.get("event") == "HELLO" and m.get("active"))
+         anchor.send(f"START {session} {args.count}")
+         anchor.wait(lambda m: m.get("event") == "HELLO" and m.get("active"))
+@@ -154,11 +217,16 @@
+                 with link.condition:
+                     if any(m.get("event") == "HARDWARE_FAULT_LATCHED" for m in link.events):
+                         raise RuntimeError(f"{link.name}: hardware integrity fault")
+             time.sleep(0.1)
+-        time.sleep(1)
+-        receipt["pass"] = all(x.records == args.count and x.complete == args.count and
+-                              x.decoder.crc_errors == 0 and x.decoder.schema_errors == 0 for x in links)
++        while any(link.records < args.count for link in links):
++            if time.monotonic() > deadline + 10:
++                raise TimeoutError('Paired record drain deadline; partial capture preserved')
++            if any(x.exception for x in links):
++                raise RuntimeError('Serial reader failed while draining records')
++            time.sleep(0.1)
++        time.sleep(0.3)
++        # Provisional progress only. Final pass is computed after STOP and full reader drain.
+     except Exception as e:
+         receipt["error"] = str(e)
+     finally:
+         for link in links:
+@@ -169,8 +237,25 @@
+         time.sleep(0.5)
+         for link in links:
+             link.close()
+             receipt[link.name+"_capture"] = link.stats()
++        if 'error' not in receipt and len(links) == 2:
++            try:
++                audited = verify_capture(
++                    session=session, count=args.count, stage=args.stage, period_us=args.period_us,
++                    identities={r: receipt[r+"_identity"] for r in ("tag", "anchor")},
++                    records={link.name: link.capture_records for link in links},
++                    stats={link.name: receipt[link.name+"_capture"] for link in links})
++                receipt['audit'] = {'pass': audited.passed,
++                                    'problems': audited.problems, 'details': audited.details}
++                receipt['pass'] = audited.passed and not any(link.capture_overflow for link in links)
++            except Exception as e:
++                receipt['audit'] = {'pass': False, 'problems': ['AUDIT_EXCEPTION'],
++                                    'exception': repr(e)}
++                receipt['pass'] = False
++            if any(link.capture_overflow for link in links):
++                receipt['audit']['problems'].append('CAPTURE_AUDIT_MEMORY_LIMIT')
++                receipt['pass'] = False
+         (args.out/"capture_receipt.json").write_text(json.dumps(receipt, indent=2, ensure_ascii=False), encoding="utf-8")
+     print(json.dumps(receipt, indent=2, ensure_ascii=False))
+     return 0 if receipt["pass"] else 2
+ 
