@@ -1,0 +1,59 @@
+{
+  "01_final_pass": {
+    "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_repeat_1000_confirmation_restarted_1794479512762",
+    "package": "logs/01_final_pass",
+    "capture": "complete directory"
+  },
+  "02_p2_repeat_recovery": {
+    "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_repeat_1000_1794479121132",
+    "package": "logs/02_p2_repeat_recovery",
+    "capture": "complete directory"
+  },
+  "03_tag_startup_fault": {
+    "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_repeat_1000_confirmation_1794479365500",
+    "package": "logs/03_tag_startup_fault",
+    "capture": "complete directory"
+  },
+  "04_baseline_reference": {
+    "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\rx_edges_stage6_tag_queue_fix_1000_20261112_184304_362",
+    "package": "logs/04_baseline_reference",
+    "capture": "receipts and verbatim selected JSONL rows",
+    "selected_txns": [
+      781
+    ],
+    "excerpts": {
+      "anchor_selected_txns.jsonl": {
+        "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\rx_edges_stage6_tag_queue_fix_1000_20261112_184304_362\\capture\\anchor.jsonl",
+        "source_sha256": "50d7efb0fd5529e0bdc2b0bee1deda5f660f5fccefa7be96a9e4c76ca92dc197",
+        "rows": 14
+      },
+      "tag_selected_txns.jsonl": {
+        "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\rx_edges_stage6_tag_queue_fix_1000_20261112_184304_362\\capture\\tag.jsonl",
+        "source_sha256": "b03ba76550daba8389e074e2d3a07c1eb65f082cdce3eff450596967fc2900d6",
+        "rows": 1
+      }
+    }
+  },
+  "05_spi_guard_reference": {
+    "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_anchor_queue_fix_1000_1794477923190",
+    "package": "logs/05_spi_guard_reference",
+    "capture": "receipts and verbatim selected JSONL rows",
+    "selected_txns": [
+      4,
+      11,
+      121
+    ],
+    "excerpts": {
+      "anchor_selected_txns.jsonl": {
+        "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_anchor_queue_fix_1000_1794477923190\\capture\\anchor.jsonl",
+        "source_sha256": "7dd4377a32ed88886edf9d3d7b60aacb6f224dc980b6dc138da4f97a3e542ceb",
+        "rows": 3
+      },
+      "tag_selected_txns.jsonl": {
+        "source": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_anchor_queue_fix_1000_1794477923190\\capture\\tag.jsonl",
+        "source_sha256": "cd8e681bfb5ef125e624fcc564749c97c788102400ba53c09c85d61589356696",
+        "rows": 3
+      }
+    }
+  }
+}

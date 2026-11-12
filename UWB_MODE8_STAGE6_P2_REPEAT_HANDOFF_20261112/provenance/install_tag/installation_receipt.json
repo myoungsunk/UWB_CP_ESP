@@ -1,0 +1,20 @@
+{
+  "mode": "install",
+  "started_utc": "2026-11-12T10:21:22.774054+00:00",
+  "tag_only": true,
+  "anchor_write": false,
+  "host": "slam-robot-tailscale",
+  "port": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+  "mac": "28:56:2f:73:06:54",
+  "offset": "0x10000",
+  "firmware_id": "D8_TAG_STAGE6_P2_REPEAT_20261112",
+  "tag_package": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\tag_p2_repeat",
+  "prior_app_sha256": "0f517e3ff36e5fa2f46fd76970bd4d71721351931ef2c6ef5a556223462767a1",
+  "new_app_sha256": "4c8fa6d94e62df5e2ea8992ddbbf774cc0ea3dca139f8b742d2dc0604dacd609",
+  "build_receipt_sha256": "d2e7bd3a0deb6ea69b48c6e45f704a3a0bdcae7ddca31d4b762cbf933027923c",
+  "source_manifest_sha256": "b02c20da02bb47ac7ed191bc2a1ed91fd05c7711d6237852ea6dc91fb195ab7a",
+  "prior_verified_on_device": true,
+  "write_attempted": true,
+  "flash_readback_verified": true,
+  "finished_utc": "2026-11-12T10:21:36.101740+00:00"
+}

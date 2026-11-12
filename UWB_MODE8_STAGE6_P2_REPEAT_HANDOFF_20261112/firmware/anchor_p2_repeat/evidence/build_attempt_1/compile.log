@@ -1,0 +1,8 @@
+COMMAND: ["C:/Program Files/Arduino IDE/resources/app/lib/backend/resources\\arduino-cli.exe", "compile", "--fqbn", "esp32:esp32:esp32doit-devkit-v1", "--warnings", "all", "--library", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\anchor_p2_repeat\\vendor\\anchor\\DW1000Ng", "--build-path", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\anchor_p2_repeat\\build\\anchor", "--output-dir", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\anchor_p2_repeat\\dist\\anchor", "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\anchor_p2_repeat\\firmware\\ANCHOR_DUAL_DS_CIR"]
+Used library Version Path
+SPI          3.3.7   C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7\libraries\SPI
+DW1000-ng    0.1.0   D:\SLAM_bot\artifacts\UWB_MODE8_ANCHOR_DIAG_20261112\anchor_p2_repeat\vendor\anchor\DW1000Ng
+
+Used platform Version Path
+esp32:esp32   3.3.7   C:\Users\Myoungsun Kim\AppData\Local\Arduino15\packages\esp32\hardware\esp32\3.3.7
+Error during build: exit status 1

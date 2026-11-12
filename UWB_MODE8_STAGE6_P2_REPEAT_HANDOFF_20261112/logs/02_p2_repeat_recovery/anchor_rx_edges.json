@@ -1,0 +1,610 @@
+{
+  "events": [
+    {
+      "source": "usb",
+      "sequence": 3,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "usb",
+      "sequence": 4,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "txn": null,
+        "index": 0,
+        "exchange": null,
+        "retry": null,
+        "window_on": null,
+        "window_off": null,
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 19204584,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 19204740,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 19205908,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 19206042,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "usb",
+      "sequence": 6,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "usb",
+      "sequence": 7,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "txn": null,
+        "index": 0,
+        "exchange": null,
+        "retry": null,
+        "window_on": null,
+        "window_off": null,
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 19204584,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 19204740,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 19205908,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 19206042,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 10,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 11,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "txn": null,
+        "index": 0,
+        "exchange": null,
+        "retry": null,
+        "window_on": null,
+        "window_off": null,
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24282526,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24282670,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24283894,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24284029,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1020,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "captured": true,
+        "count": 4,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1021,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 0,
+        "exchange": 1,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "A",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24628841,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24628989,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24639657,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24639793,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1022,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 1,
+        "exchange": 1,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "B",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24640417,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24640558,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24649624,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24649761,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1023,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 2,
+        "exchange": 2,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "A",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24714684,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24714827,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24725609,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24725746,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1024,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 3,
+        "exchange": 2,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "B",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24726340,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24726481,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24735624,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24735761,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1027,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "captured": true,
+        "count": 4,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1028,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 0,
+        "exchange": 1,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "A",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24628841,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24628989,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24639657,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24639793,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1029,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 1,
+        "exchange": 1,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "B",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24640417,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24640558,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24649624,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24649761,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1030,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 2,
+        "exchange": 2,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "A",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24714684,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24714827,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24725609,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24725746,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "capture",
+      "sequence": 1031,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "txn": 0,
+        "index": 3,
+        "exchange": 2,
+        "retry": false,
+        "window_on": "A",
+        "window_off": "B",
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 24726340,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 24726481,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 24735624,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 24735761,
+          "sys_status": 8417026,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    }
+  ],
+  "queries": [
+    {
+      "source": "usb",
+      "boot": 2314795451,
+      "received_indices": [
+        0
+      ],
+      "summary": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      },
+      "missing_indices": []
+    },
+    {
+      "source": "capture",
+      "boot": 2314795451,
+      "received_indices": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "summary": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "response",
+        "session": 3340555422,
+        "captured": true,
+        "count": 4,
+        "dropped": 0,
+        "spi_hz": 2000000
+      },
+      "missing_indices": []
+    }
+  ]
+}

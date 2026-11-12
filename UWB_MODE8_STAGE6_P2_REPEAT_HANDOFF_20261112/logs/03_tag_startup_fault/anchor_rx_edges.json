@@ -1,0 +1,142 @@
+{
+  "events": [
+    {
+      "source": "usb",
+      "sequence": 1037,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "usb",
+      "sequence": 1038,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "txn": null,
+        "index": 0,
+        "exchange": null,
+        "retry": null,
+        "window_on": null,
+        "window_off": null,
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 262471604,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 262471757,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 262472904,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 262473040,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    },
+    {
+      "source": "usb",
+      "sequence": 1040,
+      "event": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      }
+    },
+    {
+      "source": "usb",
+      "sequence": 1041,
+      "event": {
+        "event": "ANCHOR_RX_EDGE",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "txn": null,
+        "index": 0,
+        "exchange": null,
+        "retry": null,
+        "window_on": null,
+        "window_off": null,
+        "off_reason": "idle",
+        "on_before": {
+          "at_us": 262471604,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        },
+        "on_after": {
+          "at_us": 262471757,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_before": {
+          "at_us": 262472904,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 9,
+          "rf_valid": true
+        },
+        "off_after": {
+          "at_us": 262473040,
+          "sys_status": 8388610,
+          "sys_valid": true,
+          "rf_status": 1,
+          "rf_valid": true
+        }
+      }
+    }
+  ],
+  "queries": [
+    {
+      "source": "usb",
+      "boot": 2314795451,
+      "received_indices": [
+        0
+      ],
+      "summary": {
+        "event": "ANCHOR_RX_EDGES",
+        "boot": 2314795451,
+        "scope": "selftest",
+        "session": null,
+        "captured": true,
+        "count": 1,
+        "dropped": 0,
+        "spi_hz": 2000000
+      },
+      "missing_indices": []
+    }
+  ]
+}

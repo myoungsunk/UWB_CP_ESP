@@ -1,0 +1,40 @@
+{
+  "schema": "dual8.calibration.v1",
+  "source": "Stage 6 session 3895992639 recorded antenna delays. Static bench temporary profile.",
+  "roles": {
+    "anchor": {
+      "hardware_profile": "esp32-dw1000-anchor-21-22-5",
+      "radios": [
+        {
+          "radio": 0,
+          "tx": 16436,
+          "rx": 16436,
+          "id": 0,
+          "sigma_m": null,
+          "quality": "temporary"
+        }
+      ]
+    },
+    "tag": {
+      "hardware_profile": "esp32-dw1000-tag-ab-21-22-17-25-26-27",
+      "radios": [
+        {
+          "radio": 0,
+          "tx": 16279,
+          "rx": 16279,
+          "id": 0,
+          "sigma_m": 0.08423371,
+          "quality": "temporary"
+        },
+        {
+          "radio": 1,
+          "tx": 15886,
+          "rx": 15886,
+          "id": 0,
+          "sigma_m": 0.13965843,
+          "quality": "temporary"
+        }
+      ]
+    }
+  }
+}

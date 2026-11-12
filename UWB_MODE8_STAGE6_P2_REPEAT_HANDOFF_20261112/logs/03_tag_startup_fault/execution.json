@@ -1,0 +1,69 @@
+{
+  "question_id": "MODE8-ANCHOR-RX-FAULT-20261112",
+  "role": "IMPLEMENTER",
+  "started_utc": "2026-11-12T10:29:30.066767+00:00",
+  "command": [
+    "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_ANCHOR_DIAG_20261112/run_stage6_p2_repeat.py",
+    "--count",
+    "1000",
+    "--anchor-install-receipt",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_ANCHOR_DIAG_20261112/install_anchor_p2_repeat_1794479089621/installation_receipt.json",
+    "--tag-install-receipt",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_ANCHOR_DIAG_20261112/install_tag_p2_repeat_1794478868146/installation_receipt.json",
+    "--out",
+    "D:/SLAM_bot/artifacts/UWB_MODE8_ANCHOR_DIAG_20261112/stage6_p2_repeat_1000_confirmation_1794479365500"
+  ],
+  "collector_settings": {
+    "anchor": "COM4",
+    "tag": "/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0",
+    "stage": 6,
+    "count": 1000,
+    "period_us": 200000,
+    "baud": 2000000,
+    "rf_remeasure_limit": 0,
+    "out": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_repeat_1000_confirmation_1794479365500\\capture",
+    "calibration_profile": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_RELIABILITY_20261112\\calibration_stage6_temporary.json"
+  },
+  "firmware": {
+    "anchor": "D8_ANCHOR_STAGE6_P2_REPEAT_20261112",
+    "tag": "D8_TAG_STAGE6_P2_REPEAT_20261112"
+  },
+  "input_sha256": {
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\run_anchor_diag.py": "13ee84b08dcf8f530637de1e085c40a3a45ece1b09f02bc8c3384fc727204172",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_RELIABILITY_20261112\\evidence\\stage6_live_20261112_121702_342\\live_pair.py": "36070f201a2175e237f2b9d64efd428b8b84b144a4b928f7da92ac1fb452d8ca",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\p2_repeat_tools\\run_pair.py": "4899bba7d2905e60d60462a3e6478c20435a8b49797255af69d36b4c4465c4f8",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_R5_PAIR_RF_20261111\\run_split_pair.py": "835a84de94e24f27f410c73548fc37965a6dbbe2fdfd4d2dc1b2f49f683630a9",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_STAGE6_RELIABILITY_20261112\\calibration_stage6_temporary.json": "9d2bf66a699e8ea316cb389a0105106b22c26dbb2a025b49bd1c37c27695f410",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\install_tag_p2_repeat_1794478868146\\installation_receipt.json": "49869a9af5a849fdf5092515d5f4337769dcfddd8b1fc161ea9f2a725d776066",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\install_anchor_p2_repeat_1794479089621\\installation_receipt.json": "74ea53d95a12f830060f21f3cdac205f199392c6bba2d1d968281af8f9240a14",
+    "C:\\Users\\Myoungsun Kim\\.codex\\research-governance\\COMMON_CONTRACT.md": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb",
+    "C:\\Users\\Myoungsun Kim\\.codex\\research-governance\\ROLE_IMPLEMENTER.md": "2380fb1fe7302870a6c2d825cc2e65a73e91138677e095b4e51db43ab9ea90da",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\anchor_p2_repeat\\dist\\target_build_receipt.json": "3a3656007a86635ef0bdfebb9bcb15c4ca89d6f0cb9e523900dafe123bdd21fe",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\anchor_p2_repeat\\dist\\anchor\\ANCHOR_DUAL_DS_CIR.ino.bin": "4fc6307130c026f3c420d571b050d6c8616ee02d5018c526ff907a89febe718d",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\tag_p2_repeat\\dist\\target_build_receipt.json": "d2e7bd3a0deb6ea69b48c6e45f704a3a0bdcae7ddca31d4b762cbf933027923c",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\tag_p2_repeat\\dist\\tag\\TAG_DUAL_DS_CIR.ino.bin": "4c8fa6d94e62df5e2ea8992ddbbf774cc0ea3dca139f8b742d2dc0604dacd609",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\run_anchor_rx_edges.py": "d488123ade6514bd9b9af0d859db2f706b8bdd742900f2f17fd5f28617973837",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\p2_repeat_tools\\rfb8.py": "b3d98487bfe4e33c4d8aecdbae6b3903055194314640e2777a8b0e3e903f111d",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\p2_repeat_tools\\capture_audit.py": "bcd539eff87bd558af54c1655495881ff471242a993d5290234741a878d59c9c",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\p2_repeat_tools\\analyze.py": "66bede9e198901a11b3be1b12fe4ea305e63f63f4d06edd8f468772e150c7d99",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\p2_repeat_tools\\uart_fragments.py": "580c9edb362643c97882cbcecf46580b02ff8853178f541cf610a38ca58f0c66",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\p2_repeat_tools\\calibration_profile.py": "a87448b5ac071eb70e65c46bc8235419c32f89163540cacd40f59e2528cb2f8a",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\run_stage6_p2_repeat.py": "7ce36745af39c8551090eac1379ccf60aa0ec555578bdec0b6d1f0466569521d",
+    "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\run_anchor_rx_edges_tag_queue_fix.py": "6124f2ba8312466a2cb0475a3dd3e73a55fba7428e9bb82e14cf6e6aeea08faa"
+  },
+  "finished_utc": "2026-11-12T10:29:35.246575+00:00",
+  "exit_code": 2,
+  "preflight_pass": true,
+  "capture_receipt_sha256": "bf1ed9050e193dfc672b5c514d5703ef9b473a7c3f12fd53372592f1adbb9192",
+  "rx_edges": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\stage6_p2_repeat_1000_confirmation_1794479365500\\anchor_rx_edges.json",
+    "sha256": "ea5d9ab0be77e71cfa993cd286289dbb7600250dab9eeb330ef3d380480209c0",
+    "event_count": 4
+  },
+  "tag_install_receipt": {
+    "path": "D:\\SLAM_bot\\artifacts\\UWB_MODE8_ANCHOR_DIAG_20261112\\install_tag_p2_repeat_1794478868146\\installation_receipt.json",
+    "sha256": "49869a9af5a849fdf5092515d5f4337769dcfddd8b1fc161ea9f2a725d776066",
+    "firmware_id": "D8_TAG_STAGE6_P2_REPEAT_20261112"
+  }
+}

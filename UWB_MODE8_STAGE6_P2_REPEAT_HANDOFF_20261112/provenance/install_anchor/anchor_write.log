@@ -1,0 +1,36 @@
+esptool v5.5.0
+Serial port COM4:
+Connecting......
+Connected to ESP32 on COM4:
+Chip type:          ESP32-D0WD-V3 (revision v3.1)
+Features:           Wi-Fi, BT, Dual Core + LP Core, 240MHz, Vref calibration in eFuse, Coding Scheme None
+Crystal frequency:  40MHz
+MAC:                28:56:2f:72:e7:18
+
+Uploading stub flasher...
+Running stub flasher...
+Stub flasher running.
+Changing baud rate to 460800...
+Changed.
+
+Configuring flash size...
+Flash will be erased from 0x00010000 to 0x00075fff...
+Compressed 414736 bytes to 196996...
+Writing at 0x0001bec2 ==                               8.3% 16.00kB/192.38kB [0s] 
+Writing at 0x000328d2 ====>                           16.6% 32.00kB/192.38kB [0s] 
+Writing at 0x0003754a =======                         25.0% 48.00kB/192.38kB [1s] 
+Writing at 0x0003ce9a =========>                      33.3% 64.00kB/192.38kB [1s] 
+Writing at 0x000421ee ============                    41.6% 80.00kB/192.38kB [2s] 
+Writing at 0x000476b0 ==============>                 49.9% 96.00kB/192.38kB [2s] 
+Writing at 0x0004ce2b =================               58.2% 112.00kB/192.38kB [2s] 
+Writing at 0x00052609 ===================>            66.5% 128.00kB/192.38kB [3s] 
+Writing at 0x0005aeee ======================          74.9% 144.00kB/192.38kB [3s] 
+Writing at 0x00069b62 ========================>       83.2% 160.00kB/192.38kB [4s] 
+Writing at 0x0006f1ba ===========================     91.5% 176.00kB/192.38kB [4s] 
+Writing at 0x000751e7 =============================>  99.8% 192.00kB/192.38kB [4s] 
+Writing at 0x00075410 ============================== 100.0% 192.38kB/192.38kB [4s] 
+Wrote 414736 bytes (196996 compressed) at 0x00010000 in 4.9 seconds (682.2 kbit/s).
+Verifying written data...
+Hash of data verified.
+
+Hard resetting via RTS pin...
