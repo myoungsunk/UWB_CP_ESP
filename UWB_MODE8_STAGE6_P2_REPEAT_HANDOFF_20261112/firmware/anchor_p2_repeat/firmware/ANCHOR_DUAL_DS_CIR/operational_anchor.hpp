@@ -31,7 +31,7 @@ static uint32_t opsOtaDeadline=0,opsTcpSince=0;
 static char opsTcpLine[192]{};static size_t opsTcpUsed=0;
 static constexpr uint32_t OPS_ARCHIVE_MAX=32,OPS_TCP_PORT=29310;
 static constexpr uint32_t OPS_ARCHIVE_MAGIC=0x4f384d42UL; // "BM8O" LE
-static constexpr uint16_t OPS_ARCHIVE_VERSION=2;
+static constexpr uint16_t OPS_ARCHIVE_VERSION=3;
 static constexpr uint16_t OPS_LEGACY_ROW_BYTES=1070;
 static const char *OPS_ARCHIVE_PATH="/m8_pending.bin";
 static const char *OPS_ARCHIVE_TMP="/m8_pending.tmp";
@@ -150,7 +150,7 @@ static bool opsArchiveRecord(const dual8::Record& r){
  d.initial_poll_tx=r.initial_poll_tx;
  opsCopyTx(d.tx[0],r.tx[0]);opsCopyTx(d.tx[1],r.tx[1]);
  opsCopyTx(d.tx[2],r.poll2_tx);opsCopyTx(d.tx[3],r.tx[2]);
- opsCopyTx(d.tx[4],r.p2_repeat_tx);opsCopyTx(d.tx[5],r.p1_repeat_tx);
+ opsCopyTx(d.tx[4],r.p2_primary_tx);opsCopyTx(d.tx[5],r.p1_repeat_tx);
  opsCopyRx(d.rx[0],r.responses[0]);opsCopyRx(d.rx[1],r.responses[1]);
  opsCopyRx(d.rx[2],r.response2_rx[0]);opsCopyRx(d.rx[3],r.response2_rx[1]);
  const bool pollOk=r.tx[0].ok&&dual8::encode(r.poll_frame,d.frames[0]);
@@ -159,10 +159,10 @@ static bool opsArchiveRecord(const dual8::Record& r){
  const bool p2Ok=r.have_probe_frame[1]&&dual8::encode(r.probe_frame[1],d.frames[3]);
  // Never report an archive row as complete when raw RF evidence was
  // omitted, corrupted or not serializable.
- const bool p2RepeatOk=r.p2_repeat_tx.ok&&dual8::encode(r.p2_repeat_frame,d.frames[4]);
+ const bool p2PrimaryOk=r.p2_primary_tx.ok&&dual8::encode(r.p2_primary_frame,d.frames[4]);
  const bool p1RepeatOk=r.p1_repeat_tx.ok&&dual8::encode(r.p1_repeat_frame,d.frames[5]);
- if((r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok||!p2RepeatOk))||
-    (r.p1_repeat_tx.ok&&!p1RepeatOk)){
+ if((r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok))||
+    (r.p2_primary_tx.ok&&!p2PrimaryOk)||(r.p1_repeat_tx.ok&&!p1RepeatOk)){
   opsArchiveFailure=true;opsFail("ARCHIVE_FRAME");return false;
  }
  d.crc32=dual8::crc32(&d,offsetof(OpsArchiveRow,crc32));
@@ -190,7 +190,7 @@ static bool opsReadHeader(OpsArchiveHeader& h,const char* path=OPS_ARCHIVE_PATH)
  f.close();
  if(!ok||h.magic!=OPS_ARCHIVE_MAGIC||!h.session||!h.boot||!h.config||!h.count||
     h.count>OPS_ARCHIVE_MAX)return false;
- if(!((h.version==OPS_ARCHIVE_VERSION&&h.row_bytes==sizeof(OpsArchiveRow))||
+ if(!(((h.version==2||h.version==OPS_ARCHIVE_VERSION)&&h.row_bytes==sizeof(OpsArchiveRow))||
       (h.version==1&&h.row_bytes==OPS_LEGACY_ROW_BYTES)))return false;
  const uint32_t found=h.header_crc;h.header_crc=0;
  const bool valid=dual8::crc32(&h,sizeof h)==found;

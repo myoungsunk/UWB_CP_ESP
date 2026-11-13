@@ -38,12 +38,10 @@ struct Config {
  uint32_t probe1DelayUs()const{return probe1_us+(usesExtendedSchedule()?9000:0);}
  bool rangesProbe2()const{return stage==5||stage==6;}
  uint32_t probe1RepeatUs()const{return probe1DelayUs()+14000;}
- static constexpr uint32_t probe2RepeatGapUs=14000;
  uint32_t probe2PollDelayUs(bool retry=false)const{
-  return period_us/2+(retry?probe1DelayUs():0)-(stage==6?probe2RepeatGapUs:0);
+  return period_us/2-(stage==6?14000:0)+(retry?probe1DelayUs()+14000:0);
  }
  uint32_t probe2_us(bool retry=false)const{return probe1DelayUs()+(rangesProbe2()?probe2PollDelayUs(retry):probe_gap_us);}
- uint32_t probe2RepeatUs(bool retry=false)const{return probe2_us(retry)+probe2RepeatGapUs;}
 };
 inline uint32_t configId(const Config&c){
  uint8_t b[40]{};b[0]=MODE;b[1]=PROTOCOL_VERSION;b[2]=c.stage;
@@ -52,7 +50,7 @@ inline uint32_t configId(const Config&c){
  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
  // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
- b[39]=c.stage==6?14:(c.rangesProbe2()?7:4);
+ b[39]=c.stage==6?15:(c.rangesProbe2()?7:4);
  return crc32(b,sizeof b);
 }
 inline const char* validate(const Config&c){
@@ -68,7 +66,7 @@ inline const char* validate(const Config&c){
  if(c.min_lead_us<500||c.min_lead_us>1500)return "TX_LEAD_BOUND";
  if(c.cir_hz!=10000000&&c.cir_hz!=20000000)return "CIR_HZ_10M_OR_20M";
  if(c.baud!=921600&&c.baud!=2000000)return "BAUD_921600_OR_2000000";
- const uint32_t lastProbe=c.stage==6?c.probe2RepeatUs(true)+c.probe1DelayUs():c.probe2_us();
+ const uint32_t lastProbe=c.stage==6?c.probe2_us(true)+c.probe1DelayUs():c.probe2_us();
  if(c.period_us<lastProbe+10000)return "PERIOD_RF_BUDGET";
  if(c.stage>=2){ // Conservative raw + metadata throughput with 20% UART headroom.
   constexpr uint64_t wireBytes=4*CIR_BYTES+7000+24;
@@ -169,10 +167,9 @@ struct Record {
  uint32_t session=0,txn=0,boot=0,peer_boot=0,config=0;Config cfg{};uint64_t begin_us=0,end_us=0;
  bool anchor=false,metadata_conflict=false,p1_tx_confirmed=false,complete=false;uint8_t response_mask=0,response2_mask=0,rx_deadline_latch=0;
  bool p2_retry=false;uint32_t p2_first_errors=0;
- bool p2_repeat_used=false;
  uint8_t p2_primary_rx_mask=0,p2_primary_cir_mask=0;
- Frame p1_repeat_frame{},p2_repeat_frame{};
- Tx p1_repeat_tx{},p2_repeat_tx{};
+ Frame p1_repeat_frame{},p2_primary_frame{};
+ Tx p1_repeat_tx{},p2_primary_tx{};
  uint64_t initial_poll_tx=0;bool p1_retry=false;uint32_t p1_first_errors=0;
  uint32_t errors=0;Rx poll[2]{},probe[2][2]{},responses[2]{};Tx tx[3]{},response2_tx[2]{};Rx response2_rx[2]{},poll2_rx[2]{};Tx poll2_tx{};Frame poll_frame{},probe_frame[2]{},poll2_frame{};
  ResponseRxTrace response_trace[2]{};

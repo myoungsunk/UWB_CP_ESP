@@ -20,8 +20,8 @@ IMAGES={
  "tag":"TAG_DUAL_DS_CIR.ino.bin"
 }
 ROLE_MARKERS = {
-    "anchor": b"D8_ANCHOR_STAGE6_P1_DRAIN_OPS_20261113\x00",
-    "tag": b"D8_TAG_STAGE6_P1_DRAIN_20261113\x00",
+    "anchor": b"D8_ANCHOR_STAGE6_P2_FRESH_OPS_20261113\x00",
+    "tag": b"D8_TAG_STAGE6_P2_FRESH_20261113\x00",
 }
 
 class ImageHold(ValueError):pass

@@ -23,7 +23,7 @@ LEGACY_ROW_BYTES = 1070
 MAX_RECORDS = 32
 MAX_FILE_BYTES = HEADER.size + MAX_RECORDS * ROW_BYTES
 MAGIC = 0x4F384D42
-VERSION = 2
+VERSION = 3
 MASK40 = (1 << 40) - 1
 assert HEADER.size == 32 and ROW_BYTES == 1312
 
@@ -47,9 +47,10 @@ def parse(blob: bytes) -> dict:
     if len(blob) < HEADER.size:
         raise ArchiveError("truncated header")
     magic, version, row_bytes, session, boot, config, count, body_crc, head_crc = HEADER.unpack_from(blob)
-    if magic != MAGIC or (version, row_bytes) not in ((1, LEGACY_ROW_BYTES), (VERSION, ROW_BYTES)):
+    if magic != MAGIC or (version, row_bytes) not in ((1, LEGACY_ROW_BYTES), (2, ROW_BYTES), (VERSION, ROW_BYTES)):
         raise ArchiveError("unknown archive version/layout")
     legacy = version == 1
+    fresh_p2 = version == VERSION
     prefix_struct, tx_struct, rx_struct, tx_count, frame_count = (
         (LEGACY_PREFIX, LEGACY_TX, LEGACY_RX, 5, 4) if legacy else (PREFIX, TX, RX, 6, 6))
     if not 1 <= count <= MAX_RECORDS or session == 0 or boot == 0 or config == 0:
@@ -119,7 +120,8 @@ def parse(blob: bytes) -> dict:
                 frames.append(air.hex())
             else:
                 frames.append(None)
-        if complete and (not all(frames[:4 if legacy else 5]) or peer == 0):
+        required_frames = 4 if legacy or fresh_p2 else 5
+        if complete and (not all(frames[:required_frames]) or peer == 0):
             raise ArchiveError(f"row {index}: complete archive missing authenticated RF evidence")
         if not legacy and any(bool(frame) != tx["ok"] for frame, tx in zip(frames, transmit)):
             raise ArchiveError(f"row {index}: frame/TX availability mismatch")
@@ -130,15 +132,17 @@ def parse(blob: bytes) -> dict:
                      "resp_mask":resp_mask,"response2_mask":resp2_mask,
                      "p1_retry":bool(flags&1),"p2_retry":bool(flags&2),
                      "p2_repeat_used":bool(flags&4), "initial_poll_tx":initial_poll_tx,
+                     "archive_version":version,
                      "tx":transmit,"response_rx":receive,"air_frames":frames})
     return {"archive_schema":f"mode8.anchor.ops.v{version}","session":session,"boot":boot,
             "config":config,"count":count,"crc32":body_crc,"rows":rows}
 
 def to_anchor_record(row: dict, firmware: str, period_us: int) -> dict:
-    """Project a v2 archive row onto the existing RF audit's anchor schema."""
+    """Project a v2 or v3 archive row onto the paired RF audit schema."""
     tx, rx, frames = row["tx"], row["response_rx"], row["air_frames"]
     if len(tx) != 6 or len(frames) != 6:
-        raise ArchiveError("paired RF audit requires an operational v2 archive")
+        raise ArchiveError("paired RF audit requires an operational v2 or v3 archive")
+    p2_extra = "p2_primary" if row.get("archive_version") == VERSION else "p2_repeat"
     return {
         "schema": "dual8.record.v1", "firmware": firmware, "mode": 8, "role": "anchor",
         "stage": 6, "period_us": period_us,
@@ -148,7 +152,7 @@ def to_anchor_record(row: dict, firmware: str, period_us: int) -> dict:
         "tx": [tx[0], tx[1], tx[3]], "frames": [frames[0], frames[1], frames[3]],
         "response_rx": rx[:2], "response2_rx": rx[2:],
         "poll2_tx": tx[2], "poll2_frame": frames[2],
-        "p2_repeat_tx": tx[4], "p2_repeat_frame": frames[4],
+        f"{p2_extra}_tx": tx[4], f"{p2_extra}_frame": frames[4],
         "p1_repeat_tx": tx[5], "p1_repeat_frame": frames[5],
     }
 

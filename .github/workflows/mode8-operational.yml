@@ -24,6 +24,10 @@ jobs:
           python-version: '3.11'
       - name: Operational protocol and adverse-path tests
         run: python -m unittest discover -s UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/operational/tests -p 'test_*.py' -v
+      - name: P2 fresh retry and recorded transaction 24 replay
+        run: |
+          python -m pip install numpy==2.2.4
+          python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/tools/test_operational_p2_fresh_retry.py -v
       - name: Verify original Mode 8 shared-header snapshots
         run: |
           python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/tools/sync_shared.py --check
