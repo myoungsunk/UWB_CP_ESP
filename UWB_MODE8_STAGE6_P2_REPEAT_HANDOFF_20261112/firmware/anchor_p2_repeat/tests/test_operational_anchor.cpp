@@ -55,6 +55,9 @@ struct File {
 };
 struct Filesystem {
  std::map<std::string,std::vector<uint8_t>> files;
+ size_t capacity=1024*1024;
+ size_t totalBytes() const{return capacity;}
+ size_t usedBytes() const{size_t n=0;for(const auto& row:files)n+=row.second.size();return n;}
  bool corruptRenameHeader=false;
  bool begin(bool format){assert(!format);return true;}
  bool exists(const char* p){return files.count(p);}
@@ -321,6 +324,20 @@ static void testInvalidTcpNumbers(){
  opsDownloaded={};
 }
 
+static void testArchiveCapacityGuards(){
+ opsFsOk=true;opsPhase=OpsPhase::Idle;active=false;hwOk=true;
+ config.stage=6;config.period_us=200000;config.baud=2000000;
+ const size_t old=LittleFS.capacity;
+ LittleFS.capacity=12000;
+ assert(!opsArchiveSpaceReady(32));
+ assert(!opsPlan(90,32));assert(opsArchive==nullptr);
+ LittleFS.capacity=old;
+ assert(opsArchiveSpaceReady(32));
+ assert(opsPlan(91,32));assert(opsArchive!=nullptr);
+ delete[] opsArchive;opsArchive=nullptr;
+ opsPhase=OpsPhase::Idle;opsSession=opsCount=opsRows=0;
+}
+
 static void testWifiStart(){
  config.stage=6;config.period_us=200000;config.baud=2000000;
  WiFi.selected=WIFI_STA;WiFi.rejectOff=true;
@@ -345,6 +362,6 @@ int main(){
  using namespace dual8app;
  opsFsOk=true;
  testDownloadReadFailure();testPersistedHeader();testApproval();testDistinctKeys();
- testOtaImageBinding();testRecovery();testInvalidTcpNumbers();testWifiStart();
+ testOtaImageBinding();testRecovery();testInvalidTcpNumbers();testArchiveCapacityGuards();testWifiStart();
  std::puts("PASS operational firmware mock: archive integrity, custody, OTA and Wi-Fi guards");
 }

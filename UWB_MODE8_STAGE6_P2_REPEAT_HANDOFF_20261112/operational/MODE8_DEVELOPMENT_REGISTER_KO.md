@@ -45,3 +45,5 @@
 ## 2026-11-13 추가 데이터 보존 결함
 
 **M20 — route 재시작 이후 로컬 원본 재감사(IMPLEMENTED / FIELD HOLD)**: 기존에는 `operational_receipt.json`의 과거 `paired_audit` 결과를 신뢰하고 파일 존재·현재 SHA만 확인했으므로, 기록이 나중에 손상된 경우에도 다음 point/PURGE를 진행할 수 있었다. `verify_point()`에서 `audit_archived_session()`을 다시 실행하고 기존 journal SHA가 존재하면 바이트 일치를 필수화했다. `purge()` 진입 직전에도 같은 검사를 수행한다. 자동 시험 `test_preverified_receipt_does_not_replace_raw_replay`, `test_verified_route_rejects_changed_hash_before_purge` 추가. 이 결과는 모의 실행 기준이며 실기 재개·저장장치 고장 주입은 G8/G9에 남는다.
+
+**M17 추가 구현 (2026-11-13)** — RF 시작 전 LittleFS `totalBytes/usedBytes`와 요청한 아카이브 크기(`32B header + count×1312B row`) 및 8192B 보수 여유를 계산하여 용량이 부족하면 `START_GUARD`로 거부한다. 저장 전 공간 검사는 정전·동시 쓰기·실제 flash erase 내구를 보장하지 않으며 G9/G11 물리 검증은 계속 HOLD이다.

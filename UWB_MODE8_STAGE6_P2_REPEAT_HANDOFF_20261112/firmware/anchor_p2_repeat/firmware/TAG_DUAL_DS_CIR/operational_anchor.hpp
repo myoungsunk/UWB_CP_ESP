@@ -488,12 +488,24 @@ static bool opsOtaStart(uint32_t seconds){
  ArduinoOTA.begin();opsOtaOpen=true;opsOtaDeadline=millis()+seconds*1000UL;
  return true;
 }
+// Reserve room for the full RAM archive plus LittleFS metadata/erase work
+// BEFORE switching Wi-Fi OFF. A failed commit after measurement cannot
+// recover erased RAM in the event of sudden power loss.
+static constexpr size_t OPS_FLASH_RESERVE_BYTES=8192;
+static bool opsArchiveSpaceReady(uint32_t count){
+ if(!opsFsOk||count<1||count>OPS_ARCHIVE_MAX)return false;
+ const size_t capacity=LittleFS.totalBytes(), used=LittleFS.usedBytes();
+ if(!capacity||used>capacity)return false;
+ const size_t archiveBytes=sizeof(OpsArchiveHeader)+size_t(count)*sizeof(OpsArchiveRow);
+ return archiveBytes<=capacity-used&&
+        OPS_FLASH_RESERVE_BYTES<=capacity-used-archiveBytes;
+}
 static bool opsPlan(uint32_t sessionId,uint32_t count){
  if(!opsFsOk||opsFilePending()||opsOtaOpen||opsPhase!=OpsPhase::Idle||active||
     !transportChangeAllowed()||!drainClean||!opsRecordsDrained()||!hwOk||port.faulted()||
     config.stage!=6||config.period_us!=200000||config.baud!=2000000||
     count==0||count>OPS_ARCHIVE_MAX||sessionId==0||
-    validate(config))return false;
+    !opsArchiveSpaceReady(count)||validate(config))return false;
  if(!opsArchive){
   opsArchive=new(std::nothrow) OpsArchiveRow[OPS_ARCHIVE_MAX];
   if(!opsArchive)return false;
