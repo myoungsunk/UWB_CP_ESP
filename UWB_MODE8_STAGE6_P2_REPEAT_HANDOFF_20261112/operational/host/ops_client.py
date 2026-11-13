@@ -91,7 +91,7 @@ class OperationalClient:
             raise TransportError("transfer identity/CRC mismatch")
         temp.replace(path)
         if ack:
-            answer=self.command(f"ACKFILE {session}")
+            answer=self.command(f"ACKFILE {session} {body_crc}")
             if answer!="ACKFILE_OK":
                 raise TransportError("file is saved but remote ACKFILE failed")
         return doc

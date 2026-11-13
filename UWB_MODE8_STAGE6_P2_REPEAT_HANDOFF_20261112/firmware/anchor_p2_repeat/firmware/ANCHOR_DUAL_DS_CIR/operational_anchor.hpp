@@ -11,6 +11,9 @@ static bool opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
 static bool opsTcpAuthorized=false,opsTcpOverflow=false,opsArchiveFailure=false;
 static bool opsWantNetwork=false;static uint32_t opsReconnectAtMs=0;
 static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0,opsLastAck=0;
+// An ACKFILE is only permitted after a complete GET on this authenticated
+// TCP connection, and it must bind to the exact archived body CRC.
+static uint32_t opsDownloadedSession=0,opsDownloadedCrc=0;
 static uint64_t opsStartAt=0;
 static uint32_t opsOtaDeadline=0,opsTcpSince=0;
 static char opsTcpLine[192]{};static size_t opsTcpUsed=0;
@@ -291,7 +294,10 @@ static bool opsDownload(){
   if(!ok)break;
  }
  f.close();
- if(ok)opsTcpReply("END");
+ if(ok){
+  opsTcpReply("END");
+  opsDownloadedSession=h.session;opsDownloadedCrc=h.body_crc;
+ }
  return ok;
 }
 static bool opsEraseAcked(){
@@ -350,16 +356,28 @@ static void opsTcpCommand(char *line){
   return;
  }
  if(!strcmp(op,"ACKFILE")){
-  char*raw=strtok_r(nullptr," \r\t",&save),*end=nullptr;
+  char*raw=strtok_r(nullptr," \r\t",&save);
+  char*rawCrc=strtok_r(nullptr," \r\t",&save);
+  char*extra=strtok_r(nullptr," \r\t",&save);
+  char*end=nullptr;
   const unsigned long id=raw?strtoul(raw,&end,10):0;
+  const bool idOk=raw&&end&&!*end&&id&&id<=0xffffffffUL;
+  const unsigned long crc=rawCrc?strtoul(rawCrc,&end,10):0;
+  const bool crcOk=rawCrc&&end&&!*end&&crc<=0xffffffffUL;
   OpsArchiveHeader h;
-  if(!raw||!*raw||!end||*end||!id||!opsReadHeader(h)||
-     !opsVerifyArchive(h)||h.session!=id){opsTcpReply("ERROR ACKFILE");return;}
+  if(!idOk||!crcOk||extra||!opsReadHeader(h)||
+     !opsVerifyArchive(h)||h.session!=id||h.body_crc!=crc||
+     opsDownloadedSession!=id||opsDownloadedCrc!=crc){
+    opsTcpReply("ERROR ACKFILE");return;
+  }
   Preferences p;
   if(!p.begin("mode8ops",false)){opsTcpReply("ERROR NVS");return;}
   const bool ok=p.putUInt("lastack",h.session)==sizeof(uint32_t);
   p.end();
-  if(ok){opsLastAck=h.session;opsTcpReply("ACKFILE_OK");}
+  if(ok){
+   opsLastAck=h.session;opsDownloadedSession=0;opsDownloadedCrc=0;
+   opsTcpReply("ACKFILE_OK");
+  }
   else opsTcpReply("ERROR NVS");
   return;
  }
@@ -391,6 +409,7 @@ static void opsTcpPoll(){
   if(opsClient)opsClient.stop();
   opsClient=opsServer.available();
   opsTcpAuthorized=false;opsTcpUsed=0;opsTcpOverflow=false;
+  opsDownloadedSession=0;opsDownloadedCrc=0;
   if(opsClient){
    opsNonce=esp_random();if(!opsNonce)opsNonce=1;
    opsTcpSince=millis();

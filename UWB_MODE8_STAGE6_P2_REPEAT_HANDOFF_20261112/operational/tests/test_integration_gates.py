@@ -58,6 +58,15 @@ class IntegrationGateTests(unittest.TestCase):
         self.assertIn("LittleFS.exists(OPS_ARCHIVE_TMP)",ops)
         self.assertIn("delete[] opsArchive;opsArchive=nullptr;",ops)
 
+    def test_archive_ack_requires_get_and_body_crc(self):
+        ops=O.read_text()
+        cli=(BASE/"operational/host/ops_client.py").read_text()
+        self.assertIn("opsDownloadedSession!=id",ops)
+        self.assertIn("opsDownloadedCrc!=crc",ops)
+        self.assertIn("h.body_crc!=crc",ops)
+        self.assertIn("opsDownloadedSession=0;opsDownloadedCrc=0;",ops)
+        self.assertIn('ACKFILE {session} {body_crc}',cli)
+
     def test_compiler_guards_in_both_sketches(self):
         for d,sketch in (("anchor_p2_repeat","ANCHOR"),("tag_p2_repeat","TAG")):
             f=BASE/f"firmware/{d}/firmware/{sketch}_DUAL_DS_CIR/app.hpp"
