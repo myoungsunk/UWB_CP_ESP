@@ -43,6 +43,17 @@ class IntegrationGateTests(unittest.TestCase):
                     copy = firmware/"firmware"/f"{sketch}_DUAL_DS_CIR"/source.name
                     self.assertEqual(source.read_bytes(), copy.read_bytes(), str(copy))
 
+    def test_persisted_profile_boot_prepares_wire_before_writer(self):
+        for role in ("anchor","tag"):
+            app=(BASE/"firmware"/f"{role}_p2_repeat"/"shared/app.hpp").read_text(encoding="utf-8")
+            boot=app[app.index("static void setup(){"):]
+            self.assertIn("profileStatus==ProfileStatus::Valid&&config.stage==6&&config.baud==2000000",boot)
+            self.assertIn("uartWire=static_cast<uint8_t*>(malloc(bytes));",boot)
+            self.assertIn("profileStatus=ProfileStatus::Corrupt;",boot)
+            self.assertIn("uart_set_baudrate(UART_NUM_0,921600)",boot)
+            self.assertLess(boot.index("uartWire=static_cast<uint8_t*>(malloc(bytes));"),
+                            boot.index("xTaskCreatePinnedToCore(writer"))
+
     def test_rf_start_checks_wifi_even_when_internally_dispatched(self):
         ops = O.read_text(encoding="utf-8")
         start = ops[ops.index("static void opsLoop(){"):]
