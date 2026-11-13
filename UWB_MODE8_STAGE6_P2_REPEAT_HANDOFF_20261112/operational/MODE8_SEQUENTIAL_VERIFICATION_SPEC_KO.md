@@ -11,14 +11,14 @@
 | G2 호스트 | route 계획 1~10000pts/point1~32, 중복/음수/초과/경로 주입 | mock 서브프로세스, crash/restart | 잘못된 계획 거부, 세션 중복 0, 미완료 START 재실행 0 |
 | G3 저장 승인 | 파일 CRC 정상이나 radio/boot/nonce 불일치, GET 절단, ACK/PURGE replay | 앵커 Mock + Pi unittest | 검증 전 삭제 0, 유효 증거 불변성, CRC mismatch 반드시 HOLD |
 | G4 빌드 | 앵커/태그 Core3.3.7, exact board FQBN | GitHub Actions target build, size, source hashes | 2역할 BIN/ELF 생성, 실제 빌드 영수증, 컴파일 오류 0 |
-| G5 장치 | 태그 A/B CS/IRQ/RSTn, RF 스위치 제거, 전원 | DEV_ID 0xDECA0130, SYS_TIME, RXENAB, SPI 20MHz | 수신 복구 시 오동작·CS 중첩·brownout 없는 장치 |
-| G6 RF | 정지 32거래 x ≥10 runs | 같은 Probe 양쪽 CIR/DS, on-air frame CRC, RF 시각 직접 비교 | 각 실행 P1/P2 공통축 요구수 충족, period ±4ms, 누락/재시도 원인 분리 |
-| G7 운영 | 단일 point TCP start→Wi-Fi OFF→RF→commit→ON→GET/ACKFILE/PURGE | AP, Pi, Wi-Fi 스니핑, USB 원시 로그 | RF 시간 동안 Wi-Fi OFF, 양단 ID/원본 CRC 검증, 임의 삭제 0 |
+| G5 장치 | 설치 이미지·핀맵, 앵커와 태그 A/B 초기화·수신 | USB HELLO·SELFTEST, DEV_ID, SYS_TIME 검사, RX 활성·해제 진단, SYS_STATUS·RF_STATUS | 전 모듈 DEV_ID 0xDECA0130, SELFTEST 통과, SYS_TIME 진행, 수신 전환·복구 정상, PLL 보호 정지·리셋 0건 |
+| G6 RF | 정지 32거래 x ≥10 runs | 같은 Probe의 양쪽 CIR/DS, 보드가 저장한 RF 프레임 CRC·TX/RX 타임스탬프 교차 검산 | 각 실행 P1/P2 공통축 요구수 충족, period ±4ms, 누락/재시도 원인 분리 |
+| G7 운영 | 단일 point TCP start→Wi-Fi OFF→RF→commit→ON→GET/ACKFILE/PURGE | AP/Pi 접속 기록, 앵커 Wi-Fi 모드 확인·펌웨어 RF 시작 가드, USB 원시 로그 | 보드 기록상 RF 구간 Wi-Fi OFF, 양단 ID/원본 CRC 검증, 임의 삭제 0 |
 | G8 다중 point | 32+32+20, 10×32, route resume | Pi route journal, 전원/USB/TCP 차단 | 각 point 원본 해시 재생, 불완전 점 자동 재측정 없음, RF 공백 별도 보고 |
-| G9 정전 | Armed/Measuring/Draining/Flash-temp/rename/ACK/OTA 6개 절단점 | 하드웨어 릴레이 전원차단, 복원 | 미커밋 RAM 손실은 명시 HOLD, 기존 원본 덮어쓰기 0, 손상 파일 오승인 0 |
+| G9 정전 | Armed/Measuring/Draining/Flash-temp/rename/ACK/OTA 단계별 전원 차단 | 보드 전원 수동 차단 또는 사용 가능한 전원 제어, 재부팅 로그로 복원 확인 | 미커밋 RAM 손실은 명시 HOLD, 기존 원본 덮어쓰기 0, 손상 파일 오승인 0 |
 | G10 OTA | 잘못된 역할 이미지, wrong sha, U_SPIFFS 요청, 중단 업데이트, rollback | 60–600초 정비창, 역할별 파티션/부트 확인 | 근거 없는 OTA 안전/롤백 성공 주장 금지, 기존 파일 불변 |
-| G11 장기 | 1h/24h 반복 운영, 인증/PLL/heap/stack, USB 조각 결손 | 고장 주입·스코프·heap watermark | 데이터 누락이 원인별로 기록, 복구 후 원본 byte 동일, heap 저수위 문턱 지킴 |
-| G12 이동 | 0.2m/s 로봇 및 회전, FP·NLoS | 로봇 GT/odom/IMU 실제 시간축 비교 | 반복 P2는 반복 시각 사용, 통신 손실·물리 거리 보정 별도 보고 |
+| G11 장기 | 1h/24h 반복 운영, 인증/PLL/heap/stack, USB 조각 결손 | 고장 주입·부팅 ID·보호 정지 로그·heap watermark | 데이터 누락이 원인별로 기록, 복구 후 원본 byte 동일, heap 저수위 문턱 지킴 |
+| G12 이동 | 0.2m/s 로봇 및 회전, FP·NLoS | 공통 동기화 사건과 odom/IMU/RF 원본의 시간축 비교 | 반복 P2는 반복 시각 사용, 통신 손실·물리 거리 보정 별도 보고 |
 
 ## 적대적 반례 카탈로그
 
@@ -54,7 +54,7 @@
 }
 \`\`\`
 
-누락, 오류 후 복구, 정상 최초 수신을 따로 집계하고 **최초 RF 성공률**과 **복구 후 데이터 보존율**을 구분합니다. 모든 시험에 실측 전원/네트워크/보드 정보가 없으면 해당 Gate는 NOT_RUN이며 합격으로 기입하지 않습니다.
+누락, 오류 후 복구, 정상 최초 수신을 따로 집계하고 **최초 RF 성공률**과 **복구 후 데이터 보존율**을 구분합니다. 합격에는 각 단계의 보드·Pi·호스트 원본 증거가 필요합니다. 외부 계측 장비는 필수 합격 조건에서 제외합니다. 보드 진단으로 확인한 정상 동작을 기록하며, CS 중첩·전원 강하·전파의 물리 파형과 절대 위치 정확도는 실측 판정 항목에 포함하지 않습니다. 필수 원본이 빠진 단계는 합격으로 기입하지 않습니다.
 
 ## 실제 실행 명령(운영 후보)
 
@@ -114,7 +114,7 @@ python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count
 python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000 --execute --wifi-off-confirmed
 ```
 
-`PROFILE SAVE`로 초기 전송 속도를 2Mbps로 복원하는 장비에는 `--anchor-initial-baud 2000000`, `--tag-initial-baud 2000000`을 추가한다. 기본 921600으로 착각해 저장/분석을 시작하지 않는다. 유선과 원격 운영을 같은 세션에 섞지 않고 거래 시작 전에 역할·부팅·설정·최종 CRC를 반드시 대조한다.
+`PROFILE SAVE`로 초기 전송 속도를 2Mbps로 복원하는 장비에는 `--anchor-initial-baud 2000000`, `--tag-initial-baud 2000000`을 추가한다. 기본 921600으로 착각해 저장/분석을 시작하지 않는다. 현재 보드·배치에 적용할 안테나 지연 설정이 있으면 `--calibration-profile <file>`을 지정한다. 유선과 원격 운영을 같은 세션에 섞지 않고 거래 시작 전에 역할·부팅·설정·최종 CRC를 반드시 대조한다.
 
 ### 오프라인 odom 동기화 입력 형식
 

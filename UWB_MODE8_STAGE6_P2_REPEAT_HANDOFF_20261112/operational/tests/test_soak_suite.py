@@ -23,6 +23,23 @@ class SoakTests(unittest.TestCase):
             with patch.object(sys,"argv",argv),patch("ops_soak_suite.subprocess.run") as run:
                 self.assertEqual(main(),0);run.assert_not_called()
             self.assertFalse(path.exists())
+    def test_bad_raw_proof_stops_after_requested_epoch(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "run"
+            argv = ["ops_soak_suite.py", "--anchor", "COM4", "--tag", "COM7",
+                    "--out", str(path), "--rounds", "2", "--execute", "--wifi-off-confirmed",
+                    "--calibration-profile", "bench.json"]
+            with patch.object(sys, "argv", argv), \
+                 patch("ops_soak_suite.subprocess.run") as run, \
+                 patch("ops_soak_suite.verify_receipt", side_effect=RuntimeError("SHA-256 mismatch")):
+                run.return_value.returncode = 0
+                self.assertEqual(main(), 2)
+                run.assert_called_once()
+                command = run.call_args.args[0]
+                self.assertEqual(command[command.index("--calibration-profile") + 1], "bench.json")
+            plan = json.loads((path / "soak_receipt.json").read_text(encoding="utf-8"))
+            self.assertEqual([row["status"] for row in plan["entries"]], ["REQUESTED", "PENDING"])
+
     def test_failed_epoch_has_durable_requested_journal_no_retry(self):
         with tempfile.TemporaryDirectory() as d:
             path=Path(d)/"run"

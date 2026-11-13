@@ -8,7 +8,6 @@ Host/device failure or power loss remains HOLD, never auto-restarted.
 from __future__ import annotations
 import argparse
 import json
-import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -39,6 +38,7 @@ def main():
     p.add_argument("--out",required=True,type=Path)
     p.add_argument("--count",type=int,default=1000)
     p.add_argument("--rounds",type=int,default=18,help="18 * 1000 * 200ms ~= 1h excluding gaps")
+    p.add_argument("--calibration-profile", type=Path)
     p.add_argument("--execute",action="store_true")
     p.add_argument("--wifi-off-confirmed",action="store_true")
     p.add_argument("--anchor-initial-baud",type=int,choices=(921600,2000000),default=921600)
@@ -48,7 +48,7 @@ def main():
         plan=run_plan(a.anchor,a.tag,a.out,a.count,a.rounds)
         if a.out.exists():raise RouteHold("existing output directory; no automated retry")
         if not a.execute:
-            print(json.dumps({"status":"DRY_RUN_NO_RF",**plan},indent=2))
+            print(json.dumps({**plan,"status":"DRY_RUN_NO_RF"},indent=2))
             return 0
         if not a.wifi_off_confirmed:
             raise RouteHold("operator must verify anchor Wi-Fi OFF")
@@ -68,9 +68,11 @@ def main():
                          str(Path(__file__).with_name("ops_wired_continuous.py")),
                          "--anchor",a.anchor,"--tag",a.tag,
                          "--out",str(round_dir),"--count",str(a.count),
-                         "--anchor-initial-baud",str(a.anchor_initial_baud),
-                         "--tag-initial-baud",str(a.tag_initial_baud),
+                         "--anchor-initial-baud",str(a.anchor_initial_baud if i == 0 else 921600),
+                         "--tag-initial-baud",str(a.tag_initial_baud if i == 0 else 921600),
                          "--execute","--wifi-off-confirmed"]
+                if a.calibration_profile is not None:
+                    command.extend(("--calibration-profile", str(a.calibration_profile)))
                 with (a.out/f"epoch_{i:04d}.log").open("xb") as log:
                     rc=subprocess.run(command,stdout=log,stderr=subprocess.STDOUT,
                                       timeout=int(a.count*.2+220),check=False)
@@ -84,7 +86,7 @@ def main():
             durable_json(journal,plan)
         print(json.dumps({"status":plan["status"],"verified_rounds":a.rounds},indent=2))
         return 0
-    except (OSError,ValueError,RouteHold,subprocess.TimeoutExpired) as e:
+    except (OSError,ValueError,RuntimeError,subprocess.TimeoutExpired) as e:
         print("SOAK_HOLD (do not re-run a requested epoch): "+str(e),file=sys.stderr)
         return 2
 

@@ -11,40 +11,31 @@ import json
 from pathlib import Path
 import subprocess
 import sys
-from ops_wired_continuous import digest_file
+from ops_wired_continuous import verify_receipt
 
 PAIR=Path(__file__).resolve().parents[2]/"firmware/anchor_p2_repeat/tools/run_pair.py"
 PERIODS=(200000,195000,190000)
 
-def command_for(anchor,tag,out,count,period,initial_anchor=921600,initial_tag=921600):
+def command_for(anchor,tag,out,count,period,initial_anchor=921600,initial_tag=921600,
+                calibration_profile=None):
     if period not in PERIODS or type(count) is not int or not 1<=count<=5000:
         raise ValueError("only explicit 200/195/190ms 1..5000 trial counts")
     if not anchor or not tag or anchor==tag:raise ValueError("two separate USB ports required")
     if initial_anchor not in (921600,2000000) or initial_tag not in (921600,2000000):
         raise ValueError("invalid boot baud")
-    return [sys.executable,str(PAIR),"--anchor",anchor,"--tag",tag,
-            "--out",str(out),"--stage","6","--period-us",str(period),
-            "--baud","2000000","--count",str(count),
-            "--anchor-initial-baud",str(initial_anchor),
-            "--tag-initial-baud",str(initial_tag)]
+    command = [sys.executable,str(PAIR),"--anchor",anchor,"--tag",tag,
+               "--out",str(out),"--stage","6","--period-us",str(period),
+               "--baud","2000000","--count",str(count),
+               "--anchor-initial-baud",str(initial_anchor),
+               "--tag-initial-baud",str(initial_tag)]
+    if calibration_profile is not None:
+        command.extend(("--calibration-profile", str(calibration_profile)))
+    return command
 
 def inspect_trial(path:Path,expected_count:int,period:int):
-    receipt=json.loads((path/"capture_receipt.json").read_text(encoding="utf-8"))
-    if (receipt.get("pass") is not True or receipt.get("requested_count")!=expected_count
-        or receipt.get("stage")!=6 or receipt.get("period_us")!=period
-        or receipt.get("baud")!=2000000):
-        raise RuntimeError("Stage6 capture receipt failed exact-identity gate")
-    grids=(receipt.get("stage6") or {}).get("common_axis_and_power") or {}
-    if grids!={"P1":expected_count,"P2":expected_count}:
-        raise RuntimeError("missing P1/P2 2-pol common time/power grids")
-    result={}
-    for filename in ("anchor.rfb8","tag.rfb8"):
-        f=path/filename
-        if not f.is_file() or f.stat().st_size==0:
-            raise RuntimeError("missing original physical RF evidence")
-        result[filename]={"sha256":digest_file(f),"bytes":f.stat().st_size}
-    return {"period_us":period,"count":expected_count,"p1_p2_grids":grids,
-            "rf_evidence":result,"period_field_approved":False}
+    verified = verify_receipt(path, expected_count, period_us=period)
+    return {"period_us":period,"count":expected_count,"p1_p2_grids":verified["grids"],
+            "rf_evidence":verified["evidence"],"period_field_approved":False}
 
 def main()->int:
     p=argparse.ArgumentParser(description=__doc__)
@@ -54,14 +45,18 @@ def main()->int:
     p.add_argument("--count",type=int,default=20)
     p.add_argument("--anchor-initial-baud",type=int,choices=(921600,2000000),default=921600)
     p.add_argument("--tag-initial-baud",type=int,choices=(921600,2000000),default=921600)
+    p.add_argument("--calibration-profile", type=Path)
     p.add_argument("--execute",action="store_true")
     p.add_argument("--wifi-off-confirmed",action="store_true")
     args=p.parse_args()
     try:
         if args.out.exists():raise ValueError("output folder already exists")
         commands=[command_for(args.anchor,args.tag,args.out/f"period_{period}",
-                              args.count,period,args.anchor_initial_baud,args.tag_initial_baud)
-                  for period in PERIODS]
+                              args.count,period,
+                              args.anchor_initial_baud if i == 0 else 921600,
+                              args.tag_initial_baud if i == 0 else 921600,
+                              args.calibration_profile)
+                  for i, period in enumerate(PERIODS)]
         if not args.execute:
             print(json.dumps({"mode":"DRY_RUN_NO_RF","commands":commands},indent=2))
             return 0
