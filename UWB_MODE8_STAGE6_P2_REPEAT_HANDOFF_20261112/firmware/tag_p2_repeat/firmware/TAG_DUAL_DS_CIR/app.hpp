@@ -570,6 +570,7 @@ static void setup(){
  profileStatus=profileLoad(desired);
  if(profileStatus==ProfileStatus::Valid){
   if(prepareUartWire(desired)&&uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)config=desired;
+  // Prepare the R8F6 writer while the UART is still at its diagnostic baud.
   else profileStatus=ProfileStatus::Corrupt;
  }
  boot=esp_random();if(!boot)boot=1;port.configure(config);hwOk=port.initialize();hello();emitAntennaInit("boot");

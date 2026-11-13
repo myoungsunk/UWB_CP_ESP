@@ -54,6 +54,14 @@ class IntegrationGateTests(unittest.TestCase):
                     copy = firmware/"firmware"/f"{sketch}_DUAL_DS_CIR"/source.name
                     self.assertEqual(source.read_bytes(), copy.read_bytes(), str(copy))
 
+    def test_persisted_profile_prepares_wire_before_baud_and_boot_hello(self):
+        for path in (A, T):
+            app = path.read_text(encoding="utf-8")
+            boot = app[app.index("static void setup(){"):]
+            self.assertIn("if(prepareUartWire(desired)&&uart_set_baudrate", boot)
+            self.assertIn("else profileStatus=ProfileStatus::Corrupt;", boot)
+            self.assertLess(boot.index("prepareUartWire(desired)"), boot.index("hello();"))
+
     def test_rf_start_checks_wifi_even_when_internally_dispatched(self):
         ops = O.read_text(encoding="utf-8")
         start = ops[ops.index("static void opsLoop(){"):]
