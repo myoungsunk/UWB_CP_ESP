@@ -23,10 +23,10 @@ using namespace dual8;
 static Esp32Port port;static Config config;
 static constexpr unsigned BASE_POOL=3;
 static constexpr unsigned POOL=DUAL8_ANCHOR?5:BASE_POOL;
-static Record basePool[BASE_POOL];
+static Record* basePool[BASE_POOL]{};
 static Record* extraPool[2]{};
 static Record& recordAt(unsigned index){
- return index<BASE_POOL?basePool[index]:*extraPool[index-BASE_POOL];
+ return index<BASE_POOL?*basePool[index]:*extraPool[index-BASE_POOL];
 }
 static QueueHandle_t freeQ=nullptr,outQ=nullptr;
 constexpr unsigned wireStride=UART_FRAGMENT_HEADER+UART_FRAGMENT_BYTES;
@@ -481,7 +481,12 @@ static void setup(){
  Serial.setRxBufferSize(2048);Serial.setTxBufferSize(8192);Serial.begin(config.baud);delay(300);
  freeQ=xQueueCreate(POOL,sizeof(uint8_t));outQ=xQueueCreate(12,sizeof(Out));
  if(!freeQ||!outQ){Serial.println("FATAL_QUEUE");while(true)delay(1000);}
- // Keep the static DRAM footprint of the original build. Check extra slots at boot.
+ // Wi-Fi/LittleFS/OTA increase .bss. Construct all large records on the heap
+ // at boot before any RF and fail closed if RAM is insufficient.
+ for(unsigned i=0;i<BASE_POOL;++i){
+  basePool[i]=new(std::nothrow) Record();
+  if(!basePool[i]){Serial.println("FATAL_BASE_RECORD_POOL");while(true)delay(1000);}
+ }
  for(unsigned i=BASE_POOL;i<POOL;++i){
   auto*& slot=extraPool[i-BASE_POOL];
   slot=new(std::nothrow) Record();
