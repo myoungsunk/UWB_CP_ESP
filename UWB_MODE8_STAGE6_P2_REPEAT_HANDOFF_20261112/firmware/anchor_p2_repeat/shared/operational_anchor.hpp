@@ -57,6 +57,13 @@ struct OpsArchiveHeader {
 static_assert(sizeof(OpsArchiveRow)==1070,"Mode 8 archive row schema drift");
 static_assert(sizeof(OpsArchiveHeader)==32,"Mode 8 archive header schema drift");
 static OpsArchiveRow* opsArchive=nullptr;
+static void opsCancelScheduledStart(){
+ if(opsPhase!=OpsPhase::Armed)return;
+ // Explicit USB STOP cancels an accepted TCP START before the RF deadline.
+ opsPhase=OpsPhase::Idle;opsSession=0;opsCount=0;opsRows=0;opsStartAt=0;
+ opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsReconnectAtMs=millis()+1000UL;
+}
 static bool opsArchiveEnabled(){
  return opsPhase==OpsPhase::Armed||opsPhase==OpsPhase::Measuring||
         opsPhase==OpsPhase::Draining||opsPhase==OpsPhase::Stored||opsPhase==OpsPhase::Fault;
