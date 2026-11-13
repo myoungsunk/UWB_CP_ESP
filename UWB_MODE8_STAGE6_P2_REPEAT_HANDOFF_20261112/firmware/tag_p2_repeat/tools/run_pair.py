@@ -72,7 +72,8 @@ def restore_default_baud(link, period_us, *, identity=None, session=None):
         if identity is not None:
             fresh_hello(link, identity, session, baud=2000000, period_us=300000)
     # seal_capture disables record ACKs/NACKs before this transition.
-    send_while_drained(link, "BAUD 921600")
+    silent = " SILENT" if identity is not None and identity.get("silent_baud") == 1 else ""
+    send_while_drained(link, "BAUD 921600" + silent)
     time.sleep(0.2)
     link.disable_replay()
     with link.write_lock:
@@ -150,7 +151,7 @@ class Link:
         self.serial.port = device
         self.serial.open()
         self.decoder = Decoder()
-        self.replay = None
+        self.replay = ReplayReceiver() if initial_baud == 2000000 else None
         self.replay_identity = None
         self.write_lock = threading.Lock()
         self.transport_base = {}
@@ -599,7 +600,8 @@ def capture(args, profile):
                 if args.stage == 6:
                     if h.get("record_replay") != 1:
                         raise RuntimeError(f"{name}: Stage 6 replay firmware required")
-                send_while_drained(link, f"BAUD {args.baud}")
+                silent = " SILENT" if h.get("silent_baud") == 1 else ""
+                send_while_drained(link, f"BAUD {args.baud}{silent}")
                 if args.stage == 6:
                     link.enable_replay()
                 time.sleep(0.2)

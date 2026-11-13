@@ -398,7 +398,7 @@ static void serviceDrain(){
  drainClean=quiet&&!sessionFailures();
  emitDrained(request,drainClean,quiet?(drainClean?"OK":"TRANSPORT_FAILURE"):"TIMEOUT");
 }
-static void hello(uint32_t request=0){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"drain_protocol\":1,\"session\":%lu,\"hello_request\":%lu,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u,\"queue_schedule_skips\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)session,(unsigned long)request,(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load(),queueScheduleSkips);}
+static void hello(uint32_t request=0){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"drain_protocol\":1,\"silent_baud\":1,\"session\":%lu,\"hello_request\":%lu,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u,\"queue_schedule_skips\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)session,(unsigned long)request,(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load(),queueScheduleSkips);}
 static void stop(uint32_t request=0){
 #if DUAL8_ANCHOR
  if(!opsInternalStart)opsCancelScheduledStart();
@@ -560,12 +560,12 @@ static void command(char*line){
   if(!prepareUartWire(next))return;
   config=next;port.configure(config);hello();return;
  }
- if(!strcmp(w[0],"BAUD")&&n==2){uint32_t v;if(!number(w[1],v)||(v!=921600&&v!=2000000)){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_BAUD\"}");return;}Config next=config;next.baud=v;if(validate(next)){emit("{\"event\":\"ERROR\",\"reason\":\"PERIOD_UART_BUDGET\"}");return;}
+ if(!strcmp(w[0],"BAUD")&&(n==2||(n==3&&!strcmp(w[2],"SILENT")))){uint32_t v;if(!number(w[1],v)||(v!=921600&&v!=2000000)){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_BAUD\"}");return;}Config next=config;next.baud=v;if(validate(next)){emit("{\"event\":\"ERROR\",\"reason\":\"PERIOD_UART_BUDGET\"}");return;}
   if(!prepareUartWire(next))return;
   if(uart_set_baudrate(UART_NUM_0,v)!=ESP_OK){
    emit("{\"event\":\"ERROR\",\"reason\":\"UART_BAUD_FAILED\"}");return;
   }
-  config=next;port.configure(config);hello();return;
+  config=next;port.configure(config);if(n==2)hello();return;
  }
  if(!strcmp(w[0],"ANT")&&n==6){uint32_t i,tx,rx,id;if(!number(w[1],i)||!number(w[2],tx)||!number(w[3],rx)||!number(w[4],id)||i>=(DUAL8_ANCHOR?1U:2U)||tx>65535||rx>65535){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_CALIBRATION\"}");return;}
   char*e=nullptr;double sigma=NAN;
@@ -618,12 +618,6 @@ static void setup(){
  Serial.setRxBufferSize(2048);Serial.setTxBufferSize(0);Serial.begin(config.baud);delay(300);
  // No profile => the diagnostic 921600-baud startup behavior is preserved.
  // A damaged profile fails closed to diagnostics; never auto-start RF.
- Config desired=config;
- profileStatus=profileLoad(desired);
- if(profileStatus==ProfileStatus::Valid){
-  if(uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)config=desired;
-  else profileStatus=ProfileStatus::Corrupt;
- }
  freeQ=xQueueCreate(POOL,sizeof(uint8_t));outQ=xQueueCreate(12,sizeof(Out));
  if(!freeQ||!outQ){Serial.println("FATAL_QUEUE");while(true)delay(1000);}
  for(unsigned i=0;i<POOL;++i){
@@ -633,6 +627,12 @@ static void setup(){
  }
  for(uint8_t i=0;i<POOL;++i)xQueueSend(freeQ,&i,0);
  if(xTaskCreatePinnedToCore(writer,"dual8_writer",8192,nullptr,1,nullptr,0)!=pdPASS){Serial.println("FATAL_WRITER");while(true)delay(1000);}
+ Config desired=config;
+ profileStatus=profileLoad(desired);
+ if(profileStatus==ProfileStatus::Valid){
+  if(prepareUartWire(desired)&&uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)config=desired;
+  else profileStatus=ProfileStatus::Corrupt;
+ }
  boot=esp_random();if(!boot)boot=1;port.configure(config);hwOk=port.initialize();
 #if DUAL8_ANCHOR
  opsSetup();

@@ -82,7 +82,7 @@ class OperationalClient:
         proof=self.custody_proof("ACK",session,body_crc)
         return self.command(f"ACKFILE {session} {body_crc} {proof}")
 
-    def purge_archive(self, session:int,body_crc:int,boot:int)->str:
+    def purge_archive(self, session:int,body_crc:int,boot:int,*,before_send=None)->str:
         if self.boot!=boot:
             raise TransportError("anchor rebooted before purge")
         status=json.loads(self.command("STATUS"))
@@ -91,6 +91,8 @@ class OperationalClient:
             status.get("file_boot")!=boot or status.get("file_acked") is not True):
             raise TransportError("remote identity/ACK does not match local verified file")
         proof=self.custody_proof("PURGE",session,body_crc)
+        if before_send is not None:
+            before_send()
         return self.command(f"PURGE {session} {body_crc} {proof}")
 
     def get_archive(self,path:Path,expect_session:int|None=None,ack:bool=False):
@@ -158,6 +160,7 @@ def main():
     purge=sub.add_parser("purge")
     purge.add_argument("--archive",type=Path,required=True)
     purge.add_argument("--receipt",type=Path,required=True)
+    purge.add_argument("--tag",type=Path,required=True)
     ota=sub.add_parser("ota");ota.add_argument("seconds",type=int)
     args=a.parse_args()
     secret=os.environ.get(args.key_env,"")
@@ -179,16 +182,17 @@ def main():
             doc=ops.get_archive(args.path,args.session,ack=False)
             print(f"Saved and verified {doc['count']} anchor records from session {doc['session']}")
         elif args.action=="purge":
-            receipt=json.loads(args.receipt.read_text(encoding="utf-8"))
-            doc=parse(args.archive.read_bytes())
-            paired=receipt.get("paired_audit") or {}
-            anchor=receipt.get("anchor_identity") or {}
-            if (receipt.get("status")!="SAVED_BOTH_ENDPOINTS" or
-                receipt.get("requested_session")!=doc["session"] or
-                paired.get("paired_records")!=doc["count"] or
-                anchor.get("boot")!=doc["boot"]):
-                raise SystemExit("saved paired RF audit receipt required for purge")
-            print(ops.purge_archive(doc["session"],doc["crc32"],doc["boot"]))
+            from ops_route import check_point_file_hashes, verify_point_files
+            doc = parse(args.archive.read_bytes())
+            proof = verify_point_files(args.receipt, args.archive, args.tag,
+                                       doc["session"], doc["count"], 200000)
+            reply = ops.purge_archive(doc["session"], proof["archive_crc"], proof["anchor_boot"],
+                                      before_send=lambda: check_point_file_hashes(
+                                          args.receipt, args.archive, args.tag, proof))
+            if reply != "PURGE_OK":
+                raise SystemExit(f"Anchor rejected purge: {reply}")
+            check_point_file_hashes(args.receipt, args.archive, args.tag, proof)
+            print(reply)
         elif args.action=="ota":print(ops.command(f"OTA {args.seconds}"))
 
 if __name__=="__main__":

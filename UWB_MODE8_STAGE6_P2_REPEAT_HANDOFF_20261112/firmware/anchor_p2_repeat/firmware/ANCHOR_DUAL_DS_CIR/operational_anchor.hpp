@@ -186,7 +186,9 @@ static bool opsVerifyArchive(const OpsArchiveHeader& h,const char* path=OPS_ARCH
  if(!f)return false;
  const size_t expected=sizeof h+size_t(h.count)*h.row_bytes;
  if(size_t(f.size())!=expected){f.close();return false;}
- if(!f.seek(sizeof h,SeekSet)){f.close();return false;}
+ OpsArchiveHeader actual;
+ if(f.read(reinterpret_cast<uint8_t*>(&actual),sizeof actual)!=int(sizeof actual)||
+    memcmp(&actual,&h,sizeof h)!=0){f.close();return false;}
  uint8_t buffer[256];uint32_t crc=0xffffffffUL;
  size_t remaining=expected-sizeof h;
  while(remaining){
@@ -202,7 +204,7 @@ static bool opsRecoverJournal(){
  if(!opsFsOk||LittleFS.exists(OPS_ARCHIVE_PATH))return false;
  OpsArchiveHeader h;
  return opsReadHeader(h,OPS_ARCHIVE_TMP)&&opsVerifyArchive(h,OPS_ARCHIVE_TMP)&&
-        LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_PATH);
+        LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_PATH)&&opsVerifyArchive(h);
 }
 static void opsLoadArchiveState(){
  if(LittleFS.exists(OPS_ARCHIVE_TMP)&&!LittleFS.exists(OPS_ARCHIVE_PATH))
@@ -249,7 +251,11 @@ static bool opsHex(const char*hex,uint8_t*out,size_t capacity,size_t&length){
  }
  return true;
 }
+static bool opsCustodyKeyReady(){
+ return opsNet.deleteSet&&(!opsNet.authSet||memcmp(opsNet.authKey,opsNet.deleteKey,32)!=0);
+}
 static void opsLoadNet(){
+ opsLastAck={};
  Preferences p;if(!p.begin("mode8ops",true))return;
  p.getString("ssid",opsNet.ssid,sizeof opsNet.ssid);
  p.getString("pass",opsNet.pass,sizeof opsNet.pass);
@@ -259,9 +265,9 @@ static void opsLoadNet(){
      &&p.getBytes("deletekey",opsNet.deleteKey,sizeof opsNet.deleteKey)==sizeof opsNet.deleteKey;
  p.getString("otahash",opsNet.otaHash,sizeof opsNet.otaHash);
  opsNet.otaSet=strlen(opsNet.otaHash)==64;
- // Ignore the old session-only approval. A legacy file must be fetched again.
- if(p.getBytesLength("file_ack_v2")==sizeof opsLastAck&&
-    p.getBytes("file_ack_v2",&opsLastAck,sizeof opsLastAck)!=sizeof opsLastAck)
+ // Older approvals may have been signed with the TCP login key.
+ if(opsCustodyKeyReady()&&p.getBytesLength("file_ack_v3")==sizeof opsLastAck&&
+    p.getBytes("file_ack_v3",&opsLastAck,sizeof opsLastAck)!=sizeof opsLastAck)
   opsLastAck={};
  p.end();
 }
@@ -277,8 +283,14 @@ static bool opsSaveHexField(const char*name,const char*hex){
   bytes[n]=0;ok=p.putString("pass",reinterpret_cast<const char*>(bytes))==n;
   if(ok)memcpy(opsNet.pass,bytes,n+1);
  }else if(!strcmp(name,"AUTH")&&n==32){
-  ok=p.putBytes("auth",bytes,32)==32;
-  if(ok){memcpy(opsNet.authKey,bytes,32);opsNet.authSet=true;}
+  if(!opsNet.deleteSet||memcmp(bytes,opsNet.deleteKey,32)!=0){
+   ok=p.putBytes("auth",bytes,32)==32;
+   if(ok){
+    memcpy(opsNet.authKey,bytes,32);opsNet.authSet=true;
+    if(opsClient)opsClient.stop();
+    opsTcpAuthorized=false;opsDownloaded={};
+   }
+  }
  }else if(!strcmp(name,"DELETEKEY")&&n==32){
   // Deletion custody uses a separate physical USB provisioned secret.
   if(!opsNet.authSet||memcmp(bytes,opsNet.authKey,32)!=0){
@@ -327,7 +339,7 @@ static void opsTcpStatus(){
   stored?"true":"false",(unsigned long)(stored?h.session:0),(unsigned long)(stored?h.count:0),
   stored&&opsLastAck==opsIdentity(h)?"true":"false",
   (unsigned long)(stored?h.body_crc:0),(unsigned long)(stored?h.boot:0),
-  opsNet.deleteSet?"true":"false",(unsigned long)pending.load(),
+  opsCustodyKeyReady()?"true":"false",(unsigned long)pending.load(),
   awaitingAck.load(),freeQ?unsigned(uxQueueMessagesWaiting(freeQ)):0,
   firmwareId(true),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,
   hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)periodMiss,
@@ -350,7 +362,7 @@ static bool opsHmac(const char*hex){
 // The control-login key alone never grants archival approval/deletion.
 // Every proof is bound to the current TCP nonce, boot, session and CRC.
 static bool opsCustodyProof(const char* token,const char* verb,const OpsFileIdentity& id){
- if(!opsNet.deleteSet||!token||strlen(token)!=64)return false;
+ if(!opsCustodyKeyReady()||!token||strlen(token)!=64)return false;
  uint8_t claimed[32]{};size_t n=0;
  if(!opsHex(token,claimed,sizeof claimed,n)||n!=32)return false;
  char message[120];
@@ -372,34 +384,48 @@ static bool opsDownload(){
  OpsArchiveHeader h;
  if(!opsReadHeader(h)||!opsVerifyArchive(h))return false;
  File f=LittleFS.open(OPS_ARCHIVE_PATH,"r");if(!f)return false;
+ size_t remaining=sizeof h+size_t(h.count)*h.row_bytes;
+ if(size_t(f.size())!=remaining){f.close();return false;}
  char line[90];
  snprintf(line,sizeof line,"DATA %lu %lu %lu",(unsigned long)h.session,
-          (unsigned long)f.size(),(unsigned long)h.body_crc);
- if(!opsTcpReply(line)){f.close();return false;}
- uint8_t bytes[512];uint32_t idleSince=millis();bool ok=true;
- while(f.available()){
-  const size_t n=f.read(bytes,sizeof bytes);if(n==0){ok=false;break;}
+          (unsigned long)remaining,(unsigned long)h.body_crc);
+ if(!opsTcpReply(line)){f.close();opsClient.stop();return false;}
+ uint8_t bytes[512];uint32_t idleSince=millis(),crc=0xffffffffUL;
+ bool first=true,ok=true;
+ while(remaining){
+  const size_t n=remaining>sizeof bytes?sizeof bytes:remaining;
+  if(f.read(bytes,n)!=int(n)){ok=false;break;}
+  const size_t headerBytes=first?sizeof h:0;
+  if(first&&memcmp(bytes,&h,sizeof h)!=0){ok=false;break;}
+  first=false;
+  crc=dual8::crcStep(crc,bytes+headerBytes,n-headerBytes);
   size_t off=0;
   while(off<n){
    if(!opsClient.connected()||uint32_t(millis()-idleSince)>5000){ok=false;break;}
    const size_t sent=opsClient.write(bytes+off,n-off);
+   if(sent>n-off){ok=false;break;}
    if(sent){off+=sent;idleSince=millis();}else delay(1);
   }
   if(!ok)break;
+  remaining-=n;
  }
  f.close();
- if(!ok||!opsTcpReply("END"))return false;
+ // A partially sent binary payload cannot be followed by a text reply.
+ if(!ok||(crc^0xffffffffUL)!=h.body_crc||!opsTcpReply("END")){
+  opsClient.stop();return false;
+ }
  opsDownloaded=opsIdentity(h);
  return true;
 }
 static bool opsEraseAcked(){
  OpsArchiveHeader h;
- if(!opsReadHeader(h)||!opsVerifyArchive(h)||!(opsIdentity(h)==opsLastAck))return false;
+ if(!opsCustodyKeyReady()||!opsReadHeader(h)||!opsVerifyArchive(h)||
+    !(opsIdentity(h)==opsLastAck))return false;
  // Clear persistent approval before removing the file. An interruption can
  // require another GET/ACK, but cannot grant approval to a later file.
  Preferences p;
  if(!p.begin("mode8ops",false))return false;
- const bool cleared=p.remove("file_ack_v2");
+ const bool cleared=p.remove("file_ack_v3");
  p.end();
  if(!cleared)return false;
  opsLastAck={};
@@ -438,8 +464,12 @@ static void opsOtaBootAttest(){
  }
 #endif
 }
+// ArduinoOTA authenticates the connection but supplies no trusted role or
+// expected SHA-256 for the staged app. Keep the listener closed until the
+// anchor can verify both against an approved image before activation.
+static bool opsOtaCanAttestImage(){return false;}
 static bool opsOtaStart(uint32_t seconds){
- if(seconds<60||seconds>600||!opsNet.otaSet||!opsOtaPartitionsReady()||opsAnyStoredFile()||
+ if(!opsOtaCanAttestImage()||seconds<60||seconds>600||!opsNet.otaSet||!opsOtaPartitionsReady()||opsAnyStoredFile()||
     opsPhase!=OpsPhase::Idle||active||!opsRecordsDrained()||
     WiFi.status()!=WL_CONNECTED)return false;
  ArduinoOTA.setPort(3232);
@@ -512,7 +542,7 @@ static void opsTcpCommand(char *line){
   if(opsLastAck==identity){opsTcpReply("ACKFILE_OK");return;}
   Preferences p;
   if(!p.begin("mode8ops",false)){opsTcpReply("ERROR NVS");return;}
-  const bool ok=p.putBytes("file_ack_v2",&identity,sizeof identity)==sizeof identity;
+  const bool ok=p.putBytes("file_ack_v3",&identity,sizeof identity)==sizeof identity;
   p.end();
   if(ok){
    opsLastAck=identity;
@@ -553,7 +583,10 @@ static void opsTcpCommand(char *line){
   char*a=strtok_r(nullptr," \r\t",&save);
   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
   uint32_t seconds=0;
-  opsTcpReply(!extra&&parseDecimalU32(a,seconds)&&opsOtaStart(seconds)?"OTA_WINDOW_OPEN":"ERROR OTA_GUARD");
+  if(extra||!parseDecimalU32(a,seconds)||seconds<60||seconds>600)
+   opsTcpReply("ERROR OTA_GUARD");
+  else if(!opsOtaCanAttestImage())opsTcpReply("ERROR OTA_IMAGE_ATTESTATION_REQUIRED");
+  else opsTcpReply(opsOtaStart(seconds)?"OTA_WINDOW_OPEN":"ERROR OTA_GUARD");
   return;
  }
  opsTcpReply("ERROR UNKNOWN_COMMAND");
@@ -620,31 +653,39 @@ static bool opsUsbCommand(const char*line){
  if(!strcmp(op,"SSID")||!strcmp(op,"PASS")||!strcmp(op,"AUTH")||
     !strcmp(op,"DELETEKEY")||!strcmp(op,"OTAHASH")){
   char*value=strtok_r(nullptr," \r\t",&save);
+  const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
   // Credentials are not printed or echoed on serial.
   emit("{\"event\":\"OPS_PROVISION\",\"field\":\"%s\",\"ok\":%s}",
-       op,value&&opsSaveHexField(op,value)?"true":"false");
+       op,value&&!extra&&opsSaveHexField(op,value)?"true":"false");
   return true;
  }
  if(!strcmp(op,"RECOVER")){
-  const bool ok=opsPhase==OpsPhase::Recovery&&opsRecoverJournal();
+  const bool ok=!strtok_r(nullptr," \r\t",&save)&&
+      opsPhase==OpsPhase::Recovery&&opsRecoverJournal();
   if(ok){opsFailure=nullptr;opsLoadArchiveState();}
   emit("{\"event\":\"OPS_RECOVER\",\"ok\":%s}",ok?"true":"false");return true;
  }
  if(!strcmp(op,"QUARANTINE")){
   // Only move an uncommitted journal, and never overwrite a previous one.
-  const bool ok=opsPhase==OpsPhase::Recovery&&!LittleFS.exists(OPS_ARCHIVE_PATH)&&
+  const bool ok=!strtok_r(nullptr," \r\t",&save)&&
+      opsPhase==OpsPhase::Recovery&&!LittleFS.exists(OPS_ARCHIVE_PATH)&&
       !LittleFS.exists(OPS_ARCHIVE_QUARANTINE)&&LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_QUARANTINE);
   if(ok){opsPhase=OpsPhase::Idle;opsFailure=nullptr;}
   emit("{\"event\":\"OPS_QUARANTINE\",\"ok\":%s}",ok?"true":"false");return true;
  }
  if(!strcmp(op,"PURGE")){
-  emit("{\"event\":\"OPS_PURGE\",\"ok\":%s}",opsEraseAcked()?"true":"false");return true;
+  emit("{\"event\":\"OPS_PURGE\",\"ok\":false,\"reason\":\"TCP_CUSTODY_PROOF_REQUIRED\"}");return true;
  }
  if(!strcmp(op,"OTA")){
-  char*value=strtok_r(nullptr," \r\t",&save),*end=nullptr;
-  const unsigned long s=value?strtoul(value,&end,10):0;
-  emit("{\"event\":\"OPS_OTA\",\"ok\":%s}",
-       value&&end&&!*end&&opsOtaStart(uint32_t(s))?"true":"false");return true;
+  char*value=strtok_r(nullptr," \r\t",&save);
+  uint32_t seconds=0;
+  if(strtok_r(nullptr," \r\t",&save)||!parseDecimalU32(value,seconds)||
+     seconds<60||seconds>600)
+   emit("{\"event\":\"OPS_OTA\",\"ok\":false,\"reason\":\"OTA_GUARD\"}");
+  else if(!opsOtaCanAttestImage())
+   emit("{\"event\":\"OPS_OTA\",\"ok\":false,\"reason\":\"IMAGE_ATTESTATION_REQUIRED\"}");
+  else emit("{\"event\":\"OPS_OTA\",\"ok\":%s}",opsOtaStart(seconds)?"true":"false");
+  return true;
  }
  emit("{\"event\":\"ERROR\",\"reason\":\"UNKNOWN_OPS_COMMAND\"}");return true;
 }

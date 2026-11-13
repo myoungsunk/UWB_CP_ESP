@@ -1,4 +1,5 @@
 """Mode8 route custody: deterministic sessions, journal and no double START."""
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -7,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"host"))
-from ops_route import (validate_plan,derive_session,durable_json,RouteController,RouteHold)
+from ops_route import (validate_plan,derive_session,durable_json,unique_json,RouteController,RouteHold)
 
 PLAN={"route_id":777,"mode":8,"stage":6,"period_us":200000,
       "points":[{"point_id":"A1","count":32},{"point_id":"A2","count":20}]}
@@ -21,7 +22,8 @@ class PlanTests(unittest.TestCase):
         self.assertEqual(validate_plan(PLAN),PLAN)
     def test_invalid_plan_fail_closed(self):
         for bad in (
-            {**PLAN,"mode":7},{**PLAN,"period_us":190000},
+            {**PLAN,"mode":7},{**PLAN,"period_us":190000},{**PLAN,"mode":8.0},
+            {**PLAN,"stage":6.0},{**PLAN,"period_us":200000.0},
             {**PLAN,"points":[{"point_id":"a/b","count":20}]},
             {**PLAN,"points":[{"point_id":"A","count":33}]},
             {**PLAN,"points":[{"point_id":"A","count":True}]},
@@ -29,7 +31,33 @@ class PlanTests(unittest.TestCase):
         ):
             with self.assertRaises(ValueError):validate_plan(bad)
 
+    def test_duplicate_nested_json_key_rejected(self):
+        with self.assertRaisesRegex(ValueError,"duplicate JSON key: count"):
+            unique_json('{"points":[{"count":1,"count":32}]}')
+
+
 class RouteTests(unittest.TestCase):
+    def point_evidence(self,ctl,index=0):
+        entry=ctl.data["points"][index]
+        folder=ctl.point_folder(index)
+        folder.mkdir()
+        receipt,archive,tag=ctl.point_files(index)
+        tag.write_bytes(b"audited tag")
+        archive.write_bytes(b"audited anchor")
+        count=entry["count"]
+        paired={k:count for k in ("paired_records","p1_common_grid","p2_common_grid")}
+        receipt.write_text(json.dumps({
+            "status":"SAVED_BOTH_ENDPOINTS","requested_session":entry["session"],
+            "requested_count":count,"anchor_identity":{"boot":5,"config_id":6},
+            "tag_identity":{"boot":7,"config_id":6},"tag_capture":{"records":count},
+            "paired_audit":paired}),encoding="utf-8")
+        doc={"session":entry["session"],"count":count,"boot":5,"config":6,"crc32":123}
+        proof={field:hashlib.sha256(path.read_bytes()).hexdigest()
+               for field,path in zip(("receipt_sha256","anchor_sha256","tag_sha256"),
+                                     (receipt,archive,tag))}
+        proof.update(archive_crc=123,anchor_boot=5,tag_boot=7)
+        return doc,paired,proof
+
     def test_resume_rejects_changed_spec_and_missing_journal(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d)
@@ -43,8 +71,13 @@ class RouteTests(unittest.TestCase):
     def test_request_is_durable_before_external_rf_and_never_auto_restarted(self):
         with tempfile.TemporaryDirectory() as d:
             target=Path(d)/"route"
-            ctl=RouteController(PLAN,target,"127.0.0.1","COM4",KEY)
-            def failed(_cmd,check):
+            approval=b"a"*32
+            ctl=RouteController(PLAN,target,"127.0.0.1","COM4",KEY,approval_key=approval)
+            def failed(cmd,check,env):
+                self.assertEqual(env["MODE8_AUTH_KEY_HEX"],KEY.hex())
+                self.assertEqual(env["MODE8_APPROVAL_KEY_HEX"],approval.hex())
+                self.assertNotIn(KEY.hex(),cmd)
+                self.assertNotIn(approval.hex(),cmd)
                 data=json.loads((target/"route_receipt.json").read_text())
                 self.assertEqual(data["points"][0]["state"],"REQUESTED")
                 self.assertFalse(check)
@@ -66,7 +99,8 @@ class RouteTests(unittest.TestCase):
             status={"phase":"IDLE","file":False,"boot":5}
             with patch.object(ctl,"verify_point",return_value={"anchor_boot":5}) as verify:
                 with patch.object(ctl,"anchor_status",return_value=status):
-                    with patch("ops_route.OperationalClient") as client:
+                    with patch("ops_route.OperationalClient") as client, \
+                            patch("ops_route.check_point_file_hashes"):
                         ctl.purge(0)
                         client.assert_not_called()
                         verify.assert_called_once_with(0)
@@ -161,5 +195,123 @@ class RouteTests(unittest.TestCase):
                     with self.assertRaises(RouteHold):ctl.purge(0)
                     client.assert_not_called()
             self.assertEqual(row["state"],"VERIFIED")
+
+    def test_replay_cannot_pin_bytes_replaced_during_audit(self):
+        with tempfile.TemporaryDirectory() as d:
+            ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
+            doc,paired,_=self.point_evidence(ctl)
+            _,_,tag=ctl.point_files(0)
+
+            def replay(*args,tag_bytes):
+                self.assertEqual(tag_bytes,b"audited tag")
+                tag.write_bytes(b"replacement not replayed")
+                return paired
+
+            with patch("ops_route.parse_archive",return_value=doc), \
+                    patch("ops_session.audit_archived_session",side_effect=replay):
+                with self.assertRaisesRegex(RouteHold,"tag_sha256 changed"):
+                    ctl.verify_point(0)
+
+    def test_present_receipt_hashes_must_bind_both_raw_snapshots(self):
+        with tempfile.TemporaryDirectory() as d:
+            ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
+            doc,paired,proof=self.point_evidence(ctl)
+            receipt=ctl.point_files(0)[0]
+            data=json.loads(receipt.read_bytes())
+            with patch("ops_route.parse_archive",return_value=doc), \
+                    patch("ops_session.audit_archived_session",return_value=paired) as replay:
+                for hashes in (None, {"tag.rfb8":proof["tag_sha256"]}, {
+                        "anchor_archive.bin":proof["anchor_sha256"],"tag.rfb8":"0"*64}):
+                    with self.subTest(hashes=hashes):
+                        data["raw_sha256"]=hashes
+                        durable_json(receipt,data)
+                        with self.assertRaisesRegex(RouteHold,"receipt hashes"):
+                            ctl.verify_point(0)
+                replay.assert_not_called()
+                data["raw_sha256"]={"anchor_archive.bin":proof["anchor_sha256"],
+                                    "tag.rfb8":proof["tag_sha256"]}
+                durable_json(receipt,data)
+                self.assertEqual(ctl.verify_point(0)["tag_sha256"],proof["tag_sha256"])
+                replay.assert_called_once()
+
+    def test_resume_rejects_changed_journal_point_order_and_proof(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/"route"
+            ctl=RouteController(PLAN,target,"127.0.0.1","COM4",KEY)
+            original=json.dumps(ctl.data)
+            for point,field,value in ((0,"session",ctl.data["points"][1]["session"]),
+                                      (0,"point_id","replacement"),(0,"count",31),
+                                      (1,"state","REQUESTED"),(0,"state","PURGED")):
+                with self.subTest(point=point,field=field):
+                    ctl.data=json.loads(original)
+                    ctl.data["points"][point][field]=value
+                    ctl.save()
+                    with self.assertRaises(RouteHold):
+                        RouteController(PLAN,target,"127.0.0.1","COM4",KEY,resume=True)
+
+    def test_resume_rechecks_purged_original_before_next_point(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/"route"
+            ctl=RouteController(PLAN,target,"127.0.0.1","COM4",KEY)
+            _,_,proof=self.point_evidence(ctl)
+            ctl.data["points"][0].update(proof,state="PURGED")
+            ctl.save()
+            ctl.point_files(0)[2].write_bytes(b"corrupted original")
+            resumed=RouteController(PLAN,target,"127.0.0.1","COM4",KEY,resume=True)
+            with patch("ops_route.subprocess.run") as proc:
+                with self.assertRaisesRegex(RouteHold,"tag_sha256 changed"):
+                    resumed.run()
+                proc.assert_not_called()
+
+    def test_concurrent_and_stale_resume_cannot_repeat_start(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/"route"
+            first=RouteController(PLAN,target,"127.0.0.1","COM4",KEY)
+            stale=RouteController(PLAN,target,"127.0.0.1","COM4",KEY,resume=True)
+
+            def failed(_cmd,check,env):
+                with self.assertRaisesRegex(RouteHold,"route is locked"):
+                    stale.run()
+                return type("Result",(),{"returncode":2})()
+
+            with patch("ops_route.subprocess.run",side_effect=failed) as proc:
+                with self.assertRaisesRegex(RouteHold,"capture incomplete"):
+                    first.run()
+                proc.assert_called_once()
+            with patch("ops_route.subprocess.run") as proc:
+                with self.assertRaisesRegex(RouteHold,"invalid point evidence"):
+                    stale.run()
+                proc.assert_not_called()
+
+    def test_purge_rechecks_after_remote_status_and_confirms_same_boot(self):
+        for mutate in (True,False):
+            with self.subTest(mutate=mutate), tempfile.TemporaryDirectory() as d:
+                ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY,
+                                    approval_key=b"a"*32)
+                doc,paired,proof=self.point_evidence(ctl)
+                row=ctl.data["points"][0]
+                row.update(proof,state="VERIFIED")
+                status={"phase":"STORED","file":True,"file_session":row["session"],
+                        "file_count":row["count"],"boot":5,"file_acked":True}
+                final={"phase":"IDLE","file":False,"boot":6}
+                sent=[]
+
+                def purge(session,crc,boot,*,before_send):
+                    if mutate:
+                        ctl.point_files(0)[2].write_bytes(b"replaced during remote status")
+                    before_send()
+                    sent.append((session,crc,boot))
+                    return "PURGE_OK"
+
+                with patch("ops_route.parse_archive",return_value=doc), \
+                        patch("ops_session.audit_archived_session",return_value=paired), \
+                        patch.object(ctl,"anchor_status",side_effect=[status,final]), \
+                        patch("ops_route.OperationalClient") as client:
+                    client.return_value.__enter__.return_value.purge_archive.side_effect=purge
+                    message="tag_sha256 changed" if mutate else "purge not durably confirmed"
+                    with self.assertRaisesRegex(RouteHold,message):
+                        ctl.purge(0)
+                self.assertEqual(row["state"],"PURGE_INTENT")
+                self.assertEqual(len(sent),0 if mutate else 1)
 
 if __name__=="__main__":unittest.main()

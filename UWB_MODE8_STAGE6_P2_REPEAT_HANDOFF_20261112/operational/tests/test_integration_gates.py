@@ -29,11 +29,22 @@ class IntegrationGateTests(unittest.TestCase):
             app=(root/"shared/app.hpp").read_text()
             prof=(root/"shared/operational_profile.hpp").read_text()
             for snippet in ("profileStatus=profileLoad(desired);","profileSave(config)","profileClear()",
-                            'if(uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)'):
+                            'if(prepareUartWire(desired)&&uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)'):
                 self.assertIn(snippet,app)
             for snippet in ("profileCrc","r.role==(DUAL8_ANCHOR?1:2)",
                             "r.stage==6","r.period_us==200000","r.baud==2000000"):
                 self.assertIn(snippet,prof)
+
+    def test_silent_baud_leaves_no_unreceivable_control_frame(self):
+        for path in (A, T):
+            app = path.read_text(encoding="utf-8")
+            setup = app[app.index("static void setup(){"):]
+            self.assertLess(setup.index("freeQ=xQueueCreate"), setup.index("prepareUartWire(desired)"))
+            self.assertLess(setup.index("prepareUartWire(desired)"), setup.index("hello();"))
+            start = app.index('if(!strcmp(w[0],"BAUD")&&(n==2')
+            block = app[start:app.index('if(!strcmp(w[0],"ANT")',start)]
+            self.assertIn('n==3&&!strcmp(w[2],"SILENT")', block)
+            self.assertIn('if(n==2)hello();return;', block)
 
     def test_snapshot_headers_match(self):
         for role in ("anchor", "tag"):

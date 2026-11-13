@@ -565,11 +565,14 @@ def strict_shutdown_ok(receipt):
                 or not _is_nonce(stop_request)
                 or not _is_nonce(session) or set(shutdown["roles"]) != {"anchor", "tag"}):
             return False
-        for index, role in enumerate(("anchor", "tag")):
+        firmware_pair = tuple(receipt[f"{role}_identity"]["firmware"] for role in ("anchor", "tag"))
+        if firmware_pair not in (DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES):
+            return False
+        for role in ("anchor", "tag"):
             state = shutdown["roles"][role]
             identity, stats = receipt[f"{role}_identity"], receipt[f"{role}_capture"]
             boot, firmware = identity["boot"], identity["firmware"]
-            if (not _is_nonce(boot) or firmware != DRAIN_FIRMWARES[index]
+            if (not _is_nonce(boot)
                     or identity.get("drain_protocol") != 1
                     or any(state.get(k) is not True for k in
                            ("command_sent", "acknowledged", "host_sealed", "baud_restored", "closed"))

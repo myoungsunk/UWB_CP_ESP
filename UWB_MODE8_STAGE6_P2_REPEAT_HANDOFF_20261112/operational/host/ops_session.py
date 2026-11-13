@@ -7,11 +7,13 @@ with a later RF measurement without an explicit attempt identity.
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
 import secrets
 import sys
+import tempfile
 import time
 
 ROOT=Path(__file__).resolve().parents[2]
@@ -20,7 +22,7 @@ sys.path.insert(0,str(TAG_TOOLS))
 from run_pair import (Link, cir_payload_integrity, fresh_hello, restore_default_baud,
                       send_while_drained, verify_shutdown_wire)
 from capture_audit import OPERATIONAL_DRAIN_FIRMWARES, verify_capture
-from ops_archive import MAX_RECORDS, to_anchor_record
+from ops_archive import MAX_RECORDS, parse, to_anchor_record
 from ops_client import OperationalClient, TransportError
 from rfb8 import Decoder, read_file
 
@@ -32,8 +34,76 @@ def tag_start_matches(event, identity, session):
                 and event.get("session") == session
                 and event.get("config_id") == identity.get("config_id")
                 and event.get("firmware") == identity.get("firmware")
+                and event.get("hw_ok") is True and event.get("fault_latched") is False
+                and event.get("drain_protocol") == 1
                 and event.get("stage") == 6 and event.get("period_us") == 200000
                 and event.get("baud") == 2000000)
+
+
+def prepare_tag(link, initial_baud):
+    request = secrets.randbits(32) or 1
+    link.send(f"STOP {request}")
+    stopped = link.wait(lambda m: m.get("event") == "STOPPED" and m.get("role") == "tag"
+                        and m.get("stop_request") == request, timeout=5, check_faults=False)
+    identity = {"boot": stopped["boot"], "firmware": OPERATIONAL_DRAIN_FIRMWARES[1]}
+    session = stopped["session"]
+    connected = fresh_hello(link, identity, session, baud=initial_baud)["hello"]
+    if connected.get("silent_baud") != 1:
+        raise RuntimeError("Tag lacks loss-free baud transition support; update its firmware")
+    link.send("SELFTEST")
+    test = link.wait(lambda m: m.get("event") == "SELFTEST" and m.get("role") == "tag")
+    if test.get("pass") is not True:
+        raise RuntimeError(f"Tag SELFTEST failed: {test}")
+    send_while_drained(link, "SET STAGE 6", lambda m: m.get("event") == "HELLO" and m.get("stage") == 6)
+    if initial_baud != 2000000:
+        send_while_drained(link, "BAUD 2000000 SILENT")
+        link.enable_replay()
+        time.sleep(.2)
+        with link.write_lock:
+            link.serial.baudrate = 2000000
+        fresh_hello(link, identity, session, baud=2000000)
+    send_while_drained(link, "SET PERIOD_US 200000", lambda m: (
+        m.get("event") == "HELLO" and m.get("period_us") == 200000))
+    ident = fresh_hello(link, identity, session, baud=2000000, period_us=200000)["hello"]
+    if ident.get("stage") != 6 or ident.get("record_replay") != 1:
+        raise RuntimeError("Tag did not confirm Stage 6 record replay")
+    return ident
+
+
+def write_receipt(path, receipt):
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent,
+                                     prefix=path.name + ".", suffix=".partial", delete=False) as stream:
+        temp = Path(stream.name)
+        json.dump(receipt, stream, indent=2)
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temp, path)
+    if os.name == "posix":
+        directory = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
+
+
+def audit_saved_pair(directory, doc, anchor, tag, tag_stats, session, count, period_us):
+    archive_path = directory / "anchor_archive.bin"
+    tag_path = directory / "tag.rfb8"
+    archive_bytes = archive_path.read_bytes()
+    tag_bytes = tag_path.read_bytes()
+    if parse(archive_bytes) != doc:
+        raise RuntimeError("Persisted anchor archive differs from GET")
+
+    def require_unchanged():
+        if archive_path.read_bytes() != archive_bytes or tag_path.read_bytes() != tag_bytes:
+            raise RuntimeError("Saved RF data changed after audit")
+
+    audit = audit_archived_session(directory, doc, anchor, tag, tag_stats,
+                                   session, count, period_us, tag_bytes=tag_bytes)
+    require_unchanged()
+    hashes = {archive_path.name: hashlib.sha256(archive_bytes).hexdigest(),
+              tag_path.name: hashlib.sha256(tag_bytes).hexdigest()}
+    return audit, hashes, require_unchanged
 
 
 def wait_for_anchor(host,key,port,session,count,timeout):
@@ -80,7 +150,20 @@ def stop_and_drain_tag(link, identity, session, directory):
     return stats, shutdown
 
 
-def audit_archived_session(directory, doc, anchor, tag, tag_stats, session, count, period_us):
+def validate_tag_completion(stats, before, after, count):
+    if (stats["records"] != count or stats["complete"] != count
+            or any(stats.get(k) for k in ("reader_error", "writer_error", "fault_events", "capture_overflow"))
+            or type(stats["transport"].get("durable_acks_sent")) is not int
+            or stats["transport"]["durable_acks_sent"] != count
+            or type(after.get("period_miss")) is not int or after["period_miss"] != 0
+            or type(before.get("drops")) is not int or after.get("drops") != before["drops"]
+            or type(before.get("sent")) is not int or type(after.get("sent")) is not int
+            or (after["sent"] - before["sent"]) % (1 << 32) != count):
+        raise RuntimeError("Tag capture, period or durable record ACK incomplete; preserve raw data")
+
+
+def audit_archived_session(directory, doc, anchor, tag, tag_stats, session, count, period_us,
+                           *, tag_bytes: bytes | None = None):
     """Recheck the durable RFB8 and exact archived RF evidence before ACKFILE."""
     from analyze import packet_arrays
     import numpy as np
@@ -89,7 +172,8 @@ def audit_archived_session(directory, doc, anchor, tag, tag_stats, session, coun
             session, anchor["boot"], anchor["config_id"], count):
         raise RuntimeError("Anchor archive identity or record count mismatch")
     decoder=Decoder()
-    packets=[p for p in read_file(directory/"tag.rfb8", decoder) if p.kind==2]
+    stream = read_file(directory / "tag.rfb8", decoder) if tag_bytes is None else decoder.feed(tag_bytes)
+    packets = [packet for packet in stream if packet.kind == 2]
     tag_rows=[{**p.meta, "_raw_integrity_verified":cir_payload_integrity(p.meta,p.raw)} for p in packets]
     if any(decoder.statistics().get(field) for field in ("crc_errors", "schema_errors", "sequence_gap_events", "trailing_bytes", "skipped_bytes")):
         raise RuntimeError("Persisted tag RFB8 failed stream validation")
@@ -150,28 +234,12 @@ def main()->int:
     receipt={"requested_session":args.session,"requested_count":args.count,
              "tag_port":args.tag_port,"anchor":args.anchor_ip,"status":"INCOMPLETE"}
     link=None
+    tag_start_sent=False
+    shutdown_attempted=False
     try:
         link=Link("tag",args.tag_port,args.out,initial_baud=args.tag_initial_baud)
         time.sleep(.3)
-        link.send("STOP")
-        link.wait(lambda m:m.get("event")=="STOPPED",timeout=5,check_faults=False)
-        link.send("HELLO")
-        ident=link.wait(lambda m:m.get("event")=="HELLO" and m.get("role")=="tag")
-        if (not ident.get("hw_ok") or ident.get("fault_latched") or
-                ident.get("firmware")!=OPERATIONAL_DRAIN_FIRMWARES[1] or ident.get("drain_protocol")!=1):
-            raise RuntimeError("Tag hardware not healthy")
-        link.send("SELFTEST")
-        test=link.wait(lambda m:m.get("event")=="SELFTEST")
-        if not test.get("pass"):raise RuntimeError("Tag SELFTEST failed")
-        send_while_drained(link,"SET STAGE 6",lambda m:m.get("event")=="HELLO" and m.get("stage")==6)
-        if args.baud==2000000:
-            link.enable_replay()
-            send_while_drained(link,"BAUD 2000000")
-            time.sleep(.2);link.serial.baudrate=2000000
-            link.send("HELLO")
-            link.wait(lambda m:m.get("event")=="HELLO" and m.get("baud")==2000000)
-        ident=send_while_drained(link,"SET PERIOD_US 200000",
-                                 lambda m:m.get("event")=="HELLO" and m.get("period_us")==200000)
+        ident = prepare_tag(link, args.tag_initial_baud)
         receipt["tag_identity"]=ident
         with OperationalClient(args.anchor_ip,key,args.anchor_port) as ctl:
             status=json.loads(ctl.command("STATUS"))
@@ -186,6 +254,7 @@ def main()->int:
             anchor={**status, "config_id":status["config"], "role":"anchor"}
             receipt["anchor_identity"]=anchor
         link.begin_capture(ident["boot"],args.session)
+        tag_start_sent=True
         link.send(f"START {args.session} {args.count}")
         link.wait(lambda m: tag_start_matches(m, ident, args.session))
         with OperationalClient(args.anchor_ip,key,args.anchor_port) as ctl:
@@ -203,9 +272,11 @@ def main()->int:
         deadline=time.monotonic()+args.count*args.period_us/1e6+20
         while link.records<args.count:
             if link.exception:raise RuntimeError("Tag serial reader: "+link.exception)
+            if link.fault_events:raise RuntimeError("Tag hardware integrity fault")
             if time.monotonic()>=deadline:raise TimeoutError("Tag capture deadline")
             time.sleep(.04)
         finished_link=link
+        shutdown_attempted=True
         try:
             tag_stats,receipt["tag_shutdown"]=stop_and_drain_tag(
                 finished_link, ident, args.session, args.out)
@@ -213,9 +284,8 @@ def main()->int:
             if finished_link.files_finalized:
                 link=None
         receipt["tag_capture"]=tag_stats
-        if (tag_stats["records"]!=args.count or tag_stats["complete"]!=args.count or
-                any(tag_stats.get(field) for field in ("reader_error", "writer_error", "fault_events", "capture_overflow"))):
-            raise RuntimeError("Tag capture incomplete; preserve partial raw data")
+        validate_tag_completion(tag_stats, ident, receipt["tag_shutdown"]["status_proof"]["hello"],
+                                args.count)
         stored=wait_for_anchor(args.anchor_ip,key,args.anchor_port,args.session,args.count,
                                args.anchor_reconnect_timeout)
         receipt["anchor_shutdown"]=stored
@@ -228,11 +298,15 @@ def main()->int:
             if ctl.boot!=anchor["boot"]:
                 raise RuntimeError("Anchor restarted before GET")
             doc=ctl.get_archive(args.out/"anchor_archive.bin",args.session,ack=False)
-            receipt["paired_audit"]=audit_archived_session(
+            audit, hashes, require_unchanged = audit_saved_pair(
                 args.out, doc, anchor, ident, tag_stats, args.session, args.count, args.period_us)
+            receipt["paired_audit"] = audit
+            receipt["raw_sha256"] = hashes
+            receipt["archive"] = {k: v for k, v in doc.items() if k != "rows"}
+            write_receipt(args.out / "operational_receipt.json", receipt)
+            require_unchanged()
             answer=ctl.acknowledge_archive(args.session, doc["crc32"])
             if answer!="ACKFILE_OK":raise RuntimeError("Anchor archive safely saved but ACK failed")
-        receipt["archive"]={k:v for k,v in doc.items() if k!="rows"}
         receipt["status"]="SAVED_BOTH_ENDPOINTS"
         receipt["note"]="Archive remains on anchor until separate explicit PURGE."
         return 0
@@ -240,12 +314,21 @@ def main()->int:
         receipt["error"]=repr(e)
         return 2
     finally:
+        if link and tag_start_sent and not shutdown_attempted:
+            try:
+                receipt["tag_capture"], receipt["tag_shutdown"] = stop_and_drain_tag(
+                    link, ident, args.session, args.out)
+                link = None
+            except Exception as e:
+                receipt["shutdown_error"] = repr(e)
+                if link.files_finalized:
+                    link = None
         if link:
             try:link.send("STOP")
             except Exception:pass
             try:link.close()
             except Exception as e:receipt["close_error"]=repr(e)
-        (args.out/"operational_receipt.json").write_text(json.dumps(receipt,indent=2),encoding="utf-8")
+        write_receipt(args.out / "operational_receipt.json", receipt)
 
 if __name__=="__main__":
     raise SystemExit(main())

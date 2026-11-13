@@ -32,15 +32,18 @@ static void* freeQ=&pending;
 static unsigned uxQueueMessagesWaiting(void*){return POOL;}
 static const char* firmwareId(bool){return "test-anchor";}
 
+static bool failRead=false;
 struct File {
  std::vector<uint8_t>* data=nullptr;
  size_t pos=0;
+ bool directory=false;
  explicit File(std::vector<uint8_t>* p=nullptr):data(p){}
- explicit operator bool() const{return data;}
- bool isDirectory() const{return false;}
+ explicit operator bool() const{return data||directory;}
+ bool isDirectory() const{return directory;}
  File openNextFile(){return File();}
  size_t size() const{return data->size();}
  int read(uint8_t* p,size_t n){
+  if(failRead){failRead=false;return -1;}
   if(n>size()-pos)n=size()-pos;
   std::memcpy(p,data->data()+pos,n);pos+=n;return int(n);
  }
@@ -52,15 +55,19 @@ struct File {
 };
 struct Filesystem {
  std::map<std::string,std::vector<uint8_t>> files;
+ bool corruptRenameHeader=false;
  bool begin(bool format){assert(!format);return true;}
  bool exists(const char* p){return files.count(p);}
  File open(const char* p,const char* mode="r"){
+  if(std::strcmp(p,"/")==0){File root;root.directory=true;return root;}
   if(*mode=='w'){files[p].clear();return File(&files[p]);}
   return exists(p)?File(&files[p]):File();
  }
  bool rename(const char* from,const char* to){
   if(!exists(from)||exists(to))return false;
-  files[to]=files[from];files.erase(from);return true;
+  files[to]=files[from];files.erase(from);
+  if(corruptRenameHeader)files[to][0]^=1;
+  return true;
  }
  bool remove(const char* path){return files.erase(path)==1;}
 } LittleFS;
@@ -82,14 +89,24 @@ struct Preferences {
  bool remove(const char* k){return nvs.erase(k)==1;}
 };
 struct WiFiClient {
- bool connectedFlag=false;
+ bool connectedFlag=false,failDataRead=false,corruptData=false,oversizedWrite=false;
  std::string written;
  explicit operator bool() const{return connectedFlag;}
  bool connected() const{return connectedFlag;}
  void stop(){connectedFlag=false;}
- size_t print(const char* s){written+=s;return std::strlen(s);}
+ size_t print(const char* s){
+  if(std::strncmp(s,"DATA ",5)==0){
+   if(failDataRead)failRead=true;
+   if(corruptData)LittleFS.files["/m8_pending.bin"].back()^=1;
+  }
+  if(connectedFlag){written+=s;return std::strlen(s);}
+  return 0;
+ }
  size_t print(char c){written+=c;return 1;}
- size_t write(const uint8_t* p,size_t size){written.append(reinterpret_cast<const char*>(p),size);return size;}
+ size_t write(const uint8_t* p,size_t size){
+  if(size>512){oversizedWrite=true;return size;}
+  written.append(reinterpret_cast<const char*>(p),size);return size;
+ }
  bool available(){return false;}
  int read(){return -1;}
 };
@@ -118,8 +135,9 @@ struct Ota {
  template<class Fn> void onStart(Fn){}
  template<class Fn> void onEnd(Fn){}
  template<class Fn> void onError(Fn){}
+ unsigned beginCalls=0;
  int getCommand(){return U_FLASH;}
- void begin(){}
+ void begin(){++beginCalls;}
  void end(){}
  void handle(){}
 } ArduinoOTA;
@@ -177,12 +195,16 @@ static void ack(const OpsArchiveHeader& h){
 static void testApproval(){
  opsNet.deleteSet=true;
  for(unsigned i=0;i<32;++i)opsNet.deleteKey[i]=uint8_t(i);
+ Preferences p;assert(p.putBytes("deletekey",opsNet.deleteKey,32)==32);
  makeArchive(OPS_ARCHIVE_PATH,41,1);
  OpsArchiveHeader h;assert(opsReadHeader(h));
  connect();ack(h);assert(opsClient.written=="ERROR ACKFILE\n");
  tcp("GET");assert(opsClient.written.find("END\n")!=std::string::npos);
  ack(h);assert(opsClient.written=="ACKFILE_OK\n");
  ack(h);assert(opsClient.written=="ACKFILE_OK\n");
+ assert(opsUsbCommand("OPS PURGE"));
+ assert(opsUsbCommand("OPS PURGE EXTRA"));
+ assert(LittleFS.exists(OPS_ARCHIVE_PATH)&&opsLastAck==opsIdentity(h));
  opsLastAck={};opsLoadNet();assert(opsLastAck==opsIdentity(h));
  makeArchive(OPS_ARCHIVE_PATH,41,2);
  assert(!opsEraseAcked());
@@ -190,10 +212,68 @@ static void testApproval(){
  assert(!opsEraseAcked());
  makeArchive(OPS_ARCHIVE_PATH,41,1);
  assert(opsEraseAcked());
- assert(!nvs.count("file_ack_v2"));
+ assert(!nvs.count("file_ack_v3"));
  makeArchive(OPS_ARCHIVE_PATH,41,1);
  assert(!opsEraseAcked());
  LittleFS.remove(OPS_ARCHIVE_PATH);
+}
+static void testDownloadReadFailure(){
+ makeArchive(OPS_ARCHIVE_PATH,41,5);
+ connect();opsClient.failDataRead=true;
+ tcp("GET");
+ assert(!opsClient.oversizedWrite);
+ assert(!opsClient.connected()&&opsDownloaded.boot==0);
+ assert(opsClient.written.find("END\n")==std::string::npos);
+ opsClient.failDataRead=false;
+ connect();opsClient.corruptData=true;
+ tcp("GET");
+ assert(!opsClient.connected()&&opsDownloaded.boot==0);
+ assert(opsClient.written.find("END\n")==std::string::npos);
+ opsClient.corruptData=false;
+ assert(LittleFS.remove(OPS_ARCHIVE_PATH));
+}
+static void testPersistedHeader(){
+ opsArchive=new OpsArchiveRow[1]{};
+ opsCount=opsRows=1;opsSession=12;
+ LittleFS.corruptRenameHeader=true;
+ assert(!opsPersistArchive());
+ LittleFS.corruptRenameHeader=false;
+ assert(opsArchive!=nullptr&&LittleFS.exists(OPS_ARCHIVE_PATH));
+ OpsArchiveHeader h;assert(!opsReadHeader(h));
+ assert(LittleFS.remove(OPS_ARCHIVE_PATH));
+ delete[] opsArchive;opsArchive=nullptr;
+ opsCount=opsRows=opsSession=0;
+}
+static void testDistinctKeys(){
+ const char* hex="000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f";
+ assert(!opsSaveHexField("AUTH",hex)&&!nvs.count("auth"));
+ // Reproduce equal keys loaded from a previously permissive firmware.
+ Preferences p;assert(p.putBytes("auth",opsNet.deleteKey,32)==32);
+ opsLoadNet();assert(opsNet.authSet&&opsNet.deleteSet);
+ makeArchive(OPS_ARCHIVE_PATH,41,6);
+ OpsArchiveHeader h;assert(opsReadHeader(h));
+ connect();tcp("GET");assert(opsDownloaded==opsIdentity(h));
+ ack(h);assert(opsClient.written=="ERROR ACKFILE\n");
+ assert(!nvs.count("file_ack_v3")&&LittleFS.remove(OPS_ARCHIVE_PATH));
+ assert(p.remove("auth"));opsLoadNet();
+ // An approval issued by the old firmware cannot survive the upgrade.
+ const auto identity=opsIdentity(h);
+ assert(p.putBytes("file_ack_v2",&identity,sizeof identity)==sizeof identity);
+ opsLoadNet();assert(opsLastAck.boot==0);
+ assert(p.remove("file_ack_v2"));
+ const char* distinct="ffeeddccbbaa99887766554433221100ffeeddccbbaa99887766554433221100";
+ connect();assert(opsSaveHexField("AUTH",distinct));
+ assert(!opsClient.connected()&&!opsTcpAuthorized);
+ assert(p.remove("auth"));opsLoadNet();
+}
+static void testOtaImageBinding(){
+ opsNet.otaSet=true;WiFi.selected=WIFI_STA;
+ connect();tcp("OTA 60");
+ assert(opsClient.written=="ERROR OTA_IMAGE_ATTESTATION_REQUIRED\n");
+ assert(!opsOtaOpen&&ArduinoOTA.beginCalls==0);
+ assert(opsUsbCommand("OPS OTA 60"));
+ assert(!opsOtaOpen&&ArduinoOTA.beginCalls==0);
+ opsNet.otaSet=false;
 }
 static void testRecovery(){
  makeArchive(OPS_ARCHIVE_TMP,41,3);
@@ -205,6 +285,8 @@ static void testRecovery(){
  auto bytes=LittleFS.files[OPS_ARCHIVE_TMP];
  opsLoadArchiveState();assert(opsPhase==OpsPhase::Recovery);
  assert(LittleFS.files[OPS_ARCHIVE_TMP]==bytes);
+ assert(opsUsbCommand("OPS QUARANTINE EXTRA"));
+ assert(opsPhase==OpsPhase::Recovery&&LittleFS.files[OPS_ARCHIVE_TMP]==bytes);
  assert(opsUsbCommand("OPS QUARANTINE"));
  assert(opsPhase==OpsPhase::Idle);
  assert(LittleFS.files[OPS_ARCHIVE_QUARANTINE]==bytes);
@@ -234,7 +316,7 @@ static void testInvalidTcpNumbers(){
  tcp("OTA +60");assert(opsClient.written=="ERROR OTA_GUARD\n");
  tcp("OTA 60 EXTRA");assert(opsClient.written=="ERROR OTA_GUARD\n");
  assert(opsLastAck.boot==0&&opsLastAck.session==0);
- assert(!nvs.count("file_ack_v2"));
+ assert(!nvs.count("file_ack_v3"));
  assert(LittleFS.remove(OPS_ARCHIVE_PATH));
  opsDownloaded={};
 }
@@ -262,6 +344,7 @@ static void testWifiStart(){
 int main(){
  using namespace dual8app;
  opsFsOk=true;
- testApproval();testRecovery();testInvalidTcpNumbers();testWifiStart();
- std::puts("PASS operational firmware mock: ACK reuse, journal recovery, Wi-Fi start guards");
+ testDownloadReadFailure();testPersistedHeader();testApproval();testDistinctKeys();
+ testOtaImageBinding();testRecovery();testInvalidTcpNumbers();testWifiStart();
+ std::puts("PASS operational firmware mock: archive integrity, custody, OTA and Wi-Fi guards");
 }
