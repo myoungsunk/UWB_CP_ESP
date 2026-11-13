@@ -134,3 +134,16 @@ python operational/host/ops_pose_align.py --sync time_sync.csv --odom odom.csv -
 - **EAP02** 앵커 USB에서 `OPS EAPID <UTF8-HEX>`, `OPS EAPUSER <UTF8-HEX>`, `OPS EAPPASS <UTF8-HEX>` 입력 후 `OPS NET EAP 1` → 인증기관 핸드셰이크/연결 확인. 로그에 평문 암호 노출 금지.
 - **EAP03** 다른 인증기관 CA, 잘못된 계정, AP 인증 실패, Wi-Fi OFF 중간 전환을 주입. 오류 발생 시 측정 RF 시작·데이터 삭제가 없어야 함.
 - **EAP04** `OPS NET EAP 0`으로 WPA 개인망으로 복귀. 실제 EAP 기관망을 알 수 없어 실물 합격 여부는 FIELD HOLD.
+
+## M02·M11·M13·M15·M16·M18 신규 단계 시험
+
+| ID | 대상·실행 예시 | 인수 조건 |
+|---|---|---|
+| A-M02 | `ops_plan_long_run.py --route-id 711 --total 1000 --per-point 32 --out plans/1000.json` | 32개 고유 point, 31개×32+마지막 8거래; 이어서 `ops_route.py`의 GET/ACK/PURGE 전 원본 검증. 원격 단일 앵커에서 거래간 무중단이라고 주장 금지 |
+| A-M11 | 기관 PEM CA 컴파일 제공 → USB `OPS EAPID/EAPUSER/EAPPASS` → `OPS NET EAP 1` | CA 누락·오류에서 연결 거부, RF 중 Wi-Fi OFF, 인증 없는 PEAP 금지. 실제 AP 인증 기록·메모리 확보 필수 |
+| A-M13 | `ops_period_sweep.py --anchor COM4 --tag COM7 --out trial --count 20` (dry-run) → 물리 OFF 확인 뒤 `--execute --wifi-off-confirmed` | 200→195→190ms 각 거래 P1/P2 2편파 CIR·거리·호스트 RFB8 100% 검증, 실패 후 짧은 주기 자동 진행 0. 현 200ms 기본 변경 금지 |
+| A-M15 | ROS2 Humble에서 `ops_ros_capture.py --out captures/ros01` → 별도 실제 RF 시계 동기화 짝으로 `ops_pose_align.py` | odom/IMU/header ROS stamp·실제 P2 반복 시각 사용, 이벤트 동기화 없이 물리 위치/heading 수치 생성 거부 |
+| A-M16 | `ops_soak_suite.py --anchor COM4 --tag COM7 --count 1000 --rounds 18 --out captures/soak01` dry-run → 실기에서 명시적 `--execute --wifi-off-confirmed` | 각 epoch 출력 원본·양단 SHA·수집 영수증, 최초 성공률/복구율/큐/PLL 추적, 중단 epoch 자동 RF 재실행 금지. epoch 사이 중단 존재 |
+| A-M18 | `ops_flash_readback.py --role anchor --serial COM4 --image <image> --build-receipt <receipt> --running-app-offset <verified actual offset> --out <receipt>` dry-run → 기기 오프라인에서 `--execute-readback` | read-only byte 동일, source SHA·role·partition offset 기록. 이를 “이미 실행 중인 부트 이미지 검증” 또는 secure boot 검증이라 부르지 않음 |
+
+**통합 인수 중단 조건**: signed OTA 미비 상태에서 3232 listener 활성화, EAP CA 미검증 fallback, 다른 부팅 ID/세션을 혼합, 이중 USB 아닌데 무중단 캡처 승인, 장치 readback에 쓴 가짜 partition offset, 190ms 실기 없이 운영 기본값 변경, 버퍼/PLL 미확인.

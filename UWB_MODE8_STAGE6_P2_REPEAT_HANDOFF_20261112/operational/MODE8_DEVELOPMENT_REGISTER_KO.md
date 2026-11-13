@@ -8,23 +8,23 @@
 | ID | 미반영/확장 요구 | 현재 개발 판정 | 사용자가 수용할 기능 계약 / 차단 요소 |
 |---|---|---|---|
 | M01 | 재부팅 뒤 Mode8 Stage6 200ms·2Mbps 운영 설정 복원 | IMPLEMENTED / FIELD HOLD | 역할·CRC·버전 검사 후 선택적 복원; 부패하면 Stage5/921600 진단. 자동 RF 시작 금지. 초기 \`PROFILE SAVE\` 필요 |
-| M02 | 32거래 제한을 넘는 장시간 **운영 세션** | PARTIAL | Pi가 ≤32거래 point로 나누어 저장·회수·재시작. 각 point 사이 Wi-Fi/저장 공백 있음 |
+| M02 | 32거래 초과 장기 측정 | PARTIAL / HOST IMPLEMENTED | `ops_plan_long_run.py`로 32거래 이하 point 자동 분할, `ops_route.py`의 검증·회수·재개 수행; point 사이 RF 중단 있음. 두 USB 유선 연속 수집은 M24 별도 |
 | M03 | 다중 route/point 관리, crash resume 및 유일 식별 | IMPLEMENTED / FIELD HOLD | \`ops_route.py\` 의 영속 journal·고유 세션·완료 검증·재개. ROS 로봇 주행은 구현하지 않음 |
 | M04 | 무중단 1000거래(5 Hz) Wi-Fi OFF RF와 동시에 앵커 원본 보존 | HOLD — 기존 ESP32 내부 RAM 제한 | RF 미간섭 외부/분리 저장 또는 별도 데이터 회수 하드웨어 필요. USB 실험용 1000거래와 운영형은 별개 |
 | M05 | 측정 중 전원 차단 시 미커밋 RAM 원본 무손실 | HOLD — 물리적으로 RAM 보존 불가 | 전원 차단 뒤 진짜 raw 원본을 복원하려면 UPS/비휘발성 로깅 필요. 현재는 fail-closed와 ≤32거래 손실 범위 분명히 표시 |
 | M06 | 커밋 저널의 중단/CRC 복구, 자동 덮어쓰기 방지 | IMPLEMENTED / FIELD HOLD | tmp 검증·원자 rename, 손상 tmp 보존/격리; 실제 플래시 정전 주입 미실시 |
 | M07 | 파일 ACK/삭제 권한의 구분, 승인 없는 삭제 금지 | IMPLEMENTED / FIELD HOLD | 별도 USB DELETEKEY, 세션·boot·CRC 및 연결 nonce와 ACK/PURGE 용도별 HMAC. 실물 보안 시험 필요 |
-| M08 | OTA 이미지의 앵커/태그 역할·해시 확인 | PARTIAL | 기존 ArduinoOTA 정비 창·파티션 검사만 존재. 실제 image role 검증·서명 확인 미인수 |
-| M09 | 잘못된 OTA의 안전 자동 롤백/부팅 확인 | HOLD | 부트로더 rollback/OTA 파티션 설정, 이미지 검증 서명/실물 전원 차단 증거 필요 |
-| M10 | ESP32 태그 OTA·원격 복구 | NOT_STARTED / OPTIONAL | 현재 태그는 Pi USB로 업로드. Wi-Fi 추가 시 RF/전원/메모리 동시성 새 감사 필요 |
-| M11 | WPA Enterprise(EAP) 사내/학교 AP 지원 | NOT_STARTED / OPTIONAL | 현재 개인망 WPA. AP 인증서/계정·실물 환경 확보 전 WPA 개인망 격리 운용 |
-| M12 | TCP TLS, NVS 자격증명 암호화/secure boot | HOLD / DEPLOYMENT OPTION | HMAC 인증은 기밀성 없음. 보드별 secure boot·flash encryption 설정 및 키 관리가 필요. 외부 공개 인터넷 노출 금지 |
-| M13 | RF 시간 주기 추가 단축(195/190/150/100ms) | NOT APPROVED | 현재 200ms 안정 기준선 유지. 190ms는 실기 검증 후에만. 150/100ms는 RF+UART 재설계 필요 |
+| M08 | OTA 이미지 역할·해시 검증 | PARTIAL / OTA RECEIVER LOCKED | 호스트 `ops_image_preflight.py`에서 앵커/태그 역할·SHA 검증. 앵커 `opsOtaCanAttestImage()`가 false라 실제 ArduinoOTA 포트는 의도적으로 차단. 서명 공개키·장치 검증/롤백 통합 전 활성화 금지 |
+| M09 | OTA 실패 시 자동 rollback | PARTIAL / HARDWARE BLOCKED | 조건부 `ESP_OTA_IMG_PENDING_VERIFY` 부팅 자가검사/partition guard 소스 존재. 실제 롤백 활성 부트로더·efuse/파티션·정전 시험 없음 |
+| M10 | 태그 자체 Wi-Fi OTA | NOT IMPLEMENTED / SAFETY HOLD | 현재 태그는 USB/연결된 Pi로 유지보수. tag Wi-Fi 추가 시 이중 DW1000 메모리/스케줄 검증 및 별도 역할 서명키/안전 부트 필요. 안전 조건 미확정 상태에서는 OTA listener 개방 금지 |
+| M11 | Enterprise Wi-Fi(EAP) | PARTIAL / SOURCE IMPLEMENTED | 앵커 `OPS EAPID/EAPUSER/EAPPASS`, `OPS NET EAP 0/1` 구현. 기관 CA를 컴파일에서 주입하지 않으면 PEAP 거부. 실제 기관 CA/AP 인증·NVS 암호화 미검증 |
+| M12 | TLS·Secure Boot·Flash Encryption | NOT IMPLEMENTED / DEPLOYMENT SECURITY HOLD | 현 TCP는 LAN HMAC 인증(기밀성 없음). TLS 서버 인증서/개인키·ESP32 heap 확보, eFuse 불가역 provision/복구 규약·서명부트로더 필요; 임의 기본키/보안 비활성화로 대체 금지 |
+| M13 | 200ms 미만 측정 주기 | TRIAL CODE / FIELD NOT APPROVED | `ops_period_sweep.py` 200→195→190ms 실기 시험 실행기 추가, 에러 시 더 짧은 시험 중단. 150/100ms는 프로토콜·UART 일정 재설계 필요 |
 | M14 | Wi-Fi OFF/ON, PLL, RXENAB, 바운더리, 32거래 RAM 실기 검증 | FIELD HOLD | 반복 전원/수신, heap 최저치, brownout/WDT, 임시 파일 손실, 200ms 지터, raw CIR |
-| M15 | 이동 경로에서 yaw/odom/IMU 시간 정렬, P2 repeat 의미 보존 | FIELD HOLD | 반복 P2의 실제 물리 시각 사용; teach-repeat/ROS 연동 별도 |
-| M16 | 호스트 USB/ACK/FEC 스트레스, 조각 오류·큐 역압력·중복 세션 | PARTIAL | 호스트 결함 주입 테스트 존재; 실제 USB·Pi·TCP 24h 장기 시험 미완료 |
-| M17 | OTA/저장 플래시 wear, 부족 공간, 파일 조각화/실패 복구 | PARTIAL | LittleFS autoformat 금지, 파일 CRC 존재. 1000회 이상 반복/수명·전원 차단 현장 시험 필요 |
-| M18 | 비밀정보 배포와 소스/이미지 SHA·검증 영수증·PR 인수 체계 | PARTIAL | CI 아티팩트, 소스/앱 분리. 개인 인증키와 전체 플래시 원본 공개 업로드 금지. 실기 플래시 readback SHA 별도 |
+| M15 | 이동 중 odom/IMU/ROS 연계 | PARTIAL / HOST IMPLEMENTED | `ops_ros_capture.py` ROS2 odom/IMU 원본 수집, `ops_pose_align.py` 독립 RF-ROS 동기화 표본이 있을 때만 보간. 동기화 하드웨어 및 실제 로봇 이동 검증·ROS 주행제어 미구현 |
+| M16 | USB·ACK·FEC 장기 스트레스 | PARTIAL / TEST RUNNER IMPLEMENTED | `ops_soak_suite.py` 여러 유선 1000거래 원본·SHA·저널 수집, 중간 실패 시 RF 자동 재시도 금지. 실제 1h/24h 장치 스트레스/손실률 미실시 |
+| M17 | 플래시 내구성·정전 복구 | PARTIAL / FIELD HOLD | LittleFS temp/CRC/no-autoformat, 사전 용량+8KiB 예약 검사 구현. 1000회 쓰기·정전/전압·실제 wear 증거는 없음 |
+| M18 | 이미지 SHA·배포 출처·인수 기록 | PARTIAL / READBACK TOOL IMPLEMENTED | `ops_flash_readback.py`가 장치 실행 partition offset을 별도 확인한 뒤 읽기 전용으로 바이트 대조; `ops_image_preflight.py` 빌드 provenance 검사. 실보드 실행 SHA·플래시 전체 백업·부트 실행 증거 없음 |
 | M19 | 안테나 A/B TX/RX 지연값과 보정 출처의 데이터 보존 | IMPLEMENTED(원본/메타 유지) | 실험 임시값은 calibrated=false를 유지. 정확도 시험·보정값 확정은 범위 제외 |
 | EX-01 | 기존 Mode3–7/Legacy R03 프로토콜 | OUT OF SCOPE | 구현·호환 강요 금지 |
 | EX-02 | DS-TWR 절대 정확도 승인 | DEFERRED | LoS 다중 거리·편파·안테나 지연 보정 이후 수행 |
@@ -66,3 +66,7 @@ M17 선행 개선: LittleFS 가용 용량이 아카이브+8KiB 보수 여유보�
 **IMPLEMENTED / FIELD HOLD**. 앵커 USB 정비 명령 `OPS NET AUTOSTART 0`은 NVS에 Wi-Fi 자동 연결 금지를 저장하고 현재 네트워크를 OFF로 만든다. 앱을 재부팅하거나 USB 포트를 다시 열어도 자동 Wi-Fi 복귀를 시도하지 않는다. 원격 정비로 돌아갈 때 USB에서 `OPS NET AUTOSTART 1`을 실행한다. 디폴트는 기존처럼 ON이며 단독 USB 실험에서만 OFF를 선택한다. 저장 실패·Wi-Fi OFF 실패를 정상으로 오인하지 않고 오류 응답으로 나타낸다. `testWifiAutostartIsPersistentAndExplicit` Mock, CI 타깃 빌드 검증만 수행. 실물 NVS·AP·UART 재부팅 반복 시험은 별도.
 
 **M11 코드 보완 (2026-11-13)**: 앵커에 PEAP Enterprise 구성용 `OPS EAPID/EAPUSER/EAPPASS` USB 프로비저닝과 `OPS NET EAP 0/1` 스위치를 추가했다. 기관 CA가 컴파일 시 `MODE8_EAP_CA_CERT_PEM`으로 제공되지 않으면 Enterprise 활성화가 실패하도록 했다. CA·인증서/계정·실물 AP가 없는 기본 이미지는 WPA 개인망만 사용한다. 타깃 컴파일 통과는 실제 EAP 인증 성공을 보장하지 않는다.
+
+### 2026-11-13 M01–M20 구현 판정의 근거
+
+세부 근거와 미구현 사유: `MODE8_M01_M20_IMPLEMENTATION_REVIEW_20261113_KO.md`. 컴파일·호스트 QA는 각 Git SHA의 GitHub Actions 성공만을 근거로 표시하고, 실물 RF·Pi·OTA·정전·EAP·ROS 주행 검증은 `NOT_RUN`으로 분리한다. M04/M05/M10/M12는 현재 데이터/안전 전제 없이 “구현 완료”라고 판정하지 않는다.
