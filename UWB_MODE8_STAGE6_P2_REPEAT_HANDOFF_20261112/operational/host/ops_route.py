@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 from contextlib import contextmanager
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -210,6 +211,15 @@ def route_lock(path):
         yield
 
 
+def journal_signature(doc: dict, secret: bytes) -> str:
+    """Authenticate the journal contents; do not embed the custody key."""
+    payload={k:v for k,v in doc.items() if k!="journal_hmac_sha256"}
+    data=json.dumps(payload,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")
+    return hmac.new(secret,data,hashlib.sha256).hexdigest()
+
+
+
+
 class RouteController:
     def __init__(self,plan,out,anchor_ip,tag_port,key,*,anchor_port=29310,
                  initial_baud=921600,resume=False,manual_confirm=False,timeout=90,
@@ -223,6 +233,7 @@ class RouteController:
         if approval_key is not None and (len(approval_key)!=32 or approval_key==key):
             raise ValueError("custody key must be separate from TCP login key")
         self.approval_key=approval_key
+        self._journal_key=approval_key if approval_key is not None else key
         self.digest=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(",",":")).encode()).hexdigest()
         if resume:
             if not self.path.is_file():raise RouteHold("resume requires existing durable journal")
@@ -235,17 +246,22 @@ class RouteController:
                 {"point_id":pt["point_id"],"count":pt["count"],
                  "session":derive_session(plan["route_id"],i),"state":"PENDING"}
                 for i,pt in enumerate(plan["points"])]}
-            durable_json(self.path,self.data)
+            self.save()
 
     def load_journal(self):
         try:
             data=unique_json(self.path.read_bytes())
         except (OSError,ValueError) as exc:
             raise RouteHold(f"invalid route journal: {exc}") from exc
+        signature=data.get("journal_hmac_sha256") if isinstance(data,dict) else None
+        if (not isinstance(signature,str) or not re.fullmatch(r"[0-9a-f]{64}",signature)
+                or not hmac.compare_digest(signature,journal_signature(data,self._journal_key))):
+            raise RouteHold("route journal authentication failed; do not resume RF")
         validate_journal(data,self.plan,self.digest)
         return data
 
     def save(self):
+        self.data["journal_hmac_sha256"]=journal_signature(self.data,self._journal_key)
         durable_json(self.path,self.data)
 
     def point_folder(self,index):

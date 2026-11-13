@@ -527,6 +527,10 @@ def main() -> int:
     p.add_argument("--stage", type=int, choices=range(2, 7), default=5)
     p.add_argument("--period-us", type=int, default=300000)
     p.add_argument("--baud", type=int, choices=(921600, 2000000), default=921600)
+    p.add_argument("--anchor-initial-baud", type=int, choices=(921600, 2000000), default=921600,
+                   help="Anchor UART baud before first STOP/HELLO (persisted profile)")
+    p.add_argument("--tag-initial-baud", type=int, choices=(921600, 2000000), default=921600,
+                   help="Tag UART baud before first STOP/HELLO (persisted profile)")
     p.add_argument("--calibration-profile", type=Path)
     p.add_argument("--rf-remeasure-limit", type=int, default=0, choices=range(0, 9),
                    help="After STOP, take at most this many separate Stage 6 exchanges for observed Probe misses")
@@ -581,7 +585,8 @@ def capture(args, profile):
                "rf_remeasurement": []}
     try:
         for name in ("tag", "anchor"):
-            link = Link(name, getattr(args, name), args.out)
+            link = Link(name, getattr(args, name), args.out,
+                        initial_baud=getattr(args, name+"_initial_baud", 921600))
             links.append(link)
             time.sleep(0.3)
             link.send("STOP")
@@ -596,14 +601,16 @@ def capture(args, profile):
                 raise RuntimeError(f"{name}: SELFTEST failed: {st}")
             send_while_drained(link, f"SET STAGE {args.stage}",
                                lambda m: m.get("event") == "HELLO" and m.get("stage") == args.stage)
-            if args.baud != 921600:
-                if args.stage == 6:
+            if link.serial.baudrate != args.baud:
+                if args.stage == 6 and args.baud == 2000000:
                     if h.get("record_replay") != 1:
                         raise RuntimeError(f"{name}: Stage 6 replay firmware required")
                 silent = " SILENT" if h.get("silent_baud") == 1 else ""
                 send_while_drained(link, f"BAUD {args.baud}{silent}")
-                if args.stage == 6:
+                if args.stage == 6 and args.baud == 2000000:
                     link.enable_replay()
+                elif args.baud == 921600:
+                    link.disable_replay()
                 time.sleep(0.2)
                 link.serial.baudrate = args.baud
                 link.send("HELLO")
