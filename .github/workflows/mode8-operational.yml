@@ -28,10 +28,12 @@ jobs:
         run: |
           python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/tools/sync_shared.py --check
           python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/tools/sync_shared.py --check
-      - name: Portable C++ Mode 8 regression
+      - name: Portable C++ Mode 8 regression (without Arduino/Wi-Fi host stubs)
         run: |
           cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat
-          python tools/host_qa.py
+          mkdir -p build/host
+          g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie             -fsanitize=address,undefined -Ishared tests/test_core.cpp -o build/host/test_core
+          build/host/test_core evidence/host
 
   esp32-build:
     runs-on: ubuntu-latest
