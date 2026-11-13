@@ -146,6 +146,7 @@ static void testDecimalBoundaries(){
 static void checkDrain(){
  assert(!writerQuiet(1,0,true)); // In-flight writer is included in pending.
  assert(!writerQuiet(0,1,true)); // STOP alone does not retire ACK cache.
+ assert(!writerQuiet(0,0,true,1)); // A control replay NACK must block BAUD.
  assert(!writerQuiet(0,0,false)); // FIFO tail still physically transmitting.
  assert(writerQuiet(0,0,true));
  assert(!canChangeTransport(true,false,true,true));
@@ -153,6 +154,50 @@ static void checkDrain(){
  assert(!canChangeTransport(false,false,false,true));
  assert(!canChangeTransport(false,false,true,false));
  assert(canChangeTransport(false,false,true,true));
+}
+
+static void checkLostFragmentedControlReplay(){
+ const RecordKey key(0x1234,77,0x88,175);
+ constexpr uint64_t now=9000000;
+ const char payload[]="{\"event\":\"ANCHOR_RX_EDGE\",\"count\":3,\"idx\":0}";
+ ControlReplaySlot slot;
+ slot.key=key;slot.occupied=true;slot.sending=true;
+ slot.size=sizeof(payload)-1;
+ std::copy(payload,payload+slot.size,slot.payload);
+ // Raw run_03 evidence: seq=175 arrived as kind=1 with only indexes 0 and 9
+ // visible from a three-part frame. The host NACK can race the initial UART
+ // tail, so it must queue against the complete key and replay after send.
+ assert(slot.offerNack(key,now));
+ assert(!slot.offerNack(key,now));
+ assert(!slot.beginReplay(now));
+ assert(slot.finishInitial(now+1500000));
+ assert(slot.beginReplay(now+1));
+ assert(slot.size==sizeof(payload)-1);
+ assert(std::equal(payload,payload+slot.size,slot.payload));
+ // The replay sequence must remain 175, and any identifying field mismatch
+ // must not select this cache entry.
+ assert(slot.key.sequence==175);
+ assert(!slot.offerNack({0x1234,77,0x89,175},now+2));
+ assert(!slot.offerNack({0x1234,77,0x88,176},now+2));
+ assert(slot.offerNack(key,now+2)); // One NACK can wait behind this replay.
+ assert(slot.finishReplay());
+ assert(slot.beginReplay(now+3));
+ assert(slot.finishReplay());
+ assert(!slot.offerNack(key,now+4)); // Bounded to two retransmissions.
+ assert(!slot.beginReplay(now+4));
+ assert(!slot.expire(now+1500001)); // Expired, but no pending retry remains.
+
+ ControlReplaySlot expiring;
+ expiring.key=key;expiring.occupied=true;expiring.sending=true;
+ assert(expiring.finishInitial(now+10));
+ assert(expiring.offerNack(key,now+1));
+ assert(expiring.expire(now+10)); // An unserved NACK expires as a failure.
+
+ ControlReplaySlot failed;
+ failed.key=key;failed.occupied=true;failed.sending=true;
+ assert(failed.offerNack(key,now));
+ assert(failed.failSend()==1); // Failed initial send retires one pending replay.
+ assert(!failed.occupied);
 }
 
 static void checkUart(){
@@ -215,8 +260,9 @@ int main(){
  checkReplay(3);
  checkReplay(5);
  checkDrain();
+ checkLostFragmentedControlReplay();
  testDecimalBoundaries();
  checkAckReclaimsFullPoolDuringOtherWrite();
  checkUart();
- std::puts("Stage 6 bounded UART and drain regressions passed");
+ std::puts("Stage 6 bounded UART, control replay, and drain regressions passed");
 }
