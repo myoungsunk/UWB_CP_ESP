@@ -33,6 +33,7 @@ static unsigned checks=0;
 #define CHECK(x) do{++checks;if(!(x))throw std::runtime_error(std::string(__FILE__)+":"+std::to_string(__LINE__)+" " #x);}while(0)
 struct Clock {long double rate=1;uint64_t base=0;uint64_t at(long double ticks)const{return (base+uint64_t(llroundl(ticks*rate)))&MASK40;}};
 struct SimTag:Port {
+ uint32_t p1RecoveryCirCost=0;
  Config cfg;Clock ac,tc[2];long double t=0,t0=usTicks(10000),tau[2]={1066,1090};
  bool armed[2]{},used[2][10]{},drop[2][10]{},suppressPrimaryProbe2=false,retryFirst=false,badP1=false,conflict=false,failTx[2]{},corruptCir=false,hwFault=false;
  long double armT[2]{};uint64_t respAnchor[2]{},freshRespAnchor[2]{};unsigned last[2]{},calls[2]{},arms[2]{};
@@ -138,7 +139,8 @@ struct SimTag:Port {
  }
  CirRead readCir(uint8_t i,uint8_t*d,Cir&o)override{
   CHECK(!armed[0]&&!armed[1]);CHECK(last[i]==1||last[i]==2||last[i]==5||last[i]==8);
-  const uint32_t cost=p2CirCost&&last[i]!=1&&last[i]!=8?p2CirCost:cirCost;
+  uint32_t cost=p2CirCost&&last[i]!=1&&last[i]!=8?p2CirCost:cirCost;
+  if(last[i]==8&&p1RecoveryCirCost)cost=p1RecoveryCirCost;
   ++calls[i];o.present=true;o.bytes=CIR_BYTES;o.read_us=cost/2;o.repeat_us=cost/2;
   const int repeatOffset=(last[i]==5||last[i]==8)?13:0;
   for(size_t k=0;k<NSAMP;++k){putLE(d+4*k,uint16_t(int16_t((int(k)+int(i)*3)%50-25+repeatOffset)),2);putLE(d+4*k+2,uint16_t(int16_t(20-int(k)%31)),2);}
@@ -363,6 +365,21 @@ static void testsEngine(const std::string&out){
   CHECK(x.complete&&!x.p1_repeat_used&&x.p1_primary_rx_mask==3&&x.p1_primary_cir_mask==3);
   CHECK(q.last[0]==2&&q.last[1]==2&&q.probeReadsDuringFrame==0);
   CHECK(q.freshRespMask==0&&!x.have_p1_repeat_poll_frame);}
+ // Live txn 933: primary P1 A missed, P1 recovery succeeded, then the
+ // recovered CIR processing ran past primary POLL2. The fresh P2 still fits.
+ {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.txn=933;
+  q.injectProbe1Status=0x00810f02ULL;q.failProbe1Radio=0;q.p1RecoveryCirCost=9000;
+  q.suppressPrimaryProbe2=true;
+  const auto x=q.execute(true);
+  CHECK(x.complete&&x.errors==0&&x.p1_repeat_used&&x.p2_retry);
+  CHECK(x.p1_primary_rx_mask==2&&x.p2_primary_rx_mask==0);
+  CHECK(x.p2_first_errors==(ErrLate|ErrPoll2|ErrResponse2A|ErrResponse2B|ErrProbe2));
+  CHECK(!q.response2Sends[0][0]&&!q.response2Sends[0][1]);
+  CHECK(q.response2Sends[1][0]==1&&q.response2Sends[1][1]==1);
+  CHECK(x.p1_tx_confirmed&&x.probe_frame[1].tag_poll_rx==x.probe_frame[0].probe_tx);
+  CHECK(x.cir_meta[0].valid&&x.cir_meta[1].valid&&x.cir_meta[2].valid&&x.cir_meta[3].valid);
+  CHECK(x.range[0].valid&&x.range[1].valid);
+ }
  for(unsigned primaryMiss:{1U,2U,3U}){
   SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.txn=24;
   for(unsigned i=0;i<2;++i)q.drop[i][2]=bool(primaryMiss&(1U<<i));

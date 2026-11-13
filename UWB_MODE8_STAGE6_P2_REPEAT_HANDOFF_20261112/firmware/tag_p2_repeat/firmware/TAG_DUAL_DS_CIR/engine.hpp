@@ -259,15 +259,18 @@ inline void selectFreshProbe2(Port&p,Record&r,uint8_t firstRadio,uint64_t origin
  r.p2_primary_rx_mask=probeReceiveMask(r,1);r.p2_primary_cir_mask=probeCirMask(r,1);
  if(r.p2_primary_rx_mask==3&&r.p2_primary_cir_mask==3&&!(r.errors&P2ExchangeErrors))return;
  r.errors|=ErrProbe2;
- if(!capture||(r.errors&(ErrHardware|ErrMetadata|ErrLate)))return;
+ if(!capture||(r.errors&(ErrHardware|ErrMetadata)))return;
  const uint32_t firstErrors=r.errors;
  const Frame firstPoll=r.poll2_frame;
  const bool firstPollValid=r.have_poll2_frame;
  const Rx firstRx[]={r.poll2_rx[0],r.poll2_rx[1]};
  const Tx firstTx[]={r.response2_tx[0],r.response2_tx[1]};
  const uint8_t firstLatch=r.rx_deadline_latch;
- r.p2_retry=true;r.p2_first_errors=firstErrors&(P2ExchangeErrors|ErrProbe2|ErrCir);
- r.errors&=~(P2ExchangeErrors|ErrProbe2);
+ // A late primary window says nothing about the independent retry slot.
+ // Keep its error as provenance and require all retry timing checks afresh.
+ constexpr uint32_t primaryErrors=P2ExchangeErrors|ErrProbe2|ErrLate;
+ r.p2_retry=true;r.p2_first_errors=firstErrors&(primaryErrors|ErrCir);
+ r.errors&=~primaryErrors;
  if(!priorCirError)r.errors&=~ErrCir;
  r.have_poll2_frame=false;r.rx_deadline_latch&=~uint8_t(0x0c);
  for(unsigned i=0;i<2;++i){r.poll2_rx[i]=Rx{};r.response2_tx[i]=Tx{};}
