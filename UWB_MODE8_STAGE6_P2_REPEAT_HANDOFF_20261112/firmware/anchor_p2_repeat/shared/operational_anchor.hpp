@@ -35,8 +35,8 @@ static WiFiServer opsServer(OPS_TCP_PORT);
 static WiFiClient opsClient;
 struct OpsNet {
  char ssid[33]{},pass[65]{},otaHash[65]{};
- uint8_t authKey[32]{};
- bool authSet=false,otaSet=false;
+ uint8_t authKey[32]{},deleteKey[32]{};
+ bool authSet=false,deleteSet=false,otaSet=false;
 };
 static OpsNet opsNet{};
 
@@ -255,6 +255,8 @@ static void opsLoadNet(){
  p.getString("pass",opsNet.pass,sizeof opsNet.pass);
  opsNet.authSet=p.getBytesLength("auth")==sizeof opsNet.authKey
      &&p.getBytes("auth",opsNet.authKey,sizeof opsNet.authKey)==sizeof opsNet.authKey;
+ opsNet.deleteSet=p.getBytesLength("deletekey")==sizeof opsNet.deleteKey
+     &&p.getBytes("deletekey",opsNet.deleteKey,sizeof opsNet.deleteKey)==sizeof opsNet.deleteKey;
  p.getString("otahash",opsNet.otaHash,sizeof opsNet.otaHash);
  opsNet.otaSet=strlen(opsNet.otaHash)==64;
  // Ignore the old session-only approval. A legacy file must be fetched again.
@@ -277,6 +279,12 @@ static bool opsSaveHexField(const char*name,const char*hex){
  }else if(!strcmp(name,"AUTH")&&n==32){
   ok=p.putBytes("auth",bytes,32)==32;
   if(ok){memcpy(opsNet.authKey,bytes,32);opsNet.authSet=true;}
+ }else if(!strcmp(name,"DELETEKEY")&&n==32){
+  // Deletion custody uses a separate physical USB provisioned secret.
+  if(!opsNet.authSet||memcmp(bytes,opsNet.authKey,32)!=0){
+   ok=p.putBytes("deletekey",bytes,32)==32;
+   if(ok){memcpy(opsNet.deleteKey,bytes,32);opsNet.deleteSet=true;}
+  }
  }else if(!strcmp(name,"OTAHASH")&&n==32){
   // OTA uses the hex text of a 32-byte SHA-256 password digest.
   ok=p.putString("otahash",hex)==64;
@@ -311,13 +319,15 @@ static void opsTcpStatus(){
  snprintf(out,sizeof out,
   "{\"event\":\"OPS_STATUS\",\"phase\":\"%s\",\"boot\":%lu,\"session\":%lu,\"records\":%lu,"
   "\"config\":%lu,\"wifi\":%s,\"file\":%s,\"file_session\":%lu,\"file_count\":%lu,"
-  "\"file_acked\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"free_slots\":%u,"
+  "\"file_acked\":%s,\"file_crc\":%lu,\"file_boot\":%lu,\"deletion_key_ready\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"free_slots\":%u,"
   "\"firmware\":\"%s\",\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,"
   "\"hw_ok\":%s,\"fault_latched\":%s,\"period_miss\":%lu,\"drained\":%s,\"failure\":\"%s\"}",
   opsPhaseText(),(unsigned long)boot,(unsigned long)opsSession,(unsigned long)opsRows,
   (unsigned long)configId(config),WiFi.status()==WL_CONNECTED?"true":"false",
   stored?"true":"false",(unsigned long)(stored?h.session:0),(unsigned long)(stored?h.count:0),
-  stored&&opsLastAck==opsIdentity(h)?"true":"false",(unsigned long)pending.load(),
+  stored&&opsLastAck==opsIdentity(h)?"true":"false",
+  (unsigned long)(stored?h.body_crc:0),(unsigned long)(stored?h.boot:0),
+  opsNet.deleteSet?"true":"false",(unsigned long)pending.load(),
   awaitingAck.load(),freeQ?unsigned(uxQueueMessagesWaiting(freeQ)):0,
   firmwareId(true),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,
   hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)periodMiss,
@@ -335,6 +345,26 @@ static bool opsHmac(const char*hex){
  if(!info||mbedtls_md_hmac(info,opsNet.authKey,32,reinterpret_cast<const unsigned char*>(msg),
                             strlen(msg),digest)!=0)return false;
  uint8_t diff=0;for(unsigned i=0;i<32;++i)diff|=expected[i]^digest[i];
+ return diff==0;
+}
+// The control-login key alone never grants archival approval/deletion.
+// Every proof is bound to the current TCP nonce, boot, session and CRC.
+static bool opsCustodyProof(const char* token,const char* verb,const OpsFileIdentity& id){
+ if(!opsNet.deleteSet||!token||strlen(token)!=64)return false;
+ uint8_t claimed[32]{};size_t n=0;
+ if(!opsHex(token,claimed,sizeof claimed,n)||n!=32)return false;
+ char message[120];
+ const int length=snprintf(message,sizeof message,
+   "MODE8-CUSTODY:%s:%08lX:%08lX:%08lX:%08lX",verb,
+   (unsigned long)id.boot,(unsigned long)id.session,
+   (unsigned long)id.crc,(unsigned long)opsNonce);
+ if(length<0||size_t(length)>=sizeof message)return false;
+ uint8_t digest[32]{};
+ const auto* md=mbedtls_md_info_from_type(MBEDTLS_MD_SHA256);
+ if(!md||mbedtls_md_hmac(md,opsNet.deleteKey,32,
+   reinterpret_cast<const unsigned char*>(message),size_t(length),digest)!=0)return false;
+ uint8_t diff=0;
+ for(unsigned i=0;i<32;++i)diff|=claimed[i]^digest[i];
  return diff==0;
 }
 static bool opsDownload(){
@@ -438,12 +468,14 @@ static void opsTcpCommand(char *line){
  if(!strcmp(op,"ACKFILE")){
   char*raw=strtok_r(nullptr," \r\t",&save);
   char*rawCrc=strtok_r(nullptr," \r\t",&save);
+  char*proof=strtok_r(nullptr," \r\t",&save);
   char*extra=strtok_r(nullptr," \r\t",&save);
   uint32_t id=0,crc=0;
   OpsArchiveHeader h;
   if(!parseDecimalU32(raw,id)||!id||!parseDecimalU32(rawCrc,crc)||extra||!opsReadHeader(h)||
      !opsVerifyArchive(h)||h.session!=id||h.body_crc!=crc||
-     !(opsDownloaded==opsIdentity(h))){
+     !(opsDownloaded==opsIdentity(h))||
+     !opsCustodyProof(proof,"ACK",opsIdentity(h))){
     opsTcpReply("ERROR ACKFILE");return;
   }
   const auto identity=opsIdentity(h);
@@ -460,7 +492,18 @@ static void opsTcpCommand(char *line){
   return;
  }
  if(!strcmp(op,"PURGE")){
-  if(strtok_r(nullptr," \r\t",&save)){opsTcpReply("ERROR EXTRA_ARGS");return;}
+  char*raw=strtok_r(nullptr," \r\t",&save);
+  char*rawCrc=strtok_r(nullptr," \r\t",&save);
+  char*proof=strtok_r(nullptr," \r\t",&save);
+  char*extra=strtok_r(nullptr," \r\t",&save);
+  uint32_t id=0,crc=0;
+  OpsArchiveHeader h;
+  if(extra||!parseDecimalU32(raw,id)||!id||!parseDecimalU32(rawCrc,crc)||
+     !opsReadHeader(h)||!opsVerifyArchive(h)||h.session!=id||h.body_crc!=crc||
+     !(opsLastAck==opsIdentity(h))||
+     !opsCustodyProof(proof,"PURGE",opsIdentity(h))){
+   opsTcpReply("ERROR PURGE_GUARD");return;
+  }
   opsTcpReply(opsEraseAcked()?"PURGE_OK":"ERROR UNACKED_FILE");return;
  }
  if(!strcmp(op,"START")){
@@ -543,7 +586,8 @@ static bool opsUsbCommand(const char*line){
   if(sub&&!strcmp(sub,"ON")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiStart()?"true":"false");return true;}
   if(sub&&!strcmp(sub,"OFF")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiDown()?"true":"false");return true;}
  }
- if(!strcmp(op,"SSID")||!strcmp(op,"PASS")||!strcmp(op,"AUTH")||!strcmp(op,"OTAHASH")){
+ if(!strcmp(op,"SSID")||!strcmp(op,"PASS")||!strcmp(op,"AUTH")||
+    !strcmp(op,"DELETEKEY")||!strcmp(op,"OTAHASH")){
   char*value=strtok_r(nullptr," \r\t",&save);
   // Credentials are not printed or echoed on serial.
   emit("{\"event\":\"OPS_PROVISION\",\"field\":\"%s\",\"ok\":%s}",
