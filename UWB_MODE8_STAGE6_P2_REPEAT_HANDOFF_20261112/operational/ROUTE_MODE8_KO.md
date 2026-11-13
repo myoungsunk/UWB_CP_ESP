@@ -26,3 +26,5 @@ python operational/host/ops_route.py --plan operational/route_example.json --out
 4. PURGE 명령 응답 유실 후 \`PURGE_INTENT\`에서 원격 상태로 복원.
 5. 원격 boot/session/count/ACK 상태가 다를 때 다음 point 금지.
 6. 실제 로봇 이동·중지·정지 데이터 안정성을 별도 검증하고 Wi-Fi 복귀 시간을 기록.
+
+**삭제 권한**: route 및 단일 point 종료에서 서로 다른 `MODE8_AUTH_KEY_HEX`와 `MODE8_APPROVAL_KEY_HEX`가 필요합니다. 승인 키는 USB의 `OPS DELETEKEY`로만 등록하고, 일반 HMAC 로그인 키만으로는 ACKFILE/PURGE가 실패해야 합니다.

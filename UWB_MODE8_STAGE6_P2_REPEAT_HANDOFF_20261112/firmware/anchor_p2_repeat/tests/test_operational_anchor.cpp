@@ -128,9 +128,16 @@ struct Esp {unsigned getFreeHeap(){return 100000;}} ESP;
 using ota_error_t=int;
 struct mbedtls_md_info_t {};
 enum { MBEDTLS_MD_SHA256 };
-static const mbedtls_md_info_t* mbedtls_md_info_from_type(int){return nullptr;}
-static int mbedtls_md_hmac(const mbedtls_md_info_t*,const uint8_t*,size_t,
-                           const uint8_t*,size_t,uint8_t*){return 1;}
+static mbedtls_md_info_t mockMdInfo;
+static const mbedtls_md_info_t* mbedtls_md_info_from_type(int){return &mockMdInfo;}
+static int mbedtls_md_hmac(const mbedtls_md_info_t*,const uint8_t*key,size_t kn,
+                           const uint8_t*msg,size_t mn,uint8_t*out){
+ uint32_t h=2166136261U;
+ for(size_t i=0;i<kn;++i)h=(h^key[i])*16777619U;
+ for(size_t i=0;i<mn;++i)h=(h^msg[i])*16777619U;
+ for(unsigned i=0;i<32;++i)out[i]=uint8_t((h>>(8*(i%4)))^i);
+ return 0;
+}
 static void delay(unsigned ms){nowUs+=uint64_t(ms)*1000;}
 
 #define DUAL8_ANCHOR 1
@@ -149,13 +156,27 @@ static void tcp(const char* op){
  opsClient.written.clear();opsTcpCommand(line);
 }
 static void connect(){
- opsClient.connectedFlag=true;opsTcpAuthorized=true;opsDownloaded={};
+ opsClient.connectedFlag=true;opsTcpAuthorized=true;opsDownloaded={};opsNonce=17;
+}
+static std::string custodyToken(const char* kind,const OpsArchiveHeader& h){
+ char text[128];
+ std::snprintf(text,sizeof text,"MODE8-CUSTODY:%s:%08X:%08X:%08X:%08X",
+               kind,h.boot,h.session,h.body_crc,opsNonce);
+ uint8_t digest[32]{};
+ mbedtls_md_hmac(&mockMdInfo,opsNet.deleteKey,32,
+    reinterpret_cast<const uint8_t*>(text),std::strlen(text),digest);
+ char hex[65]{};
+ for(unsigned i=0;i<32;++i)std::snprintf(hex+2*i,3,"%02x",unsigned(digest[i]));
+ return std::string(hex);
 }
 static void ack(const OpsArchiveHeader& h){
- char cmd[64];std::snprintf(cmd,sizeof cmd,"ACKFILE %u %u",h.session,h.body_crc);
+ char cmd[144];std::snprintf(cmd,sizeof cmd,"ACKFILE %u %u %s",
+                            h.session,h.body_crc,custodyToken("ACK",h).c_str());
  tcp(cmd);
 }
 static void testApproval(){
+ opsNet.deleteSet=true;
+ for(unsigned i=0;i<32;++i)opsNet.deleteKey[i]=uint8_t(i);
  makeArchive(OPS_ARCHIVE_PATH,41,1);
  OpsArchiveHeader h;assert(opsReadHeader(h));
  connect();ack(h);assert(opsClient.written=="ERROR ACKFILE\n");

@@ -17,6 +17,13 @@ from ops_archive import (parse, ArchiveError, HEADER, ROW_BYTES, PREFIX, TX, RX,
 from ops_client import OperationalClient, TransportError
 
 KEY=bytes(range(32))
+CUSTODY_KEY=bytes(reversed(range(32)))
+
+def signed_ack(blob):
+    crc=parse(blob)["crc32"]
+    msg=f"MODE8-CUSTODY:ACK:00000002:00000315:{crc:08X}:00000001"
+    mac=hmac.new(CUSTODY_KEY,msg.encode("ascii"),hashlib.sha256).hexdigest()
+    return f"ACKFILE 789 {crc} {mac}"
 
 def archive(count=2, session=789, *, legacy=False):
     rows=[]
@@ -118,7 +125,7 @@ class FakeServer(threading.Thread):
                     s.sendall(prefix+self.archive[:18]);return
                 s.sendall(prefix+self.archive+b"END\n")
                 self.ack=f.readline().decode().strip()
-                if not self.lose_ack and self.ack=="ACKFILE 789 "+str(parse(self.archive)["crc32"]):
+                if not self.lose_ack and self.ack==signed_ack(self.archive):
                     s.sendall(b"ACKFILE_OK\n")
         except Exception as e:self.error=e
         finally:self.sock.close()
@@ -140,7 +147,7 @@ class TransportTests(unittest.TestCase):
         server=FakeServer();server.start()
         with tempfile.TemporaryDirectory() as folder:
             dest=Path(folder)/"archive.bin"
-            with OperationalClient("127.0.0.1",KEY,server.port) as cli:
+            with OperationalClient("127.0.0.1",KEY,server.port,approval_key=CUSTODY_KEY) as cli:
                 data=cli.get_archive(dest,789,ack=False)
                 # Transport-only fixture: paired proof is checked by ops_session.
                 self.assertEqual(cli.acknowledge_archive(789,data["crc32"]),"ACKFILE_OK")
@@ -153,7 +160,7 @@ class TransportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             dest=Path(folder)/"archive.bin"
             with self.assertRaises((TransportError,ConnectionError,TimeoutError,EOFError)):
-                with OperationalClient("127.0.0.1",KEY,server.port,timeout=1) as cli:
+                with OperationalClient("127.0.0.1",KEY,server.port,timeout=1,approval_key=CUSTODY_KEY) as cli:
                     cli.get_archive(dest,789,ack=False)
             self.assertFalse(dest.exists())
             self.assertEqual(len(list(dest.parent.glob("*.partial"))),1)
@@ -166,12 +173,12 @@ class TransportTests(unittest.TestCase):
             dest=Path(folder)/"archive.bin"
             first.start()
             with self.assertRaises(TransportError):
-                with OperationalClient("127.0.0.1",KEY,first.port) as cli:
+                with OperationalClient("127.0.0.1",KEY,first.port,approval_key=CUSTODY_KEY) as cli:
                     doc=cli.get_archive(dest,789,ack=False)
                     cli.acknowledge_archive(789,doc["crc32"])
             self.assertEqual(dest.read_bytes(),first.archive)
             retry.start()
-            with OperationalClient("127.0.0.1",KEY,retry.port) as cli:
+            with OperationalClient("127.0.0.1",KEY,retry.port,approval_key=CUSTODY_KEY) as cli:
                 doc=cli.get_archive(dest,789,ack=False)
                 self.assertEqual(cli.acknowledge_archive(789,doc["crc32"]),"ACKFILE_OK")
             self.assertEqual(dest.read_bytes(),first.archive)
@@ -179,7 +186,7 @@ class TransportTests(unittest.TestCase):
         for server in (first,retry):
             server.join(5)
             self.assertIsNone(server.error)
-            self.assertEqual(server.ack,"ACKFILE 789 "+str(parse(server.archive)["crc32"]))
+            self.assertEqual(server.ack,signed_ack(server.archive))
 
     def test_different_archive_cannot_replace_prior_evidence(self):
         server=FakeServer(blob=archive(count=1))
@@ -189,7 +196,7 @@ class TransportTests(unittest.TestCase):
             dest.write_bytes(original)
             server.start()
             with self.assertRaisesRegex(TransportError,"differs"):
-                with OperationalClient("127.0.0.1",KEY,server.port) as cli:
+                with OperationalClient("127.0.0.1",KEY,server.port,approval_key=CUSTODY_KEY) as cli:
                     cli.get_archive(dest,789,ack=False)
             self.assertEqual(dest.read_bytes(),original)
             self.assertEqual(len(list(dest.parent.glob("*.partial"))),1)
