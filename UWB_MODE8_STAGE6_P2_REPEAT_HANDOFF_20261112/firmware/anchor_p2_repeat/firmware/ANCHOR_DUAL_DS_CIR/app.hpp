@@ -18,6 +18,8 @@
 #include <ArduinoOTA.h>
 #include <Update.h>
 #include <mbedtls/md.h>
+#include <esp_ota_ops.h>
+#include <esp_partition.h>
 #endif
 namespace dual8app {
 using namespace dual8;

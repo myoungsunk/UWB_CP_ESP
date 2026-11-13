@@ -410,8 +410,36 @@ static bool opsEraseAcked(){
  }
  return ok;
 }
+// Device-only OTA partition gate. Does not enable the rollback bootloader.
+static bool opsOtaPartitionsReady(){
+#if defined(ESP_PLATFORM)
+ const auto*running=esp_ota_get_running_partition();
+ const auto*next=esp_ota_get_next_update_partition(nullptr);
+ if(!running||!next||next==running||next->size<0x100000UL)return false;
+ esp_ota_img_states_t state=ESP_OTA_IMG_UNDEFINED;
+ if(esp_ota_get_state_partition(running,&state)==ESP_OK&&
+    state==ESP_OTA_IMG_PENDING_VERIFY)return false;
+ return true;
+#else
+ return true;
+#endif
+}
+static void opsOtaBootAttest(){
+#if defined(CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE) && CONFIG_BOOTLOADER_APP_ROLLBACK_ENABLE
+ const auto*running=esp_ota_get_running_partition();
+ esp_ota_img_states_t state=ESP_OTA_IMG_UNDEFINED;
+ if(!running||esp_ota_get_state_partition(running,&state)!=ESP_OK||
+    state!=ESP_OTA_IMG_PENDING_VERIFY)return;
+ if(hwOk&&opsFsOk&&port.selftest()&&opsPhase!=OpsPhase::Recovery){
+  if(esp_ota_mark_app_valid_cancel_rollback()!=ESP_OK)opsFail("OTA_VALIDATION_FAILED");
+ }else{
+  esp_ota_mark_app_invalid_rollback_and_reboot();
+  opsFail("OTA_FIRST_BOOT_SELFTEST");
+ }
+#endif
+}
 static bool opsOtaStart(uint32_t seconds){
- if(seconds<60||seconds>600||!opsNet.otaSet||opsAnyStoredFile()||
+ if(seconds<60||seconds>600||!opsNet.otaSet||!opsOtaPartitionsReady()||opsAnyStoredFile()||
     opsPhase!=OpsPhase::Idle||active||!opsRecordsDrained()||
     WiFi.status()!=WL_CONNECTED)return false;
  ArduinoOTA.setPort(3232);
@@ -420,8 +448,10 @@ static bool opsOtaStart(uint32_t seconds){
  ArduinoOTA.setMdnsEnabled(false);
  ArduinoOTA.setRebootOnSuccess(true);
  ArduinoOTA.onStart([](){
-  if(ArduinoOTA.getCommand()!=U_FLASH){Update.abort();return;}
-  // The runtime was checked before opening the OTA window.
+  if(ArduinoOTA.getCommand()!=U_FLASH||active||opsPhase!=OpsPhase::Idle||
+     !opsRecordsDrained()||opsAnyStoredFile()){
+   Update.abort();return;
+  }
  });
  ArduinoOTA.onEnd([](){opsOtaOpen=false;});
  ArduinoOTA.onError([](ota_error_t){opsOtaOpen=false;});
@@ -560,6 +590,7 @@ static void opsSetup(){
  opsFsOk=LittleFS.begin(false); // NO autoformat; preserve existing flash data.
  opsLoadNet();
  if(opsFsOk)opsLoadArchiveState();
+ opsOtaBootAttest();
  WiFi.mode(WIFI_OFF);
  opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
  opsReconnectAtMs=millis()+2000UL;
