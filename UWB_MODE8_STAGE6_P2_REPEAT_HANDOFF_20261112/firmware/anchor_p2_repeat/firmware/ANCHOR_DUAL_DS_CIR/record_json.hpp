@@ -3,14 +3,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 namespace dual8 {
-constexpr size_t JSON_MAX=7000;
+constexpr size_t JSON_MAX=RECORD_JSON_BYTES;
 inline unsigned rxTraceOffset(uint64_t timestamp,uint64_t begin){
  if(!timestamp)return 0;
  constexpr unsigned unavailable=0xffffff;
  if(timestamp<begin||timestamp-begin>=unavailable-1)return unavailable;
  return unsigned(timestamp-begin)+1;
 }
-inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_P2_FRESH_OPS_20261113":"D8_TAG_STAGE6_RELIABILITY_20261112";}
+inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_P1_P2_FRESH_OPS_20261114":"D8_TAG_STAGE6_RELIABILITY_20261112";}
 class Json {
  char* p_;size_t cap_;
 public:
@@ -104,6 +104,10 @@ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes
   if(r.cfg.stage==6&&r.anchor){
    j.add(",\"p1_repeat_frame\":");jsonFrame(j,r.p1_repeat_frame,r.p1_repeat_tx.ok);
    j.add(",\"p1_repeat_tx\":");jsonTx(j,r.p1_repeat_tx);
+   j.add(",\"p1_repeat_poll_frame\":");jsonFrame(j,r.p1_repeat_poll_frame,r.p1_repeat_poll_tx.ok);
+   j.add(",\"p1_repeat_poll_tx\":");jsonTx(j,r.p1_repeat_poll_tx);
+   j.add(",\"p1_repeat_responses\":[");
+   jsonRx(j,r.p1_repeat_responses[0]);j.add(",");jsonRx(j,r.p1_repeat_responses[1]);j.add("]");
    j.add(",\"p2_primary_frame\":");jsonFrame(j,r.p2_primary_frame,r.p2_primary_tx.ok);
    j.add(",\"p2_primary_tx\":");jsonTx(j,r.p2_primary_tx);
   }else if(r.cfg.stage==6){

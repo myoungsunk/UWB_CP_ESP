@@ -46,10 +46,14 @@ struct ProbeRepeatCapture {
   for(unsigned i=0;i<2;++i){rx[i]=Rx{};cir[i]=Cir{};}
  }
 };
+enum class Probe1Recovery { None, Poll, Final };
 inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secondPoll=false,
-                     bool acceptRetry=false,ProbeRepeatCapture* repeat=nullptr){
+                     bool acceptRetry=false,ProbeRepeatCapture* repeat=nullptr,
+                     Probe1Recovery recovery=Probe1Recovery::None){
  bool got[2]={false,false},probeGot[2]={false,false};
- const unsigned window=secondPoll?(r.p2_retry?3:2):probe?(r.p2_retry?5:4):repeat?6:(r.p1_retry?1:0);
+ const bool repeatPoll=recovery==Probe1Recovery::Poll;
+ const bool repeatFinal=recovery==Probe1Recovery::Final;
+ const unsigned window=repeatPoll?7:secondPoll?(r.p2_retry?3:2):probe?(r.p2_retry?5:4):repeat?6:(r.p1_retry?1:0);
  auto& traces=r.rx_windows[window];
  struct TraceScope {
   Port& port; RxWindowTrace* trace;
@@ -68,7 +72,7 @@ inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secon
  const uint64_t target=deadline>=r.cfg.grace_us?deadline-r.cfg.grace_us:0;
  constexpr uint32_t preambleMarginUs=450, frameTailUs=1150;
  const bool stage6=r.cfg.stage==6;
- const bool probeQuiet=stage6&&!secondPoll;
+ const bool probeQuiet=stage6&&!secondPoll&&!repeatPoll;
  // Keep shared SPI inactive around scheduled Probe reception on both radios.
  // The larger guard covers the PHY frame and clock/projection uncertainty.
  // Cap it at the existing deadline so the final latched sample still runs.
@@ -80,13 +84,14 @@ inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secon
   bounds[0]=quietBegin;bounds[1]=quietEnd;
  }
  const uint32_t offset=secondPoll?r.cfg.probe2PollDelayUs(r.p2_retry):
-                       repeat&&!probe?r.cfg.probe1RepeatUs():
+                       repeatPoll?r.cfg.probe1RepeatUs():
                        probe?r.cfg.probe2_us(r.p2_retry):r.cfg.probe1DelayUs();
- const uint64_t reference=r.poll_frame.poll_tx;
+ const uint64_t reference=repeatFinal?r.p1_repeat_poll_frame.poll_tx:r.poll_frame.poll_tx;
+ const Rx* referenceRx=repeatFinal?r.p1_repeat_poll_rx:r.poll;
  bool retrySelected=false;
  uint64_t closeTicks[2]{};
  if(stage6)for(unsigned i=0;i<2;++i){
-  if(r.poll[i].received)closeTicks[i]=(r.poll[i].hw+usTicks(offset+r.cfg.grace_us))&MASK40;
+  if(referenceRx[i].received)closeTicks[i]=(referenceRx[i].hw+usTicks(offset+r.cfg.grace_us))&MASK40;
   else{
    const uint64_t ticks=p.system(uint8_t(i)),now=p.nowUs();
    closeTicks[i]=(ticks+usTicks(deadline>now?deadline-now:0))&MASK40;
@@ -108,12 +113,16 @@ inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secon
    if(rc==1){
     const bool p1Retry=acceptRetry&&!probe&&isRetryPoll(f);
     const bool retryPacket=p1Retry;
-    const bool pollPacket=secondPoll||retryPacket;
+    const bool pollPacket=secondPoll||retryPacket||repeatPoll;
     const bool expected=pollPacket?
       (p1Retry?(f.probe_tx==reference&&(!f.peer_boot||f.peer_boot==r.boot)):
+                repeatPoll?(isProbe1RepeatPoll(f)&&f.probe_tx==reference&&f.peer_boot==r.boot):
                 (f.type==Type::Poll2&&f.peer_boot==r.boot))&&
       f.session==r.session&&f.txn==r.txn&&f.config==r.config&&f.boot==r.peer_boot&&f.stage==r.cfg.stage:
-      eligibleProbe(f,r,probe)&&(!stage6||!probe||
+      eligibleProbe(f,r,probe)&&
+      (!repeatFinal||(f.peer_boot==r.boot&&f.resp_mask==3&&f.tx_ok_mask==1&&
+                      !f.prev_probe_actual&&!f.tag_poll_rx&&!f.tag_resp_tx))&&
+      (!stage6||!probe||
        (r.p2_retry?(r.have_poll2_frame&&f.tag_resp_tx==r.poll2_frame.poll_tx):f.tag_resp_tx==0));
     // Host scheduling can delay inspection of a latched event. Use the
     // receiver's timestamp to enforce the original Stage 6 on-air deadline.
@@ -129,14 +138,11 @@ inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secon
       for(auto& rx:r.poll)rx=Rx{};
       for(auto& tx:r.tx)tx=Tx{};
      }
-     auto& captured=repeat?repeat->frame:p1Retry?r.poll_frame:pollPacket?r.poll2_frame:r.probe_frame[probe];
-     auto& have=repeat?repeat->have_frame:p1Retry?r.p1_retry:pollPacket?r.have_poll2_frame:r.have_probe_frame[probe];
-     bool samePrimary=true;
-     if(repeat&&!probe&&r.have_probe_frame[probe]){
-      Frame normalized=f;normalized.probe_tx=r.probe_frame[probe].probe_tx;
-      samePrimary=sameFrame(r.probe_frame[probe],normalized);
-     }
-     if(!onSchedule||mixed||!samePrimary||(have&&!sameFrame(captured,f))){
+     auto& captured=repeat?repeat->frame:p1Retry?r.poll_frame:repeatPoll?r.p1_repeat_poll_frame:
+                    pollPacket?r.poll2_frame:r.probe_frame[probe];
+     auto& have=repeat?repeat->have_frame:p1Retry?r.p1_retry:repeatPoll?r.have_p1_repeat_poll_frame:
+                pollPacket?r.have_poll2_frame:r.have_probe_frame[probe];
+     if(!onSchedule||mixed||(have&&!sameFrame(captured,f))){
       r.metadata_conflict=true;r.errors|=ErrMetadata;
      }else{captured=f;have=true;}
      if(!mixed){
@@ -145,10 +151,11 @@ inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secon
        sample=o;probeGot[i]=true;
       }
       else if(p1Retry&&retrySelected)r.poll[i]=o;
+      else if(repeatPoll)r.p1_repeat_poll_rx[i]=o;
       else if(!p1Retry)r.poll2_rx[i]=o;
      }
      got[i]=true;traces[i].accepted=!mixed&&onSchedule;
-     if(finalSample){
+     if(finalSample&&!repeatPoll){
       auto& latch=repeat?repeat->deadline_latch:r.rx_deadline_latch;
       latch|=uint8_t(1U<<((secondPoll?2U:probe?4U:0U)+i));
      }
@@ -164,8 +171,8 @@ inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secon
  // No receiver is restarted before both snapshots are copied. This also keeps
  // both radios out of RX while using the high-speed accumulator-read path.
  stopPair(p);
- const bool pollSlot=secondPoll||retrySelected;
- if(!got[0]||!got[1])r.errors|=pollSlot?(retrySelected&&!probe?ErrPoll:ErrPoll2):(probe?ErrProbe2:ErrProbe1);
+ const bool pollSlot=secondPoll||retrySelected||repeatPoll;
+ if(!got[0]||!got[1])r.errors|=repeatPoll?ErrProbe1:pollSlot?(retrySelected&&!probe?ErrPoll:ErrPoll2):(probe?ErrProbe2:ErrProbe1);
  if(pollSlot)return got[0]||got[1];
  if(repeat&&(!repeat->have_frame||r.metadata_conflict||!probeGot[0]||!probeGot[1]||
              !repeat->rx[0].lde||!repeat->rx[1].lde))return false;
@@ -189,19 +196,6 @@ inline void commitProbeCapture(Record&r,unsigned probe,const ProbeRepeatCapture&
  const unsigned latchMask=probe?0x30U:0x03U;
  r.rx_deadline_latch=uint8_t((r.rx_deadline_latch&~latchMask)|capture.deadline_latch);
 }
-inline void selectProbe1Repeat(Port&p,Record&r,uint8_t firstRadio,uint64_t originRx,ProbeRepeatCapture* repeat){
- r.p1_primary_rx_mask=probeReceiveMask(r,0);r.p1_primary_cir_mask=probeCirMask(r,0);
- if(r.p1_primary_rx_mask==3&&r.p1_primary_cir_mask==3)return;
- r.errors|=ErrProbe1;
- if(!repeat||(r.errors&(ErrHardware|ErrMetadata|ErrLate)))return;
- const uint64_t target=deadlineAt(p,firstRadio,originRx,r.cfg.probe1RepeatUs(),true);
- if(p.nowUs()+r.cfg.min_lead_us>=target){r.p1_repeat_late=true;return;}
- repeat->reset();
- waitPair(p,r,0,target+r.cfg.grace_us,false,false,repeat);
- if(!repeat->cir[0].valid||!repeat->cir[1].valid||(r.errors&(ErrHardware|ErrMetadata)))return;
- commitProbeCapture(r,0,*repeat);r.p1_repeat_used=true;
- r.errors&=~(ErrProbe1|ErrCir);
-}
 inline void sendTagResponses(Port&p,Record&r,const Rx*rx,uint64_t origin,Tx*tx,bool second){
  const auto& c=r.cfg;
  for(unsigned i=0;i<2;++i){
@@ -214,6 +208,36 @@ inline void sendTagResponses(Port&p,Record&r,const Rx*rx,uint64_t origin,Tx*tx,b
   const uint64_t requested=(rx[i].hw+usTicks(delay))&MASK40;
   if(!p.send(uint8_t(i),f,requested,tx[i]))r.errors|=error;
  }
+}
+inline void selectProbe1Repeat(Port&p,Record&r,uint8_t firstRadio,uint64_t originRx,ProbeRepeatCapture* repeat){
+ r.p1_primary_rx_mask=probeReceiveMask(r,0);r.p1_primary_cir_mask=probeCirMask(r,0);
+ r.p1_primary_frame=r.probe_frame[0];
+ r.have_p1_primary_frame=r.have_probe_frame[0];
+ if(r.p1_primary_rx_mask==3&&r.p1_primary_cir_mask==3)return;
+ r.errors|=ErrProbe1;
+ if(!repeat||(r.errors&(ErrHardware|ErrMetadata|ErrLate)))return;
+ const auto& c=r.cfg;
+ const uint64_t target=deadlineAt(p,firstRadio,originRx,c.probe1RepeatUs(),true);
+ if(p.nowUs()+c.min_lead_us>=target){r.p1_repeat_late=true;return;}
+ waitPair(p,r,0,target+c.grace_us,false,false,nullptr,Probe1Recovery::Poll);
+ if(!r.have_p1_repeat_poll_frame||!r.p1_repeat_poll_rx[0].lde||!r.p1_repeat_poll_rx[1].lde||
+    (r.errors&(ErrHardware|ErrMetadata)))return;
+ const uint32_t firstErrors=r.errors;
+ r.errors&=~(ErrProbe1|ErrCir);
+ sendTagResponses(p,r,r.p1_repeat_poll_rx,r.p1_repeat_poll_frame.poll_tx,r.p1_repeat_response_tx,false);
+ if(!p.healthy(0)||!p.healthy(1))r.errors|=ErrHardware;
+ if(!(r.errors&ErrHardware)&&r.p1_repeat_response_tx[0].ok&&r.p1_repeat_response_tx[1].ok){
+  const uint64_t final=deadlineAt(p,firstRadio,r.p1_repeat_poll_rx[firstRadio].hw,c.probe1DelayUs(),true);
+  if(p.nowUs()+c.min_lead_us<final){
+   repeat->reset();
+   waitPair(p,r,0,final+c.grace_us,false,false,repeat,Probe1Recovery::Final);
+   if(repeat->cir[0].valid&&repeat->cir[1].valid&&!(r.errors&(ErrHardware|ErrMetadata))){
+    commitProbeCapture(r,0,*repeat);r.p1_repeat_used=true;
+    return;
+   }
+  }else r.p1_repeat_late=true;
+ }
+ r.errors|=firstErrors;
 }
 inline void runTagProbe2Poll(Port&p,Record&r,uint8_t firstRadio,uint64_t originRx){
  const auto& c=r.cfg;
@@ -297,7 +321,7 @@ inline void runTag(Port&p,const Config&c,uint32_t localBoot,uint8_t firstRadio,c
   selectProbe1Repeat(p,r,firstRadio,originRx,repeat);
   if(r.p1_primary_rx_mask==3&&r.p1_primary_cir_mask==3&&!(r.errors&(ErrHardware|ErrMetadata))){
    // When primary P1 is complete, leave both receivers idle through the
-   // redundant P1 emission before arming for the distinct POLL2 frame.
+   // optional P1 recovery POLL before arming for the distinct POLL2 frame.
    const uint64_t repeatEnd=deadlineAt(p,firstRadio,originRx,c.probe1RepeatUs()+c.grace_us,true);
    while(p.nowUs()<repeatEnd)p.relax();
   }
@@ -310,12 +334,13 @@ inline void runTag(Port&p,const Config&c,uint32_t localBoot,uint8_t firstRadio,c
  if(c.stage==6)selectFreshProbe2(p,r,firstRadio,originRx,priorCirError,repeat);
  stopPair(p);
  if(r.have_probe_frame[0])r.response_mask=r.probe_frame[0].resp_mask;
- if(r.have_probe_frame[0]&&r.have_probe_frame[1]&&!coherentAnchorBlock(r.probe_frame[0],r.probe_frame[1])){r.metadata_conflict=true;r.errors|=ErrMetadata;}
+ if((r.p1_repeat_used?r.have_p1_primary_frame:r.have_probe_frame[0])&&r.have_probe_frame[1]&&
+    !coherentAnchorBlock(r.p1_repeat_used?r.p1_primary_frame:r.probe_frame[0],r.probe_frame[1])){r.metadata_conflict=true;r.errors|=ErrMetadata;}
  finalizeRanges(r);
  if(c.stage>=4&&(!r.range[0].valid||!r.range[1].valid))r.errors|=ErrRange;
  r.end_us=p.nowUs();
 }
-inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,uint8_t&mask,bool second){
+inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,uint8_t&mask,bool second,bool repeat=false){
   const auto& c=r.cfg;
   if(!p.arm(0)){r.errors|=ErrHardware;return;}
   const uint32_t delayA=c.responseDelayUs(0);
@@ -341,7 +366,7 @@ inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,
     if(q.type==responseType(second,i)&&q.session==r.session&&q.txn==r.txn&&q.config==r.config&&q.peer_boot==r.boot&&q.stage==c.stage&&
        q.poll_tx==origin&&(!r.peer_boot||r.peer_boot==q.boot)&&inSlot&&!(mask&(1U<<i))&&o.lde){
       r.peer_boot=q.boot;responses[i]=o;mask|=uint8_t(1U<<i);
-      if(finalSample)r.rx_deadline_latch|=uint8_t(1U<<(i+(second?2U:0U)));
+      if(finalSample&&!repeat)r.rx_deadline_latch|=uint8_t(1U<<(i+(second?2U:0U)));
     }
     if(!finalSample&&mask!=3&&!p.arm(0)){r.errors|=ErrHardware;break;}
    }else if(rc==-1&&!finalSample&&!p.arm(0)){r.errors|=ErrHardware;break;}
@@ -372,6 +397,42 @@ inline void sendAnchorProbe(Port&p,Record&r,Frame&frame,unsigned probe,uint32_t 
  if(!p.send(0,frame,at,tx))r.errors|=probe?ErrProbe2:ErrProbe1;
  r.probe_frame[probe]=frame;r.have_probe_frame[probe]=tx.ok;
  if(tx.hardware_fault)r.errors|=ErrHardware;
+}
+inline void recoverAnchorProbe1(Port&p,Record&r,const Frame&poll,const Frame&primary){
+ const auto& c=r.cfg;
+ const uint32_t offset=c.probe1RepeatUs();
+ const uint64_t canonical=r.tx[0].actual;
+ const uint64_t prepare=deadlineAt(p,0,canonical,offset-3500);
+ while(p.nowUs()<prepare)p.relax();
+ Frame retry=poll;
+ retry.peer_boot=r.peer_boot;
+ retry.tx_ok_mask=2;
+ retry.probe_tx=canonical;
+ const uint64_t target=(canonical+usTicks(offset))&MASK40;
+ if(!p.send(0,retry,target,r.p1_repeat_poll_tx)){
+  if(r.p1_repeat_poll_tx.hardware_fault)r.errors|=ErrHardware;
+  return;
+ }
+ r.p1_repeat_poll_frame=retry;
+ r.have_p1_repeat_poll_frame=true;
+ const uint64_t origin=r.p1_repeat_poll_tx.actual;
+ const uint32_t firstErrors=r.errors;
+ uint8_t mask=0;
+ receiveAnchorResponses(p,r,origin,r.p1_repeat_responses,mask,false,true);
+ // Silence is expected if the tag captured both primary observations.
+ r.errors=firstErrors|(r.errors&ErrHardware);
+ if(mask!=3||(r.errors&ErrHardware))return;
+ Frame final=primary;
+ final.poll_tx=origin;
+ final.resp_mask=mask;
+ for(unsigned i=0;i<2;++i){
+  final.resp_rx[i]=r.p1_repeat_responses[i].hw;
+  final.ci[i]=r.p1_repeat_responses[i].ci;
+ }
+ const uint64_t finalAt=(origin+usTicks(c.probe1DelayUs()))&MASK40;
+ p.send(0,final,finalAt,r.p1_repeat_tx);
+ r.p1_repeat_frame=final;
+ if(r.p1_repeat_tx.hardware_fault)r.errors|=ErrHardware;
 }
 inline void recoverAnchorProbe2(Port&p,Record&r,const Frame&poll){
  const uint32_t firstErrors=r.errors;
@@ -449,18 +510,9 @@ inline void runAnchor(Port&p,const Config&c,uint32_t session,uint32_t txn,uint32
   }
   sendAnchorProbe(p,r,q,k,k?c.probe2_us():c.probe1DelayUs());
   if(r.errors&ErrHardware)break;
-  if(!k&&c.stage==6&&r.tx[1].ok){
-   // Repeat the same P1 exchange at a separate, fixed slot. The primary TX
-   // and repeat TX retain independent evidence and are confirmed in P2.
-   Frame repeat=q;
-   const uint32_t offset=c.probe1RepeatUs();
-   const uint64_t prepare=deadlineAt(p,0,r.tx[0].actual,offset-3500);
-   while(p.nowUs()<prepare)p.relax();
-   const uint64_t repeatAt=(r.tx[0].actual+usTicks(offset))&MASK40;
-   p.send(0,repeat,repeatAt,r.p1_repeat_tx);
-   r.p1_repeat_frame=repeat;
-   if(r.p1_repeat_tx.hardware_fault){r.errors|=ErrHardware;break;}
-  }
+  if(!k&&c.stage==6&&r.tx[1].ok&&r.peer_boot)
+   recoverAnchorProbe1(p,r,f,q);
+  if(r.errors&ErrHardware)break;
  }
  if(c.stage==6&&r.peer_boot&&!(r.errors&ErrHardware))
   recoverAnchorProbe2(p,r,f);

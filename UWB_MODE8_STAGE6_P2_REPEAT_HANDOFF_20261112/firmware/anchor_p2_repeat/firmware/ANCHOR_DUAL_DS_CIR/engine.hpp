@@ -153,10 +153,10 @@ inline void runTag(Port&p,const Config&c,uint32_t localBoot,uint8_t firstRadio,c
  if(c.stage>=4&&(!r.range[0].valid||!r.range[1].valid))r.errors|=ErrRange;
  r.end_us=p.nowUs();
 }
-inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,uint8_t&mask,bool second){
+inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,uint8_t&mask,bool second,bool repeat=false){
   const auto& c=r.cfg;
-  const Tx& poll=second?r.poll2_tx:r.tx[0];
-  p.beginAnchorRx({r.session,r.txn,origin,poll.end_us,second,second?r.p2_retry:r.p1_retry});
+  const Tx& poll=repeat?r.p1_repeat_poll_tx:second?r.poll2_tx:r.tx[0];
+  p.beginAnchorRx({r.session,r.txn,origin,poll.end_us,second,repeat||(second?r.p2_retry:r.p1_retry)});
   if(!p.arm(0)){r.errors|=ErrHardware;p.endAnchorRx();return;}
   const uint32_t delayA=c.responseDelayUs(0);
   const uint32_t delayB=c.responseDelayUs(1);
@@ -180,7 +180,7 @@ inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,
    if(slot!=window){window=slot;p.anchorRxWindow(window);}
    Frame q;Rx o;int rc=p.receive(0,q,o);
    auto& trace=r.response_trace[slot];
-   if(c.usesExtendedSchedule()&&!second){
+   if(c.usesExtendedSchedule()&&!second&&!repeat){
     trace.status_or|=o.status;
     if(rc<0){++trace.failed_reads;trace.last_failure=o.status;}
     if(o.first_read_issue!=RxReadIssue::None){
@@ -196,8 +196,8 @@ inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,
     if(q.type==responseType(second,i)&&q.session==r.session&&q.txn==r.txn&&q.config==r.config&&q.peer_boot==r.boot&&q.stage==c.stage&&
        q.poll_tx==origin&&(!r.peer_boot||r.peer_boot==q.boot)&&inSlot&&!(mask&(1U<<i))&&o.lde){
      r.peer_boot=q.boot;responses[i]=o;mask|=uint8_t(1U<<i);
-     if(finalSample)r.rx_deadline_latch|=uint8_t(1U<<(i+(second?2U:0U)));
-    }else if(c.usesExtendedSchedule()&&!second){++trace.rejected_frames;}
+     if(finalSample&&!repeat)r.rx_deadline_latch|=uint8_t(1U<<(i+(second?2U:0U)));
+    }else if(c.usesExtendedSchedule()&&!second&&!repeat){++trace.rejected_frames;}
     if(!finalSample&&mask!=3&&!p.arm(0)){r.errors|=ErrHardware;break;}
    }else if(rc==-1&&!finalSample&&!p.arm(0)){r.errors|=ErrHardware;break;}
    if(finalSample)break;
@@ -228,6 +228,42 @@ inline void sendAnchorProbe(Port&p,Record&r,Frame&frame,unsigned probe,uint32_t 
  if(!p.send(0,frame,at,tx))r.errors|=probe?ErrProbe2:ErrProbe1;
  r.probe_frame[probe]=frame;r.have_probe_frame[probe]=tx.ok;
  if(tx.hardware_fault)r.errors|=ErrHardware;
+}
+inline void recoverAnchorProbe1(Port&p,Record&r,const Frame&poll,const Frame&primary){
+ const auto& c=r.cfg;
+ const uint32_t offset=c.probe1RepeatUs();
+ const uint64_t canonical=r.tx[0].actual;
+ const uint64_t prepare=deadlineAt(p,0,canonical,offset-3500);
+ while(p.nowUs()<prepare)p.relax();
+ Frame retry=poll;
+ retry.peer_boot=r.peer_boot;
+ retry.tx_ok_mask=2;
+ retry.probe_tx=canonical;
+ const uint64_t target=(canonical+usTicks(offset))&MASK40;
+ if(!p.send(0,retry,target,r.p1_repeat_poll_tx)){
+  if(r.p1_repeat_poll_tx.hardware_fault)r.errors|=ErrHardware;
+  return;
+ }
+ r.p1_repeat_poll_frame=retry;
+ r.have_p1_repeat_poll_frame=true;
+ const uint64_t origin=r.p1_repeat_poll_tx.actual;
+ const uint32_t firstErrors=r.errors;
+ uint8_t mask=0;
+ receiveAnchorResponses(p,r,origin,r.p1_repeat_responses,mask,false,true);
+ // Silence is expected if the tag captured both primary observations.
+ r.errors=firstErrors|(r.errors&ErrHardware);
+ if(mask!=3||(r.errors&ErrHardware))return;
+ Frame final=primary;
+ final.poll_tx=origin;
+ final.resp_mask=mask;
+ for(unsigned i=0;i<2;++i){
+  final.resp_rx[i]=r.p1_repeat_responses[i].hw;
+  final.ci[i]=r.p1_repeat_responses[i].ci;
+ }
+ const uint64_t finalAt=(origin+usTicks(c.probe1DelayUs()))&MASK40;
+ p.send(0,final,finalAt,r.p1_repeat_tx);
+ r.p1_repeat_frame=final;
+ if(r.p1_repeat_tx.hardware_fault)r.errors|=ErrHardware;
 }
 inline void recoverAnchorProbe2(Port&p,Record&r,const Frame&poll){
  const uint32_t firstErrors=r.errors;
@@ -305,18 +341,9 @@ inline void runAnchor(Port&p,const Config&c,uint32_t session,uint32_t txn,uint32
   }
   sendAnchorProbe(p,r,q,k,k?c.probe2_us():c.probe1DelayUs());
   if(r.errors&ErrHardware)break;
-  if(!k&&c.stage==6&&r.tx[1].ok){
-   // Repeat the same P1 exchange at a separate, fixed slot. The primary TX
-   // and repeat TX retain independent evidence and are confirmed in P2.
-   Frame repeat=q;
-   const uint32_t offset=c.probe1RepeatUs();
-   const uint64_t prepare=deadlineAt(p,0,r.tx[0].actual,offset-3500);
-   while(p.nowUs()<prepare)p.relax();
-   const uint64_t repeatAt=(r.tx[0].actual+usTicks(offset))&MASK40;
-   p.send(0,repeat,repeatAt,r.p1_repeat_tx);
-   r.p1_repeat_frame=repeat;
-   if(r.p1_repeat_tx.hardware_fault){r.errors|=ErrHardware;break;}
-  }
+  if(!k&&c.stage==6&&r.tx[1].ok&&r.peer_boot)
+   recoverAnchorProbe1(p,r,f,q);
+  if(r.errors&ErrHardware)break;
  }
  if(c.stage==6&&r.peer_boot&&!(r.errors&ErrHardware))
   recoverAnchorProbe2(p,r,f);

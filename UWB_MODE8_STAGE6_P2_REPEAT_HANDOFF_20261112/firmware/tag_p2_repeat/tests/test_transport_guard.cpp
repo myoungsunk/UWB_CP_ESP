@@ -65,7 +65,8 @@ static void checkReplay(unsigned pool){
  assert(slot.take(99)==ReplayDecision::Nack);
  assert(slot.take(99)==ReplayDecision::None);
  assert(slot.offer(key,true,99));
- assert(slot.take(150)==ReplayDecision::Ack);
+ assert(slot.take(150)==ReplayDecision::None);
+ assert(slot.finishReplay());
 
  std::vector<ReplaySlot> slots;
  for(unsigned i=0;i<pool;++i)slots.push_back(cacheAt({100,200,300,400+i},100));
@@ -79,6 +80,47 @@ static void checkReplay(unsigned pool){
  slot=cacheAt({100,200,300,500},100); // A reused index has a fresh sequence.
  assert(!slot.offer(key,true,1));
  assert(slot.take(101)==ReplayDecision::Expired);
+}
+
+static void checkAckRetiresCompletedSendImmediately(){
+ constexpr unsigned pool=5;
+ constexpr uint64_t now=1000000,expires=now+5000;
+ ReplaySlot slots[pool];
+ for(unsigned i=0;i<pool;++i){
+  slots[i].occupied=true;slots[i].key={100,200,300,400+i};slots[i].expires=expires;
+ }
+ unsigned awaiting=pool,queued=0,retired=0;
+ const RecordKey key(100,200,300,400);
+ assert(slots[0].offer(key,true,now));++queued;
+ // Mirrors noticeReplay: retire outside the critical section as soon as the
+ // completed slot is atomically detached from the cache.
+ const bool ready=slots[0].takeAck();
+ assert(ready);if(ready){++retired;--awaiting;}
+ assert(queued==retired&&awaiting==pool-1);
+ assert(!slots[0].occupied&&slots[1].occupied); // Other in-flight records stay owned.
+
+ // An ACK during the initial UART send must wait until writer publishes the
+ // completed-send expiry, then retire without a later writer scan.
+ ReplaySlot initial;
+ initial.occupied=true;initial.key=key;
+ assert(initial.offer(key,true,now));
+ assert(!initial.takeAck());
+ initial.expires=expires;
+ assert(initial.takeAck()&&!initial.occupied);
+
+ // A replay owns its record until finishReplay even when ACK arrives mid-send.
+ ReplaySlot replay=cacheAt(key,expires);
+ assert(replay.offer(key,false,now));
+ assert(replay.take(now)==ReplayDecision::Nack);
+ assert(replay.offer(key,true,now));
+ assert(!replay.takeAck());
+ assert(replay.finishReplay()&&!replay.occupied);
+
+ // A host ACK can also arrive as the initial send fails while draining FIFO.
+ ReplaySlot failed;
+ failed.occupied=true;failed.key=key;
+ assert(failed.offer(key,true,now));
+ assert(failed.cancelSend()&&!failed.occupied);
 }
 
 static void testDecimalBoundaries(){
@@ -164,6 +206,7 @@ static void checkUart(){
 int main(){
  checkReplay(3);
  checkReplay(5);
+ checkAckRetiresCompletedSendImmediately();
  checkDrain();
  testDecimalBoundaries();
  checkUart();

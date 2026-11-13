@@ -59,7 +59,9 @@ P1_REPEAT_FIRMWARES = (P1_REPEAT_ANCHOR, P1_REPEAT_TAG)
 DRAIN_FIRMWARES = ("D8_ANCHOR_STAGE6_P1_DRAIN_20261113", "D8_TAG_STAGE6_P1_DRAIN_20261113")
 OPERATIONAL_DRAIN_FIRMWARES = ("D8_ANCHOR_STAGE6_P1_DRAIN_OPS_20261113", DRAIN_FIRMWARES[1])
 P2_FRESH_FIRMWARES = ("D8_ANCHOR_STAGE6_P2_FRESH_OPS_20261113", "D8_TAG_STAGE6_P2_FRESH_20261113")
-P1_REPEAT_PAIRS = (P1_REPEAT_FIRMWARES, DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, P2_FRESH_FIRMWARES)
+P1_FRESH_FIRMWARES = ("D8_ANCHOR_STAGE6_P1_P2_FRESH_OPS_20261114", "D8_TAG_STAGE6_P1_P2_FRESH_20261114")
+P2_FRESH_PAIRS = (P2_FRESH_FIRMWARES, P1_FRESH_FIRMWARES)
+P1_REPEAT_PAIRS = (P1_REPEAT_FIRMWARES, DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, *P2_FRESH_PAIRS)
 REPEAT_PAIRS = ((P2_REPEAT_ANCHOR, P2_REPEAT_TAG), *P1_REPEAT_PAIRS)
 P2_REPEAT_FIRMWARES = tuple(firmware for pair in REPEAT_PAIRS for firmware in pair)
 TICK_MODULUS = 1 << 40
@@ -93,7 +95,7 @@ def _probe2_origin(anchor: dict, tag: dict):
     if (type(retry) is not bool or anchor.get('p2_retry', False) is not retry
             or retry and tag['stage'] != 6):
         return None
-    fresh = (anchor.get('firmware'), tag.get('firmware')) == P2_FRESH_FIRMWARES
+    fresh = (anchor.get('firmware'), tag.get('firmware')) in P2_FRESH_PAIRS
     offset = tag['period_us']//2 + ((42000 if fresh else 28000) if retry else 0)
     if p2_repeat_contract(anchor, tag):
         offset -= 14000
@@ -148,6 +150,73 @@ def _p1_tx_at(tx, frame, origin, delay):
             and tx.get('status', 0) & 0x80 and (target - actual) % TICK_MODULUS <= 511)
 
 
+def p1_fresh_contract(anchor: dict, tag: dict) -> bool:
+    return anchor.get('stage') == tag.get('stage') == 6 and (
+        anchor.get('firmware'), tag.get('firmware')) == P1_FRESH_FIRMWARES
+
+
+def p1_exchange(anchor: dict, tag: dict) -> tuple:
+    """Select the endpoint evidence corresponding to the chosen P1 final."""
+    if p1_fresh_contract(anchor, tag) and tag.get('p1_repeat_used') is True:
+        return (tag.get('p1_repeat_poll_rx', []), tag.get('p1_repeat_response_tx', []),
+                anchor.get('p1_repeat_responses', []))
+    return tag.get('poll_rx', []), tag.get('tx', []), anchor.get('response_rx', [])
+
+
+def _fresh_p1_repeat(anchor, tag, primary, p2, repeat, origin, identity):
+    """Validate the reserved POLL, two fresh RESPONSES and P2 TX confirmation."""
+    poll_value = anchor['p1_repeat_poll_frame']
+    poll = _air(poll_value)
+    sent = anchor['p1_repeat_poll_tx']
+    if poll is None:
+        return (poll_value in ('', None) and sent.get('ok') is False and repeat is None
+                and tag.get('p1_repeat_poll_frame') in ('', None))
+    poll_tx = int.from_bytes(poll[32:37], 'little')
+    target = origin + 42000 * 638976 // 10
+    if (poll[5] != 1 or poll[28:32] != bytes((255, 0, 2, 6))
+            or struct.unpack_from('<5I', poll, 8) != identity
+            or int.from_bytes(poll[47:52], 'little') != origin
+            or not anchor_tx_matches(sent, 0, poll_tx)
+            or sent.get('attempted') is not True or not sent.get('status', 0) & 0x80
+            or (target - poll_tx) % TICK_MODULUS > 511):
+        return False
+    tag_poll_value = tag.get('p1_repeat_poll_frame')
+    if tag_poll_value not in ('', None) and _air(tag_poll_value) != poll:
+        return False
+    if repeat is None:
+        return True
+    repeat_tx = anchor['p1_repeat_tx']
+    if (repeat[:32] != primary[:32] or repeat[52:67] != primary[52:67]
+            or int.from_bytes(repeat[32:37], 'little') != poll_tx
+            or not _p1_tx_at(repeat_tx, repeat, poll_tx, 28000)
+            or p2[57:62] != repeat[47:52] or not any(repeat[47:52])):
+        return False
+    if not tag['p1_repeat_used']:
+        return False
+    polls, txs, rxs = p1_exchange(anchor, tag)
+    if _air(tag_poll_value) != poll or any(len(events) != 2 for events in (polls, txs, rxs)):
+        return False
+    for radio, (poll_rx, tx, rx) in enumerate(zip(polls, txs, rxs)):
+        response_tick = int.from_bytes(repeat[37 + 5*radio:42 + 5*radio], 'little')
+        poll_rx_tick, tx_tick = poll_rx.get('hw'), tx.get('actual')
+        delay = (radio + 1) * 10000 * 638976 // 10
+        response_error = (response_tick - poll_tx - delay + TICK_MODULUS//2) % TICK_MODULUS - TICK_MODULUS//2
+        if (not -(1000 * 638976 // 10) <= response_error < 2200 * 638976 // 10
+                or not all(type(tick) is int and 0 <= tick < TICK_MODULUS
+                           for tick in (poll_rx_tick, tx_tick, rx.get('hw')))
+                or poll_rx.get('ok') is not True or poll_rx.get('lde') is not True
+                or poll_rx.get('radio') != radio or poll_rx.get('type') != 1
+                or _air(poll_rx.get('air')) != poll
+                or tx.get('ok') is not True or tx.get('attempted') is not True
+                or tx.get('radio') != radio or tx.get('type') != 2 + radio
+                or tx.get('planned') != tx_tick or not tx.get('status', 0) & 0x80
+                or (poll_rx_tick + delay - tx_tick) % TICK_MODULUS > 511
+                or rx.get('radio') != 0 or rx.get('type') != 2 + radio
+                or not response_matches(rx, tx, poll_rx, tag, radio, poll_tx, response_tick)):
+            return False
+    return True
+
+
 def p1_selection(anchor: dict, tag: dict):
     """Bind the selected A/B P1 observations to one independently confirmed TX."""
     try:
@@ -177,10 +246,11 @@ def p1_selection(anchor: dict, tag: dict):
         repeat_tx = anchor['p1_repeat_tx']
         repeat_value = anchor['p1_repeat_frame']
         repeat = _air(repeat_value)
+        fresh = p1_fresh_contract(anchor, tag)
         if repeat is None:
             if repeat_value not in ('', None) or repeat_tx.get('ok') is not False or any(p2[57:62]):
                 return None
-        elif (repeat[:47] != primary[:47] or repeat[52:92] != primary[52:92]
+        elif not fresh and (repeat[:47] != primary[:47] or repeat[52:92] != primary[52:92]
               or not _p1_tx_at(repeat_tx, repeat, origin, 42000)
               or not any(repeat[47:52]) or p2[57:62] != repeat[47:52]):
             return None
@@ -192,10 +262,33 @@ def p1_selection(anchor: dict, tag: dict):
                 or used and rx_mask == cir_mask == 3
                 or selected != (repeat if used else primary)):
             return None
+        local_polls = tag['poll_rx']
+        if fresh:
+            primary_value = tag.get('p1_primary_frame')
+            if ((used and rx_mask != 0 or primary_value not in ('', None)) and _air(primary_value) != primary
+                    or primary[32:47] != p2[32:47] or primary[29] != p2[29]
+                    or primary[29] != 3 or primary[30] != 1
+                    or struct.unpack_from('<5I', p2, 8) != identity
+                    or not _fresh_p1_repeat(anchor, tag, primary, p2, repeat, origin, identity)):
+                return None
+            if used:
+                for radio, (rx, tx, local) in enumerate(zip(anchor['response_rx'], tag['tx'], tag['poll_rx'], strict=True)):
+                    if (tx.get('ok') is not True or tx.get('radio') != radio or tx.get('type') != 2 + radio
+                            or tx.get('planned') != tx.get('actual')
+                            or rx.get('radio') != 0 or rx.get('type') != 2 + radio
+                            or local.get('ok') is not True or local.get('lde') is not True
+                            or local.get('radio') != radio or local.get('type') != 1
+                            or _air(local.get('air')) != poll
+                            or not response_matches(rx, tx, local, tag, radio, origin,
+                                                    int.from_bytes(primary[37 + 5*radio:42 + 5*radio], 'little'))):
+                        return None
+                poll = _air(tag['p1_repeat_poll_frame'])
+                local_polls, _, _ = p1_exchange(anchor, tag)
         selected_rx_mask = selected_cir_mask = 0
-        sent_delta = (int.from_bytes(selected[47:52], 'little') - origin) % TICK_MODULUS
+        selected_origin = int.from_bytes(selected[32:37], 'little')
+        sent_delta = (int.from_bytes(selected[47:52], 'little') - selected_origin) % TICK_MODULUS
         for radio in range(2):
-            rx, cir, local_poll = tag['probe_rx'][radio], tag['cir'][radio], tag['poll_rx'][radio]
+            rx, cir, local_poll = tag['probe_rx'][radio], tag['cir'][radio], local_polls[radio]
             if cir.get('valid') is True:
                 if (cir.get('slot') != radio or cir.get('radio') != radio
                         or cir.get('probe') != 1 or cir.get('present') is not True):
@@ -274,7 +367,7 @@ def p2_selection(anchor: dict, tag: dict):
         if (type(rx_mask) is not int or type(cir_mask) is not int
                 or not 0 <= rx_mask <= 3 or not 0 <= cir_mask <= 3 or cir_mask & ~rx_mask):
             return None
-        if (anchor['firmware'], tag['firmware']) == P2_FRESH_FIRMWARES:
+        if (anchor['firmware'], tag['firmware']) in P2_FRESH_PAIRS:
             used = tag['p2_retry']
             if (selected != primary or used and rx_mask == cir_mask == 3
                     or not _p2_fresh_selection(anchor, tag, selected, primary_tx, origin, identity)
@@ -493,10 +586,11 @@ def verify_capture(*, session: int, count: int, stage: int, period_us: int,
                                len(a.get('response_rx', [])) != 2 or
                                any(rx.get('ok') for rx in a['response_rx'])):
                 errors.append(f'STAGE2_UNEXPECTED_RESPONSE_TXN_{txn}')
-            if (p1[32:37] != poll[32:37] or p2[32:37] != poll[32:37] or
-                    p1[37:47] != p2[37:47] or p1[29] != p2[29] or
+            canonical_p1 = _air(af[1]) if p1_fresh_contract(a, t) else p1
+            if (canonical_p1 is None or canonical_p1[32:37] != poll[32:37] or
+                    p2[32:47] != canonical_p1[32:47] or canonical_p1[29] != p2[29] or
                     (not p1_contract and p2[52:57] != p1[47:52]) or p2[30] & 3 != 3 or
-                    (stage >= 3 and p1[29] != 3)):
+                    (stage >= 3 and (p1[29] != 3 or canonical_p1[29] != 3))):
                 errors.append(f'PAIR_RF_ANCHOR_BLOCK_INCOHERENT_TXN_{txn}')
         # Independent endpoint timing evidence for every RF packet included.
         tt = a.get('tx', [])
@@ -511,9 +605,8 @@ def verify_capture(*, session: int, count: int, stage: int, period_us: int,
                         index, int.from_bytes(frame[field_off:field_off+5], 'little')):
                     errors.append(f'ANCHOR_TX_TIMESTAMP_MISMATCH_TXN_{txn}_INDEX_{index}')
         if all(rf_frames) and stage >= 3:
-            from_ranging = t.get('tx', [])
-            receive_anchor = a.get('response_rx', [])
-            if len(from_ranging) != 2 or len(receive_anchor) != 2 or len(t.get('poll_rx', [])) != 2:
+            poll_ranging, from_ranging, receive_anchor = p1_exchange(a, t)
+            if any(len(events) != 2 for events in (poll_ranging, from_ranging, receive_anchor)):
                 errors.append(f'RESPONSE_SHAPE_TXN_{txn}')
             else:
                 p1 = rf_frames[1]
@@ -527,7 +620,7 @@ def verify_capture(*, session: int, count: int, stage: int, period_us: int,
                             receive_anchor[radio].get('type') != 2+radio or
                             type(tx.get('actual')) is not int or
                             tx.get('actual') != tx.get('planned') or
-                            not response_matches(receive_anchor[radio], tx, t['poll_rx'][radio],
+                            not response_matches(receive_anchor[radio], tx, poll_ranging[radio],
                                                  t, radio, poll_tx, arx)):
                         errors.append(f'RESPONSE_TIMESTAMP_MISMATCH_TXN_{txn}_RADIO_{radio}')
         if stage in (5, 6) and all(rf_frames):
@@ -553,7 +646,11 @@ def verify_capture(*, session: int, count: int, stage: int, period_us: int,
                     type(rx.get('type')) is not int or rx['type'] != 1 or
                     got is None or got != rf_frames[0]):
                 errors.append(f'TAG_POLL_AIR_MISMATCH_TXN_{txn}_RADIO_{radio}')
-        if stage >= 4 and all(rf_frames) and len(t.get('tx', [])) == 2:
+        if stage >= 4 and all(rf_frames):
+            poll_ranging, from_ranging, _ = p1_exchange(a, t)
+            if len(poll_ranging) != 2 or len(from_ranging) != 2:
+                errors.append(f'TAG_RANGING_EXCHANGE_SHAPE_TXN_{txn}')
+                continue
             p1 = rf_frames[1]
             rf_poll = int.from_bytes(p1[32:37], 'little')
             rf_probe = int.from_bytes(p1[47:52], 'little')
@@ -563,7 +660,7 @@ def verify_capture(*, session: int, count: int, stage: int, period_us: int,
                     errors.append(f'TAG_RANGES_SHAPE_TXN_{txn}')
                     break
                 expected = [rf_poll, int.from_bytes(p1[37+5*radio:42+5*radio], 'little'), rf_probe,
-                            t['poll_rx'][radio].get('hw'), t['tx'][radio].get('actual'),
+                            poll_ranging[radio].get('hw'), from_ranging[radio].get('actual'),
                             t['probe_rx'][radio].get('hw')]
                 if (rr[radio].get('radio') != radio or rr[radio].get('six_ts') != expected or
                         not all(type(x) is int and 0 <= x <= (1 << 40)-1 for x in expected)):
@@ -598,7 +695,7 @@ def strict_shutdown_ok(receipt):
                 or not _is_nonce(session) or set(shutdown["roles"]) != {"anchor", "tag"}):
             return False
         firmware_pair = tuple(receipt[f"{role}_identity"]["firmware"] for role in ("anchor", "tag"))
-        if firmware_pair not in (DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, P2_FRESH_FIRMWARES):
+        if firmware_pair not in (DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, *P2_FRESH_PAIRS):
             return False
         for role in ("anchor", "tag"):
             state = shutdown["roles"][role]
@@ -725,11 +822,15 @@ def stage6_accounting(receipt, records, *, legacy_shutdown=False):
             "final_received": len(received),
             "both_endpoint_evidence_confirmed": len(verified),
         }
-        if probe == 2 or any(tag.get("firmware") in (P1_REPEAT_TAG, DRAIN_FIRMWARES[1], P2_FRESH_FIRMWARES[1]) for tag in tags.values()):
+        if probe == 2 or any(tag.get("firmware") in {pair[1] for pair in P1_REPEAT_PAIRS} for tag in tags.values()):
             fresh = {txn for txn in retry if probe == 2 and
-                     tags.get(txn, {}).get("firmware") == P2_FRESH_FIRMWARES[1]}
+                     tags.get(txn, {}).get("firmware") in {pair[1] for pair in P2_FRESH_PAIRS}}
             rf[f"P{probe}"]["primary_complete"] = len(verified - repeat_used - fresh)
             rf[f"P{probe}"]["repeat_restored_txns"] = sorted(verified & repeat_used)
+            if probe == 1:
+                rf["P1"]["fresh_exchange_restored_txns"] = sorted(
+                    txn for txn in verified & repeat_used
+                    if p1_fresh_contract(anchors[txn], tags[txn]))
     for role, indexed in (("anchor", anchors), ("tag", tags)):
         stats = receipt.get(f"{role}_capture", {})
         t = stats.get("transport", {})

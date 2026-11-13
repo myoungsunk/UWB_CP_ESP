@@ -21,7 +21,7 @@ TAG_TOOLS=ROOT/"firmware/tag_p2_repeat/tools"
 sys.path.insert(0,str(TAG_TOOLS))
 from run_pair import (Link, cir_payload_integrity, fresh_hello, restore_default_baud,
                       send_while_drained, verify_shutdown_wire)
-from capture_audit import OPERATIONAL_DRAIN_FIRMWARES, P2_FRESH_FIRMWARES, verify_capture
+from capture_audit import OPERATIONAL_DRAIN_FIRMWARES, P1_FRESH_FIRMWARES, P2_FRESH_FIRMWARES, verify_capture
 from ops_archive import MAX_RECORDS, parse, to_anchor_record
 from ops_client import OperationalClient, TransportError
 from rfb8 import Decoder, read_file
@@ -40,11 +40,22 @@ def tag_start_matches(event, identity, session):
                 and event.get("baud") == 2000000)
 
 
-def prepare_tag(link, initial_baud, firmware=P2_FRESH_FIRMWARES[1]):
+def prepare_tag(link, initial_baud, firmware=None):
     request = secrets.randbits(32) or 1
     link.send(f"STOP {request}")
     stopped = link.wait(lambda m: m.get("event") == "STOPPED" and m.get("role") == "tag"
                         and m.get("stop_request") == request, timeout=5, check_faults=False)
+    if firmware is None:
+        hello_request = secrets.randbits(32) or 1
+        link.send(f"HELLO {hello_request}")
+        hello = link.wait(lambda m: m.get("event") == "HELLO"
+                          and m.get("hello_request") == hello_request
+                          and m.get("role") == "tag"
+                          and m.get("boot") == stopped["boot"], timeout=5, check_faults=False)
+        firmware = hello.get("firmware")
+        if firmware not in {pair[1] for pair in
+                            (P1_FRESH_FIRMWARES, P2_FRESH_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES)}:
+            raise RuntimeError("Tag firmware is outside the verified operational families")
     identity = {"boot": stopped["boot"], "firmware": firmware}
     session = stopped["session"]
     connected = fresh_hello(link, identity, session, baud=initial_baud)["hello"]
@@ -246,7 +257,7 @@ def main()->int:
             if status.get("phase")!="IDLE" or status.get("file") is not False:
                 raise RuntimeError(f"Anchor not ready: {status}")
             if (status.get("config")!=ident.get("config_id") or status.get("boot")!=ctl.boot or
-                    (status.get("firmware"), ident.get("firmware")) not in (P2_FRESH_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES) or
+                    (status.get("firmware"), ident.get("firmware")) not in (P1_FRESH_FIRMWARES, P2_FRESH_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES) or
                     status.get("hw_ok") is not True or status.get("fault_latched") is not False or
                     status.get("stage")!=6 or status.get("period_us")!=args.period_us or
                     status.get("baud")!=args.baud or status.get("drained") is not True):

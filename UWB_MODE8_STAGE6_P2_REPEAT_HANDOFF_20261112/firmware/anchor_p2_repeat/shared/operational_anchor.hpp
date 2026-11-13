@@ -31,7 +31,8 @@ static uint32_t opsOtaDeadline=0,opsTcpSince=0;
 static char opsTcpLine[192]{};static size_t opsTcpUsed=0;
 static constexpr uint32_t OPS_ARCHIVE_MAX=32,OPS_TCP_PORT=29310;
 static constexpr uint32_t OPS_ARCHIVE_MAGIC=0x4f384d42UL; // "BM8O" LE
-static constexpr uint16_t OPS_ARCHIVE_VERSION=3;
+static constexpr uint16_t OPS_ARCHIVE_VERSION=4;
+static constexpr uint16_t OPS_V2_V3_ROW_BYTES=1312;
 static constexpr uint16_t OPS_LEGACY_ROW_BYTES=1070;
 static const char *OPS_ARCHIVE_PATH="/m8_pending.bin";
 static const char *OPS_ARCHIVE_TMP="/m8_pending.tmp";
@@ -63,9 +64,9 @@ struct OpsArchiveRow {
  uint32_t session=0,txn=0,boot=0,peer=0,config=0,errors=0;
  uint8_t complete=0,response_mask=0,response2_mask=0,flags=0;
  uint64_t initial_poll_tx=0;
- OpsTx tx[6]{};
- OpsRx rx[4]{};
- uint8_t frames[6][dual8::AIR_BYTES]{};
+ OpsTx tx[7]{};
+ OpsRx rx[6]{};
+ uint8_t frames[7][dual8::AIR_BYTES]{};
  uint32_t crc32=0;
 };
 struct OpsArchiveHeader {
@@ -75,7 +76,7 @@ struct OpsArchiveHeader {
  uint32_t session=0,boot=0,config=0,count=0,body_crc=0,header_crc=0;
 };
 #pragma pack(pop)
-static_assert(sizeof(OpsArchiveRow)==1312,"Mode 8 archive row schema drift");
+static_assert(sizeof(OpsArchiveRow)==1700,"Mode 8 archive row schema drift");
 static_assert(sizeof(OpsArchiveHeader)==32,"Mode 8 archive header schema drift");
 static OpsArchiveRow* opsArchive=nullptr;
 static OpsFileIdentity opsIdentity(const OpsArchiveHeader& h){
@@ -151,8 +152,10 @@ static bool opsArchiveRecord(const dual8::Record& r){
  opsCopyTx(d.tx[0],r.tx[0]);opsCopyTx(d.tx[1],r.tx[1]);
  opsCopyTx(d.tx[2],r.poll2_tx);opsCopyTx(d.tx[3],r.tx[2]);
  opsCopyTx(d.tx[4],r.p2_primary_tx);opsCopyTx(d.tx[5],r.p1_repeat_tx);
+ opsCopyTx(d.tx[6],r.p1_repeat_poll_tx);
  opsCopyRx(d.rx[0],r.responses[0]);opsCopyRx(d.rx[1],r.responses[1]);
  opsCopyRx(d.rx[2],r.response2_rx[0]);opsCopyRx(d.rx[3],r.response2_rx[1]);
+ opsCopyRx(d.rx[4],r.p1_repeat_responses[0]);opsCopyRx(d.rx[5],r.p1_repeat_responses[1]);
  const bool pollOk=r.tx[0].ok&&dual8::encode(r.poll_frame,d.frames[0]);
  const bool p1Ok=r.have_probe_frame[0]&&dual8::encode(r.probe_frame[0],d.frames[1]);
  const bool poll2Ok=r.have_poll2_frame&&dual8::encode(r.poll2_frame,d.frames[2]);
@@ -161,8 +164,10 @@ static bool opsArchiveRecord(const dual8::Record& r){
  // omitted, corrupted or not serializable.
  const bool p2PrimaryOk=r.p2_primary_tx.ok&&dual8::encode(r.p2_primary_frame,d.frames[4]);
  const bool p1RepeatOk=r.p1_repeat_tx.ok&&dual8::encode(r.p1_repeat_frame,d.frames[5]);
+ const bool p1RepeatPollOk=r.p1_repeat_poll_tx.ok&&dual8::encode(r.p1_repeat_poll_frame,d.frames[6]);
  if((r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok))||
-    (r.p2_primary_tx.ok&&!p2PrimaryOk)||(r.p1_repeat_tx.ok&&!p1RepeatOk)){
+    (r.p2_primary_tx.ok&&!p2PrimaryOk)||(r.p1_repeat_tx.ok&&(!p1RepeatOk||!p1RepeatPollOk))||
+    (r.p1_repeat_poll_tx.ok&&!p1RepeatPollOk)){
   opsArchiveFailure=true;opsFail("ARCHIVE_FRAME");return false;
  }
  d.crc32=dual8::crc32(&d,offsetof(OpsArchiveRow,crc32));
@@ -190,7 +195,8 @@ static bool opsReadHeader(OpsArchiveHeader& h,const char* path=OPS_ARCHIVE_PATH)
  f.close();
  if(!ok||h.magic!=OPS_ARCHIVE_MAGIC||!h.session||!h.boot||!h.config||!h.count||
     h.count>OPS_ARCHIVE_MAX)return false;
- if(!(((h.version==2||h.version==OPS_ARCHIVE_VERSION)&&h.row_bytes==sizeof(OpsArchiveRow))||
+ if(!((h.version==OPS_ARCHIVE_VERSION&&h.row_bytes==sizeof(OpsArchiveRow))||
+      ((h.version==2||h.version==3)&&h.row_bytes==OPS_V2_V3_ROW_BYTES)||
       (h.version==1&&h.row_bytes==OPS_LEGACY_ROW_BYTES)))return false;
  const uint32_t found=h.header_crc;h.header_crc=0;
  const bool valid=dual8::crc32(&h,sizeof h)==found;

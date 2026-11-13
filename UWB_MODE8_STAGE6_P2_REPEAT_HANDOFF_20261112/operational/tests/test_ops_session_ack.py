@@ -159,7 +159,8 @@ class SessionAckTests(unittest.TestCase):
 
     def test_saved_profile_does_not_reset_active_fragment_decoder_or_baud(self):
         link = Mock()
-        link.wait.side_effect = [{"boot": 7, "session": 0}, {"pass": True}]
+        link.wait.side_effect = [{"boot": 7, "session": 0},
+                                 {"firmware": ops_session.P2_FRESH_FIRMWARES[1]}, {"pass": True}]
         link.serial.baudrate = 2000000
         ready = {"stage": 6, "record_replay": 1, "silent_baud": 1}
         with patch.object(ops_session, "fresh_hello", return_value={"hello": ready}) as hello, \
@@ -174,7 +175,8 @@ class SessionAckTests(unittest.TestCase):
     def test_default_baud_transition_does_not_emit_an_unreceivable_sequence(self):
         link = Mock()
         link.write_lock = Lock()
-        link.wait.side_effect = [{"boot": 7, "session": 0}, {"pass": True}]
+        link.wait.side_effect = [{"boot": 7, "session": 0},
+                                 {"firmware": ops_session.P1_FRESH_FIRMWARES[1]}, {"pass": True}]
         ready = {"stage": 6, "record_replay": 1, "silent_baud": 1}
         with patch.object(ops_session, "fresh_hello", return_value={"hello": ready}) as hello, \
              patch.object(ops_session, "send_while_drained") as send, \

@@ -17,10 +17,11 @@ using namespace dual8;
 #include "operational_profile.hpp"
 static Esp32Port port;static Config config;
 // Two extra tag slots cover transient write/ACK latency at the RF cadence.
-static constexpr unsigned POOL=DUAL8_ANCHOR?3:5;
+// Keep one additional tag slot for ACK delivery stalls without changing RF cadence.
+static constexpr unsigned POOL=DUAL8_ANCHOR?3:6;
 static constexpr unsigned BASE_POOL=3;
 static Record basePool[BASE_POOL];
-static Record* extraPool[2]{};
+static Record* extraPool[DUAL8_ANCHOR?1:POOL-BASE_POOL]{};
 static Record& recordAt(unsigned i){return i<BASE_POOL?basePool[i]:*extraPool[i-BASE_POOL];}
 static QueueHandle_t freeQ=nullptr,outQ=nullptr;
 constexpr unsigned wireStride=UART_FRAGMENT_HEADER+UART_FRAGMENT_BYTES;
@@ -160,6 +161,10 @@ static void retireReplay(uint8_t i){
  releaseRecord(i);
  --awaitingAck;
 }
+static void retireAck(uint8_t i){
+ ++ackRetired;
+ retireReplay(i);
+}
 static const char* wireError(WireResult result){
  return result==WireResult::Timeout?"UART_FRAME_TIMEOUT":
         result==WireResult::Driver?"UART_DRIVER_ERROR":"SERIALIZE_OVERFLOW";
@@ -175,13 +180,21 @@ static void writerError(const char* reason,bool fragmented,uint32_t seq,uint32_t
 }
 static void noticeReplay(const RecordKey& key,bool ack){
  const uint64_t now=esp_timer_get_time();
+ int ready=-1;
  portENTER_CRITICAL(&replayMux);
- for(auto& slot:cache){
+ for(uint8_t i=0;i<POOL;++i){
+  auto& slot=cache[i];
   if(!slot.offer(key,ack,now))continue;
-  if(ack)++ackQueued;
+  if(ack){
+   ++ackQueued;
+   if(slot.takeAck())ready=i;
+  }
   break;
  }
  portEXIT_CRITICAL(&replayMux);
+ // Return an already-sent record immediately; do not wait for the writer to
+ // finish an unrelated long CIR record before the RF task can reserve a slot.
+ if(ready>=0)retireAck(uint8_t(ready));
 }
 static void serviceReplay(char* json){
  for(uint8_t i=0;i<POOL;++i){
@@ -191,7 +204,7 @@ static void serviceReplay(char* json){
   const auto decision=slot.take(now);
   portEXIT_CRITICAL(&replayMux);
   if(decision==ReplayDecision::None)continue;
-  if(decision==ReplayDecision::Ack){++ackRetired;retireReplay(i);continue;}
+  if(decision==ReplayDecision::Ack){retireAck(i);continue;}
   const uint32_t sequence=slot.key.sequence, txn=recordAt(i).txn;
   if(decision==ReplayDecision::Expired){
    writerError("RECORD_ACK_TIMEOUT",true,sequence,txn);
@@ -199,15 +212,21 @@ static void serviceReplay(char* json){
   }
   const bool exhausted=slot.attempts>=REPLAY_LIMIT;
   const auto result=exhausted?WireResult::Encoding:writeRecord(recordAt(i),json,sequence);
-  if(result==WireResult::Ok){++slot.attempts;++retransmissions;continue;}
+  if(result==WireResult::Ok){
+   ++retransmissions;
+   portENTER_CRITICAL(&replayMux);
+   ++slot.attempts;
+   const bool acked=slot.finishReplay();
+   portEXIT_CRITICAL(&replayMux);
+   if(acked)retireAck(i);
+   continue;
+  }
   portENTER_CRITICAL(&replayMux);
-  const bool alreadyAcked=slot.ack;
-  slot.occupied=false;
+  const bool alreadyAcked=slot.cancelSend();
   portEXIT_CRITICAL(&replayMux);
-  if(alreadyAcked)++ackRetired;
   if(!exhausted||!alreadyAcked)
    writerError(exhausted?"RECORD_REPLAY_EXHAUSTED":wireError(result),true,sequence,txn);
-  retireReplay(i);
+  if(alreadyAcked)retireAck(i);else retireReplay(i);
  }
 }
 static void writer(void*){
@@ -237,19 +256,25 @@ static void writer(void*){
     ++sent;
     if(fragmented){
      const uint64_t expires=uint64_t(esp_timer_get_time())+REPLAY_TIMEOUT_US;
+     bool acked=false;
      portENTER_CRITICAL(&replayMux);
      cache[i].expires=expires;
+     acked=cache[i].takeAck();
      portEXIT_CRITICAL(&replayMux);
+     if(acked)retireAck(i);
     }else releaseRecord(i);
    }else{
     const uint32_t txn=r.txn;
+    bool acked=false;
     if(fragmented){
      portENTER_CRITICAL(&replayMux);
-     cache[i].occupied=false;
+     acked=cache[i].cancelSend();
      portEXIT_CRITICAL(&replayMux);
     }
     writerError(wireError(result),fragmented,sequence,txn);
-    if(fragmented)retireReplay(i);else releaseRecord(i);
+    if(acked)retireAck(i);
+    else if(fragmented)retireReplay(i);
+    else releaseRecord(i);
    }
    const uint32_t elapsed=uint32_t(esp_timer_get_time())-started;
    if(elapsed>writerMaxUs)writerMaxUs=elapsed;
@@ -587,7 +612,7 @@ static void setup(){
  freeQ=xQueueCreate(POOL,sizeof(uint8_t));outQ=xQueueCreate(12,sizeof(Out));
  if(!freeQ||!outQ){Serial.println("FATAL_QUEUE");while(true)delay(1000);}
  // Allocate the extra records before RF starts. The ESP32 static DRAM
- // segment cannot hold five full records.
+ // segment cannot hold the full tag record pool.
  for(unsigned i=BASE_POOL;i<POOL;++i){
   auto*& slot=extraPool[i-BASE_POOL];
   slot=new(std::nothrow) Record();
@@ -630,7 +655,7 @@ static void loop(){
 #else
  for(uint8_t i=0;i<2;++i){Frame f;Rx o;const int rc=port.receive(i,f,o);
   if(rc==1){
-   if(f.type==Type::Poll&&f.session==session&&f.config==configId(config)&&f.stage==config.stage&&f.txn>=txn&&f.txn<targetCount&&(!peerBoot||peerBoot==f.boot)&&(!isRetryPoll(f)||!f.peer_boot||f.peer_boot==boot)){
+   if(f.type==Type::Poll&&!isProbe1RepeatPoll(f)&&f.session==session&&f.config==configId(config)&&f.stage==config.stage&&f.txn>=txn&&f.txn<targetCount&&(!peerBoot||peerBoot==f.boot)&&(!isRetryPoll(f)||!f.peer_boot||f.peer_boot==boot)){
     peerBoot=f.boot;txn=f.txn+1;int idx=reserve();if(idx<0){
      const unsigned held=awaitingAck.load(),queued=ackQueued.load(),retired=ackRetired.load();
      const uint32_t backlog=pending.load();

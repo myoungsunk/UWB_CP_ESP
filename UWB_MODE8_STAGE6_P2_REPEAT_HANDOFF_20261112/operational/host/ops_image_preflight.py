@@ -19,9 +19,14 @@ IMAGES={
  "anchor":"ANCHOR_DUAL_DS_CIR.ino.bin",
  "tag":"TAG_DUAL_DS_CIR.ino.bin"
 }
-ROLE_MARKERS = {
+LEGACY_ROLE_MARKERS = {
     "anchor": b"D8_ANCHOR_STAGE6_P2_FRESH_OPS_20261113\x00",
     "tag": b"D8_TAG_STAGE6_P2_FRESH_20261113\x00",
+}
+
+ROLE_MARKERS = {
+    "anchor": b"D8_ANCHOR_STAGE6_P1_P2_FRESH_OPS_20261114\x00",
+    "tag": b"D8_TAG_STAGE6_P1_P2_FRESH_20261114\x00",
 }
 
 class ImageHold(ValueError):pass
@@ -45,7 +50,8 @@ def verify_esp32_app(data: bytes, role: str) -> str:
         for byte in segment:
             checksum ^= byte
         segment_bytes = bytes(segment)
-        matching_roles.update(key for key, marker in ROLE_MARKERS.items() if marker in segment_bytes)
+        for markers in (ROLE_MARKERS, LEGACY_ROLE_MARKERS):
+            matching_roles.update(key for key, marker in markers.items() if marker in segment_bytes)
     checksum_offset = offset | 15
     if (checksum_offset + 1 != len(payload) or any(payload[offset:checksum_offset])
             or payload[checksum_offset] != checksum):

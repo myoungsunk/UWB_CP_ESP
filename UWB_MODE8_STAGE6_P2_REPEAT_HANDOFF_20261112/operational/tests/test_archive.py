@@ -12,7 +12,7 @@ import unittest
 import zlib
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"host"))
-from ops_archive import (parse, ArchiveError, HEADER, ROW_BYTES, PREFIX, TX, RX,
+from ops_archive import (parse, ArchiveError, HEADER, ROW_BYTES, FRESH_P1_ROW_BYTES, PREFIX, TX, RX,
                          MAGIC, VERSION, LEGACY_ROW_BYTES, LEGACY_PREFIX, LEGACY_TX, LEGACY_RX,
                          to_anchor_record)
 from ops_client import OperationalClient, TransportError
@@ -29,7 +29,7 @@ def signed_ack(blob):
 def archive(count=2, session=789, *, version=2):
     legacy = version == 1
     rows=[]
-    row_size=LEGACY_ROW_BYTES if legacy else ROW_BYTES
+    row_size=LEGACY_ROW_BYTES if legacy else FRESH_P1_ROW_BYTES if version==VERSION else ROW_BYTES
     for i in range(count):
         fields=(session,i,12345,9876,321,0,0,3,3,0)
         if legacy:
@@ -39,9 +39,10 @@ def archive(count=2, session=789, *, version=2):
             frames=bytes(384)
         else:
             prefix=PREFIX.pack(*fields,0)
-            tx=TX.pack(0,0,0,0,0,255,0)*6
-            rx=RX.pack(0,0,0,0,0,0,0,0,0,255,bytes(96))*4
-            frames=bytes(576)
+            slots=7 if version==VERSION else 6
+            tx=TX.pack(0,0,0,0,0,255,0)*slots
+            rx=RX.pack(0,0,0,0,0,0,0,0,0,255,bytes(96))*(6 if version==VERSION else 4)
+            frames=bytes(96*slots)
         body=prefix+tx+rx+frames
         assert len(body)==row_size-4
         rows.append(body+struct.pack("<I",zlib.crc32(body)))
@@ -97,7 +98,7 @@ class ArchiveTests(unittest.TestCase):
     def test_v3_preserves_selected_fresh_and_optional_primary_p2(self):
         for has_primary in (False, True):
             with self.subTest(has_primary=has_primary):
-                result = parse(complete_archive(VERSION, has_extra=has_primary))
+                result = parse(complete_archive(3, has_extra=has_primary))
                 self.assertEqual(result["archive_schema"], "mode8.anchor.ops.v3")
                 record = to_anchor_record(result["rows"][0], "anchor", 200000)
                 self.assertTrue(record["p2_retry"])
@@ -107,6 +108,15 @@ class ArchiveTests(unittest.TestCase):
                 self.assertEqual(record["p2_primary_tx"]["actual"], 300 if has_primary else 0)
                 self.assertEqual(bool(record["p2_primary_frame"]), has_primary)
                 self.assertNotIn("p2_repeat_tx", record)
+
+    def test_v4_has_separate_recovery_poll_and_responses(self):
+        result = parse(archive(version=VERSION))
+        self.assertEqual(result["archive_schema"], "mode8.anchor.ops.v4")
+        record = to_anchor_record(result["rows"][0], "anchor", 200000)
+        self.assertFalse(record["p1_repeat_poll_tx"]["attempted"])
+        self.assertIsNone(record["p1_repeat_poll_frame"])
+        self.assertEqual(len(record["p1_repeat_responses"]), 2)
+        self.assertEqual(len(record["response2_rx"]), 2)
 
     def test_v2_retains_repeat_slot_and_requires_its_evidence(self):
         with self.assertRaisesRegex(ArchiveError, "missing authenticated RF evidence"):

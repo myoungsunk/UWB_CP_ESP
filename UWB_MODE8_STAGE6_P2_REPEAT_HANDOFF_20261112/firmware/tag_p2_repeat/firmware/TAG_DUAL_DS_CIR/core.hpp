@@ -11,6 +11,7 @@ namespace dual8 {
 constexpr uint64_t MASK40=(1ULL<<40)-1, HALF40=1ULL<<39;
 constexpr double HZ=63897600000.0, DTU=1.0/HZ, C_AIR=299702547.0;
 constexpr double SAMPLE_S=1.0/998400000.0; // 64 DW1000 timestamp ticks, not 1 DTU.
+constexpr size_t RECORD_JSON_BYTES=8500;
 constexpr size_t NSAMP=992, CIR_BYTES=NSAMP*4, AIR_BYTES=96;
 constexpr uint32_t AIR_MAGIC=0x38424346, WIRE_MAGIC=0x38424652;
 constexpr uint8_t PROTOCOL_VERSION=1, MODE=8;
@@ -39,6 +40,7 @@ struct Config {
  bool rangesProbe2()const{return stage==5||stage==6;}
  static constexpr uint32_t probeRepeatGapUs=14000;
  uint32_t probe1RepeatUs()const{return probe1DelayUs()+probeRepeatGapUs;}
+ uint32_t probe1RepeatFinalUs()const{return probe1RepeatUs()+probe1DelayUs();}
  uint32_t probe2PollDelayUs(bool retry=false)const{
   return period_us/2-(stage==6?14000:0)+(retry?probe1DelayUs()+14000:0);
  }
@@ -51,7 +53,7 @@ inline uint32_t configId(const Config&c){
  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
  // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
- b[39]=c.stage==6?15:(c.rangesProbe2()?7:4);
+ b[39]=c.stage==6?16:(c.rangesProbe2()?7:4);
  return crc32(b,sizeof b);
 }
 inline const char* validate(const Config&c){
@@ -63,14 +65,14 @@ inline const char* validate(const Config&c){
  if(c.probe_gap_us<16000||c.probe_gap_us>100000)return "CIR_GAP_BUDGET";
  if(c.period_us<100000||c.period_us>5000000)return "PERIOD_RF_BUDGET";
  if(c.rangesProbe2()&&c.probe2PollDelayUs()<c.probe1DelayUs()+c.probe_gap_us)return "P2_PREPARE_BUDGET";
- if(c.stage==6&&c.probe2PollDelayUs()<c.probe1RepeatUs()+c.grace_us+7000)return "P1_REPEAT_PREPARE_BUDGET";
+ if(c.stage==6&&c.probe2PollDelayUs()<c.probe1RepeatFinalUs()+c.grace_us+10000)return "P1_REPEAT_PREPARE_BUDGET";
  if(c.min_lead_us<500||c.min_lead_us>1500)return "TX_LEAD_BOUND";
  if(c.cir_hz!=10000000&&c.cir_hz!=20000000)return "CIR_HZ_10M_OR_20M";
  if(c.baud!=921600&&c.baud!=2000000)return "BAUD_921600_OR_2000000";
  const uint32_t lastProbe=c.stage==6?c.probe2_us(true)+c.probe1DelayUs():c.probe2_us();
  if(c.period_us<lastProbe+10000)return "PERIOD_RF_BUDGET";
  if(c.stage>=2){ // Conservative raw + metadata throughput with 20% UART headroom.
-  constexpr uint64_t wireBytes=4*CIR_BYTES+7000+24;
+  const uint64_t wireBytes=4*CIR_BYTES+(c.stage==6?RECORD_JSON_BYTES:7000)+24;
   uint64_t minPeriod=(wireBytes*10*1200000ULL+c.baud-1)/c.baud;
   if(c.stage==6&&c.baud==2000000){
    const unsigned dataCount=(wireBytes+UART_FRAGMENT_BYTES-1)/UART_FRAGMENT_BYTES;
@@ -92,13 +94,17 @@ struct Frame {
  int32_t ci[2]{};
 };
 inline bool isRetryPoll(const Frame&f){return f.stage==6&&f.type==Type::Poll&&f.tx_ok_mask==1;}
+inline bool isProbe1RepeatPoll(const Frame&f){return f.stage==6&&f.type==Type::Poll&&f.tx_ok_mask==2;}
 inline bool validFrameFields(const Frame&f){
  const unsigned t=unsigned(f.type);
  if(t<1||t>8||(t>=6&&f.stage!=5&&f.stage!=6)||!f.session||!f.boot||f.stage<2||f.stage>6||(f.resp_mask&~3U)||(f.tx_ok_mask&~3U))return false;
  if(isResponse(f.type)){if(f.radio!=(t>=6?t-6:t-2)||!f.peer_boot)return false;}else if(f.radio!=255||(f.type==Type::Poll2&&!f.peer_boot))return false;
  const uint64_t ts[]={f.poll_tx,f.resp_rx[0],f.resp_rx[1],f.probe_tx,f.prev_probe_actual,f.tag_poll_rx,f.tag_resp_tx};
  for(auto v:ts)if(v>MASK40)return false;
- if(f.stage==6&&f.type==Type::Poll&&!isRetryPoll(f)&&(f.tx_ok_mask||f.probe_tx))return false;
+ if(isProbe1RepeatPoll(f)){
+  if(!f.peer_boot||f.resp_mask||f.resp_rx[0]||f.resp_rx[1]||f.prev_probe_actual||
+     f.tag_poll_rx||f.tag_resp_tx||f.ci[0]||f.ci[1])return false;
+ }else if(f.stage==6&&f.type==Type::Poll&&!isRetryPoll(f)&&(f.tx_ok_mask||f.probe_tx))return false;
  return true;
 }
 inline bool encode(const Frame&f,uint8_t out[AIR_BYTES]){
@@ -163,10 +169,14 @@ struct Record {
  uint8_t p1_primary_rx_mask=0,p1_primary_cir_mask=0,p2_primary_rx_mask=0,p2_primary_cir_mask=0;
  Frame p1_repeat_frame{},p2_primary_frame{};
  Tx p1_repeat_tx{},p2_primary_tx{};
+ Frame p1_primary_frame{},p1_repeat_poll_frame{};
+ Tx p1_repeat_poll_tx{},p1_repeat_response_tx[2]{};
+ Rx p1_repeat_poll_rx[2]{},p1_repeat_responses[2]{};
+ bool have_p1_primary_frame=false,have_p1_repeat_poll_frame=false;
  uint64_t initial_poll_tx=0;bool p1_retry=false;uint32_t p1_first_errors=0;
  uint32_t errors=0;Rx poll[2]{},probe[2][2]{},responses[2]{};Tx tx[3]{},response2_tx[2]{};Rx response2_rx[2]{},poll2_rx[2]{};Tx poll2_tx{};Frame poll_frame{},probe_frame[2]{},poll2_frame{};
  bool have_probe_frame[2]{},have_poll2_frame=false;DsResult range[2]{};DsInput range_input[2]{};
- RxWindowTrace rx_windows[7][2]{};
+ RxWindowTrace rx_windows[8][2]{};
  uint64_t probe2_spi_quiet[2][2]{};
  uint32_t dev_id[2]{};
  uint64_t sys_status[2]{};
@@ -201,16 +211,25 @@ inline void finalizeRanges(Record&r){
  const uint32_t fatal_integrity=ErrHardware|ErrMetadata|ErrLate;
  const auto& p1=r.probe_frame[0];
  const auto& p2=r.probe_frame[1];
- const bool selectedTxConfirmed=r.cfg.stage==6&&r.p1_repeat_used
-   ? (p2.tx_ok_mask&1)&&p2.tag_poll_rx&&p2.tag_poll_rx==p1.probe_tx
-   : (p2.tx_ok_mask&3)==3&&p2.prev_probe_actual==p1.probe_tx;
+ const bool repeat=r.cfg.stage==6&&r.p1_repeat_used;
+ const Frame& origin=repeat?r.p1_repeat_poll_frame:r.poll_frame;
+ const Rx* polls=repeat?r.p1_repeat_poll_rx:r.poll;
+ const Tx* responses=repeat?r.p1_repeat_response_tx:r.tx;
+ const uint64_t primarySlot=(r.poll_frame.poll_tx+usTicks(r.cfg.probe1DelayUs()))&MASK40;
+ const bool selectedTxConfirmed=repeat
+   ? (p2.tx_ok_mask&3)==3&&p2.tag_poll_rx==p1.probe_tx&&
+     p2.poll_tx==r.poll_frame.poll_tx&&p1.peer_boot==p2.peer_boot&&
+     diff40(primarySlot,p2.prev_probe_actual)<=511&&r.have_p1_repeat_poll_frame&&
+     (!r.have_p1_primary_frame||(p2.prev_probe_actual==r.p1_primary_frame.probe_tx&&
+      coherentAnchorBlock(r.p1_primary_frame,p2)))
+   : (p2.tx_ok_mask&3)==3&&p2.prev_probe_actual==p1.probe_tx&&coherentAnchorBlock(p1,p2);
  r.p1_tx_confirmed=!(r.errors&fatal_integrity)&&r.have_probe_frame[0]&&r.have_probe_frame[1]&&
-   !r.metadata_conflict&&coherentAnchorBlock(p1,p2)&&selectedTxConfirmed;
+   !r.metadata_conflict&&p1.poll_tx==origin.poll_tx&&selectedTxConfirmed;
  for(unsigned i=0;i<2;++i){
   r.range[i]=DsResult{};
-  if(r.cfg.stage<4||!r.p1_tx_confirmed||!r.poll[i].received||!r.poll[i].lde||!r.tx[i].ok||!r.probe[0][i].received||!r.probe[0][i].lde||!(r.probe_frame[0].resp_mask&(1U<<i)))continue;
+  if(r.cfg.stage<4||!r.p1_tx_confirmed||!polls[i].received||!polls[i].lde||!responses[i].ok||!r.probe[0][i].received||!r.probe[0][i].lde||!(r.probe_frame[0].resp_mask&(1U<<i)))continue;
   const auto&f=r.probe_frame[0];auto&d=r.range_input[i];d.a_poll_tx=f.poll_tx;d.a_resp_rx=f.resp_rx[i];d.a_probe_tx=f.probe_tx;
-  d.t_poll_rx=r.poll[i].hw;d.t_resp_tx=r.tx[i].actual;d.t_probe_rx=r.probe[0][i].hw;r.range[i]=dsTwr(d);
+  d.t_poll_rx=polls[i].hw;d.t_resp_tx=responses[i].actual;d.t_probe_rx=r.probe[0][i].hw;r.range[i]=dsTwr(d);
  }
  r.complete=r.errors==0&&!r.metadata_conflict;
  for(unsigned s=0;s<4;++s)r.complete=r.complete&&r.cir_meta[s].valid;
