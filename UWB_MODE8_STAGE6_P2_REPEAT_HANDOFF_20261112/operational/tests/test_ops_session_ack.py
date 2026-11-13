@@ -12,6 +12,20 @@ import ops_session
 
 
 class SessionAckTests(unittest.TestCase):
+    def test_stale_active_hello_never_confirms_new_tag_start(self):
+        ident={"boot":7,"config_id":8,"firmware":"TAG_EXACT"}
+        good={"event":"HELLO","role":"tag","active":True,
+              "boot":7,"session":789,"config_id":8,"firmware":"TAG_EXACT",
+              "stage":6,"period_us":200000,"baud":2000000}
+        self.assertTrue(ops_session.tag_start_matches(good,ident,789))
+        for key,bad in (("boot",6),("session",788),("config_id",9),
+                        ("role","anchor"),("firmware","OTHER"),("active",False),
+                        ("stage",5),("period_us",300000),("baud",921600)):
+            wrong=dict(good);wrong[key]=bad
+            with self.subTest(key=key):
+                self.assertFalse(ops_session.tag_start_matches(wrong,ident,789))
+        self.assertFalse(ops_session.tag_start_matches(None,ident,789))
+
     def test_session_acks_verified_archive_with_crc_on_get_connection(self):
         for good_archive, ack_reply, expected_status in (
             (True, "ACKFILE_OK", "SAVED_BOTH_ENDPOINTS"),

@@ -24,6 +24,18 @@ from ops_archive import MAX_RECORDS, to_anchor_record
 from ops_client import OperationalClient, TransportError
 from rfb8 import Decoder, read_file
 
+def tag_start_matches(event, identity, session):
+    """Reject an active HELLO from another boot, session or RF config."""
+    return bool(isinstance(event, dict) and event.get("event") == "HELLO"
+                and event.get("role") == "tag" and event.get("active") is True
+                and event.get("boot") == identity.get("boot")
+                and event.get("session") == session
+                and event.get("config_id") == identity.get("config_id")
+                and event.get("firmware") == identity.get("firmware")
+                and event.get("stage") == 6 and event.get("period_us") == 200000
+                and event.get("baud") == 2000000)
+
+
 def wait_for_anchor(host,key,port,session,count,timeout):
     end=time.monotonic()+timeout
     while time.monotonic()<end:
@@ -169,7 +181,7 @@ def main()->int:
             receipt["anchor_identity"]=anchor
         link.begin_capture(ident["boot"],args.session)
         link.send(f"START {args.session} {args.count}")
-        link.wait(lambda m:m.get("event")=="HELLO" and m.get("active") is True)
+        link.wait(lambda m: tag_start_matches(m, ident, args.session))
         with OperationalClient(args.anchor_ip,key,args.anchor_port) as ctl:
             if ctl.boot!=anchor["boot"]:
                 raise RuntimeError("Anchor restarted before START")

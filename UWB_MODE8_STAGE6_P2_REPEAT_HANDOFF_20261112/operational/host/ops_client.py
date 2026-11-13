@@ -68,6 +68,10 @@ class OperationalClient:
         return self.command(f"ACKFILE {session} {body_crc}")
 
     def get_archive(self,path:Path,expect_session:int|None=None,ack:bool=False):
+        # Saving an anchor file is not a paired RF verification. Do not let
+        # the standalone GET shortcut authorize a remote deletion.
+        if ack:
+            raise TransportError("unpaired ACK forbidden: use verified ops_session")
         self.send("GET")
         header=self.readline().split()
         if len(header)!=4 or header[0]!="DATA":
@@ -112,10 +116,6 @@ class OperationalClient:
                 os.fsync(directory)
             finally:
                 os.close(directory)
-        if ack:
-            answer=self.acknowledge_archive(session, body_crc)
-            if answer!="ACKFILE_OK":
-                raise TransportError("file is saved but remote ACKFILE failed")
         return doc
 
 def main():
@@ -126,7 +126,8 @@ def main():
     sub=a.add_subparsers(dest="action",required=True)
     sub.add_parser("status")
     start=sub.add_parser("start");start.add_argument("session",type=int);start.add_argument("count",type=int)
-    get=sub.add_parser("get");get.add_argument("path",type=Path);get.add_argument("--session",type=int);get.add_argument("--ack",action="store_true")
+    get=sub.add_parser("get");get.add_argument("path",type=Path);get.add_argument("--session",type=int)
+    # CLI GET never ACKs: only the paired controller runs the cross-endpoint audit.
     sub.add_parser("purge")
     ota=sub.add_parser("ota");ota.add_argument("seconds",type=int)
     args=a.parse_args()
@@ -140,7 +141,7 @@ def main():
             if not (1<=args.session<=0xFFFFFFFF and 1<=args.count<=32):raise SystemExit("invalid count/session")
             print(ops.command(f"START {args.session} {args.count}"))
         elif args.action=="get":
-            doc=ops.get_archive(args.path,args.session,args.ack)
+            doc=ops.get_archive(args.path,args.session,ack=False)
             print(f"Saved and verified {doc['count']} anchor records from session {doc['session']}")
         elif args.action=="purge":print(ops.command("PURGE"))
         elif args.action=="ota":print(ops.command(f"OTA {args.seconds}"))

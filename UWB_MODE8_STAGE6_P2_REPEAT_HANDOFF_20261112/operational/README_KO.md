@@ -11,7 +11,7 @@
 - \`firmware/anchor_p2_repeat/shared/operational_anchor.hpp\`: 유휴 TCP 서버(29310), HMAC-SHA256 인증, Wi-Fi OFF 측정, 32거래 고정 크기 RAM 증거 수집, 측정 종료 후 LittleFS 검산·TCP 파일 회수, ArduinoOTA 정비 창
 - \`firmware/{anchor_p2_repeat,tag_p2_repeat}/shared/app.hpp\`: STOP/ACK 기록 정리 게이트. 앵커는 운영형에서 UART RFB8 대신 RAM archive를 저장하는 한정된 경로 제공
 - \`operational/host/ops_archive.py\`: 파일/행/air frame CRC, 길이, 세션·부팅·거래 순서 검증
-- \`operational/host/ops_client.py\`: 원격 챌린지 HMAC, GET 임시 파일/fsync/CRC 검증 후 선택적 ACKFILE
+- \`operational/host/ops_client.py\`: 원격 챌린지 HMAC, GET 임시 파일/fsync/CRC 검증. 단독 GET의 ACK 금지. 태그·앵커 양단 검증 후 \`ops_session.py\`만 ACKFILE 전송
 - \`operational/host/ops_session.py\`: Pi 태그 원시 RFB8/CRC/ACK 수집, TCP 앵커 START→Wi-Fi OFF, 재연결→앵커 파일 회수/양단 ID 검증
 - \`.github/workflows/mode8-operational.yml\`: Python 적대적 테스트, 기존 portable Mode 8 회귀, 앵커·태그 실제 ESP32 Core 3.3.7 빌드
 
@@ -64,6 +64,7 @@ python operational/host/ops_client.py --host <anchor-ip> purge
 - USB·TCP 측정 기록이 손상되면 동일 원본 record를 재회수하며 RF 재측정으로 치환하지 않는다
 - 앵커는 32개 이하 구간 동안 RAM에 compact 정보를 보존한 뒤 종료 시 플래시 커밋한다. 측정 중 전원 차단으로 RAM 증거가 사라지는 위험이 있다. 완전 무손실 전원 차단 대응에는 외부 비휘발성 저장·저장 트랜잭션 재설계가 필요하다
 - OTA는 저장 미확인 데이터가 남아 있거나 writer/ACK/RF가 활성이라면 거절한다
+- 단독 \`ops_client.py get\`은 파일만 내려받으며 삭제 승인하지 않는다. 과거 \`--ack\` 옵션과 Python \`get_archive(ack=True)\`는 거부한다. ACKFILE은 신뢰된 호스트의 검증된 \`ops_session.py\` 경로에서만 자동 호출해야 한다. HMAC 키를 가진 다른 클라이언트의 직접 명령은 서버가 구분할 수 없으므로 폐쇄 LAN과 키 보호를 전제로 한다.
 - Pi는 요청 ID가 일치하는 STOPPED·DRAINED와 baud 복귀 응답이 저장된 원시 RFB8에 포함됐는지 확인한다. 양단 부팅 ID, 실제 송수신 시각, P1·P2 선택, CIR 무결성, 공통축·전력 그리드와 주기를 검산한 뒤 GET 연결에서 파일 CRC와 세션을 ACKFILE에 보낸다. 삭제 승인은 부팅 ID·세션·CRC에 묶고 삭제 직전에 폐기한다.
 
 ## 3. 인수 테스트

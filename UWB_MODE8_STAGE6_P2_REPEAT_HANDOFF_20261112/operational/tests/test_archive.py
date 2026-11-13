@@ -129,12 +129,21 @@ class FakeServer(threading.Thread):
         if text!="GET":raise AssertionError("bad GET")
 
 class TransportTests(unittest.TestCase):
+    def test_standalone_get_ack_cannot_bypass_paired_audit(self):
+        # No network call is made even if the caller asks for ACK=True.
+        client=OperationalClient('127.0.0.1',KEY)
+        with tempfile.TemporaryDirectory() as folder:
+            with self.assertRaisesRegex(TransportError,'unpaired ACK forbidden'):
+                client.get_archive(Path(folder)/'unverified.bin',789,ack=True)
+
     def test_durable_get_ack(self):
         server=FakeServer();server.start()
         with tempfile.TemporaryDirectory() as folder:
             dest=Path(folder)/"archive.bin"
             with OperationalClient("127.0.0.1",KEY,server.port) as cli:
-                data=cli.get_archive(dest,789,ack=True)
+                data=cli.get_archive(dest,789,ack=False)
+                # Transport-only fixture: paired proof is checked by ops_session.
+                self.assertEqual(cli.acknowledge_archive(789,data["crc32"]),"ACKFILE_OK")
             self.assertEqual(data["count"],2)
             self.assertEqual(dest.read_bytes(),server.archive)
             self.assertEqual(list(dest.parent.glob("*.partial")),[])
@@ -145,7 +154,7 @@ class TransportTests(unittest.TestCase):
             dest=Path(folder)/"archive.bin"
             with self.assertRaises((TransportError,ConnectionError,TimeoutError,EOFError)):
                 with OperationalClient("127.0.0.1",KEY,server.port,timeout=1) as cli:
-                    cli.get_archive(dest,789,ack=True)
+                    cli.get_archive(dest,789,ack=False)
             self.assertFalse(dest.exists())
             self.assertEqual(len(list(dest.parent.glob("*.partial"))),1)
         server.join(5);self.assertIsNone(server.error)
@@ -158,11 +167,13 @@ class TransportTests(unittest.TestCase):
             first.start()
             with self.assertRaises(TransportError):
                 with OperationalClient("127.0.0.1",KEY,first.port) as cli:
-                    cli.get_archive(dest,789,ack=True)
+                    doc=cli.get_archive(dest,789,ack=False)
+                    cli.acknowledge_archive(789,doc["crc32"])
             self.assertEqual(dest.read_bytes(),first.archive)
             retry.start()
             with OperationalClient("127.0.0.1",KEY,retry.port) as cli:
-                cli.get_archive(dest,789,ack=True)
+                doc=cli.get_archive(dest,789,ack=False)
+                self.assertEqual(cli.acknowledge_archive(789,doc["crc32"]),"ACKFILE_OK")
             self.assertEqual(dest.read_bytes(),first.archive)
             self.assertEqual(list(dest.parent.glob("*.partial")),[])
         for server in (first,retry):
@@ -179,7 +190,7 @@ class TransportTests(unittest.TestCase):
             server.start()
             with self.assertRaisesRegex(TransportError,"differs"):
                 with OperationalClient("127.0.0.1",KEY,server.port) as cli:
-                    cli.get_archive(dest,789,ack=True)
+                    cli.get_archive(dest,789,ack=False)
             self.assertEqual(dest.read_bytes(),original)
             self.assertEqual(len(list(dest.parent.glob("*.partial"))),1)
         server.join(5)
