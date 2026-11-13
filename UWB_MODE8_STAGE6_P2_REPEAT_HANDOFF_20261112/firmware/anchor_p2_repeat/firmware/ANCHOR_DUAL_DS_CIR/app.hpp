@@ -2,6 +2,7 @@
 #include "esp32_port.hpp"
 #include "record_json.hpp"
 #include "uart_fragment.hpp"
+#include "transport_guard.hpp"
 #include <esp_system.h>
 #include <driver/uart.h>
 #include <freertos/FreeRTOS.h>
@@ -23,6 +24,8 @@ using namespace dual8;
 static Esp32Port port;static Config config;
 static constexpr unsigned BASE_POOL=3;
 static constexpr unsigned POOL=DUAL8_ANCHOR?5:BASE_POOL;
+// Wi-Fi increases static DRAM usage on ESP32. Reserve the same record pool
+// from heap during setup, before enabling the operational network.
 static Record* basePool[BASE_POOL]{};
 static Record* extraPool[2]{};
 static Record& recordAt(unsigned index){
@@ -33,15 +36,13 @@ constexpr unsigned wireStride=UART_FRAGMENT_HEADER+UART_FRAGMENT_BYTES;
 constexpr unsigned maxWireData=(24+JSON_MAX+(DUAL8_ANCHOR?0:4*CIR_BYTES)+UART_FRAGMENT_BYTES-1)/UART_FRAGMENT_BYTES;
 static_assert(maxWireData<=UART_FRAGMENT_MAX_DATA,"RFB8 fragment capacity");
 static uint8_t* uartWire=nullptr;
-enum class WriterAction:uint8_t { RecordOrEvent, Ack, Nack };
 struct Out {
  uint8_t index=255;
  bool fragmented=false;
- WriterAction action=WriterAction::RecordOrEvent;
- uint32_t sequence=0, session=0;
  char text[768]{};
 };
-struct ReplaySlot { bool occupied=false; uint32_t sequence=0; uint8_t attempts=0; uint64_t expires=0; };
+static ReplaySlot cache[POOL]{};
+static portMUX_TYPE replayMux=portMUX_INITIALIZER_UNLOCKED;
 constexpr uint64_t REPLAY_TIMEOUT_US=1500000;
 constexpr unsigned REPLAY_LIMIT=2;
 static std::atomic<unsigned> awaitingAck{0},retransmissions{0};
@@ -51,19 +52,12 @@ static std::atomic<uint32_t> pending{0},drops{0},sent{0},writerMaxUs{0};
 static uint32_t boot=0,session=0,txn=0,peerBoot=0,remaining=0,periodMiss=0;static uint64_t nextStart=0;
 static uint64_t runExpire=0;static uint32_t targetCount=0;
 static bool active=false,hwOk=false;static uint32_t recordSequence=0;
-static std::atomic<bool> opsWriterBusy{false};
-static bool opsRecordsDrained(){
- return !active&&pending.load(std::memory_order_acquire)==0&&awaitingAck.load(std::memory_order_acquire)==0
-  &&!opsWriterBusy.load(std::memory_order_acquire)&&freeQ&&outQ&&uxQueueMessagesWaiting(freeQ)==POOL;
-}
-
 #if DUAL8_ANCHOR
+static bool opsInternalStart=false;
 static bool opsArchiveEnabled();
-static bool opsArchiveRecord(const dual8::Record&);
+static bool opsUsbCommand(const char*);
 static void opsSetup();
 static void opsLoop();
-static bool opsUsbCommand(const char*);
-static bool opsInternalStart=false;
 static void opsCancelScheduledStart();
 #endif
 static const char*role(){return DUAL8_ANCHOR?"anchor":"tag";}
@@ -149,18 +143,24 @@ static bool prepareUartWire(const Config& next){
  emit("{\"event\":\"ERROR\",\"reason\":\"UART_RECORD_BUFFER_MEMORY\"}");
  return false;
 }
-static bool writeAll(const uint8_t*p,size_t n,bool bounded){
- constexpr size_t chunk=128;
- const uint64_t deadline=uint64_t(esp_timer_get_time())+REPLAY_TIMEOUT_US;
- while(n){
-  if(uint64_t(esp_timer_get_time())>=deadline)return false;
-  const size_t limit=bounded&&n>chunk?chunk:n;
-  const size_t w=Serial.write(p,limit);
-  if(!w){vTaskDelay(1);continue;}
-  p+=w;n-=w;
+// UART0 has no TX ring. Only the writer submits bytes; the command task
+// changes baud only when the writer and physical UART are both idle.
+struct UartTx {
+ uint64_t nextYield=now()+4000;
+ static uint64_t now(){return esp_timer_get_time();}
+ static int write(const uint8_t* p,size_t n){
+  return uart_tx_chars(UART_NUM_0,reinterpret_cast<const char*>(p),n);
  }
- return uint64_t(esp_timer_get_time())<deadline;
-}
+ static int idle(){
+  const auto result=uart_wait_tx_done(UART_NUM_0,0);
+  return result==ESP_OK?1:result==ESP_ERR_TIMEOUT?0:-1;
+ }
+ void pause(){
+  if(now()>=nextYield){vTaskDelay(1);nextYield=now()+4000;}
+  else delayMicroseconds(100);
+ }
+};
+static constexpr uint64_t UART_FRAME_US=350000;
 static void encodeFragment(uint8_t*h,uint32_t seq,unsigned index,unsigned dataCount,unsigned size,bool data){
  h[0]='R';h[1]='8';h[2]='F';h[3]='6';
  putLE(h+4,seq,4);h[8]=uint8_t(index);h[9]=uint8_t(dataCount);putLE(h+10,size,2);
@@ -168,7 +168,7 @@ static void encodeFragment(uint8_t*h,uint32_t seq,unsigned index,unsigned dataCo
  if(data)crc=crcStep(crc,h+UART_FRAGMENT_HEADER,UART_FRAGMENT_BYTES);
  putLE(h+12,crc^0xffffffff,4);
 }
-static bool sendFragments(uint32_t seq,const uint8_t*header,const uint8_t*meta,size_t nmeta,const uint8_t*raw,size_t nraw){
+static bool sendFragments(BoundedWire<UartTx>& output,uint32_t seq,const uint8_t*header,const uint8_t*meta,size_t nmeta,const uint8_t*raw,size_t nraw){
  static const UartField field;
  constexpr unsigned stride=wireStride;
  uint8_t* const wire=uartWire;
@@ -196,88 +196,143 @@ static bool sendFragments(uint32_t seq,const uint8_t*header,const uint8_t*meta,s
  for(unsigned j=dataCount;j<count;++j)encodeFragment(wire+j*stride,seq,j,dataCount,bytes,true);
  // Submit the whole record to UART once, including the redundant end markers.
  for(unsigned j=0;j<3;++j)encodeFragment(wire+count*stride+j*UART_FRAGMENT_HEADER,seq,UART_FRAGMENT_END,dataCount,bytes,false);
- return writeAll(wire,count*stride+3*UART_FRAGMENT_HEADER,false);
+ return output.send(wire,count*stride+3*UART_FRAGMENT_HEADER);
 }
-static bool wireAt(uint32_t sequence,uint8_t kind,const char*json,size_t size,const uint8_t*raw,size_t nraw,bool bounded,bool fragmented){
+// A failed frame may leave a FIFO tail. Resume on the same UART only
+// after observing the transmitter idle within the next frame budget.
+static bool uartRecoveryRequired=false;
+static WireResult wireAt(uint32_t sequence,uint8_t kind,const char*json,size_t size,const uint8_t*raw,size_t nraw,bool fragmented){
+ UartTx uart;
+ BoundedWire<UartTx> output(uart,UART_FRAME_US);
+ if(uartRecoveryRequired&&output.waitIdle()!=WireResult::Ok)return output.finish();
+ uartRecoveryRequired=true;
  uint8_t h[24]{};putLE(h,WIRE_MAGIC,4);h[4]=1;h[5]=kind;putLE(h+6,24,2);putLE(h+8,sequence,4);putLE(h+12,size,4);putLE(h+16,nraw,4);
  uint32_t c=crcStep(0xffffffff,json,size);if(nraw)c=crcStep(c,raw,nraw);putLE(h+20,c^0xffffffff,4);
- if(fragmented)return sendFragments(sequence,h,reinterpret_cast<const uint8_t*>(json),size,raw,nraw);
- return writeAll(h,24,bounded)&&
-  writeAll(reinterpret_cast<const uint8_t*>(json),size,bounded)&&
-  (!nraw||writeAll(raw,nraw,bounded));
+ if(fragmented){
+  if(!sendFragments(output,sequence,h,reinterpret_cast<const uint8_t*>(json),size,raw,nraw)){
+   const auto result=output.finish();
+   uartRecoveryRequired=result!=WireResult::Ok;
+   return result==WireResult::Ok?WireResult::Encoding:result;
+  }
+ }else{
+  if(!output.send(h,24)||!output.send(reinterpret_cast<const uint8_t*>(json),size)||
+     (nraw&&!output.send(raw,nraw)))return output.finish();
+ }
+ const auto result=output.finish();
+ uartRecoveryRequired=result!=WireResult::Ok;
+ return result;
 }
-static bool wire(uint8_t kind,const char*json,size_t size,const uint8_t*raw,size_t nraw,bool bounded=false,bool fragmented=false){
- return wireAt(recordSequence++,kind,json,size,raw,nraw,bounded,fragmented);
+static WireResult wire(uint8_t kind,const char*json,size_t size,const uint8_t*raw,size_t nraw,bool fragmented){
+ return wireAt(recordSequence++,kind,json,size,raw,nraw,fragmented);
 }
-static bool writeRecord(Record& r,char* json,uint32_t sequence){
+static WireResult writeRecord(Record& r,char* json,uint32_t sequence){
  size_t n=0;
- return serializeRecord(r,json,JSON_MAX+1,n)&&
-  wireAt(sequence,2,json,n,r.anchor?nullptr:&r.cir[0][0],r.anchor?0:4*CIR_BYTES,
-   r.cfg.stage==6,r.cfg.stage==6&&r.cfg.baud==2000000);
+ if(!serializeRecord(r,json,JSON_MAX+1,n))return WireResult::Encoding;
+ return wireAt(sequence,2,json,n,r.anchor?nullptr:&r.cir[0][0],r.anchor?0:4*CIR_BYTES,
+   r.cfg.stage==6&&r.cfg.baud==2000000);
 }
-static void releaseRecord(uint8_t i){xQueueSend(freeQ,&i,portMAX_DELAY);}
-static void retireReplay(ReplaySlot& slot,uint8_t i){
- slot.occupied=false;--awaitingAck;releaseRecord(i);
+static void releaseRecord(uint8_t i){
+ if(xQueueSend(freeQ,&i,0)!=pdTRUE)++drops;
+}
+static void retireReplay(uint8_t i){
+ releaseRecord(i);
+ --awaitingAck;
+}
+static const char* wireError(WireResult result){
+ return result==WireResult::Timeout?"UART_FRAME_TIMEOUT":
+        result==WireResult::Driver?"UART_DRIVER_ERROR":"SERIALIZE_OVERFLOW";
 }
 static void writerError(const char* reason,bool fragmented,uint32_t seq,uint32_t txn){
  ++drops;
- char event[152];
+ // Wait only within the next frame's own budget for any previous FIFO tail.
+ // A partial frame remains visible in the raw stream and makes DRAINED fail.
+ char event[200];
  const int n=snprintf(event,sizeof event,"{\"event\":\"ERROR\",\"reason\":\"%s\",\"sequence\":%lu,\"txn\":%lu}",
   reason,(unsigned long)seq,(unsigned long)txn);
- if(n>0&&size_t(n)<sizeof event)wire(1,event,size_t(n),nullptr,0,false,fragmented);
+ if(n>0&&size_t(n)<sizeof event)wire(1,event,size_t(n),nullptr,0,fragmented);
+}
+static void noticeReplay(const RecordKey& key,bool ack){
+ const uint64_t now=esp_timer_get_time();
+ portENTER_CRITICAL(&replayMux);
+ for(auto& slot:cache){
+  if(!slot.offer(key,ack,now))continue;
+  if(ack)++ackQueued;
+  break;
+ }
+ portEXIT_CRITICAL(&replayMux);
+}
+static void serviceReplay(char* json){
+ for(uint8_t i=0;i<POOL;++i){
+  auto& slot=cache[i];
+  const uint64_t now=esp_timer_get_time();
+  portENTER_CRITICAL(&replayMux);
+  const auto decision=slot.take(now);
+  portEXIT_CRITICAL(&replayMux);
+  if(decision==ReplayDecision::None)continue;
+  if(decision==ReplayDecision::Ack){++ackRetired;retireReplay(i);continue;}
+  const uint32_t sequence=slot.key.sequence, txn=recordAt(i).txn;
+  if(decision==ReplayDecision::Expired){
+   writerError("RECORD_ACK_TIMEOUT",true,sequence,txn);
+   retireReplay(i);continue;
+  }
+  const bool exhausted=slot.attempts>=REPLAY_LIMIT;
+  const auto result=exhausted?WireResult::Encoding:writeRecord(recordAt(i),json,sequence);
+  if(result==WireResult::Ok){++slot.attempts;++retransmissions;continue;}
+  portENTER_CRITICAL(&replayMux);
+  const bool alreadyAcked=slot.ack;
+  slot.occupied=false;
+  portEXIT_CRITICAL(&replayMux);
+  if(alreadyAcked)++ackRetired;
+  if(!exhausted||!alreadyAcked)
+   writerError(exhausted?"RECORD_REPLAY_EXHAUSTED":wireError(result),true,sequence,txn);
+  retireReplay(i);
+ }
 }
 static void writer(void*){
- static char json[JSON_MAX+1];Out o;ReplaySlot cache[POOL]{};
+ static char json[JSON_MAX+1];Out o;
  for(;;){
-  const bool queued=xQueueReceive(outQ,&o,pdMS_TO_TICKS(10))==pdTRUE;
-  opsWriterBusy.store(true,std::memory_order_release);
-  const uint64_t now=uint64_t(esp_timer_get_time());
-  for(uint8_t i=0;i<POOL;++i)if(cache[i].occupied&&now>=cache[i].expires){
-   const uint32_t seq=cache[i].sequence,txn=recordAt(i).txn;
-   retireReplay(cache[i],i);
-   writerError("RECORD_ACK_TIMEOUT",true,seq,txn);
-  }
-  if(!queued){opsWriterBusy.store(false,std::memory_order_release);continue;}
-  if(o.action!=WriterAction::RecordOrEvent){
-   for(uint8_t i=0;i<POOL;++i){
-    auto& slot=cache[i];
-    if(!slot.occupied||slot.sequence!=o.sequence||recordAt(i).session!=o.session)continue;
-    if(o.action==WriterAction::Ack){retireReplay(slot,i);++ackRetired;}
-    else if(slot.attempts>=REPLAY_LIMIT||!writeRecord(recordAt(i),json,slot.sequence)){
-     const uint32_t txn=recordAt(i).txn;
-     retireReplay(slot,i);writerError("RECORD_REPLAY_EXHAUSTED",true,o.sequence,txn);
-    }else {++slot.attempts;++retransmissions;}
-    break;
-   }
-  }else if(o.index==255){
-   if(!wire(1,o.text,strlen(o.text),nullptr,0,false,o.fragmented))++drops;
+  const bool queued=xQueueReceive(outQ,&o,1)==pdTRUE;
+  serviceReplay(json);
+  if(!queued)continue;
+  if(o.index==255){
+   if(wire(1,o.text,strlen(o.text),nullptr,0,o.fragmented)!=WireResult::Ok)++drops;
   }else{
    const uint8_t i=o.index;Record& r=recordAt(i);
    const uint32_t started=uint32_t(esp_timer_get_time()),sequence=recordSequence++;
-#if DUAL8_ANCHOR
-   if(opsArchiveEnabled()){
-    ++sent;releaseRecord(i);
-   }else
-#endif
-   if(writeRecord(r,json,sequence)){
+   const bool fragmented=r.cfg.stage==6&&r.cfg.baud==2000000;
+   if(fragmented){
+    const RecordKey key(boot,r.session,configId(r.cfg),sequence);
+    portENTER_CRITICAL(&replayMux);
+    cache[i]=ReplaySlot{};
+    cache[i].key=key;
+    cache[i].occupied=true;
+    portEXIT_CRITICAL(&replayMux);
+    const unsigned held=++awaitingAck;
+    if(held>peakAwaitingAck.load())peakAwaitingAck=held;
+   }
+   const auto result=writeRecord(r,json,sequence);
+   if(result==WireResult::Ok){
     ++sent;
-    if(r.cfg.stage==6&&r.cfg.baud==2000000){
-     auto& slot=cache[i];
-     slot.occupied=true;slot.sequence=sequence;slot.attempts=0;
-     slot.expires=uint64_t(esp_timer_get_time())+REPLAY_TIMEOUT_US;
-     const unsigned held=++awaitingAck;
-     if(held>peakAwaitingAck.load())peakAwaitingAck=held;
+    if(fragmented){
+     const uint64_t expires=uint64_t(esp_timer_get_time())+REPLAY_TIMEOUT_US;
+     portENTER_CRITICAL(&replayMux);
+     cache[i].expires=expires;
+     portEXIT_CRITICAL(&replayMux);
     }else releaseRecord(i);
    }else{
-    const bool fragmented=r.cfg.stage==6&&r.cfg.baud==2000000;
     const uint32_t txn=r.txn;
-    releaseRecord(i);writerError("SERIALIZE_OVERFLOW",fragmented,sequence,txn);
+    if(fragmented){
+     portENTER_CRITICAL(&replayMux);
+     cache[i].occupied=false;
+     portEXIT_CRITICAL(&replayMux);
+    }
+    writerError(wireError(result),fragmented,sequence,txn);
+    if(fragmented)retireReplay(i);else releaseRecord(i);
    }
    const uint32_t elapsed=uint32_t(esp_timer_get_time())-started;
    if(elapsed>writerMaxUs)writerMaxUs=elapsed;
   }
   --pending;
-  opsWriterBusy.store(false,std::memory_order_release);
  }
 }
 static int reserve(bool countDrop=true){
@@ -310,13 +365,43 @@ static bool number(const char*s,uint32_t&v){
  if(!s||!*s||*s=='-'||*s=='+'){return false;}
  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
 }
-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":true,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u,\"queue_schedule_skips\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load(),queueScheduleSkips);}
+static uint32_t drainRequest=0, dropsAtStart=0;
+static uint64_t drainDeadline=0;
+static bool drainComplete=true, drainClean=true;
+static uint32_t sessionFailures(){return drops.load()-dropsAtStart;}
+static bool transportQuiet(){
+ // Read pending first: the writer publishes replay state before dropping pending.
+ const auto queued=pending.load();
+ const auto held=awaitingAck.load();
+ return writerQuiet(queued,held,!queued&&!held&&UartTx::idle()>0);
+}
+static bool transportChangeAllowed(){
+ return canChangeTransport(active,drainRequest!=0,drainComplete,!active&&transportQuiet());
+}
+static void emitDrained(uint32_t request,bool ok,const char* reason){
+ emit("{\"event\":\"DRAINED\",\"role\":\"%s\",\"boot\":%lu,\"session\":%lu,\"request\":%lu,"
+      "\"ok\":%s,\"rf_stopped\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"failures\":%lu,\"reason\":\"%s\"}",
+      role(),(unsigned long)boot,(unsigned long)session,(unsigned long)request,
+      ok?"true":"false",active?"false":"true",(unsigned long)pending.load(),awaitingAck.load(),
+      (unsigned long)sessionFailures(),reason);
+}
+static void serviceDrain(){
+ if(!drainRequest)return;
+ const bool quiet=transportQuiet();
+ if(!quiet&&UartTx::now()<drainDeadline)return;
+ const uint32_t request=drainRequest;
+ drainRequest=0;
+ drainComplete=quiet;
+ drainClean=quiet&&!sessionFailures();
+ emitDrained(request,drainClean,quiet?(drainClean?"OK":"TRANSPORT_FAILURE"):"TIMEOUT");
+}
+static void hello(uint32_t request=0){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"drain_protocol\":1,\"session\":%lu,\"hello_request\":%lu,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u,\"queue_schedule_skips\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)session,(unsigned long)request,(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load(),queueScheduleSkips);}
 static void stop(uint32_t request=0){
 #if DUAL8_ANCHOR
  if(!opsInternalStart)opsCancelScheduledStart();
 #endif
  active=false;remaining=0;idleAll();
- emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)request);
+ emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"boot\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)boot,(unsigned long)request);
 #if DUAL8_ANCHOR
  if(port.takeAnchorEdgeReport())emitAnchorRxEdges();
 #endif
@@ -327,15 +412,27 @@ static void command(char*line){
   uint32_t b,s,seq;
   if(n!=4||!number(w[1],b)||!number(w[2],s)||!number(w[3],seq)||
      b!=boot||!s||s!=session||config.stage!=6||config.baud!=2000000)return;
-  Out o;o.action=!strcmp(w[0],"REC_ACK")?WriterAction::Ack:WriterAction::Nack;
-  o.session=s;o.sequence=seq;++pending;
-  const bool ack=o.action==WriterAction::Ack;
-  const auto accepted=ack?xQueueSendToFront(outQ,&o,0):xQueueSend(outQ,&o,0);
-  if(accepted!=pdTRUE){--pending;++drops;}
-  else if(ack)++ackQueued;
+  // Configuration cannot change while this session has cached records.
+  noticeReplay({b,s,configId(config),seq},!strcmp(w[0],"REC_ACK"));
   return;
  }
- if(!strcmp(w[0],"HELLO")||!strcmp(w[0],"STATUS")){hello();return;}
+ if(!strcmp(w[0],"HELLO")||!strcmp(w[0],"STATUS")){
+  uint32_t request=0;
+  if(n==1||(n==2&&number(w[1],request)&&request))hello(request);
+  else emit("{\"event\":\"ERROR\",\"reason\":\"BAD_HELLO_REQUEST\"}");
+  return;
+ }
+ if(!strcmp(w[0],"DRAIN")){
+  uint32_t s,b,request;
+  if(n!=4||!number(w[1],s)||!number(w[2],b)||!number(w[3],request)||!request){
+   emit("{\"event\":\"ERROR\",\"reason\":\"BAD_DRAIN_REQUEST\"}");return;
+  }
+  if(s!=session||b!=boot){emitDrained(request,false,"DRAIN_IDENTITY");return;}
+  if(active){emitDrained(request,false,"RF_ACTIVE");return;}
+  if(drainRequest){if(drainRequest!=request)emitDrained(request,false,"DRAIN_BUSY");return;}
+  drainRequest=request;drainDeadline=UartTx::now()+5000000;
+  return;
+ }
 #if DUAL8_ANCHOR
  if(!strcmp(w[0],"RXFAULT")&&n==1&&!active){emitAnchorRxFault();return;}
  if(!strcmp(w[0],"RXEDGES")&&!active){
@@ -372,32 +469,30 @@ static void command(char*line){
 #if DUAL8_ANCHOR
   "PLLSTATUS; RXFAULT; RXEDGES [index]; "
 #endif
-  "SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; RESET\"}");return;}
+  "SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; DRAIN session boot request; RESET\"}");return;}
 #if DUAL8_ANCHOR
- if(opsArchiveEnabled()&&!opsInternalStart&&
-    (!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
-     !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))){
-  emit("{\"event\":\"ERROR\",\"reason\":\"OPS_ARCHIVE_LOCK\"}");return;
- }
-#endif
-#if DUAL8_ANCHOR
- // Wi-Fi maintenance and ArduinoOTA must never overlap a user-started
- // Mode 8 RF session or a state-changing USB command.
- if(WiFi.getMode()!=WIFI_OFF&&!opsInternalStart&&
-    (!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
-     !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))){
-  emit("{\"event\":\"ERROR\",\"reason\":\"OPS_WIFI_MAINTENANCE\"}");return;
+ if(!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
+    !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST")){
+  if(!opsInternalStart&&opsArchiveEnabled()){
+   emit("{\"event\":\"ERROR\",\"reason\":\"OPS_ARCHIVE_LOCK\"}");return;
+  }
+  if(WiFi.getMode()!=WIFI_OFF){
+   emit("{\"event\":\"ERROR\",\"reason\":\"OPS_WIFI_MAINTENANCE\"}");return;
+  }
  }
 #endif
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
- if((!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
-      !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))
-      &&!opsRecordsDrained()){
-  emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\",\"session\":%lu,\"pending\":%lu,\"awaiting_ack\":%u}",
-    (unsigned long)session,(unsigned long)pending.load(),awaitingAck.load());
-  return;
+ if(!strcmp(w[0],"RESET")&&n==1){
+  if(!transportChangeAllowed()){
+   emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\"}");return;
+  }
+  idleAll();hwOk=port.initialize();
+  if(hwOk&&!drainClean){
+   // Retire the failed run identity. Its existing DRAINED failure stays valid.
+   session=0;dropsAtStart=drops.load();drainClean=true;
+  }
+  hello();return;
  }
- if(!strcmp(w[0],"RESET")&&n==1){idleAll();hwOk=port.initialize();hello();return;}
  if(!strcmp(w[0],"SELFTEST")&&n==1){
 #if DUAL8_ANCHOR
   const bool hadRxFault=port.anchorRxFault().phase!=nullptr;
@@ -427,6 +522,10 @@ static void command(char*line){
        (unsigned long)port.last_dev[1],port.last_ant_tx[0],port.last_ant_rx[0],port.last_ant_tx[1],port.last_ant_rx[1],detail);
   return;
  }
+ if((!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||!strcmp(w[0],"START")||
+     !strcmp(w[0],"ANT"))&&!transportChangeAllowed()){
+  emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\"}");return;
+ }
  if(!strcmp(w[0],"SET")&&n==3){uint32_t v;if(!number(w[2],v)){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_INTEGER\"}");return;}Config next=config;
   if(!strcmp(w[1],"STAGE")){if(v<1||v>6){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_STAGE\"}");return;}next.stage=uint8_t(v);}
   else if(!strcmp(w[1],"PERIOD_US"))next.period_us=v;
@@ -439,11 +538,10 @@ static void command(char*line){
  }
  if(!strcmp(w[0],"BAUD")&&n==2){uint32_t v;if(!number(w[1],v)||(v!=921600&&v!=2000000)){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_BAUD\"}");return;}Config next=config;next.baud=v;if(validate(next)){emit("{\"event\":\"ERROR\",\"reason\":\"PERIOD_UART_BUDGET\"}");return;}
   if(!prepareUartWire(next))return;
-  const uint64_t timeout=port.nowUs()+2000000;
-  while(pending.load()&&port.nowUs()<timeout)delay(1);
-  if(pending.load()||awaitingAck.load()){emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\"}");return;}
-  Serial.flush();Serial.end();
-  Serial.setTxBufferSize(v==2000000?0:8192);Serial.begin(v);config=next;port.configure(config);hello();return;
+  if(uart_set_baudrate(UART_NUM_0,v)!=ESP_OK){
+   emit("{\"event\":\"ERROR\",\"reason\":\"UART_BAUD_FAILED\"}");return;
+  }
+  config=next;port.configure(config);hello();return;
  }
  if(!strcmp(w[0],"ANT")&&n==6){uint32_t i,tx,rx,id;if(!number(w[1],i)||!number(w[2],tx)||!number(w[3],rx)||!number(w[4],id)||i>=(DUAL8_ANCHOR?1U:2U)||tx>65535||rx>65535){emit("{\"event\":\"ERROR\",\"reason\":\"BAD_CALIBRATION\"}");return;}
   char*e=nullptr;double sigma=NAN;
@@ -453,7 +551,7 @@ static void command(char*line){
   }
   Calibration c;c.tx=uint16_t(tx);c.rx=uint16_t(rx);c.id=id;c.range_sigma_m=sigma;hwOk=port.setCalibration(i,c);hello();return;
  }
- if(!strcmp(w[0],"START")&&n==3){uint32_t s,count;if(!number(w[1],s)||!number(w[2],count)||!s||count<1||count>1000000||config.stage<2||validate(config)||!hwOk||port.faulted()||awaitingAck.load()){
+ if(!strcmp(w[0],"START")&&n==3){uint32_t s,count;if(!number(w[1],s)||!number(w[2],count)||!s||count<1||count>1000000||config.stage<2||validate(config)||!hwOk||port.faulted()||!drainClean){
    emit("{\"event\":\"ERROR\",\"reason\":\"START_GUARD\"}");return;}
 #if DUAL8_ANCHOR
   if(const char*reason=port.verifyStart()){
@@ -461,6 +559,8 @@ static void command(char*line){
   }
   port.beginAnchorEdgeReport("response",s);
 #endif
+  dropsAtStart=drops.load();
+  drainComplete=config.stage!=6||config.baud!=2000000;drainClean=drainComplete;
   session=s;remaining=count;targetCount=count;txn=0;peerBoot=0;periodMiss=0;queueScheduleSkips=0;writerMaxUs=0;nextStart=port.nowUs()+20000;runExpire=port.nowUs()+uint64_t(count)*config.period_us+10000000ULL;active=true;
   if(!DUAL8_ANCHOR){if(!port.arm(0)||!port.arm(1)){active=false;hwOk=false;idleAll();}}
   hello();return;
@@ -477,12 +577,12 @@ static void service(){
  for(int i=0;i<count;++i){
   const char c=char(incoming[i]);
   if(c=='\n'){
-   if(!overflow){b[n]=0;
+   if(!overflow){
+    b[n]=0;
 #if DUAL8_ANCHOR
-     if(!opsUsbCommand(b))command(b);
-#else
-     command(b);
+    if(!opsUsbCommand(b))
 #endif
+     command(b);
    }else emit("{\"event\":\"ERROR\",\"reason\":\"COMMAND_TOO_LONG\"}");
    n=0;overflow=false;
   }else if(c!='\r'){
@@ -491,17 +591,11 @@ static void service(){
  }
 }
 static void setup(){
- Serial.setRxBufferSize(2048);Serial.setTxBufferSize(8192);Serial.begin(config.baud);delay(300);
+ Serial.setRxBufferSize(2048);Serial.setTxBufferSize(0);Serial.begin(config.baud);delay(300);
  freeQ=xQueueCreate(POOL,sizeof(uint8_t));outQ=xQueueCreate(12,sizeof(Out));
  if(!freeQ||!outQ){Serial.println("FATAL_QUEUE");while(true)delay(1000);}
- // Wi-Fi/LittleFS/OTA increase .bss. Construct all large records on the heap
- // at boot before any RF and fail closed if RAM is insufficient.
- for(unsigned i=0;i<BASE_POOL;++i){
-  basePool[i]=new(std::nothrow) Record();
-  if(!basePool[i]){Serial.println("FATAL_BASE_RECORD_POOL");while(true)delay(1000);}
- }
- for(unsigned i=BASE_POOL;i<POOL;++i){
-  auto*& slot=extraPool[i-BASE_POOL];
+ for(unsigned i=0;i<POOL;++i){
+  auto*& slot=i<BASE_POOL?basePool[i]:extraPool[i-BASE_POOL];
   slot=new(std::nothrow) Record();
   if(!slot){Serial.println("FATAL_RECORD_POOL");while(true)delay(1000);}
  }
@@ -514,7 +608,7 @@ static void setup(){
  hello();
 }
 static void loop(){
- service();
+ service();serviceDrain();
 #if DUAL8_ANCHOR
  opsLoop();
 #endif
@@ -534,12 +628,13 @@ static void loop(){
  }
  auto& record=recordAt(idx);
  runAnchor(port,config,session,txn++,boot,peerBoot,record);
- if(!opsArchiveRecord(record)){
-  emit("{\"event\":\"ERROR\",\"reason\":\"OPS_ARCHIVE_RECORD_FAILURE\"}");
-  stop();
- }
  if(record.peer_boot)peerBoot=record.peer_boot;
- submit(uint8_t(idx));
+ if(opsArchiveEnabled()){
+  const bool archived=opsArchiveRecord(record);
+  releaseRecord(uint8_t(idx));
+  if(!archived){stop();return;}
+  ++sent;
+ }else submit(uint8_t(idx));
  if(port.faulted()&&port.anchorRxFault().phase)emitAnchorRxFault();
  nextStart+=config.period_us;if(port.nowUs()>=nextStart){++periodMiss;nextStart=port.nowUs()+config.period_us;}
  if(--remaining==0)stop();

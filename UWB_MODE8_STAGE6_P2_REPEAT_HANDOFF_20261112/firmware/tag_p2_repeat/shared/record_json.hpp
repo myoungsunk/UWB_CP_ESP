@@ -10,7 +10,7 @@ inline unsigned rxTraceOffset(uint64_t timestamp,uint64_t begin){
  if(timestamp<begin||timestamp-begin>=unavailable-1)return unavailable;
  return unsigned(timestamp-begin)+1;
 }
-inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_RELIABILITY_20261112":"D8_TAG_STAGE6_P2_REPEAT_20261112";}
+inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_RELIABILITY_20261112":"D8_TAG_STAGE6_P1_DRAIN_20261113";}
 class Json {
  char* p_;size_t cap_;
 public:
@@ -87,6 +87,9 @@ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes
    j.add(",\"p2_repeat_frame\":");jsonFrame(j,r.p2_repeat_frame,r.p2_repeat_tx.ok);
    j.add(",\"p2_repeat_tx\":");jsonTx(j,r.p2_repeat_tx);
   }else if(r.cfg.stage==6){
+   j.add(",\"p1_repeat_used\":%s,\"p1_primary_rx_mask\":%u,\"p1_primary_cir_mask\":%u",
+         r.p1_repeat_used?"true":"false",unsigned(r.p1_primary_rx_mask),unsigned(r.p1_primary_cir_mask));
+   if(r.p1_repeat_late)j.add(",\"p1_repeat_late\":true");
    j.add(",\"p2_repeat_used\":%s,\"p2_primary_rx_mask\":%u,\"p2_primary_cir_mask\":%u",
          r.p2_repeat_used?"true":"false",unsigned(r.p2_primary_rx_mask),unsigned(r.p2_primary_cir_mask));
    if(r.p2_repeat_late)j.add(",\"p2_repeat_late\":true");
@@ -101,7 +104,7 @@ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes
    constexpr size_t traceTail=sizeof powerFormula+sizeof truncated;
    j.add(",\"rx_windows\":[");
    bool comma=false,omitted=false;
-   for(unsigned w=0;w<6;++w)for(unsigned i=0;i<2;++i){
+   for(unsigned w=0;w<7;++w)for(unsigned i=0;i<2;++i){
     const auto& t=r.rx_windows[w][i];
     if(!t.close_us||(!t.failures&&t.accepted))continue;
     char entry[96];

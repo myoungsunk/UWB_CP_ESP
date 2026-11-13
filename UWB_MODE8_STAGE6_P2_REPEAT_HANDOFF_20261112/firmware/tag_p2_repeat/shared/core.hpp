@@ -37,12 +37,13 @@ struct Config {
  }
  uint32_t probe1DelayUs()const{return probe1_us+(usesExtendedSchedule()?9000:0);}
  bool rangesProbe2()const{return stage==5||stage==6;}
- static constexpr uint32_t probe2RepeatGapUs=14000;
+ static constexpr uint32_t probeRepeatGapUs=14000;
+ uint32_t probe1RepeatUs()const{return probe1DelayUs()+probeRepeatGapUs;}
  uint32_t probe2PollDelayUs(bool retry=false)const{
-  return period_us/2+(retry?probe1DelayUs():0)-(stage==6?probe2RepeatGapUs:0);
+  return period_us/2+(retry?probe1DelayUs():0)-(stage==6?probeRepeatGapUs:0);
  }
  uint32_t probe2_us(bool retry=false)const{return probe1DelayUs()+(rangesProbe2()?probe2PollDelayUs(retry):probe_gap_us);}
- uint32_t probe2RepeatUs(bool retry=false)const{return probe2_us(retry)+probe2RepeatGapUs;}
+ uint32_t probe2RepeatUs(bool retry=false)const{return probe2_us(retry)+probeRepeatGapUs;}
 };
 inline uint32_t configId(const Config&c){
  uint8_t b[40]{};b[0]=MODE;b[1]=PROTOCOL_VERSION;b[2]=c.stage;
@@ -51,7 +52,7 @@ inline uint32_t configId(const Config&c){
  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
  // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
- b[39]=c.stage==6?13:(c.rangesProbe2()?7:4);
+ b[39]=c.stage==6?14:(c.rangesProbe2()?7:4);
  return crc32(b,sizeof b);
 }
 inline const char* validate(const Config&c){
@@ -63,6 +64,7 @@ inline const char* validate(const Config&c){
  if(c.probe_gap_us<16000||c.probe_gap_us>100000)return "CIR_GAP_BUDGET";
  if(c.period_us<100000||c.period_us>5000000)return "PERIOD_RF_BUDGET";
  if(c.rangesProbe2()&&c.probe2PollDelayUs()<c.probe1DelayUs()+c.probe_gap_us)return "P2_PREPARE_BUDGET";
+ if(c.stage==6&&c.probe2PollDelayUs()<c.probe1RepeatUs()+c.grace_us+7000)return "P1_REPEAT_PREPARE_BUDGET";
  if(c.min_lead_us<500||c.min_lead_us>1500)return "TX_LEAD_BOUND";
  if(c.cir_hz!=10000000&&c.cir_hz!=20000000)return "CIR_HZ_10M_OR_20M";
  if(c.baud!=921600&&c.baud!=2000000)return "BAUD_921600_OR_2000000";
@@ -158,14 +160,14 @@ struct Record {
  uint32_t session=0,txn=0,boot=0,peer_boot=0,config=0;Config cfg{};uint64_t begin_us=0,end_us=0;
  bool anchor=false,metadata_conflict=false,p1_tx_confirmed=false,complete=false;uint8_t response_mask=0,response2_mask=0,rx_deadline_latch=0;
  bool p2_retry=false;uint32_t p2_first_errors=0;
- bool p2_repeat_used=false,p2_repeat_late=false;
- uint8_t p2_primary_rx_mask=0,p2_primary_cir_mask=0;
+ bool p1_repeat_used=false,p1_repeat_late=false,p2_repeat_used=false,p2_repeat_late=false;
+ uint8_t p1_primary_rx_mask=0,p1_primary_cir_mask=0,p2_primary_rx_mask=0,p2_primary_cir_mask=0;
  Frame p2_repeat_frame{};
  Tx p2_repeat_tx{};
  uint64_t initial_poll_tx=0;bool p1_retry=false;uint32_t p1_first_errors=0;
  uint32_t errors=0;Rx poll[2]{},probe[2][2]{},responses[2]{};Tx tx[3]{},response2_tx[2]{};Rx response2_rx[2]{},poll2_rx[2]{};Tx poll2_tx{};Frame poll_frame{},probe_frame[2]{},poll2_frame{};
  bool have_probe_frame[2]{},have_poll2_frame=false;DsResult range[2]{};DsInput range_input[2]{};
- RxWindowTrace rx_windows[6][2]{};
+ RxWindowTrace rx_windows[7][2]{};
  uint64_t probe2_spi_quiet[2][2]{};
  uint32_t dev_id[2]{};
  uint64_t sys_status[2]{};
@@ -198,9 +200,13 @@ inline void finalizeRanges(Record&r){
  // A latched hardware fault, late deadline or metadata fault invalidates all
  // physical ranges even if the on-air timestamp fields happen to look coherent.
  const uint32_t fatal_integrity=ErrHardware|ErrMetadata|ErrLate;
- r.p1_tx_confirmed=!(r.errors&fatal_integrity)&&r.have_probe_frame[0]&&r.have_probe_frame[1]&&!r.metadata_conflict&&
-   coherentAnchorBlock(r.probe_frame[0],r.probe_frame[1])&&((r.probe_frame[1].tx_ok_mask&3)==3)&&
-   r.probe_frame[1].prev_probe_actual==r.probe_frame[0].probe_tx;
+ const auto& p1=r.probe_frame[0];
+ const auto& p2=r.probe_frame[1];
+ const bool selectedTxConfirmed=r.cfg.stage==6&&r.p1_repeat_used
+   ? (p2.tx_ok_mask&1)&&p2.tag_poll_rx&&p2.tag_poll_rx==p1.probe_tx
+   : (p2.tx_ok_mask&3)==3&&p2.prev_probe_actual==p1.probe_tx;
+ r.p1_tx_confirmed=!(r.errors&fatal_integrity)&&r.have_probe_frame[0]&&r.have_probe_frame[1]&&
+   !r.metadata_conflict&&coherentAnchorBlock(p1,p2)&&selectedTxConfirmed;
  for(unsigned i=0;i<2;++i){
   r.range[i]=DsResult{};
   if(r.cfg.stage<4||!r.p1_tx_confirmed||!r.poll[i].received||!r.poll[i].lde||!r.tx[i].ok||!r.probe[0][i].received||!r.probe[0][i].lde||!(r.probe_frame[0].resp_mask&(1U<<i)))continue;

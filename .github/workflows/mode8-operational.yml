@@ -34,6 +34,10 @@ jobs:
           mkdir -p build/host
           g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie             -fsanitize=address,undefined -Ishared tests/test_core.cpp -o build/host/test_core
           build/host/test_core evidence/host
+          g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie -fsanitize=address,undefined -Ishared tests/test_transport_guard.cpp -o build/host/test_transport_guard
+          build/host/test_transport_guard
+          g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -Wno-unused-function -fno-pie -no-pie -fsanitize=address,undefined -Ishared tests/test_operational_anchor.cpp -o build/host/test_operational_anchor
+          build/host/test_operational_anchor
 
   esp32-build:
     runs-on: ubuntu-latest
@@ -57,7 +61,7 @@ jobs:
         run: |
           cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat
           python tools/build.py --role anchor || { tail -150 dist/anchor/compile.log; exit 2; }
-      - name: Compile original dual-DW1000 tag plus drain guard
+      - name: Compile dual-DW1000 P1 drain tag
         run: |
           cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat
           python tools/build.py --role tag || { tail -150 dist/tag/compile.log; exit 2; }

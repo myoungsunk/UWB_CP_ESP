@@ -1,8 +1,8 @@
 # Mode 8 Dual-DW1000 운영 계층 통합 — 개발 후보
 
-**기준**: 2026-11-12 Stage 6 P2-repeat \`ce8f986793c5a12be0a020df924f05b516edf70e\`
+**기준** 2026-11-13 Stage 6 P1 반복 및 종료 정리 재감사 소스. 기존 저장소 경로를 사용하며 운영 앵커와 태그는 Stage 6 RF 계약 14를 사용한다.
 
-**적용 범위**: ESP32 앵커의 Wi-Fi/TCP/OTA 정비 계층, 단일 정지 point의 RF-offline 수집·로컬 증거 보존·TCP 회수, Raspberry Pi의 태그 USB 수집기. 기존 Stage 6 RF 엔진과 태그 SPI 핀맵·TWR·CIR·P2 반복 복구를 변경하지 않는다.
+**적용 범위**: ESP32 앵커의 Wi-Fi/TCP/OTA 정비 계층, 단일 정지 point의 RF-offline 수집·로컬 증거 보존·TCP 회수, Raspberry Pi의 태그 USB 수집기. P1·P2 반복, 원본 CIR, 기존 태그 핀맵 및 대응하는 Pi 수집기를 함께 사용한다.
 
 **인수 상태**: GitHub Actions ESP32 Core 3.3.7 빌드 및 실물 Stage 6 검증이 모두 완료되기 전에는 업로드를 승인하지 않는다. 이 문서는 구현·시험 계약이지 실물 통과 영수증이 아니다.
 
@@ -46,7 +46,7 @@ ESP32 DevKit V1 및 현장 배선 확인 후, 복원 가능한 기존 펌웨어 
 **호스트 사용 예**:
 
 \`\`\`bash
-pip install pyserial
+pip install pyserial numpy
 export MODE8_AUTH_KEY_HEX='<USB에서 등록한 64자리 hex 키>'
 python operational/host/ops_client.py --host <anchor-ip> status
 python operational/host/ops_session.py --anchor-ip <anchor-ip> --tag-port /dev/serial/by-id/<tag-port> --session 12345 --count 20 --out captures/point_12345
@@ -57,11 +57,14 @@ python operational/host/ops_client.py --host <anchor-ip> purge
 
 ### 복구 및 오류 정책
 
-- 기존 파일이 있거나 CRC가 틀리면 새 세션/OTA를 거부한다. **autoformat·자동 삭제 없음**
+- 임시 파일을 검산해 완전하면 확정한다. 손상 시 `RECOVERY_REQUIRED`를 표시한다. USB `OPS RECOVER`는 검산을 재시도하고, `OPS QUARANTINE`은 손상된 임시 파일을 별도 경로에 보존한다. 덮어쓰기와 자동 포맷은 금지한다.
+- 기존 v1 파일은 GET과 수동 검증이 가능하다. 새 v2 파일은 최초·반복 P1/P2 TX와 프레임을 보관한다. 이전 세션 단독 삭제 승인은 폐기한다.
+- TCP 시작 응답은 예약 수락을 뜻한다. RF 시작 직전 Wi-Fi OFF를 다시 확인한다. 응답이 끊기면 동일 부팅 ID와 세션의 결과로 시작 여부를 확인한다.
+- 현재 브랜치의 대상 이미지는 새 CI 또는 로컬 빌드 산출물이다. 저장소의 기존 dist 바이너리는 이전 소스에서 생성됐다.
 - USB·TCP 측정 기록이 손상되면 동일 원본 record를 재회수하며 RF 재측정으로 치환하지 않는다
 - 앵커는 32개 이하 구간 동안 RAM에 compact 정보를 보존한 뒤 종료 시 플래시 커밋한다. 측정 중 전원 차단으로 RAM 증거가 사라지는 위험이 있다. 완전 무손실 전원 차단 대응에는 외부 비휘발성 저장·저장 트랜잭션 재설계가 필요하다
 - OTA는 저장 미확인 데이터가 남아 있거나 writer/ACK/RF가 활성이라면 거절한다
-- STOPPED는 RF 명령 처리 응답이고, QUIESCENT는 별도 writer·ACK·queue가 완전히 정리되어야 한다
+- Pi는 요청 ID가 일치하는 STOPPED·DRAINED와 baud 복귀 응답이 저장된 원시 RFB8에 포함됐는지 확인한다. 양단 부팅 ID, 실제 송수신 시각, P1·P2 선택, CIR 무결성, 공통축·전력 그리드와 주기를 검산한 뒤 GET 연결에서 파일 CRC와 세션을 ACKFILE에 보낸다. 삭제 승인은 부팅 ID·세션·CRC에 묶고 삭제 직전에 폐기한다.
 
 ## 3. 인수 테스트
 

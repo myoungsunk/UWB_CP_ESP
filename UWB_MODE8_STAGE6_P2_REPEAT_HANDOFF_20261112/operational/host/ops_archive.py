@@ -12,13 +12,20 @@ import struct
 import zlib
 
 HEADER = struct.Struct("<IHHIIIIII")
-TX = struct.Struct("<QQQBB")
-RX = struct.Struct("<QQQiHHBBB96s")
-PREFIX = struct.Struct("<6I4B")
-ROW_BYTES = PREFIX.size + 5 * TX.size + 4 * RX.size + 4 * 96 + 4
+TX = struct.Struct("<QQQBBBB")
+RX = struct.Struct("<QQQiHHBBBB96s")
+PREFIX = struct.Struct("<6I4BQ")
+LEGACY_TX = struct.Struct("<QQQBB")
+LEGACY_RX = struct.Struct("<QQQiHHBBB96s")
+LEGACY_PREFIX = struct.Struct("<6I4B")
+ROW_BYTES = PREFIX.size + 6 * TX.size + 4 * RX.size + 6 * 96 + 4
+LEGACY_ROW_BYTES = 1070
+MAX_RECORDS = 32
+MAX_FILE_BYTES = HEADER.size + MAX_RECORDS * ROW_BYTES
 MAGIC = 0x4F384D42
-VERSION = 1
-assert HEADER.size == 32 and ROW_BYTES == 1070
+VERSION = 2
+MASK40 = (1 << 40) - 1
+assert HEADER.size == 32 and ROW_BYTES == 1312
 
 class ArchiveError(ValueError):
     pass
@@ -40,54 +47,68 @@ def parse(blob: bytes) -> dict:
     if len(blob) < HEADER.size:
         raise ArchiveError("truncated header")
     magic, version, row_bytes, session, boot, config, count, body_crc, head_crc = HEADER.unpack_from(blob)
-    if magic != MAGIC or version != VERSION or row_bytes != ROW_BYTES:
+    if magic != MAGIC or (version, row_bytes) not in ((1, LEGACY_ROW_BYTES), (VERSION, ROW_BYTES)):
         raise ArchiveError("unknown archive version/layout")
-    if count > 32 or session == 0 or boot == 0 or config == 0:
+    legacy = version == 1
+    prefix_struct, tx_struct, rx_struct, tx_count, frame_count = (
+        (LEGACY_PREFIX, LEGACY_TX, LEGACY_RX, 5, 4) if legacy else (PREFIX, TX, RX, 6, 6))
+    if not 1 <= count <= MAX_RECORDS or session == 0 or boot == 0 or config == 0:
         raise ArchiveError("invalid archive identity or size")
     if zlib.crc32(blob[:28] + bytes(4)) != head_crc:
         raise ArchiveError("header CRC mismatch")
-    if len(blob) != HEADER.size + ROW_BYTES * count:
+    if len(blob) != HEADER.size + row_bytes * count:
         raise ArchiveError("archive length mismatch")
     if zlib.crc32(blob[HEADER.size:]) != body_crc:
         raise ArchiveError("body CRC mismatch")
     rows = []
     for index in range(count):
-        row = memoryview(blob)[HEADER.size + ROW_BYTES * index: HEADER.size + ROW_BYTES * (index + 1)]
-        if zlib.crc32(row[:-4]) != struct.unpack_from("<I", row, ROW_BYTES - 4)[0]:
+        row = memoryview(blob)[HEADER.size + row_bytes * index: HEADER.size + row_bytes * (index + 1)]
+        if zlib.crc32(row[:-4]) != struct.unpack_from("<I", row, row_bytes - 4)[0]:
             raise ArchiveError(f"row {index}: CRC mismatch")
-        fields = PREFIX.unpack_from(row)
-        rs, txn, rb, peer, rc, errors, complete, resp_mask, resp2_mask, flags = fields
+        fields = prefix_struct.unpack_from(row)
+        rs, txn, rb, peer, rc, errors, complete, resp_mask, resp2_mask, flags = fields[:10]
+        initial_poll_tx = None if legacy else fields[10]
+        if not legacy and initial_poll_tx > MASK40:
+            raise ArchiveError(f"row {index}: initial POLL timestamp")
         if (rs, txn, rb, rc) != (session, index, boot, config):
             raise ArchiveError(f"row {index}: transaction/session/boot/config mismatch")
-        if flags & ~7 or resp_mask & ~3 or resp2_mask & ~3 or complete not in (0,1):
+        if flags & ~(7 if legacy else 3) or resp_mask & ~3 or resp2_mask & ~3 or complete not in (0,1):
             raise ArchiveError(f"row {index}: invalid flags")
-        offset = PREFIX.size
+        offset = prefix_struct.size
         transmit = []
-        for k in range(5):
-            planned, actual, status, typ, ok = TX.unpack_from(row, offset)
-            if ok not in (0,1):
-                raise ArchiveError(f"row {index}: TX flag")
+        for k in range(tx_count):
+            planned, actual, status, typ, ok, *extra = tx_struct.unpack_from(row, offset)
+            radio, attempted = extra if extra else (0 if ok else 255, ok)
+            if (ok not in (0, 1) or attempted not in (0, 1) or ok and not attempted or
+                    not legacy and (planned > MASK40 or actual > MASK40 or
+                                    attempted and (radio != 0 or typ != (1, 4, 8, 5, 5, 4)[k]))):
+                raise ArchiveError(f"row {index}: TX flag, slot, or timestamp")
             transmit.append({"planned": planned, "actual": actual, "status": status,
-                            "type": typ, "ok": bool(ok)})
-            offset += TX.size
+                             "type": typ, "ok": bool(ok), "radio": radio, "attempted": bool(attempted)})
+            offset += tx_struct.size
         receive = []
         for k in range(4):
-            hw, raw, status, ci, fp, nacc, typ, present, lde, air = RX.unpack_from(row,offset)
-            if present not in (0,1) or lde not in (0,1):
+            hw, raw, status, ci, fp, nacc, typ, present, lde, *extra = rx_struct.unpack_from(row, offset)
+            radio, air = extra if not legacy else (0 if present else 255, extra[0])
+            if present not in (0, 1) or lde not in (0, 1):
                 raise ArchiveError(f"row {index}: RX flag")
             if present:
-                check_air(air)
+                if not check_air(air):
+                    raise ArchiveError(f"row {index}: RX bytes missing")
+                if not legacy and (radio != 0 or typ != (2, 3, 6, 7)[k] or hw > MASK40 or raw > MASK40):
+                    raise ArchiveError(f"row {index}: RX slot or timestamp")
             elif air != bytes(96):
                 raise ArchiveError(f"row {index}: orphaned RX bytes")
-            receive.append({"hw":hw,"raw":raw,"status":status,"ci":ci,"fp":fp,
-                            "nacc":nacc,"type":typ,"present":bool(present),
-                            "lde":bool(lde),"air_hex":air.hex() if present else None})
-            offset += RX.size
-        frames=[]
-        for k in range(4):
+            receive.append({"hw": hw, "raw": raw, "status": status, "ci": ci, "fp": fp,
+                            "nacc": nacc, "type": typ, "ok": bool(present), "radio": radio,
+                            "lde": bool(lde), "air": air.hex() if present else None,
+                            "present": bool(present), "air_hex": air.hex() if present else None})
+            offset += rx_struct.size
+        frames = []
+        for k in range(frame_count):
             air=bytes(row[offset:offset+96]);offset+=96
             if check_air(air):
-                if air[5] != (1, 4, 8, 5)[k]:
+                if air[5] != (1, 4, 8, 5, 5, 4)[k]:
                     raise ArchiveError(f"row {index}: wrong RF message type in frame {k}")
                 origin=(int.from_bytes(air[8:12], "little"),
                         int.from_bytes(air[12:16], "little"),
@@ -98,18 +119,39 @@ def parse(blob: bytes) -> dict:
                 frames.append(air.hex())
             else:
                 frames.append(None)
-        if complete and (not all(frames) or peer == 0):
+        if complete and (not all(frames[:4 if legacy else 5]) or peer == 0):
             raise ArchiveError(f"row {index}: complete archive missing authenticated RF evidence")
-        if offset != ROW_BYTES-4:
+        if not legacy and any(bool(frame) != tx["ok"] for frame, tx in zip(frames, transmit)):
+            raise ArchiveError(f"row {index}: frame/TX availability mismatch")
+        if offset != row_bytes-4:
             raise ArchiveError("parser layout mismatch")
         rows.append({"session":rs,"txn":txn,"boot":rb,"peer_boot":peer,
                      "config":rc,"errors":errors,"complete":bool(complete),
                      "resp_mask":resp_mask,"response2_mask":resp2_mask,
                      "p1_retry":bool(flags&1),"p2_retry":bool(flags&2),
-                     "p2_repeat_used":bool(flags&4),
+                     "p2_repeat_used":bool(flags&4), "initial_poll_tx":initial_poll_tx,
                      "tx":transmit,"response_rx":receive,"air_frames":frames})
-    return {"archive_schema":"mode8.anchor.ops.v1","session":session,"boot":boot,
+    return {"archive_schema":f"mode8.anchor.ops.v{version}","session":session,"boot":boot,
             "config":config,"count":count,"crc32":body_crc,"rows":rows}
+
+def to_anchor_record(row: dict, firmware: str, period_us: int) -> dict:
+    """Project a v2 archive row onto the existing RF audit's anchor schema."""
+    tx, rx, frames = row["tx"], row["response_rx"], row["air_frames"]
+    if len(tx) != 6 or len(frames) != 6:
+        raise ArchiveError("paired RF audit requires an operational v2 archive")
+    return {
+        "schema": "dual8.record.v1", "firmware": firmware, "mode": 8, "role": "anchor",
+        "stage": 6, "period_us": period_us,
+        **{key: row[key] for key in ("session", "txn", "boot", "peer_boot", "config",
+                                    "complete", "errors", "initial_poll_tx", "p1_retry", "p2_retry")},
+        "resp_mask": row["resp_mask"], "response2_mask": row["response2_mask"],
+        "tx": [tx[0], tx[1], tx[3]], "frames": [frames[0], frames[1], frames[3]],
+        "response_rx": rx[:2], "response2_rx": rx[2:],
+        "poll2_tx": tx[2], "poll2_frame": frames[2],
+        "p2_repeat_tx": tx[4], "p2_repeat_frame": frames[4],
+        "p1_repeat_tx": tx[5], "p1_repeat_frame": frames[5],
+    }
+
 
 def main()->int:
     parser=argparse.ArgumentParser(description=__doc__)

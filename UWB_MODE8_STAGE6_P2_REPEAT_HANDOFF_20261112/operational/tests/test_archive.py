@@ -12,23 +12,32 @@ import unittest
 import zlib
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"host"))
-from ops_archive import parse, ArchiveError, HEADER, ROW_BYTES, PREFIX, TX, RX, MAGIC, VERSION
+from ops_archive import (parse, ArchiveError, HEADER, ROW_BYTES, PREFIX, TX, RX,
+                         MAGIC, VERSION, LEGACY_ROW_BYTES, LEGACY_PREFIX, LEGACY_TX, LEGACY_RX)
 from ops_client import OperationalClient, TransportError
 
 KEY=bytes(range(32))
 
-def archive(count=2, session=789, *, frame=False):
+def archive(count=2, session=789, *, legacy=False):
     rows=[]
+    row_size=LEGACY_ROW_BYTES if legacy else ROW_BYTES
     for i in range(count):
-        prefix=PREFIX.pack(session,i,12345,9876,321,0,0,3,3,0)
-        tx=b"".join(TX.pack(0,0,0,0,0) for _ in range(5))
-        rx=b"".join(RX.pack(0,0,0,0,0,0,0,0,0,bytes(96)) for _ in range(4))
-        frames=bytes(384)
+        fields=(session,i,12345,9876,321,0,0,3,3,0)
+        if legacy:
+            prefix=LEGACY_PREFIX.pack(*fields)
+            tx=LEGACY_TX.pack(0,0,0,0,0)*5
+            rx=LEGACY_RX.pack(0,0,0,0,0,0,0,0,0,bytes(96))*4
+            frames=bytes(384)
+        else:
+            prefix=PREFIX.pack(*fields,0)
+            tx=TX.pack(0,0,0,0,0,255,0)*6
+            rx=RX.pack(0,0,0,0,0,0,0,0,0,255,bytes(96))*4
+            frames=bytes(576)
         body=prefix+tx+rx+frames
-        assert len(body)==ROW_BYTES-4
+        assert len(body)==row_size-4
         rows.append(body+struct.pack("<I",zlib.crc32(body)))
     payload=b"".join(rows)
-    header=HEADER.pack(MAGIC,VERSION,ROW_BYTES,session,12345,321,count,zlib.crc32(payload),0)
+    header=HEADER.pack(MAGIC,1 if legacy else VERSION,row_size,session,12345,321,count,zlib.crc32(payload),0)
     header=header[:-4]+struct.pack("<I",zlib.crc32(header))
     return header+payload
 
@@ -45,6 +54,11 @@ class ArchiveTests(unittest.TestCase):
         got=parse(archive())
         self.assertEqual(got["count"],2)
         self.assertEqual([r["txn"] for r in got["rows"]],[0,1])
+    def test_legacy_archive_is_readable(self):
+        result=parse(archive(legacy=True))
+        self.assertEqual(result["archive_schema"],"mode8.anchor.ops.v1")
+        self.assertEqual(len(result["rows"][0]["air_frames"]),4)
+
     def test_truncated_header(self):
         with self.assertRaises(ArchiveError):parse(bytes(31))
     def test_corrupt_header(self):
@@ -62,7 +76,7 @@ class ArchiveTests(unittest.TestCase):
         struct.pack_into("<I",b,off+ROW_BYTES-4,zlib.crc32(b[off:off+ROW_BYTES-4]))
         with self.assertRaisesRegex(ArchiveError,"transaction"):parse(recalc(b))
     def test_missing_rx_carries_orphan_bytes(self):
-        b=bytearray(archive());offset=32+PREFIX.size+5*TX.size
+        b=bytearray(archive());offset=32+PREFIX.size+6*TX.size
         b[offset+RX.size-1]=0xAA
         struct.pack_into("<I",b,32+ROW_BYTES-4,zlib.crc32(b[32:32+ROW_BYTES-4]))
         with self.assertRaisesRegex(ArchiveError,"orphaned"):parse(recalc(b))
@@ -79,13 +93,15 @@ class ArchiveTests(unittest.TestCase):
         with self.assertRaises(ArchiveError):parse(recalc(b))
 
 class FakeServer(threading.Thread):
-    def __init__(self, send_partial=False):
+    def __init__(self, send_partial=False, lose_ack=False, blob=None):
         super().__init__(daemon=True)
         self.sock=socket.socket();self.sock.bind(("127.0.0.1",0));self.sock.listen(1)
         self.port=self.sock.getsockname()[1]
         self.send_partial=send_partial
         self.error=None
-        self.archive=archive()
+        self.archive=archive() if blob is None else blob
+        self.lose_ack=lose_ack
+        self.ack=None
     def run(self):
         try:
             s,_=self.sock.accept()
@@ -101,8 +117,9 @@ class FakeServer(threading.Thread):
                 if self.send_partial:
                     s.sendall(prefix+self.archive[:18]);return
                 s.sendall(prefix+self.archive+b"END\n")
-                ack=f.readline().decode().strip()
-                if ack=="ACKFILE 789 "+str(parse(self.archive)["crc32"]):s.sendall(b"ACKFILE_OK\n")
+                self.ack=f.readline().decode().strip()
+                if not self.lose_ack and self.ack=="ACKFILE 789 "+str(parse(self.archive)["crc32"]):
+                    s.sendall(b"ACKFILE_OK\n")
         except Exception as e:self.error=e
         finally:self.sock.close()
     def check(self,text):
@@ -120,7 +137,7 @@ class TransportTests(unittest.TestCase):
                 data=cli.get_archive(dest,789,ack=True)
             self.assertEqual(data["count"],2)
             self.assertEqual(dest.read_bytes(),server.archive)
-            self.assertFalse(dest.with_suffix(".bin.partial").exists())
+            self.assertEqual(list(dest.parent.glob("*.partial")),[])
         server.join(5);self.assertIsNone(server.error)
     def test_truncated_download_never_acked(self):
         server=FakeServer(send_partial=True);server.start()
@@ -130,7 +147,44 @@ class TransportTests(unittest.TestCase):
                 with OperationalClient("127.0.0.1",KEY,server.port,timeout=1) as cli:
                     cli.get_archive(dest,789,ack=True)
             self.assertFalse(dest.exists())
+            self.assertEqual(len(list(dest.parent.glob("*.partial"))),1)
         server.join(5);self.assertIsNone(server.error)
+
+    def test_retry_after_ack_reply_is_lost(self):
+        first=FakeServer(lose_ack=True)
+        retry=FakeServer()
+        with tempfile.TemporaryDirectory() as folder:
+            dest=Path(folder)/"archive.bin"
+            first.start()
+            with self.assertRaises(TransportError):
+                with OperationalClient("127.0.0.1",KEY,first.port) as cli:
+                    cli.get_archive(dest,789,ack=True)
+            self.assertEqual(dest.read_bytes(),first.archive)
+            retry.start()
+            with OperationalClient("127.0.0.1",KEY,retry.port) as cli:
+                cli.get_archive(dest,789,ack=True)
+            self.assertEqual(dest.read_bytes(),first.archive)
+            self.assertEqual(list(dest.parent.glob("*.partial")),[])
+        for server in (first,retry):
+            server.join(5)
+            self.assertIsNone(server.error)
+            self.assertEqual(server.ack,"ACKFILE 789 "+str(parse(server.archive)["crc32"]))
+
+    def test_different_archive_cannot_replace_prior_evidence(self):
+        server=FakeServer(blob=archive(count=1))
+        with tempfile.TemporaryDirectory() as folder:
+            dest=Path(folder)/"archive.bin"
+            original=archive(count=2)
+            dest.write_bytes(original)
+            server.start()
+            with self.assertRaisesRegex(TransportError,"differs"):
+                with OperationalClient("127.0.0.1",KEY,server.port) as cli:
+                    cli.get_archive(dest,789,ack=True)
+            self.assertEqual(dest.read_bytes(),original)
+            self.assertEqual(len(list(dest.parent.glob("*.partial"))),1)
+        server.join(5)
+        self.assertIsNone(server.error)
+        self.assertEqual(server.ack,"")
 
 if __name__=="__main__":
     unittest.main()

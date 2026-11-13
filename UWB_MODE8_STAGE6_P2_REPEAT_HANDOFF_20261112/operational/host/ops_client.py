@@ -11,9 +11,9 @@ import hmac
 import os
 from pathlib import Path
 import socket
-import sys
+import tempfile
 
-from ops_archive import parse, ArchiveError
+from ops_archive import MAX_FILE_BYTES, parse, ArchiveError
 
 class TransportError(RuntimeError):
     pass
@@ -26,18 +26,23 @@ class OperationalClient:
 
     def __enter__(self):
         self.sock=socket.create_connection(self.address,self.timeout)
-        self.sock.settimeout(self.timeout)
-        self.stream=self.sock.makefile("rb")
-        hello=self.readline().split()
-        if len(hello)!=3 or hello[0]!="CHALLENGE":
-            raise TransportError(f"missing challenge: {hello!r}")
-        nonce=int(hello[1],16);boot=int(hello[2],16)
-        msg=f"MODE8:{nonce:08X}:{boot:08X}".encode("ascii")
-        mac=hmac.new(self.key,msg,hashlib.sha256).hexdigest()
-        self.send("AUTH "+mac)
-        if self.readline()!="AUTH_OK":
-            raise TransportError("authentication rejected")
-        return self
+        try:
+            self.sock.settimeout(self.timeout)
+            self.stream=self.sock.makefile("rb")
+            hello=self.readline().split()
+            if len(hello)!=3 or hello[0]!="CHALLENGE":
+                raise TransportError(f"missing challenge: {hello!r}")
+            nonce=int(hello[1],16)
+            self.boot=int(hello[2],16)
+            msg=f"MODE8:{nonce:08X}:{self.boot:08X}".encode("ascii")
+            mac=hmac.new(self.key,msg,hashlib.sha256).hexdigest()
+            self.send("AUTH "+mac)
+            if self.readline()!="AUTH_OK":
+                raise TransportError("authentication rejected")
+            return self
+        except BaseException:
+            self.__exit__()
+            raise
 
     def __exit__(self,*_):
         if self.stream:self.stream.close()
@@ -58,12 +63,11 @@ class OperationalClient:
         self.send(command)
         return self.readline()
 
+    def acknowledge_archive(self, session: int, body_crc: int) -> str:
+        """Acknowledge a validated archive on its authenticated GET connection."""
+        return self.command(f"ACKFILE {session} {body_crc}")
+
     def get_archive(self,path:Path,expect_session:int|None=None,ack:bool=False):
-        if path.exists():
-            raise FileExistsError(path)
-        temp=path.with_suffix(path.suffix+".partial")
-        if temp.exists():
-            raise FileExistsError(temp)
         self.send("GET")
         header=self.readline().split()
         if len(header)!=4 or header[0]!="DATA":
@@ -71,10 +75,14 @@ class OperationalClient:
         session,size,body_crc=map(int,header[1:])
         if expect_session is not None and session!=expect_session:
             raise TransportError("unexpected session")
-        if not (32<=size<=32+32*1070):
+        if not 32<=size<=MAX_FILE_BYTES:
             raise TransportError("invalid archive length")
         buffer=bytearray()
-        with temp.open("xb") as file:
+        # Retain interrupted evidence and use a fresh file on each retry.
+        with tempfile.NamedTemporaryFile(mode="wb", dir=path.parent,
+                                         prefix=path.name+".", suffix=".partial",
+                                         delete=False) as file:
+            temp=Path(file.name)
             remaining=size
             while remaining:
                 chunk=self.stream.read(min(4096,remaining))
@@ -89,9 +97,23 @@ class OperationalClient:
             raise TransportError(f"invalid archive: {e}") from e
         if (doc["session"],doc["crc32"])!=(session,body_crc):
             raise TransportError("transfer identity/CRC mismatch")
-        temp.replace(path)
+        try:
+            # A hard link atomically publishes the synced bytes without
+            # overwriting a concurrent or previously completed capture.
+            os.link(temp,path)
+        except FileExistsError:
+            if path.read_bytes()!=buffer:
+                raise TransportError(f"archive differs from existing file: {path}")
+        temp.unlink()
+        if os.name=="posix":
+            # On Pi, also persist the directory entry before authorizing purge.
+            directory=os.open(path.parent,os.O_RDONLY|os.O_DIRECTORY)
+            try:
+                os.fsync(directory)
+            finally:
+                os.close(directory)
         if ack:
-            answer=self.command(f"ACKFILE {session} {body_crc}")
+            answer=self.acknowledge_archive(session, body_crc)
             if answer!="ACKFILE_OK":
                 raise TransportError("file is saved but remote ACKFILE failed")
         return doc

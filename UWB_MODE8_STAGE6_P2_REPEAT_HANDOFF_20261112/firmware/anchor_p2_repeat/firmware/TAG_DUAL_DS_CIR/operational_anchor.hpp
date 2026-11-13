@@ -5,23 +5,32 @@
 // All DW1000 operations remain owned by the original Mode 8 RF loop.
 // This module never touches SPI, CIR accumulators or RF timestamps.
 #if DUAL8_ANCHOR
-enum class OpsPhase : uint8_t { Idle, Armed, Measuring, Draining, Stored, Fault };
+enum class OpsPhase : uint8_t { Idle, Armed, Measuring, Draining, Stored, Recovery, Fault };
 static OpsPhase opsPhase=OpsPhase::Idle;
 static bool opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
 static bool opsTcpAuthorized=false,opsTcpOverflow=false,opsArchiveFailure=false;
 static bool opsWantNetwork=false;static uint32_t opsReconnectAtMs=0;
-static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0,opsLastAck=0;
+static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0;
 // An ACKFILE is only permitted after a complete GET on this authenticated
 // TCP connection, and it must bind to the exact archived body CRC.
-static uint32_t opsDownloadedSession=0,opsDownloadedCrc=0;
+struct OpsFileIdentity {
+ uint32_t boot=0,session=0,crc=0;
+ bool operator==(const OpsFileIdentity& other) const {
+  return boot==other.boot&&session==other.session&&crc==other.crc;
+ }
+};
+static OpsFileIdentity opsLastAck{},opsDownloaded{};
+static const char* opsFailure=nullptr;
 static uint64_t opsStartAt=0;
 static uint32_t opsOtaDeadline=0,opsTcpSince=0;
 static char opsTcpLine[192]{};static size_t opsTcpUsed=0;
 static constexpr uint32_t OPS_ARCHIVE_MAX=32,OPS_TCP_PORT=29310;
 static constexpr uint32_t OPS_ARCHIVE_MAGIC=0x4f384d42UL; // "BM8O" LE
-static constexpr uint16_t OPS_ARCHIVE_VERSION=1;
+static constexpr uint16_t OPS_ARCHIVE_VERSION=2;
+static constexpr uint16_t OPS_LEGACY_ROW_BYTES=1070;
 static const char *OPS_ARCHIVE_PATH="/m8_pending.bin";
 static const char *OPS_ARCHIVE_TMP="/m8_pending.tmp";
+static const char *OPS_ARCHIVE_QUARANTINE="/m8_quarantine.bin";
 static WiFiServer opsServer(OPS_TCP_PORT);
 static WiFiClient opsClient;
 struct OpsNet {
@@ -34,21 +43,22 @@ static OpsNet opsNet{};
 #pragma pack(push,1)
 struct OpsTx {
  uint64_t planned=0,actual=0,status=0;
- uint8_t type=0,ok=0;
+ uint8_t type=0,ok=0,radio=255,attempted=0;
 };
 struct OpsRx {
  uint64_t hw=0,raw=0,status=0;
  int32_t ci=0;
  uint16_t fp=0,nacc=0;
- uint8_t type=0,received=0,lde=0;
+ uint8_t type=0,received=0,lde=0,radio=255;
  uint8_t air[dual8::AIR_BYTES]{};
 };
 struct OpsArchiveRow {
  uint32_t session=0,txn=0,boot=0,peer=0,config=0,errors=0;
  uint8_t complete=0,response_mask=0,response2_mask=0,flags=0;
- OpsTx tx[5]{};
+ uint64_t initial_poll_tx=0;
+ OpsTx tx[6]{};
  OpsRx rx[4]{};
- uint8_t frames[4][dual8::AIR_BYTES]{};
+ uint8_t frames[6][dual8::AIR_BYTES]{};
  uint32_t crc32=0;
 };
 struct OpsArchiveHeader {
@@ -58,21 +68,33 @@ struct OpsArchiveHeader {
  uint32_t session=0,boot=0,config=0,count=0,body_crc=0,header_crc=0;
 };
 #pragma pack(pop)
-static_assert(sizeof(OpsArchiveRow)==1070,"Mode 8 archive row schema drift");
+static_assert(sizeof(OpsArchiveRow)==1312,"Mode 8 archive row schema drift");
 static_assert(sizeof(OpsArchiveHeader)==32,"Mode 8 archive header schema drift");
 static OpsArchiveRow* opsArchive=nullptr;
+static OpsFileIdentity opsIdentity(const OpsArchiveHeader& h){
+ OpsFileIdentity id;id.boot=h.boot;id.session=h.session;id.crc=h.body_crc;return id;
+}
+static bool opsRecordsDrained(){
+ return transportQuiet()&&freeQ&&uxQueueMessagesWaiting(freeQ)==POOL;
+}
+static void opsRequestNetwork(){
+ opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsReconnectAtMs=millis()+1000UL;
+}
+static void opsFail(const char* reason){
+ opsPhase=OpsPhase::Fault;opsFailure=reason;opsRequestNetwork();
+}
 static void opsCancelScheduledStart(){
  if(opsPhase!=OpsPhase::Armed)return;
  // Explicit USB STOP cancels an accepted TCP START before the RF deadline.
  opsPhase=OpsPhase::Idle;opsSession=0;opsCount=0;opsRows=0;opsStartAt=0;
- opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
- opsReconnectAtMs=millis()+1000UL;
+ opsRequestNetwork();
 }
 static bool opsArchiveEnabled(){
  return opsPhase==OpsPhase::Armed||opsPhase==OpsPhase::Measuring||
-        opsPhase==OpsPhase::Draining||opsPhase==OpsPhase::Stored||opsPhase==OpsPhase::Fault;
+        opsPhase==OpsPhase::Draining||opsPhase==OpsPhase::Stored||
+        opsPhase==OpsPhase::Recovery||opsPhase==OpsPhase::Fault;
 }
-static bool opsArchivedMode(){return opsArchiveEnabled();}
 static const char* opsPhaseText(){
  switch(opsPhase){
  case OpsPhase::Idle:return "IDLE";
@@ -80,42 +102,47 @@ static const char* opsPhaseText(){
  case OpsPhase::Measuring:return "MEASURING";
  case OpsPhase::Draining:return "DRAINING";
  case OpsPhase::Stored:return "STORED";
+ case OpsPhase::Recovery:return "RECOVERY_REQUIRED";
  default:return "FAULT";
  }
 }
 static void opsCopyTx(OpsTx& d,const dual8::Tx& s){
  d.planned=s.planned;d.actual=s.actual;d.status=s.status;
- d.type=s.type;d.ok=s.ok?1:0;
+ d.type=s.type;d.ok=s.ok?1:0;d.radio=s.radio;d.attempted=s.attempted?1:0;
 }
 static void opsCopyRx(OpsRx& d,const dual8::Rx& s){
  d.hw=s.hw;d.raw=s.raw;d.status=s.status;d.ci=s.ci;
  d.fp=s.fp_raw;d.nacc=s.nacc;d.type=s.type;
- d.received=s.received?1:0;d.lde=s.lde?1:0;
+ d.received=s.received?1:0;d.lde=s.lde?1:0;d.radio=s.radio;
  if(s.received)memcpy(d.air,s.air,dual8::AIR_BYTES);
 }
 static bool opsArchiveRecord(const dual8::Record& r){
  if(opsPhase!=OpsPhase::Measuring)return true; // bench USB mode untouched
  if(!opsArchive||r.session!=opsSession||r.txn!=opsRows||opsRows>=opsCount||
-    opsRows>=OPS_ARCHIVE_MAX){opsArchiveFailure=true;opsPhase=OpsPhase::Fault;return false;}
+    opsRows>=OPS_ARCHIVE_MAX){opsArchiveFailure=true;opsFail("ARCHIVE_RECORD");return false;}
  OpsArchiveRow& d=opsArchive[opsRows];
- memset(&d,0,sizeof d);
+ d=OpsArchiveRow{};
  d.session=r.session;d.txn=r.txn;d.boot=r.boot;d.peer=r.peer_boot;
  d.config=r.config;d.errors=r.errors;d.complete=r.complete?1:0;
  d.response_mask=r.response_mask;d.response2_mask=r.response2_mask;
- d.flags=(r.p1_retry?1:0)|(r.p2_retry?2:0)|(r.p2_repeat_used?4:0);
+ d.flags=(r.p1_retry?1:0)|(r.p2_retry?2:0);
+ d.initial_poll_tx=r.initial_poll_tx;
  opsCopyTx(d.tx[0],r.tx[0]);opsCopyTx(d.tx[1],r.tx[1]);
  opsCopyTx(d.tx[2],r.poll2_tx);opsCopyTx(d.tx[3],r.tx[2]);
- opsCopyTx(d.tx[4],r.p2_repeat_tx);
+ opsCopyTx(d.tx[4],r.p2_repeat_tx);opsCopyTx(d.tx[5],r.p1_repeat_tx);
  opsCopyRx(d.rx[0],r.responses[0]);opsCopyRx(d.rx[1],r.responses[1]);
  opsCopyRx(d.rx[2],r.response2_rx[0]);opsCopyRx(d.rx[3],r.response2_rx[1]);
- const bool pollOk=dual8::encode(r.poll_frame,d.frames[0]);
+ const bool pollOk=r.tx[0].ok&&dual8::encode(r.poll_frame,d.frames[0]);
  const bool p1Ok=r.have_probe_frame[0]&&dual8::encode(r.probe_frame[0],d.frames[1]);
  const bool poll2Ok=r.have_poll2_frame&&dual8::encode(r.poll2_frame,d.frames[2]);
  const bool p2Ok=r.have_probe_frame[1]&&dual8::encode(r.probe_frame[1],d.frames[3]);
  // Never report an archive row as complete when raw RF evidence was
  // omitted, corrupted or not serializable.
- if(r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok)){
-  opsArchiveFailure=true;opsPhase=OpsPhase::Fault;return false;
+ const bool p2RepeatOk=r.p2_repeat_tx.ok&&dual8::encode(r.p2_repeat_frame,d.frames[4]);
+ const bool p1RepeatOk=r.p1_repeat_tx.ok&&dual8::encode(r.p1_repeat_frame,d.frames[5]);
+ if((r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok||!p2RepeatOk))||
+    (r.p1_repeat_tx.ok&&!p1RepeatOk)){
+  opsArchiveFailure=true;opsFail("ARCHIVE_FRAME");return false;
  }
  d.crc32=dual8::crc32(&d,offsetof(OpsArchiveRow,crc32));
  ++opsRows;
@@ -134,14 +161,16 @@ static bool opsAnyStoredFile(){
  root.close();
  return exists;
 }
-static bool opsReadHeader(OpsArchiveHeader& h){
- if(!opsFilePending())return false;
- File f=LittleFS.open(OPS_ARCHIVE_PATH,"r");
+static bool opsReadHeader(OpsArchiveHeader& h,const char* path=OPS_ARCHIVE_PATH){
+ if(!opsFsOk)return false;
+ File f=LittleFS.open(path,"r");
  if(!f)return false;
  const bool ok=f.size()>=sizeof h&&f.read(reinterpret_cast<uint8_t*>(&h),sizeof h)==sizeof h;
  f.close();
- if(!ok||h.magic!=OPS_ARCHIVE_MAGIC||h.version!=OPS_ARCHIVE_VERSION||
-    h.row_bytes!=sizeof(OpsArchiveRow)||h.count>OPS_ARCHIVE_MAX)return false;
+ if(!ok||h.magic!=OPS_ARCHIVE_MAGIC||!h.session||!h.boot||!h.config||!h.count||
+    h.count>OPS_ARCHIVE_MAX)return false;
+ if(!((h.version==OPS_ARCHIVE_VERSION&&h.row_bytes==sizeof(OpsArchiveRow))||
+      (h.version==1&&h.row_bytes==OPS_LEGACY_ROW_BYTES)))return false;
  const uint32_t found=h.header_crc;h.header_crc=0;
  const bool valid=dual8::crc32(&h,sizeof h)==found;
  h.header_crc=found;
@@ -152,7 +181,7 @@ static bool opsVerifyArchive(const OpsArchiveHeader& h,const char* path=OPS_ARCH
  if(!f)return false;
  const size_t expected=sizeof h+size_t(h.count)*h.row_bytes;
  if(size_t(f.size())!=expected){f.close();return false;}
- f.seek(sizeof h,SeekSet);
+ if(!f.seek(sizeof h,SeekSet)){f.close();return false;}
  uint8_t buffer[256];uint32_t crc=0xffffffffUL;
  size_t remaining=expected-sizeof h;
  while(remaining){
@@ -161,6 +190,24 @@ static bool opsVerifyArchive(const OpsArchiveHeader& h,const char* path=OPS_ARCH
   crc=dual8::crcStep(crc,buffer,n);remaining-=n;
  }
  f.close();return (crc^0xffffffffUL)==h.body_crc;
+}
+// Only promote a complete, checksum-verified journal. A damaged journal
+// stays on flash and requires an explicit operator recovery decision.
+static bool opsRecoverJournal(){
+ if(!opsFsOk||LittleFS.exists(OPS_ARCHIVE_PATH))return false;
+ OpsArchiveHeader h;
+ return opsReadHeader(h,OPS_ARCHIVE_TMP)&&opsVerifyArchive(h,OPS_ARCHIVE_TMP)&&
+        LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_PATH);
+}
+static void opsLoadArchiveState(){
+ if(LittleFS.exists(OPS_ARCHIVE_TMP)&&!LittleFS.exists(OPS_ARCHIVE_PATH))
+  opsRecoverJournal();
+ OpsArchiveHeader h;
+ if(opsReadHeader(h)&&opsVerifyArchive(h)){
+  opsPhase=OpsPhase::Stored;opsSession=h.session;opsCount=opsRows=h.count;
+ }else if(opsFilePending()){
+  opsPhase=OpsPhase::Recovery;opsFailure="ARCHIVE_RECOVERY_REQUIRED";
+ }
 }
 static bool opsPersistArchive(){
  if(!opsArchive||!opsFsOk||opsFilePending()||opsRows!=opsCount||
@@ -205,7 +252,10 @@ static void opsLoadNet(){
      &&p.getBytes("auth",opsNet.authKey,sizeof opsNet.authKey)==sizeof opsNet.authKey;
  p.getString("otahash",opsNet.otaHash,sizeof opsNet.otaHash);
  opsNet.otaSet=strlen(opsNet.otaHash)==64;
- opsLastAck=p.getUInt("lastack",0);
+ // Ignore the old session-only approval. A legacy file must be fetched again.
+ if(p.getBytesLength("file_ack_v2")==sizeof opsLastAck&&
+    p.getBytes("file_ack_v2",&opsLastAck,sizeof opsLastAck)!=sizeof opsLastAck)
+  opsLastAck={};
  p.end();
 }
 static bool opsSaveHexField(const char*name,const char*hex){
@@ -229,12 +279,14 @@ static bool opsSaveHexField(const char*name,const char*hex){
  }
  p.end();memset(bytes,0,sizeof bytes);return ok;
 }
-static void opsWifiDown(){
+static bool opsWifiDown(){
  opsWantNetwork=false;
  if(opsOtaOpen){ArduinoOTA.end();opsOtaOpen=false;}
  if(opsClient)opsClient.stop();
- opsServer.end();WiFi.disconnect(true,false);WiFi.mode(WIFI_OFF);
- opsWifiUp=false;opsTcpAuthorized=false;opsTcpUsed=0;
+ opsServer.end();WiFi.disconnect(false,false);
+ const bool modeSet=WiFi.mode(WIFI_OFF);
+ opsWifiUp=false;opsTcpAuthorized=false;opsTcpUsed=0;opsDownloaded={};
+ return modeSet&&WiFi.getMode()==WIFI_OFF;
 }
 static bool opsWifiStart(){
  if(active||!opsRecordsDrained()||opsPhase==OpsPhase::Measuring||
@@ -243,22 +295,28 @@ static bool opsWifiStart(){
  WiFi.begin(opsNet.ssid,opsNet.pass);
  opsWifiUp=false;opsWantNetwork=true;opsReconnectAtMs=millis()+15000UL;return true;
 }
-static void opsTcpReply(const char*line){
- if(opsClient&&opsClient.connected()){opsClient.print(line);opsClient.print('\n');}
+static bool opsTcpReply(const char*line){
+ return opsClient&&opsClient.connected()&&opsClient.print(line)==strlen(line)&&
+        opsClient.print('\n')==1;
 }
 static void opsTcpStatus(){
  if(!opsClient)return;
- char out[400];
+ char out[576];
  OpsArchiveHeader h;const bool stored=opsReadHeader(h)&&opsVerifyArchive(h);
  snprintf(out,sizeof out,
   "{\"event\":\"OPS_STATUS\",\"phase\":\"%s\",\"boot\":%lu,\"session\":%lu,\"records\":%lu,"
   "\"config\":%lu,\"wifi\":%s,\"file\":%s,\"file_session\":%lu,\"file_count\":%lu,"
-  "\"file_acked\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"free_slots\":%u}",
+  "\"file_acked\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"free_slots\":%u,"
+  "\"firmware\":\"%s\",\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,"
+  "\"hw_ok\":%s,\"fault_latched\":%s,\"period_miss\":%lu,\"drained\":%s,\"failure\":\"%s\"}",
   opsPhaseText(),(unsigned long)boot,(unsigned long)opsSession,(unsigned long)opsRows,
   (unsigned long)configId(config),WiFi.status()==WL_CONNECTED?"true":"false",
   stored?"true":"false",(unsigned long)(stored?h.session:0),(unsigned long)(stored?h.count:0),
-  stored&&opsLastAck==h.session?"true":"false",(unsigned long)pending.load(),
-  awaitingAck.load(),freeQ?unsigned(uxQueueMessagesWaiting(freeQ)):0);
+  stored&&opsLastAck==opsIdentity(h)?"true":"false",(unsigned long)pending.load(),
+  awaitingAck.load(),freeQ?unsigned(uxQueueMessagesWaiting(freeQ)):0,
+  firmwareId(true),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,
+  hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)periodMiss,
+  drainComplete&&drainClean&&opsRecordsDrained()?"true":"false",opsFailure?opsFailure:"");
  opsTcpReply(out);
 }
 static bool opsHmac(const char*hex){
@@ -275,13 +333,14 @@ static bool opsHmac(const char*hex){
  return diff==0;
 }
 static bool opsDownload(){
+ opsDownloaded={};
  OpsArchiveHeader h;
  if(!opsReadHeader(h)||!opsVerifyArchive(h))return false;
  File f=LittleFS.open(OPS_ARCHIVE_PATH,"r");if(!f)return false;
  char line[90];
  snprintf(line,sizeof line,"DATA %lu %lu %lu",(unsigned long)h.session,
           (unsigned long)f.size(),(unsigned long)h.body_crc);
- opsTcpReply(line);
+ if(!opsTcpReply(line)){f.close();return false;}
  uint8_t bytes[512];uint32_t idleSince=millis();bool ok=true;
  while(f.available()){
   const size_t n=f.read(bytes,sizeof bytes);if(n==0){ok=false;break;}
@@ -294,22 +353,32 @@ static bool opsDownload(){
   if(!ok)break;
  }
  f.close();
- if(ok){
-  opsTcpReply("END");
-  opsDownloadedSession=h.session;opsDownloadedCrc=h.body_crc;
- }
- return ok;
+ if(!ok||!opsTcpReply("END"))return false;
+ opsDownloaded=opsIdentity(h);
+ return true;
 }
 static bool opsEraseAcked(){
  OpsArchiveHeader h;
- if(!opsReadHeader(h)||!opsVerifyArchive(h)||h.session!=opsLastAck)return false;
+ if(!opsReadHeader(h)||!opsVerifyArchive(h)||!(opsIdentity(h)==opsLastAck))return false;
+ // Clear persistent approval before removing the file. An interruption can
+ // require another GET/ACK, but cannot grant approval to a later file.
+ Preferences p;
+ if(!p.begin("mode8ops",false))return false;
+ const bool cleared=p.remove("file_ack_v2");
+ p.end();
+ if(!cleared)return false;
+ opsLastAck={};
  const bool ok=LittleFS.remove(OPS_ARCHIVE_PATH);
- if(ok){opsPhase=OpsPhase::Idle;opsSession=0;opsCount=0;opsRows=0;}
+ if(ok){
+  opsPhase=OpsPhase::Idle;opsSession=0;opsCount=0;opsRows=0;opsDownloaded={};
+  opsFailure=nullptr;opsLoadArchiveState();
+ }
  return ok;
 }
 static bool opsOtaStart(uint32_t seconds){
  if(seconds<60||seconds>600||!opsNet.otaSet||opsAnyStoredFile()||
-    !opsRecordsDrained()||WiFi.status()!=WL_CONNECTED)return false;
+    opsPhase!=OpsPhase::Idle||active||!opsRecordsDrained()||
+    WiFi.status()!=WL_CONNECTED)return false;
  ArduinoOTA.setPort(3232);
  ArduinoOTA.setHostname("mode8-anchor");
  ArduinoOTA.setPasswordHash(opsNet.otaHash);
@@ -325,18 +394,18 @@ static bool opsOtaStart(uint32_t seconds){
  return true;
 }
 static bool opsPlan(uint32_t sessionId,uint32_t count){
- if(!opsFsOk||opsFilePending()||opsOtaOpen||opsPhase!=OpsPhase::Idle||
-    !opsRecordsDrained()||!hwOk||port.faulted()||
-    config.stage!=6||count==0||count>OPS_ARCHIVE_MAX||sessionId==0||
+ if(!opsFsOk||opsFilePending()||opsOtaOpen||opsPhase!=OpsPhase::Idle||active||
+    !transportChangeAllowed()||!drainClean||!opsRecordsDrained()||!hwOk||port.faulted()||
+    config.stage!=6||config.period_us!=200000||config.baud!=2000000||
+    count==0||count>OPS_ARCHIVE_MAX||sessionId==0||
     validate(config))return false;
  if(!opsArchive){
   opsArchive=new(std::nothrow) OpsArchiveRow[OPS_ARCHIVE_MAX];
   if(!opsArchive)return false;
   if(ESP.getFreeHeap()<32768){delete[] opsArchive;opsArchive=nullptr;return false;}
  }
- memset(opsArchive,0,size_t(count)*sizeof(OpsArchiveRow));
  opsSession=sessionId;opsCount=count;opsRows=0;opsArchiveFailure=false;
- opsPhase=OpsPhase::Armed;
+ opsFailure=nullptr;opsPhase=OpsPhase::Armed;
  return true;
 }
 static void opsTcpCommand(char *line){
@@ -367,15 +436,17 @@ static void opsTcpCommand(char *line){
   OpsArchiveHeader h;
   if(!idOk||!crcOk||extra||!opsReadHeader(h)||
      !opsVerifyArchive(h)||h.session!=id||h.body_crc!=crc||
-     opsDownloadedSession!=id||opsDownloadedCrc!=crc){
+     !(opsDownloaded==opsIdentity(h))){
     opsTcpReply("ERROR ACKFILE");return;
   }
+  const auto identity=opsIdentity(h);
+  if(opsLastAck==identity){opsTcpReply("ACKFILE_OK");return;}
   Preferences p;
   if(!p.begin("mode8ops",false)){opsTcpReply("ERROR NVS");return;}
-  const bool ok=p.putUInt("lastack",h.session)==sizeof(uint32_t);
+  const bool ok=p.putBytes("file_ack_v2",&identity,sizeof identity)==sizeof identity;
   p.end();
   if(ok){
-   opsLastAck=h.session;opsDownloadedSession=0;opsDownloadedCrc=0;
+   opsLastAck=identity;
    opsTcpReply("ACKFILE_OK");
   }
   else opsTcpReply("ERROR NVS");
@@ -389,9 +460,9 @@ static void opsTcpCommand(char *line){
   const unsigned long count=b?strtoul(b,&end,10):0;
   if(!b||!end||*end||!count||count>OPS_ARCHIVE_MAX||
      !opsPlan(uint32_t(sid),uint32_t(count))){opsTcpReply("ERROR START_GUARD");return;}
-  opsTcpReply("START_ACCEPTED_WIFI_OFF");
-  opsClient.flush();delay(15);
-  opsWifiDown();
+  if(!opsTcpReply("START_ACCEPTED_WIFI_OFF")){opsCancelScheduledStart();return;}
+  delay(15);
+  if(!opsWifiDown()){opsFail("WIFI_OFF_FAILED");return;}
   opsStartAt=uint64_t(esp_timer_get_time())+250000ULL;
   return;
  }
@@ -407,9 +478,9 @@ static void opsTcpPoll(){
  if(!opsWifiUp)return;
  if(!opsClient||!opsClient.connected()){
   if(opsClient)opsClient.stop();
-  opsClient=opsServer.available();
+  opsClient=opsServer.accept();
   opsTcpAuthorized=false;opsTcpUsed=0;opsTcpOverflow=false;
-  opsDownloadedSession=0;opsDownloadedCrc=0;
+  opsDownloaded={};
   if(opsClient){
    opsNonce=esp_random();if(!opsNonce)opsNonce=1;
    opsTcpSince=millis();
@@ -433,7 +504,8 @@ static void opsTcpPoll(){
 }
 static void opsSetup(){
  opsFsOk=LittleFS.begin(false); // NO autoformat; preserve existing flash data.
- opsLoadNet();opsPhase=opsFilePending()?OpsPhase::Stored:OpsPhase::Idle;
+ opsLoadNet();
+ if(opsFsOk)opsLoadArchiveState();
  WiFi.mode(WIFI_OFF);
  opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
  opsReconnectAtMs=millis()+2000UL;
@@ -446,9 +518,9 @@ static bool opsUsbCommand(const char*line){
  char *op=strtok_r(nullptr," \r\t",&save);
  if(!op){emit("{\"event\":\"ERROR\",\"reason\":\"OPS_COMMAND_REQUIRED\"}");return true;}
  if(!strcmp(op,"STATUS")){
-  emit("{\"event\":\"OPS_STATUS\",\"phase\":\"%s\",\"wifi\":%s,\"fs\":%s,\"pending_file\":%s,\"session\":%lu,\"rows\":%lu}",
+  emit("{\"event\":\"OPS_STATUS\",\"phase\":\"%s\",\"wifi\":%s,\"fs\":%s,\"pending_file\":%s,\"session\":%lu,\"rows\":%lu,\"failure\":\"%s\"}",
    opsPhaseText(),WiFi.status()==WL_CONNECTED?"true":"false",opsFsOk?"true":"false",
-   opsFilePending()?"true":"false",(unsigned long)opsSession,(unsigned long)opsRows);
+   opsFilePending()?"true":"false",(unsigned long)opsSession,(unsigned long)opsRows,opsFailure?opsFailure:"");
   return true;
  }
  if((opsOtaOpen&&strcmp(op,"STATUS")!=0)||active||!opsRecordsDrained()||opsPhase==OpsPhase::Armed||
@@ -458,7 +530,7 @@ static bool opsUsbCommand(const char*line){
  if(!strcmp(op,"NET")){
   char*sub=strtok_r(nullptr," \r\t",&save);
   if(sub&&!strcmp(sub,"ON")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiStart()?"true":"false");return true;}
-  if(sub&&!strcmp(sub,"OFF")){opsWifiDown();emit("{\"event\":\"OPS_NET\",\"ok\":true}");return true;}
+  if(sub&&!strcmp(sub,"OFF")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiDown()?"true":"false");return true;}
  }
  if(!strcmp(op,"SSID")||!strcmp(op,"PASS")||!strcmp(op,"AUTH")||!strcmp(op,"OTAHASH")){
   char*value=strtok_r(nullptr," \r\t",&save);
@@ -466,6 +538,18 @@ static bool opsUsbCommand(const char*line){
   emit("{\"event\":\"OPS_PROVISION\",\"field\":\"%s\",\"ok\":%s}",
        op,value&&opsSaveHexField(op,value)?"true":"false");
   return true;
+ }
+ if(!strcmp(op,"RECOVER")){
+  const bool ok=opsPhase==OpsPhase::Recovery&&opsRecoverJournal();
+  if(ok){opsFailure=nullptr;opsLoadArchiveState();}
+  emit("{\"event\":\"OPS_RECOVER\",\"ok\":%s}",ok?"true":"false");return true;
+ }
+ if(!strcmp(op,"QUARANTINE")){
+  // Only move an uncommitted journal, and never overwrite a previous one.
+  const bool ok=opsPhase==OpsPhase::Recovery&&!LittleFS.exists(OPS_ARCHIVE_PATH)&&
+      !LittleFS.exists(OPS_ARCHIVE_QUARANTINE)&&LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_QUARANTINE);
+  if(ok){opsPhase=OpsPhase::Idle;opsFailure=nullptr;}
+  emit("{\"event\":\"OPS_QUARANTINE\",\"ok\":%s}",ok?"true":"false");return true;
  }
  if(!strcmp(op,"PURGE")){
   emit("{\"event\":\"OPS_PURGE\",\"ok\":%s}",opsEraseAcked()?"true":"false");return true;
@@ -480,19 +564,29 @@ static bool opsUsbCommand(const char*line){
 }
 static void opsLoop(){
  if(opsPhase==OpsPhase::Armed&&!active&&uint64_t(esp_timer_get_time())>=opsStartAt){
-  if(!opsRecordsDrained()){opsPhase=OpsPhase::Fault;return;}
+  if(WiFi.getMode()!=WIFI_OFF){opsFail("WIFI_OFF_LOST");return;}
+  // An incidental USB status reply can still be draining at the deadline.
+  // Wait briefly for it before failing the armed session.
+  if(!opsRecordsDrained()){
+   if(uint64_t(esp_timer_get_time())>=opsStartAt+250000ULL)opsFail("RECORD_DRAIN_PENDING");
+   return;
+  }
   char line[70];snprintf(line,sizeof line,"START %lu %lu",
                         (unsigned long)opsSession,(unsigned long)opsCount);
   opsInternalStart=true;command(line);opsInternalStart=false;
-  opsPhase=active?OpsPhase::Measuring:OpsPhase::Fault;
+  if(active)opsPhase=OpsPhase::Measuring;
+  else opsFail("RF_START_FAILED");
  }
  if(opsPhase==OpsPhase::Measuring&&!active)opsPhase=OpsPhase::Draining;
  if(opsPhase==OpsPhase::Draining&&opsRecordsDrained()){
+  drainComplete=true;drainClean=sessionFailures()==0;
   if(opsPersistArchive()){
    delete[] opsArchive;opsArchive=nullptr; // release RF archival RAM before Wi-Fi TCP maintenance
+   if(!drainClean)opsFailure="TRANSPORT_FAILURE";
    opsPhase=OpsPhase::Stored;opsWifiStart();
-  }
-  else opsPhase=OpsPhase::Fault;
+  }else if(opsFilePending()){
+   opsPhase=OpsPhase::Recovery;opsFailure="ARCHIVE_RECOVERY_REQUIRED";opsRequestNetwork();
+  }else opsFail("ARCHIVE_INCOMPLETE");
  }
  if(opsOtaOpen){
   if(active||opsFilePending()||int32_t(millis()-opsOtaDeadline)>=0){

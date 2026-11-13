@@ -4,6 +4,9 @@ from dataclasses import dataclass, field
 import struct
 import zlib
 
+from collections import OrderedDict
+import hashlib
+
 from rfb8 import HEADER as RECORD_HEADER, MAGIC as RECORD_MAGIC, JSON_MAX, RAW_BYTES
 
 
@@ -232,19 +235,25 @@ class ReplayReceiver:
         self.expected = None
         self.pending = {}
         self.failed = set()
-        self.replayed = set()
+        self.repaired_gaps = set()
         self.first_failed = set()
         self.requests = {}
         self.active = False
+        self.committed = OrderedDict()
+        self.duplicates = []
+        self.duplicate_count = 0
 
     def begin(self):
         if self.expected is None:
             raise RuntimeError("RFB8 replay requires a verified initial sequence")
         self.active = True
         self.first_failed.clear()
-        self.replayed.clear()
+        self.repaired_gaps.clear()
         self.requests.clear()
         self.failed.clear()
+        self.committed.clear()
+        self.duplicates.clear()
+        self.duplicate_count = 0
 
     def _distance(self, sequence):
         return (sequence - self.expected) & self.MASK
@@ -261,7 +270,7 @@ class ReplayReceiver:
         output = bytearray()
         offset = 0
         while offset < len(restored):
-            _, _, _, header, sequence, meta, raw, _ = RECORD_HEADER.unpack_from(restored, offset)
+            _, _, kind, header, sequence, meta, raw, _ = RECORD_HEADER.unpack_from(restored, offset)
             end = offset + header + meta + raw
             packet = restored[offset:end]
             offset = end
@@ -271,7 +280,13 @@ class ReplayReceiver:
                 continue
             distance = self._distance(sequence)
             if distance > self.MASK // 2:
-                continue  # duplicate of a packet already committed in sequence
+                digest = self.committed.get(sequence)
+                if digest is None or digest != hashlib.sha256(packet).digest():
+                    raise RuntimeError("Unverifiable or conflicting late RFB8 replay")
+                self.duplicate_count += 1
+                if kind == 2:
+                    self.duplicates.append(sequence)
+                continue
             if distance > self.REORDER_LIMIT:
                 raise RuntimeError("RFB8 replay reorder window exhausted")
             previous = self.pending.setdefault(sequence, packet)
@@ -279,9 +294,13 @@ class ReplayReceiver:
                 raise RuntimeError("Conflicting RFB8 packets for one sequence")
         while self.expected in self.pending:
             sequence = self.expected
-            output.extend(self.pending.pop(sequence))
+            packet = self.pending.pop(sequence)
+            output.extend(packet)
+            self.committed[sequence] = hashlib.sha256(packet).digest()
+            if len(self.committed) > 64:
+                self.committed.popitem(last=False)
             if sequence in self.requests:
-                self.replayed.add(sequence)
+                self.repaired_gaps.add(sequence)
             self.failed.discard(sequence)
             self.expected = (sequence + 1) & self.MASK
         return bytes(output)
@@ -299,13 +318,20 @@ class ReplayReceiver:
         self.requests[sequence] = (first, now, attempts + 1)
         return sequence
 
+    def take_duplicates(self):
+        duplicates, self.duplicates = self.duplicates, []
+        return duplicates
+
     def statistics(self):
         return {
+            "duplicate_records": self.duplicate_count,
+            "pending_fragment_bytes": len(self.decoder.buffer),
+            "partial_fragment_record": self.decoder.frame is not None,
             "fragment": dict(self.decoder.counts),
             "fec_repaired_sequences": [x["sequence"] for x in self.decoder.repaired],
             "first_failed_sequences": sorted(self.first_failed),
-            "replayed_sequences": sorted(self.replayed),
-            "replay_requests": sum(attempts for _, _, attempts in self.requests.values()),
-            "unresolved_sequences": sorted(self.failed | (self.requests.keys() - self.replayed)),
+            "gaps_repaired_after_nack_scheduled": sorted(self.repaired_gaps),
+            "replay_nacks_scheduled": sum(attempts for _, _, attempts in self.requests.values()),
+            "unresolved_sequences": sorted(self.failed | (self.requests.keys() - self.repaired_gaps)),
             "pending_records": len(self.pending),
         }

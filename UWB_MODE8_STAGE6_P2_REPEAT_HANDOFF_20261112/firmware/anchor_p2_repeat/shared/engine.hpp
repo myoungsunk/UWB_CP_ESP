@@ -261,12 +261,29 @@ inline void runAnchor(Port&p,const Config&c,uint32_t session,uint32_t txn,uint32
   Frame q;q.type=k?Type::Probe2:Type::Probe1;q.session=session;q.txn=txn;q.config=r.config;q.boot=localBoot;q.peer_boot=r.peer_boot;q.stage=c.stage;
   q.poll_tx=r.tx[0].actual;q.resp_mask=r.response_mask;q.tx_ok_mask=1;
   for(unsigned i=0;i<2;++i){q.resp_rx[i]=r.responses[i].hw;q.ci[i]=r.responses[i].ci;}
-  if(k){q.prev_probe_actual=r.tx[1].actual;if(r.tx[1].ok)q.tx_ok_mask|=2;}
+  if(k){
+   q.prev_probe_actual=r.tx[1].actual;
+   if(r.tx[1].ok)q.tx_ok_mask|=2;
+   // In the Stage 6 Probe2 contract this slot confirms the repeat's actual TX.
+   if(c.stage==6&&r.p1_repeat_tx.ok)q.tag_poll_rx=r.p1_repeat_tx.actual;
+  }
   const uint64_t at=(r.tx[0].actual+usTicks(k?c.probe2_us(r.p2_retry):c.probe1DelayUs()))&MASK40;
   Tx& tx=r.tx[k+1];
   if(!p.send(0,q,at,tx))r.errors|=k?ErrProbe2:ErrProbe1;
   r.probe_frame[k]=q;r.have_probe_frame[k]=tx.ok;
   if(tx.hardware_fault){r.errors|=ErrHardware;break;}
+  if(!k&&c.stage==6&&tx.ok){
+   // Repeat the same P1 exchange at a separate, fixed slot. The primary TX
+   // and repeat TX retain independent evidence and are confirmed in P2.
+   Frame repeat=q;
+   const uint32_t offset=c.probe1RepeatUs();
+   const uint64_t prepare=deadlineAt(p,0,r.tx[0].actual,offset-3500);
+   while(p.nowUs()<prepare)p.relax();
+   const uint64_t repeatAt=(r.tx[0].actual+usTicks(offset))&MASK40;
+   p.send(0,repeat,repeatAt,r.p1_repeat_tx);
+   r.p1_repeat_frame=repeat;
+   if(r.p1_repeat_tx.hardware_fault){r.errors|=ErrHardware;break;}
+  }
  }
  if(c.stage==6&&r.tx[2].attempted&&!(r.errors&ErrHardware)){
   // Preserve the primary P2 evidence. A repeat changes only probe_tx and its

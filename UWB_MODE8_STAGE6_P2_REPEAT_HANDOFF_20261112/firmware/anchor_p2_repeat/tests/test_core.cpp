@@ -214,6 +214,13 @@ static void testsEngine(const std::string&out){
   CHECK(diff40((x.tx[0].actual+usTicks(114000))&MASK40,x.poll2_tx.actual)<=511);
   CHECK(diff40((x.tx[0].actual+usTicks(142000))&MASK40,x.tx[2].actual)<=511);
   CHECK(diff40((x.tx[0].actual+usTicks(156000))&MASK40,x.p2_repeat_tx.actual)<=511);
+  CHECK(x.p1_repeat_tx.ok&&x.p1_repeat_frame.probe_tx==x.p1_repeat_tx.actual);
+  CHECK(diff40((x.tx[0].actual+usTicks(42000))&MASK40,x.p1_repeat_tx.actual)<=511);
+  Frame p1Normalized=x.p1_repeat_frame;p1Normalized.probe_tx=x.probe_frame[0].probe_tx;
+  CHECK(sameFrame(p1Normalized,x.probe_frame[0]));
+  CHECK(x.probe_frame[1].prev_probe_actual==x.tx[1].actual);
+  CHECK(x.probe_frame[1].tag_poll_rx==x.p1_repeat_tx.actual);
+  CHECK(x.p2_repeat_frame.tag_poll_rx==x.p1_repeat_tx.actual);
   CHECK(x.p2_repeat_tx.ok&&x.p2_repeat_frame.probe_tx==x.p2_repeat_tx.actual);
   Frame normalized=x.p2_repeat_frame;normalized.probe_tx=x.probe_frame[1].probe_tx;
   CHECK(sameFrame(normalized,x.probe_frame[1]));

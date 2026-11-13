@@ -16,7 +16,8 @@ import math
 import zlib
 import numpy as np
 from rfb8 import read_file, Decoder, CIR_BYTES, RAW_BYTES
-from capture_audit import anchor_tx_matches, probe2_response_ticks, response_matches
+from capture_audit import (anchor_tx_matches, p1_repeat_contract, p1_selection,
+                           p2_selection, probe2_response_ticks, response_matches)
 
 MASK40 = (1 << 40) - 1
 HZ = 63897600000
@@ -52,7 +53,7 @@ def air_frame(hex_bytes: str | None) -> dict | None:
             'config': read(16, 4), 'boot': read(20, 4), 'peer_boot': read(24, 4),
             'mask': b[29], 'tx_ok_mask': b[30], 'poll_tx': read(32),
             'resp_rx': [read(37), read(42)], 'probe_tx': read(47),
-            'prev_probe_actual': read(52)}
+            'prev_probe_actual': read(52), 'p1_repeat_actual': read(57)}
 
 
 def same_identity(f: dict | None, meta: dict, *, peer: bool) -> bool:
@@ -76,7 +77,7 @@ def _anchor_response_matches(anchor: dict, meta: dict, p2: dict, radio: int) -> 
                 not response_matches(rx[radio], meta['tx'][radio], meta['poll_rx'][radio],
                                      meta, radio, p2['poll_tx'], p2['resp_rx'][radio])):
             return False
-        if not all(anchor['frames'][j] == meta['frames'][j] for j in range(3)):
+        if anchor['frames'][0] != meta['frames'][0]:
             return False
         return True
     except (KeyError, IndexError, TypeError, ValueError):
@@ -98,7 +99,7 @@ def _slot_provenance(meta: dict, frames: list[dict | None], slot: int) -> bool:
                 f['peer_boot'] == (0 if meta['stage'] == 2 else meta['boot']))
 
 
-def _anchor_block_agrees(p1: dict | None, p2: dict | None) -> bool:
+def _anchor_block_agrees(p1: dict | None, p2: dict | None, repeat_used: bool) -> bool:
     if not p1 or not p2:
         return False
     return bool(p1['type'] == 4 and p2['type'] == 5 and
@@ -106,7 +107,7 @@ def _anchor_block_agrees(p1: dict | None, p2: dict | None) -> bool:
                 p1['resp_rx'] == p2['resp_rx'] and
                 p1['mask'] == p2['mask'] and
                 p1['peer_boot'] == p2['peer_boot'] and
-                p2['prev_probe_actual'] == p1['probe_tx'] and
+                (p2['p1_repeat_actual'] if repeat_used else p2['prev_probe_actual']) == p1['probe_tx'] and
                 p1['tx_ok_mask'] & 1 and p2['tx_ok_mask'] & 3 == 3)
 
 
@@ -150,7 +151,13 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
                  p1['peer_boot'] == meta['boot'])
     p2_ok = bool(p2 and p2['type'] == 5 and same_identity(p2, meta, peer=True) and
                  p2['peer_boot'] == meta['boot'])
-    coherent = bool(poll_ok and p1_ok and p2_ok and _anchor_block_agrees(p1, p2) and
+    p1_contract = p1_repeat_contract(anchor if isinstance(anchor, dict) else {}, meta)
+    p1_proof = p1_selection(anchor, meta) if isinstance(anchor, dict) else None
+    p2_proof = p2_selection(anchor, meta) if isinstance(anchor, dict) else None
+    repeat_used = p1_contract and meta.get('p1_repeat_used') is True
+    coherent = bool(poll_ok and p1_ok and p2_ok and
+                    (not p1_contract or (p1_proof is not None and p2_proof is not None)) and
+                    _anchor_block_agrees(p1, p2, repeat_used) and
                     p1['poll_tx'] == poll['poll_tx'] and
                     meta.get('p1_tx_confirmed') is True and
                     meta.get('metadata_conflict') is False and not meta.get('errors', 0) & (1 | 64 | 256))
@@ -169,10 +176,11 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
     anchor_tx_ok = False
     if coherent and isinstance(anchor, dict):
         txs = anchor.get('tx')
-        rf_ticks = (poll['poll_tx'], p1['probe_tx'], p2['probe_tx'])
-        anchor_tx_ok = (isinstance(txs, list) and len(txs) == 3 and
-                        all(anchor_tx_matches(tx, slot, tick)
-                            for slot, (tx, tick) in enumerate(zip(txs, rf_ticks))))
+        anchor_tx_ok = (p1_proof is not None and p2_proof is not None
+                        and isinstance(txs, list) and len(txs) == 3
+                        and anchor_tx_matches(txs[0], 0, poll['poll_tx'])
+                        and anchor_tx_matches(p1_proof[1], 1, p1['probe_tx'])
+                        and anchor_tx_matches(p2_proof[1], 2, p2['probe_tx']))
     matched_anchor = [anchor_tx_ok and local_response_ok[radio] and
                       _anchor_response_matches(anchor, meta, p2, radio) for radio in range(2)]
 
@@ -184,7 +192,8 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
         po, tx, rx = meta['poll_rx'][radio], meta['tx'][radio], meta['probe_rx'][radio]
         expected = ([p1['poll_tx'], p1['resp_rx'][radio], p1['probe_tx'],
                      po.get('hw'), tx.get('actual'), rx.get('hw')] if coherent else None)
-        evidence_ok = bool(coherent and slot_ok[radio] and fw.get('math_valid') is True and
+        evidence_ok = bool(coherent and (not p1_contract or matched_anchor[radio])
+                           and slot_ok[radio] and fw.get('math_valid') is True and
                            p1['mask'] & (1 << radio) and
                            local_response_ok[radio] and
                            rx.get('ok') and rx.get('lde') and

@@ -37,6 +37,7 @@ struct Config {
  }
  uint32_t probe1DelayUs()const{return probe1_us+(usesExtendedSchedule()?9000:0);}
  bool rangesProbe2()const{return stage==5||stage==6;}
+ uint32_t probe1RepeatUs()const{return probe1DelayUs()+14000;}
  static constexpr uint32_t probe2RepeatGapUs=14000;
  uint32_t probe2PollDelayUs(bool retry=false)const{
   return period_us/2+(retry?probe1DelayUs():0)-(stage==6?probe2RepeatGapUs:0);
@@ -51,7 +52,7 @@ inline uint32_t configId(const Config&c){
  // RF is fixed: ch5, 850 kbps, 16 MHz PRF, 256-symbol preamble, code3, standard SFD.
  b[32]=5;putLE(b+33,850,2);b[35]=16;putLE(b+36,256,2);b[38]=3;
  // R4 contract: FCS-safe transmit buffer and provenance-hardened capture.
- b[39]=c.stage==6?13:(c.rangesProbe2()?7:4);
+ b[39]=c.stage==6?14:(c.rangesProbe2()?7:4);
  return crc32(b,sizeof b);
 }
 inline const char* validate(const Config&c){
@@ -63,6 +64,7 @@ inline const char* validate(const Config&c){
  if(c.probe_gap_us<16000||c.probe_gap_us>100000)return "CIR_GAP_BUDGET";
  if(c.period_us<100000||c.period_us>5000000)return "PERIOD_RF_BUDGET";
  if(c.rangesProbe2()&&c.probe2PollDelayUs()<c.probe1DelayUs()+c.probe_gap_us)return "P2_PREPARE_BUDGET";
+ if(c.stage==6&&c.probe2PollDelayUs()<c.probe1RepeatUs()+c.grace_us+7000)return "P1_REPEAT_PREPARE_BUDGET";
  if(c.min_lead_us<500||c.min_lead_us>1500)return "TX_LEAD_BOUND";
  if(c.cir_hz!=10000000&&c.cir_hz!=20000000)return "CIR_HZ_10M_OR_20M";
  if(c.baud!=921600&&c.baud!=2000000)return "BAUD_921600_OR_2000000";
@@ -169,8 +171,8 @@ struct Record {
  bool p2_retry=false;uint32_t p2_first_errors=0;
  bool p2_repeat_used=false;
  uint8_t p2_primary_rx_mask=0,p2_primary_cir_mask=0;
- Frame p2_repeat_frame{};
- Tx p2_repeat_tx{};
+ Frame p1_repeat_frame{},p2_repeat_frame{};
+ Tx p1_repeat_tx{},p2_repeat_tx{};
  uint64_t initial_poll_tx=0;bool p1_retry=false;uint32_t p1_first_errors=0;
  uint32_t errors=0;Rx poll[2]{},probe[2][2]{},responses[2]{};Tx tx[3]{},response2_tx[2]{};Rx response2_rx[2]{},poll2_rx[2]{};Tx poll2_tx{};Frame poll_frame{},probe_frame[2]{},poll2_frame{};
  ResponseRxTrace response_trace[2]{};

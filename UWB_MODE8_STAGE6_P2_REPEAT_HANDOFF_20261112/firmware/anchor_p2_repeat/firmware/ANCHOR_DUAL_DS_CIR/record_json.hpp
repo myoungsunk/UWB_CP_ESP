@@ -10,7 +10,7 @@ inline unsigned rxTraceOffset(uint64_t timestamp,uint64_t begin){
  if(timestamp<begin||timestamp-begin>=unavailable-1)return unavailable;
  return unsigned(timestamp-begin)+1;
 }
-inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_P2_REPEAT_20261112":"D8_TAG_STAGE6_RELIABILITY_20261112";}
+inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_P1_DRAIN_OPS_20261113":"D8_TAG_STAGE6_RELIABILITY_20261112";}
 class Json {
  char* p_;size_t cap_;
 public:
@@ -102,6 +102,8 @@ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes
    j.add("]");
   }
   if(r.cfg.stage==6&&r.anchor){
+   j.add(",\"p1_repeat_frame\":");jsonFrame(j,r.p1_repeat_frame,r.p1_repeat_tx.ok);
+   j.add(",\"p1_repeat_tx\":");jsonTx(j,r.p1_repeat_tx);
    j.add(",\"p2_repeat_frame\":");jsonFrame(j,r.p2_repeat_frame,r.p2_repeat_tx.ok);
    j.add(",\"p2_repeat_tx\":");jsonTx(j,r.p2_repeat_tx);
   }else if(r.cfg.stage==6){
