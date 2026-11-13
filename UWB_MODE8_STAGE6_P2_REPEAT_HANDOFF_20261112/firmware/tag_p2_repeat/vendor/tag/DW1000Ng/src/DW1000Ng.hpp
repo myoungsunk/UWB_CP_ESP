@@ -105,11 +105,11 @@ inline constexpr Device device(uint8_t idx) { return Device(idx); }
     enum ClockInitStep : uint8_t {
         BeforeReset, ResetReleased, XtiSelected, DetectorEnabled, TrimWritten,
         LdoLoaded, LdeLoaded, LdeAuto, LdeDone, BeforeFinalAuto, FinalAuto,
-        FinalSettled, ClockInitStepCount
+        FinalSettled, PllCalibrationWritten, ClockInitStepCount
     };
     struct ClockInitSample {
         uint64_t status=0;
-        uint32_t ec_ctrl=0, pmsc_ctrl0=0, dev_id=0;
+        uint32_t ec_ctrl=0, pmsc_ctrl0=0, dev_id=0, pll_calibration_command=0;
         uint8_t rf_status=0, xtal_trim=0;
     };
     void initializeNoInterrupt(uint8_t idx, uint8_t ss, uint8_t rst, SPIClass& spi = SPI,

@@ -6,6 +6,9 @@
 #include <esp_timer.h>
 #include "engine.hpp"
 #include "rx_guard_policy.hpp"
+#if !DUAL8_ANCHOR
+#include "clock_history.hpp"
+#endif
 namespace dual8 {
 struct RegisterFault {
  const char* check=nullptr;
@@ -51,6 +54,9 @@ class Esp32Port:public Port {
  ClockTraceSample pre_ack_clock_[2], settled_clock_[2];
  bool clock_ack_[2]{};
  StartClockTrace* start_clock_trace_=nullptr;
+ ClockHistory clock_history_[2];
+ bool clock_history_active_=false, clock_history_fault_=false;
+ uint8_t clock_history_fault_radio_=0xff;
 #endif
  uint64_t last_status_[2]{};
  uint8_t sampled_[2]{};
@@ -76,10 +82,37 @@ class Esp32Port:public Port {
  uint64_t status(){
   last_status_[active_]=registerValue(0x0f,0xffff,5);
   sampled_[active_]|=2;
+#if !DUAL8_ANCHOR
+  if(clock_history_active_&&last_status_[active_]!=MASK40&&
+     !(last_status_[active_]&rxguard::CLOCK_PLL_LOSS)&&clock_history_[active_].due(nowUs()))
+   saveClockSample(ClockPhase::Running,last_status_[active_]);
+#endif
   return last_status_[active_];
  }
  void clear(uint64_t mask){uint8_t b[5];putLE(b,mask,5);write(0x0f,0xffff,b,5);}
 #if !DUAL8_ANCHOR
+ void saveClockSample(ClockPhase phase,uint64_t statusValue){
+  ClockSample sample;
+  sample.status=statusValue;sample.txn=diagnostic_txn_;sample.phase=phase;
+  read(0x28,0x2c,&sample.rf_status,1);
+  sample.esp_before_us=nowUs();
+  sample.system_time=registerValue(0x06,0xffff,5);
+  sample.esp_after_us=nowUs();
+  clock_history_[active_].push(sample);
+ }
+ void saveClockPair(ClockPhase phase,uint8_t faultRadio,uint64_t faultStatus){
+  const uint8_t previous=active_;
+  SPIporting::RxSpeedScope slow(true);
+  // Read the affected radio first. The two SPI samples are sequential.
+  for(uint8_t i=0;i<N;++i){
+   const uint8_t radio=faultRadio^i;
+   choose(radio);
+   const uint64_t value=i==0&&phase==ClockPhase::BeforeTrip
+       ?faultStatus:registerValue(0x0f,0xffff,5);
+   saveClockSample(phase,value);
+  }
+  choose(previous);
+ }
  ClockTraceSample sampleClock(){
   SPIporting::RxSpeedScope slow(true);
   ClockTraceSample sample;
@@ -143,6 +176,10 @@ class Esp32Port:public Port {
  void tripRegister(uint8_t i,uint64_t statusAtFault,const char* check,uint8_t reg,
                    uint16_t off,uint8_t bytes,uint64_t expected,uint64_t observed){
   auto& fault=register_fault_[i];
+#if !DUAL8_ANCHOR
+  const bool captureClock=clock_history_active_&&statusAtFault!=MASK40&&
+      (statusAtFault&rxguard::CLOCK_PLL_LOSS);
+#endif
   if(!fault.check){
    fault.check=check;fault.reg=reg;fault.offset=off;fault.bytes=bytes;
    fault.expected=expected;fault.first=observed;fault.at_us=nowUs();fault.txn=diagnostic_txn_;
@@ -152,7 +189,16 @@ class Esp32Port:public Port {
 #endif
    fault.reread_2mhz=registerValue(reg,off,bytes);
   }
+#if !DUAL8_ANCHOR
+  if(captureClock){
+   clock_history_fault_=true;clock_history_fault_radio_=i;clock_history_active_=false;
+   saveClockPair(ClockPhase::BeforeTrip,i,statusAtFault);
+  }
+#endif
   trip(i,statusAtFault);
+#if !DUAL8_ANCHOR
+  if(captureClock)saveClockPair(ClockPhase::AfterTrip,i,0);
+#endif
  }
  bool guard(uint8_t i,AntennaDelaySample* initial=nullptr){
   if(i>=N||latched_[i]||!ready_[i]){return false;}
@@ -261,6 +307,14 @@ public:
  void traceRx(RxWindowTrace* traces)override{window_trace_=traces;}
  bool faulted()const{return latched_[0]||latched_[1];}
 #if !DUAL8_ANCHOR
+ void beginClockHistory(bool enabled){
+  for(auto& history:clock_history_)history.reset();
+  clock_history_active_=enabled;clock_history_fault_=false;clock_history_fault_radio_=0xff;
+ }
+ void stopClockHistory(){clock_history_active_=false;}
+ bool clockHistoryFault()const{return clock_history_fault_;}
+ uint8_t clockHistoryFaultRadio()const{return clock_history_fault_radio_;}
+ const ClockHistory& clockHistory(uint8_t radio)const{return clock_history_[radio];}
  const AntennaInitTrace& antennaInitA()const{return antenna_init_a_;}
  const ClockTraceSample& vendorInitClock(unsigned i)const{return vendor_init_clock_[i];}
  const DW1000Ng::ClockInitSample& clockInitStep(unsigned i,unsigned step)const{return clock_steps_[i][step];}
@@ -285,6 +339,9 @@ public:
  }
 #endif
  bool initialize(){
+#if !DUAL8_ANCHOR
+  beginClockHistory(false);
+#endif
   for(unsigned i=0;i<N;++i){
    ready_[i]=false;
    const Pins p=pins(i);
@@ -315,6 +372,12 @@ public:
    ldo.before=DW1000Ng::getInitLdoTuneBefore();
    ldo.after=DW1000Ng::getInitLdoTuneAfter();
    ldo.kicked=DW1000Ng::wasInitLdoTuneKicked();
+   if(!clock_steps_[i][DW1000Ng::PllCalibrationWritten].pll_calibration_command){
+    SPIporting::RxSpeedScope slow(true);
+    const auto& sample=clock_steps_[i][DW1000Ng::PllCalibrationWritten];
+    tripRegister(uint8_t(i),sample.status,"PLL_CAL_XTI",0x36,0,1,1,sample.pmsc_ctrl0&0xffU);
+    initialized=false;continue;
+   }
    if(!settleInitClock(uint8_t(i))){initialized=false;continue;}
 #endif
    SPIporting::setSPIspeed(SPIClock::FAST);

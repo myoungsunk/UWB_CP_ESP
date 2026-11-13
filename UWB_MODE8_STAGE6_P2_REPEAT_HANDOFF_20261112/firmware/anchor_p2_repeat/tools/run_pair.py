@@ -65,6 +65,71 @@ def fresh_hello(link, identity, session, *, baud, period_us=None):
     return {"request": request, "hello": proof}
 
 
+
+def read_clock_history(link, stopped):
+    """Read the frozen Stage 6 history after correlated STOP, including on faults."""
+    boot, session = stopped["boot"], stopped["session"]
+    result = {}
+    for radio in range(2):
+        samples = []
+        expected = None
+        for offset in range(0, 16, 4):
+            link.send(f"CLOCKTRACE {radio} {offset}")
+            row = link.wait(lambda m: (
+                m.get("event") == "CLOCK_TRACE" and m.get("boot") == boot
+                and m.get("session") == session and m.get("radio") == radio
+                and m.get("offset") == offset), timeout=1, check_faults=False)
+            count, fault, fault_radio = (row.get(k) for k in ("count", "clock_fault", "fault_radio"))
+            chunk = row.get("samples")
+            if (type(count) is not int or not offset <= count <= 16 or type(fault) is not bool
+                    or type(fault_radio) is not int or fault_radio not in ((0, 1) if fault else (255,))
+                    or (expected is not None and expected != (count, fault, fault_radio))
+                    or not isinstance(chunk, list) or len(chunk) != min(4, count - offset)
+                    or any(not isinstance(s, list) or len(s) != 7
+                           or any(type(x) is not int for x in s) for s in chunk)):
+                raise ValueError(f"Tag clock history mismatch for radio {radio} at offset {offset}")
+            expected = (count, fault, fault_radio)
+            samples.extend(chunk)
+            if len(samples) == count:
+                break
+        result[str(radio)] = {"clock_fault": fault, "fault_radio": fault_radio, "samples": samples}
+    if (result["0"]["clock_fault"], result["0"]["fault_radio"]) != (
+            result["1"]["clock_fault"], result["1"]["fault_radio"]):
+        raise ValueError("Tag radios disagree on the clock fault identity")
+    fault_radio = result["0"]["fault_radio"]
+    for radio in range(2):
+        samples = result[str(radio)]["samples"]
+        phases = [sample[0] for sample in samples]
+        expected_phases = [0] * len(samples)
+        if fault_radio != 255:
+            if len(samples) < 2:
+                raise ValueError(f"Missing clock fault pair for tag radio {radio}")
+            expected_phases[-2:] = [1, 2]
+            if radio == fault_radio and not samples[-2][4] & (1 << 25):
+                raise ValueError("Clock fault sample is missing CLKPLL_LL")
+        if phases != expected_phases or any(sample[2] > sample[3] for sample in samples):
+            raise ValueError(f"Malformed clock history for tag radio {radio}")
+    return {"boot": boot, "session": session, "radios": result,
+            "sample_layout": ["phase", "txn", "esp_before_us", "esp_after_us",
+                              "sys_status", "rf_status", "sys_time"]}
+
+
+def verify_pll_calibration(link, boot):
+    """Check each radio's actual boot evidence before starting RF."""
+    samples = []
+    for radio in range(2):
+        link.send(f"PLLSTEP {radio} 12")
+        row = link.wait(lambda m: (
+            m.get("event") == "PLL_INIT_STEP" and m.get("boot") == boot
+            and m.get("radio") == radio and m.get("index") == 12), timeout=2)
+        if (row.get("step") != "pll_calibration_written" or row.get("sysstat1_command") != 0xE7950448
+                or type(row.get("pmsc_ctrl0")) is not int or row["pmsc_ctrl0"] & 3 != 1
+                or row.get("dev_id") != 0xDECA0130):
+            raise ValueError(f"Tag radio {radio} did not report SYSSTAT-1 calibration in INIT")
+        samples.append(row)
+    return samples
+
+
 def restore_default_baud(link, period_us, *, identity=None, session=None):
     if period_us < 300000:
         send_while_drained(link, "SET PERIOD_US 300000", lambda m: (
@@ -534,7 +599,11 @@ def main() -> int:
     p.add_argument("--calibration-profile", type=Path)
     p.add_argument("--rf-remeasure-limit", type=int, default=0, choices=range(0, 9),
                    help="After STOP, take at most this many separate Stage 6 exchanges for observed Probe misses")
+    p.add_argument("--require-tag-clock-evidence", action="store_true",
+                   help="Require SYSSTAT-1 boot proof and runtime trace for both tag radios")
     args = p.parse_args()
+    if args.require_tag_clock_evidence and args.stage != 6:
+        p.error("--require-tag-clock-evidence requires Stage 6")
     if not 1 <= args.count <= 100000 or not 100000 <= args.period_us <= 5000000:
         p.error("count or period out of bounds")
     if args.anchor == args.tag:
@@ -576,6 +645,9 @@ def capture(args, profile):
         raise FileExistsError("Output directory already contains a capture; choose a new directory")
     session = secrets.randbelow(0xffffffff)+1
     strict = args.stage == 6
+    require_clock = getattr(args, "require_tag_clock_evidence", False)
+    if require_clock and not strict:
+        raise ValueError("Tag clock evidence requires Stage 6")
     links: list[Link] = []
     receipt = {"session": session, "source": "serial_hardware_capture",
                "stage": args.stage, "period_us": args.period_us, "baud": args.baud,
@@ -599,6 +671,11 @@ def capture(args, profile):
             st = link.wait(lambda m: m.get("event") == "SELFTEST")
             if not st.get("pass"):
                 raise RuntimeError(f"{name}: SELFTEST failed: {st}")
+            if name == "tag":
+                if require_clock and h.get("clock_trace") != 1:
+                    raise ValueError("Tag image does not support required clock evidence")
+                if h.get("clock_trace") == 1:
+                    receipt["tag_pll_calibration"] = verify_pll_calibration(link, h["boot"])
             send_while_drained(link, f"SET STAGE {args.stage}",
                                lambda m: m.get("event") == "HELLO" and m.get("stage") == args.stage)
             if link.serial.baudrate != args.baud:
@@ -628,6 +705,9 @@ def capture(args, profile):
                         **setting, sigma=sigma), lambda m: m.get("event") == "HELLO")
                     if not h.get("hw_ok") or h.get("fault_latched"):
                         raise RuntimeError(f"{name}: calibration register readback failed")
+            if name == "tag" and "tag_pll_calibration" in receipt and any(
+                    row["boot"] != h["boot"] for row in receipt["tag_pll_calibration"]):
+                raise ValueError("Tag rebooted after SYSSTAT-1 verification")
             receipt[name+"_identity"] = h
         tag, anchor = links
         if strict and any(receipt[link.name+"_identity"].get("drain_protocol") != 1 for link in links):
@@ -690,6 +770,12 @@ def capture(args, profile):
                     state.update(acknowledged=True, session=ack.get('session'), stopped=ack)
                 except Exception as exc:
                     state['ack_error'] = repr(exc)
+            if (strict and link.name == "tag" and state["acknowledged"] and identity
+                    and identity.get("clock_trace") == 1 and state["session"] == session):
+                try:
+                    receipt["tag_clock_history"] = read_clock_history(link, state["stopped"])
+                except (KeyError, OSError, RuntimeError, TypeError, ValueError) as exc:
+                    receipt["tag_clock_history_error"] = repr(exc)
             if strict and state['acknowledged'] and identity:
                 drain_session = state['session']
                 drain_request = secrets.randbits(32) or 1
@@ -790,6 +876,13 @@ def capture(args, profile):
                 axes = {}
             receipt["pass"] = (receipt["pass"] and receipt["stage6"]["strict_gate"] and
                                axes == {"P1": args.count, "P2": args.count})
+        if require_clock:
+            history = receipt.get("tag_clock_history", {})
+            clock_ok = (len(receipt.get("tag_pll_calibration", ())) == 2
+                        and all(history.get("radios", {}).get(str(radio), {}).get("samples")
+                                for radio in (0, 1)))
+            receipt["tag_clock_evidence_pass"] = clock_ok
+            receipt["pass"] = receipt["pass"] and clock_ok
         try:
             if files_finalized:
                 receipt["file_sha256"] = capture_file_hashes(args.out)

@@ -307,6 +307,7 @@ constexpr uint16_t TC_SARL = 0x03;
 
 // FS_CTRL (for re-tuning only)
 constexpr uint16_t FS_CTRL = 0x2B;
+constexpr uint16_t FS_RES1_SUB = 0x00;
 constexpr uint16_t FS_PLLCFG_SUB = 0x07;
 constexpr uint16_t FS_PLLTUNE_SUB = 0x0B;
 constexpr uint16_t FS_XTALT_SUB = 0x0E;

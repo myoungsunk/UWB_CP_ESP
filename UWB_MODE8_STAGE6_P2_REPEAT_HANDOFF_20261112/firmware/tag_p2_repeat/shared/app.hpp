@@ -297,7 +297,7 @@ static void serviceDrain(){
  drainClean=quiet&&!sessionFailures();
  emitDrained(request,drainClean,quiet?(drainClean?"OK":"TRANSPORT_FAILURE"):"TIMEOUT");
 }
-static void hello(uint32_t request=0){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"drain_protocol\":1,\"silent_baud\":1,\"session\":%lu,\"hello_request\":%lu,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)session,(unsigned long)request,(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load());}
+static void hello(uint32_t request=0){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"drain_protocol\":1,\"silent_baud\":1,\"clock_trace\":%u,\"session\":%lu,\"hello_request\":%lu,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u}",role(),firmwareId(DUAL8_ANCHOR),DUAL8_ANCHOR?0U:1U,(unsigned long)session,(unsigned long)request,(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load());}
 static void formatFault(uint8_t radio,char (&out)[256]){
  const auto& f=port.registerFault(radio);
  if(!f.check){strcpy(out,"null");return;}
@@ -310,7 +310,7 @@ static void formatFault(uint8_t radio,char (&out)[256]){
 static const char* clockInitTrigger="boot";
 static const char* const clockStepNames[]={
  "before_reset","reset_released","xti_selected","detector_enabled","trim_written",
- "ldo_loaded","lde_loaded","lde_auto","lde_done","before_final_auto","final_auto","final_settled"
+ "ldo_loaded","lde_loaded","lde_auto","lde_done","before_final_auto","final_auto","final_settled","pll_calibration_written"
 };
 static_assert(sizeof clockStepNames/sizeof clockStepNames[0]==DW1000Ng::ClockInitStepCount,"clock step labels");
 #endif
@@ -332,21 +332,27 @@ static void emitAntennaInit(const char* trigger){
   const auto& before=port.preAckClock(i);
   const auto& after=port.settledClock(i);
   const auto& configured=port.configuredClock(i);
+  const auto& pll_cal=port.clockInitStep(i,DW1000Ng::PllCalibrationWritten);
   emit("{\"event\":\"PLL_INIT\",\"boot\":%lu,\"trigger\":\"%s\",\"radio\":%u,"
        "\"vendor_init\":[%llu,%u,%lu],\"pre_ack\":[%llu,%u,%lu],"
-       "\"acknowledged\":%s,\"settled\":[%llu,%u,%lu],\"configured\":[%llu,%u,%lu]}",
+       "\"acknowledged\":%s,\"settled\":[%llu,%u,%lu],\"configured\":[%llu,%u,%lu],"
+       "\"sysstat1_command\":%lu,\"sysstat1_pmsc_ctrl0\":%lu}",
        (unsigned long)boot,trigger,i,
        (unsigned long long)vendor.status,vendor.rf_status,(unsigned long)vendor.detector,
        (unsigned long long)before.status,before.rf_status,(unsigned long)before.detector,
        port.startupClockAcknowledged(i)?"true":"false",
        (unsigned long long)after.status,after.rf_status,(unsigned long)after.detector,
-       (unsigned long long)configured.status,configured.rf_status,(unsigned long)configured.detector);
+       (unsigned long long)configured.status,configured.rf_status,(unsigned long)configured.detector,
+       (unsigned long)pll_cal.pll_calibration_command,(unsigned long)pll_cal.pmsc_ctrl0);
  }
 #else
  (void)trigger;
 #endif
 }
 static void stop(uint32_t request=0){
+#if !DUAL8_ANCHOR
+ port.stopClockHistory();
+#endif
  active=false;remaining=0;idleAll();
  if(!DUAL8_ANCHOR&&port.faulted()){
   char a[256],b[256];formatFault(0,a);formatFault(1,b);
@@ -388,9 +394,35 @@ static void command(char*line){
   else emit("{\"event\":\"ERROR\",\"reason\":\"BAD_STOP_REQUEST\"}");
   return;
  }
- if(!strcmp(w[0],"HELP")){emit("{\"event\":\"HELP\",\"commands\":\"HELLO; SELFTEST; SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; DRAIN session boot request; RESET%s\"}",DUAL8_ANCHOR?"":"; DEVID 0|1; PLLSTEP radio index");return;}
+ if(!strcmp(w[0],"HELP")){emit("{\"event\":\"HELP\",\"commands\":\"HELLO; SELFTEST; SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; DRAIN session boot request; RESET%s\"}",DUAL8_ANCHOR?"":"; DEVID 0|1; PLLSTEP radio index; CLOCKTRACE radio offset");return;}
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
 #if !DUAL8_ANCHOR
+ if(!strcmp(w[0],"CLOCKTRACE")){
+  uint32_t radio,offset;
+  if(n!=3||!number(w[1],radio)||radio>=2||!number(w[2],offset)||offset>=ClockHistory::Capacity){
+   emit("{\"event\":\"ERROR\",\"reason\":\"BAD_CLOCK_TRACE\"}");return;
+  }
+  const auto& history=port.clockHistory(uint8_t(radio));
+  char rows[440];size_t used=0;rows[0]='\0';
+  for(unsigned i=offset;i<history.count()&&i-offset<ClockHistory::Chunk;++i){
+   const auto& s=history.at(i);
+   const int written=snprintf(rows+used,sizeof(rows)-used,
+       "%s[%u,%ld,%llu,%llu,%llu,%u,%llu]",i==offset?"":",",
+       unsigned(s.phase),long(s.txn),(unsigned long long)s.esp_before_us,
+       (unsigned long long)s.esp_after_us,(unsigned long long)s.status,
+       unsigned(s.rf_status),(unsigned long long)s.system_time);
+   if(written<0||size_t(written)>=sizeof(rows)-used){
+    emit("{\"event\":\"ERROR\",\"reason\":\"CLOCK_TRACE_ENCODING\"}");return;
+   }
+   used+=size_t(written);
+  }
+  emit("{\"event\":\"CLOCK_TRACE\",\"boot\":%lu,\"session\":%lu,\"radio\":%lu,"
+       "\"offset\":%lu,\"count\":%u,\"clock_fault\":%s,\"fault_radio\":%u,\"samples\":[%s]}",
+       (unsigned long)boot,(unsigned long)session,(unsigned long)radio,(unsigned long)offset,
+       history.count(),port.clockHistoryFault()?"true":"false",
+       unsigned(port.clockHistoryFaultRadio()),rows);
+  return;
+ }
  if(!strcmp(w[0],"PLLSTEP")){
   uint32_t i,k;
   if(n!=3||!number(w[1],i)||i>=2||!number(w[2],k)||k>=DW1000Ng::ClockInitStepCount){
@@ -400,11 +432,11 @@ static void command(char*line){
   const auto& ldo=port.clockInitLdo(i);
   emit("{\"event\":\"PLL_INIT_STEP\",\"boot\":%lu,\"trigger\":\"%s\",\"radio\":%u,\"index\":%u,\"step\":\"%s\","
        "\"status\":%llu,\"rf_status\":%u,\"ec_ctrl\":%lu,\"pmsc_ctrl0\":%lu,\"xtal_trim\":%u,\"dev_id\":%lu,"
-       "\"ldo_otp\":%lu,\"ldo_before\":%lu,\"ldo_after\":%lu,\"ldo_kicked\":%s}",
+       "\"ldo_otp\":%lu,\"ldo_before\":%lu,\"ldo_after\":%lu,\"ldo_kicked\":%s,\"sysstat1_command\":%lu}",
        (unsigned long)boot,clockInitTrigger,unsigned(i),unsigned(k),clockStepNames[k],
        (unsigned long long)s.status,unsigned(s.rf_status),(unsigned long)s.ec_ctrl,
        (unsigned long)s.pmsc_ctrl0,unsigned(s.xtal_trim),(unsigned long)s.dev_id,
-       (unsigned long)ldo.otp,(unsigned long)ldo.before,(unsigned long)ldo.after,ldo.kicked?"true":"false");
+       (unsigned long)ldo.otp,(unsigned long)ldo.before,(unsigned long)ldo.after,ldo.kicked?"true":"false",(unsigned long)s.pll_calibration_command);
   return;
  }
  if(!strcmp(w[0],"DEVID")){
@@ -503,12 +535,13 @@ static void command(char*line){
   session=s;remaining=count;targetCount=count;txn=0;peerBoot=0;periodMiss=0;writerMaxUs=0;nextStart=port.nowUs()+20000;runExpire=port.nowUs()+uint64_t(count)*config.period_us+10000000ULL;active=true;
 #if !DUAL8_ANCHOR
   port.clearRxEvidence();
+  port.beginClockHistory(config.stage==6);
 #endif
 #if !DUAL8_ANCHOR
   StartClockTrace clock;
   const bool armed=port.beginStartClockTrace(clock)&&port.arm(0)&&port.arm(1);
   port.endStartClockTrace();
-  if(!armed||!port.checkStartClocks(clock.after_arms)){active=false;hwOk=false;idleAll();}
+  if(!armed||!port.checkStartClocks(clock.after_arms)){port.stopClockHistory();active=false;hwOk=false;idleAll();}
   for(uint8_t i=0;i<2;++i){
    const auto& vendor=port.vendorInitClock(i);
    const auto& configured=port.configuredClock(i);
@@ -621,6 +654,9 @@ static void loop(){
  }
 #endif
  if(port.faulted()){
+#if !DUAL8_ANCHOR
+  port.stopClockHistory();
+#endif
   active=false;hwOk=false;idleAll();
   char a[256],b[256];formatFault(0,a);formatFault(1,b);
   emit("{\"event\":\"HARDWARE_FAULT_LATCHED\",\"session\":%lu,\"boot\":%lu,\"next_txn\":%lu,\"status_a\":%llu,\"status_b\":%llu,\"fault_a\":%s,\"fault_b\":%s}",
