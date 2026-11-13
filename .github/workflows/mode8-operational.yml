@@ -56,11 +56,11 @@ jobs:
       - name: Compile operational anchor with original pinned DW1000 library
         run: |
           cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat
-          python tools/build.py --role anchor
+          python tools/build.py --role anchor || { tail -150 dist/anchor/compile.log; exit 2; }
       - name: Compile original dual-DW1000 tag plus drain guard
         run: |
           cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat
-          python tools/build.py --role tag
+          python tools/build.py --role tag || { tail -150 dist/tag/compile.log; exit 2; }
       - name: Publish build proof
         if: always()
         uses: actions/upload-artifact@v4
