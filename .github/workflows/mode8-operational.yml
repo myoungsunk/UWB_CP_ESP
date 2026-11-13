@@ -1,0 +1,72 @@
+name: Mode8 operational integration
+on:
+  push:
+    branches:
+      - 'codex/mode8-operational-integration-*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  host-adversarial:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/operational
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Operational protocol and adverse-path tests
+        run: python -m unittest discover -s UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/operational/tests -p 'test_*.py' -v
+      - name: Verify original Mode 8 shared-header snapshots
+        run: |
+          python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/tools/sync_shared.py --check
+          python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/tools/sync_shared.py --check
+      - name: Portable C++ Mode 8 regression
+        run: |
+          cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat
+          python tools/host_qa.py
+
+  esp32-build:
+    runs-on: ubuntu-latest
+    needs: host-adversarial
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            .github
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: arduino/setup-arduino-cli@v2
+      - name: Exact ESP32 core 3.3.7
+        run: |
+          arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core install esp32:esp32@3.3.7 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+      - name: Compile operational anchor with original pinned DW1000 library
+        run: |
+          cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat
+          python tools/build.py --role anchor
+      - name: Compile original dual-DW1000 tag plus drain guard
+        run: |
+          cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat
+          python tools/build.py --role tag
+      - name: Publish build proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mode8-operational-build-receipts
+          path: |
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/dist/target_build_receipt.json
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/dist/anchor/compile.log
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/dist/target_build_receipt.json
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/dist/tag/compile.log
+          if-no-files-found: warn
