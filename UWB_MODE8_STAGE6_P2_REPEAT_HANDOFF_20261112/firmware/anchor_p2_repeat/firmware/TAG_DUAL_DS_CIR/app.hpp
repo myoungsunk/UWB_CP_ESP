@@ -254,15 +254,26 @@ static void writerError(const char* reason,bool fragmented,uint32_t seq,uint32_t
   reason,(unsigned long)seq,(unsigned long)txn);
  if(n>0&&size_t(n)<sizeof event)wire(1,event,size_t(n),nullptr,0,fragmented);
 }
+static void retireAck(uint8_t i){
+ ++ackRetired;
+ retireReplay(i);
+}
 static void noticeReplay(const RecordKey& key,bool ack){
  const uint64_t now=esp_timer_get_time();
+ int ready=-1;
  portENTER_CRITICAL(&replayMux);
- for(auto& slot:cache){
+ for(uint8_t i=0;i<POOL;++i){
+  auto& slot=cache[i];
   if(!slot.offer(key,ack,now))continue;
-  if(ack)++ackQueued;
+  if(ack){
+   ++ackQueued;
+   if(slot.takeAck())ready=i;
+  }
   break;
  }
  portEXIT_CRITICAL(&replayMux);
+ // Free completed records without waiting for an unrelated UART write.
+ if(ready>=0)retireAck(uint8_t(ready));
 }
 static void serviceReplay(char* json){
  for(uint8_t i=0;i<POOL;++i){
@@ -272,7 +283,7 @@ static void serviceReplay(char* json){
   const auto decision=slot.take(now);
   portEXIT_CRITICAL(&replayMux);
   if(decision==ReplayDecision::None)continue;
-  if(decision==ReplayDecision::Ack){++ackRetired;retireReplay(i);continue;}
+  if(decision==ReplayDecision::Ack){retireAck(i);continue;}
   const uint32_t sequence=slot.key.sequence, txn=recordAt(i).txn;
   if(decision==ReplayDecision::Expired){
    writerError("RECORD_ACK_TIMEOUT",true,sequence,txn);
@@ -280,15 +291,22 @@ static void serviceReplay(char* json){
   }
   const bool exhausted=slot.attempts>=REPLAY_LIMIT;
   const auto result=exhausted?WireResult::Encoding:writeRecord(recordAt(i),json,sequence);
-  if(result==WireResult::Ok){++slot.attempts;++retransmissions;continue;}
+  if(result==WireResult::Ok){
+   ++retransmissions;
+   portENTER_CRITICAL(&replayMux);
+   ++slot.attempts;
+   const bool acked=slot.finishReplay();
+   portEXIT_CRITICAL(&replayMux);
+   if(acked)retireAck(i);
+   continue;
+  }
   portENTER_CRITICAL(&replayMux);
   const bool alreadyAcked=slot.ack;
   slot.occupied=false;
   portEXIT_CRITICAL(&replayMux);
-  if(alreadyAcked)++ackRetired;
   if(!exhausted||!alreadyAcked)
    writerError(exhausted?"RECORD_REPLAY_EXHAUSTED":wireError(result),true,sequence,txn);
-  retireReplay(i);
+  if(alreadyAcked)retireAck(i);else retireReplay(i);
  }
 }
 static void writer(void*){
@@ -320,7 +338,9 @@ static void writer(void*){
      const uint64_t expires=uint64_t(esp_timer_get_time())+REPLAY_TIMEOUT_US;
      portENTER_CRITICAL(&replayMux);
      cache[i].expires=expires;
+     const bool acked=cache[i].takeAck();
      portEXIT_CRITICAL(&replayMux);
+     if(acked)retireAck(i);
     }else releaseRecord(i);
    }else{
     const uint32_t txn=r.txn;

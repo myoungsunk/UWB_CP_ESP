@@ -30,7 +30,7 @@ enum class ReplayDecision:uint8_t { None, Ack, Nack, Expired };
 
 struct ReplaySlot {
  RecordKey key{};
- bool occupied=false, ack=false, nack=false;
+ bool occupied=false, ack=false, nack=false, replaying=false;
  uint8_t attempts=0;
  // Zero while the initial send is still in progress.
  uint64_t expires=0;
@@ -41,12 +41,23 @@ struct ReplaySlot {
   if(nack)return false;
   nack=true;return true;
  }
+ // Caller holds the replay lock. The writer owns the record during either
+ // the initial send or a replay, so a concurrent ACK only marks it then.
+ bool takeAck(){
+  if(!occupied||!expires||replaying||!ack)return false;
+  occupied=false;
+  return true;
+ }
  ReplayDecision take(uint64_t now){
-  if(!occupied||!expires)return ReplayDecision::None;
-  if(ack){occupied=false;return ReplayDecision::Ack;}
+  if(!occupied||!expires||replaying)return ReplayDecision::None;
+  if(takeAck())return ReplayDecision::Ack;
   if(now>=expires){occupied=false;return ReplayDecision::Expired;}
-  if(nack){nack=false;return ReplayDecision::Nack;}
+  if(nack){nack=false;replaying=true;return ReplayDecision::Nack;}
   return ReplayDecision::None;
+ }
+ bool finishReplay(){
+  replaying=false;
+  return takeAck();
  }
 };
 

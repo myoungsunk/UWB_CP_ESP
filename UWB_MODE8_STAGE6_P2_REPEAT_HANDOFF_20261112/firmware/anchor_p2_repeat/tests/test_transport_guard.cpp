@@ -65,7 +65,9 @@ static void checkReplay(unsigned pool){
  assert(slot.take(99)==ReplayDecision::Nack);
  assert(slot.take(99)==ReplayDecision::None);
  assert(slot.offer(key,true,99));
- assert(slot.take(150)==ReplayDecision::Ack);
+ assert(slot.take(150)==ReplayDecision::None); // Replay still owns the record.
+ assert(slot.finishReplay());
+ assert(!slot.takeAck());
 
  std::vector<ReplaySlot> slots;
  for(unsigned i=0;i<pool;++i)slots.push_back(cacheAt({100,200,300,400+i},100));
@@ -79,6 +81,47 @@ static void checkReplay(unsigned pool){
  slot=cacheAt({100,200,300,500},100); // A reused index has a fresh sequence.
  assert(!slot.offer(key,true,1));
  assert(slot.take(101)==ReplayDecision::Expired);
+}
+
+static void checkAckReclaimsFullPoolDuringOtherWrite(){
+ constexpr uint64_t scheduled=1000000;
+ constexpr uint64_t deadline=1500000;
+ ReplaySlot slots[5];
+ for(unsigned i=0;i<5;++i)slots[i]=cacheAt({100,200,300,400+i},i==4?0:deadline);
+ // Run 06 txn 5: four accepted ACKs, all five slots occupied, and one
+ // UART write still in flight. The RF scheduler needs one free slot now.
+ unsigned reclaimed=0;
+ for(unsigned i=0;i<4;++i){
+  const RecordKey key(100,200,300,400+i);
+  assert(slots[i].offer(key,true,scheduled-2000));
+  reclaimed+=slots[i].takeAck();
+  assert(!slots[i].offer(key,true,scheduled));
+  assert(!slots[i].takeAck());
+ }
+ assert(reclaimed==4);
+ assert(slots[4].occupied&&!slots[4].takeAck());
+ const RecordKey inFlight(100,200,300,404);
+ assert(slots[4].offer(inFlight,true,scheduled));
+ assert(!slots[4].takeAck());
+ slots[4].expires=deadline;
+ assert(slots[4].takeAck());
+ assert(!slots[4].takeAck());
+
+ // ACK arriving during a NACK replay is deferred until writer completion.
+ auto replay=cacheAt(inFlight,deadline);
+ assert(replay.offer(inFlight,false,scheduled));
+ assert(replay.take(scheduled)==ReplayDecision::Nack);
+ assert(replay.offer(inFlight,true,scheduled));
+ assert(!replay.takeAck());
+ assert(replay.finishReplay());
+ assert(!replay.takeAck());
+
+ // Without a concurrent ACK a successful replay keeps its cache and expiry.
+ replay=cacheAt(inFlight,deadline);
+ assert(replay.offer(inFlight,false,scheduled));
+ assert(replay.take(scheduled)==ReplayDecision::Nack);
+ assert(!replay.finishReplay()&&replay.occupied);
+ assert(replay.take(deadline)==ReplayDecision::Expired);
 }
 
 static void testDecimalBoundaries(){
@@ -166,6 +209,7 @@ int main(){
  checkReplay(5);
  checkDrain();
  testDecimalBoundaries();
+ checkAckReclaimsFullPoolDuringOtherWrite();
  checkUart();
  std::puts("Stage 6 bounded UART and drain regressions passed");
 }
