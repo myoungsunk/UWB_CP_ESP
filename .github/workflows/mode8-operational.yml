@@ -69,6 +69,10 @@ jobs:
           path: |
             UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/dist/target_build_receipt.json
             UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/dist/anchor/compile.log
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/dist/anchor/*.bin
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/dist/anchor/*.elf
             UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/dist/target_build_receipt.json
             UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/dist/tag/compile.log
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/dist/tag/*.bin
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/tag_p2_repeat/dist/tag/*.elf
           if-no-files-found: warn
