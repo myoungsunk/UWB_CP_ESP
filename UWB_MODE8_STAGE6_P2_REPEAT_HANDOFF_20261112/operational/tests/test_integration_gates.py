@@ -49,6 +49,15 @@ class IntegrationGateTests(unittest.TestCase):
                     "const bool p2Ok=", "if(r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok))"):
             self.assertIn(key,ops)
 
+    def test_commit_is_not_direct_flash_overwrite(self):
+        ops=O.read_text()
+        self.assertIn('OPS_ARCHIVE_TMP="/m8_pending.tmp"',ops)
+        self.assertIn('LittleFS.open(OPS_ARCHIVE_TMP,"w")',ops)
+        self.assertIn("opsVerifyArchive(h,OPS_ARCHIVE_TMP)",ops)
+        self.assertIn("LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_PATH)",ops)
+        self.assertIn("LittleFS.exists(OPS_ARCHIVE_TMP)",ops)
+        self.assertIn("delete[] opsArchive;opsArchive=nullptr;",ops)
+
     def test_compiler_guards_in_both_sketches(self):
         for d,sketch in (("anchor_p2_repeat","ANCHOR"),("tag_p2_repeat","TAG")):
             f=BASE/f"firmware/{d}/firmware/{sketch}_DUAL_DS_CIR/app.hpp"
