@@ -153,7 +153,8 @@ class RouteController:
     def purge(self,index):
         entry=self.data["points"][index]
         status=self.anchor_status()
-        if entry["state"]=="PURGE_INTENT" and status.get("phase")=="IDLE" and status.get("file") is False:
+        if (entry["state"]=="PURGE_INTENT" and status.get("phase")=="IDLE" and
+            status.get("file") is False and status.get("boot")==entry["anchor_boot"]):
             # A previously logged PURGE may have succeeded before the host
             # updated its journal; never remeasure to discover that.
             entry["state"]="PURGED";self.save();return

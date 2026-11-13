@@ -38,6 +38,10 @@ jobs:
           build/host/test_transport_guard
           g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -Wno-unused-function -fno-pie -no-pie -fsanitize=address,undefined -Ishared tests/test_operational_anchor.cpp -o build/host/test_operational_anchor
           build/host/test_operational_anchor
+          for role in 0 1; do
+            g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie -fsanitize=address,undefined -DDUAL8_ANCHOR=$role -Ishared tests/test_operational_profile.cpp -o build/host/test_operational_profile_$role
+            build/host/test_operational_profile_$role
+          done
 
   esp32-build:
     runs-on: ubuntu-latest

@@ -69,6 +69,16 @@ class RouteTests(unittest.TestCase):
                     ctl.purge(0)
                     client.assert_not_called()
             self.assertEqual(row["state"],"PURGED")
+    def test_reboot_does_not_fake_lost_purge_completion(self):
+        with tempfile.TemporaryDirectory() as d:
+            ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
+            row=ctl.data["points"][0]
+            row.update(state="PURGE_INTENT",anchor_boot=5)
+            with patch.object(ctl,"anchor_status",return_value={
+                    "phase":"IDLE","file":False,"boot":6}):
+                with self.assertRaises(RouteHold):ctl.purge(0)
+            self.assertNotEqual(row["state"],"PURGED")
+
     def test_bad_remote_identity_prevents_purge(self):
         with tempfile.TemporaryDirectory() as d:
             ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
