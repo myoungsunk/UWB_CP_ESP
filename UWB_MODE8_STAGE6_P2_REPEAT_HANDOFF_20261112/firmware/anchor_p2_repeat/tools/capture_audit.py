@@ -58,7 +58,8 @@ P1_REPEAT_TAG = "D8_TAG_STAGE6_P1_REPEAT_20261113"
 P1_REPEAT_FIRMWARES = (P1_REPEAT_ANCHOR, P1_REPEAT_TAG)
 DRAIN_FIRMWARES = ("D8_ANCHOR_STAGE6_P1_DRAIN_20261113", "D8_TAG_STAGE6_P1_DRAIN_20261113")
 OPERATIONAL_DRAIN_FIRMWARES = ("D8_ANCHOR_STAGE6_P1_DRAIN_OPS_20261113", DRAIN_FIRMWARES[1])
-P1_REPEAT_PAIRS = (P1_REPEAT_FIRMWARES, DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES)
+P2_FRESH_FIRMWARES = ("D8_ANCHOR_STAGE6_P2_FRESH_OPS_20261113", "D8_TAG_STAGE6_P2_FRESH_20261113")
+P1_REPEAT_PAIRS = (P1_REPEAT_FIRMWARES, DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, P2_FRESH_FIRMWARES)
 REPEAT_PAIRS = ((P2_REPEAT_ANCHOR, P2_REPEAT_TAG), *P1_REPEAT_PAIRS)
 P2_REPEAT_FIRMWARES = tuple(firmware for pair in REPEAT_PAIRS for firmware in pair)
 TICK_MODULUS = 1 << 40
@@ -92,7 +93,8 @@ def _probe2_origin(anchor: dict, tag: dict):
     if (type(retry) is not bool or anchor.get('p2_retry', False) is not retry
             or retry and tag['stage'] != 6):
         return None
-    offset = tag['period_us']//2 + (28000 if retry else 0)
+    fresh = (anchor.get('firmware'), tag.get('firmware')) == P2_FRESH_FIRMWARES
+    offset = tag['period_us']//2 + ((42000 if fresh else 28000) if retry else 0)
     if p2_repeat_contract(anchor, tag):
         offset -= 14000
     target = anchor['tx'][0]['actual'] + offset * 638976//10
@@ -222,6 +224,32 @@ def p1_selection(anchor: dict, tag: dict):
         return None
 
 
+def _p2_tx_at(tx, frame, origin, delay):
+    actual = int.from_bytes(frame[47:52], 'little')
+    target = origin + delay * 638976 // 10
+    return (anchor_tx_matches(tx, 2, actual) and tx.get('attempted') is True
+            and tx.get('status', 0) & 0x80 and (target - actual) % TICK_MODULUS <= 511)
+
+
+def _p2_fresh_selection(anchor, tag, selected, tx, origin, identity):
+    retry = tag['p2_retry']  # _probe2_origin has already checked both flags.
+    if (selected[5] != 5 or selected[28] != 255 or selected[31] != 6
+            or struct.unpack_from('<5I', selected, 8) != identity
+            or int.from_bytes(selected[32:37], 'little') != anchor['tx'][0]['actual']
+            or int.from_bytes(selected[62:67], 'little') != (origin if retry else 0)
+            or not _p2_tx_at(tx, selected, origin, 28000)):
+        return False
+    prior_value, prior_tx = anchor['p2_primary_frame'], anchor['p2_primary_tx']
+    prior = _air(prior_value)
+    if prior is None:
+        return (prior_value in ('', None) and prior_tx.get('ok') is False
+                and (not tag['p2_primary_rx_mask'] if retry else prior_tx.get('attempted') is False))
+    primary_offset = tag['period_us']//2 - 14000 + 28000
+    return (retry and prior[:47] == selected[:47] and prior[52:62] == selected[52:62]
+            and prior[62:67] == bytes(5) and prior[67:92] == selected[67:92]
+            and _p2_tx_at(prior_tx, prior, anchor['tx'][0]['actual'], primary_offset))
+
+
 def p2_selection(anchor: dict, tag: dict):
     """Return the selected over-air frame and its independent anchor TX record."""
     try:
@@ -237,32 +265,36 @@ def p2_selection(anchor: dict, tag: dict):
                 or anchor['period_us'] != tag['period_us']):
             return None
 
-        repeat = _air(anchor['p2_repeat_frame'])
-        repeat_tx = anchor['p2_repeat_tx']
         identity = (tag['session'], tag['txn'], tag['config'], tag['peer_boot'], tag['boot'])
-        if (repeat is None or primary[5] != 5 or primary[28] != 255 or primary[31] != 6
-                or struct.unpack_from('<5I', primary, 8) != identity
-                or repeat[:47] != primary[:47] or repeat[52:92] != primary[52:92]):
-            return None
-
         origin_and_air = _probe2_origin(anchor, tag)
         if origin_and_air is None:
             return None
         origin, poll_air = origin_and_air
-        for delay, tx, frame in ((28000, primary_tx, primary), (42000, repeat_tx, repeat)):
-            actual = int.from_bytes(frame[47:52], 'little')
-            target = origin + delay * 638976//10
-            if (not anchor_tx_matches(tx, 2, actual) or tx.get('attempted') is not True
-                    or not tx.get('status', 0) & 0x80 or (target - actual) % TICK_MODULUS > 511):
-                return None
-
-        used = tag['p2_repeat_used']
         rx_mask, cir_mask = tag['p2_primary_rx_mask'], tag['p2_primary_cir_mask']
-        if (type(used) is not bool or type(rx_mask) is not int or type(cir_mask) is not int
-                or not 0 <= rx_mask <= 3 or not 0 <= cir_mask <= 3 or cir_mask & ~rx_mask
-                or used and rx_mask == cir_mask == 3
-                or selected != (repeat if used else primary)):
+        if (type(rx_mask) is not int or type(cir_mask) is not int
+                or not 0 <= rx_mask <= 3 or not 0 <= cir_mask <= 3 or cir_mask & ~rx_mask):
             return None
+        if (anchor['firmware'], tag['firmware']) == P2_FRESH_FIRMWARES:
+            used = tag['p2_retry']
+            if (selected != primary or used and rx_mask == cir_mask == 3
+                    or not _p2_fresh_selection(anchor, tag, selected, primary_tx, origin, identity)
+                    or any(probe2_response_ticks(anchor, tag, radio) is None for radio in range(2))):
+                return None
+            selected_tx = primary_tx
+        else:
+            repeat = _air(anchor['p2_repeat_frame'])
+            repeat_tx = anchor['p2_repeat_tx']
+            if (repeat is None or primary[5] != 5 or primary[28] != 255 or primary[31] != 6
+                    or struct.unpack_from('<5I', primary, 8) != identity
+                    or repeat[:47] != primary[:47] or repeat[52:92] != primary[52:92]
+                    or not _p2_tx_at(primary_tx, primary, origin, 28000)
+                    or not _p2_tx_at(repeat_tx, repeat, origin, 42000)):
+                return None
+            used = tag['p2_repeat_used']
+            if (type(used) is not bool or used and rx_mask == cir_mask == 3
+                    or selected != (repeat if used else primary)):
+                return None
+            selected_tx = repeat_tx if used else primary_tx
 
         selected_rx_mask = selected_cir_mask = 0
         sent_delta = (int.from_bytes(selected[47:52], 'little') - origin) % TICK_MODULUS
@@ -296,7 +328,7 @@ def p2_selection(anchor: dict, tag: dict):
         if (selected_cir_mask & ~selected_rx_mask or
                 (selected_rx_mask, selected_cir_mask) != ((3, 3) if used else (rx_mask, cir_mask))):
             return None
-        return selected, repeat_tx if used else primary_tx
+        return selected, selected_tx
     except (KeyError, IndexError, TypeError, ValueError, AttributeError):
         return None
 
@@ -566,7 +598,7 @@ def strict_shutdown_ok(receipt):
                 or not _is_nonce(session) or set(shutdown["roles"]) != {"anchor", "tag"}):
             return False
         firmware_pair = tuple(receipt[f"{role}_identity"]["firmware"] for role in ("anchor", "tag"))
-        if firmware_pair not in (DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES):
+        if firmware_pair not in (DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, P2_FRESH_FIRMWARES):
             return False
         for role in ("anchor", "tag"):
             state = shutdown["roles"][role]
@@ -693,8 +725,10 @@ def stage6_accounting(receipt, records, *, legacy_shutdown=False):
             "final_received": len(received),
             "both_endpoint_evidence_confirmed": len(verified),
         }
-        if probe == 2 or any(tag.get("firmware") in (P1_REPEAT_TAG, DRAIN_FIRMWARES[1]) for tag in tags.values()):
-            rf[f"P{probe}"]["primary_complete"] = len(verified - repeat_used)
+        if probe == 2 or any(tag.get("firmware") in (P1_REPEAT_TAG, DRAIN_FIRMWARES[1], P2_FRESH_FIRMWARES[1]) for tag in tags.values()):
+            fresh = {txn for txn in retry if probe == 2 and
+                     tags.get(txn, {}).get("firmware") == P2_FRESH_FIRMWARES[1]}
+            rf[f"P{probe}"]["primary_complete"] = len(verified - repeat_used - fresh)
             rf[f"P{probe}"]["repeat_restored_txns"] = sorted(verified & repeat_used)
     for role, indexed in (("anchor", anchors), ("tag", tags)):
         stats = receipt.get(f"{role}_capture", {})

@@ -13,7 +13,8 @@ import zlib
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"host"))
 from ops_archive import (parse, ArchiveError, HEADER, ROW_BYTES, PREFIX, TX, RX,
-                         MAGIC, VERSION, LEGACY_ROW_BYTES, LEGACY_PREFIX, LEGACY_TX, LEGACY_RX)
+                         MAGIC, VERSION, LEGACY_ROW_BYTES, LEGACY_PREFIX, LEGACY_TX, LEGACY_RX,
+                         to_anchor_record)
 from ops_client import OperationalClient, TransportError
 
 KEY=bytes(range(32))
@@ -25,7 +26,8 @@ def signed_ack(blob):
     mac=hmac.new(CUSTODY_KEY,msg.encode("ascii"),hashlib.sha256).hexdigest()
     return f"ACKFILE 789 {crc} {mac}"
 
-def archive(count=2, session=789, *, legacy=False):
+def archive(count=2, session=789, *, version=2):
+    legacy = version == 1
     rows=[]
     row_size=LEGACY_ROW_BYTES if legacy else ROW_BYTES
     for i in range(count):
@@ -44,7 +46,7 @@ def archive(count=2, session=789, *, legacy=False):
         assert len(body)==row_size-4
         rows.append(body+struct.pack("<I",zlib.crc32(body)))
     payload=b"".join(rows)
-    header=HEADER.pack(MAGIC,1 if legacy else VERSION,row_size,session,12345,321,count,zlib.crc32(payload),0)
+    header=HEADER.pack(MAGIC,version,row_size,session,12345,321,count,zlib.crc32(payload),0)
     header=header[:-4]+struct.pack("<I",zlib.crc32(header))
     return header+payload
 
@@ -56,15 +58,64 @@ def recalc(blob, *, body=True):
     struct.pack_into("<I",copy,28,zlib.crc32(copy[:32]))
     return bytes(copy)
 
+def complete_archive(version, *, has_extra):
+    blob = bytearray(archive(count=1, version=version))
+    row = HEADER.size
+    blob[row + 24] = 1
+    blob[row + 27] = 2  # Selected P2 is a fresh exchange.
+    tx_offset = row + PREFIX.size
+    frame_offset = tx_offset + 6 * TX.size + 4 * RX.size
+    # The selected fresh P2 and earlier primary are deliberately distinct.
+    for slot, (kind, tick) in enumerate(zip((1, 4, 8, 5, 5), (100, 200, 400, 500, 300))):
+        if slot == 4 and not has_extra:
+            continue
+        TX.pack_into(blob, tx_offset + slot * TX.size, tick, tick, 0x80, kind, 1, 0, 1)
+        air = bytearray(96)
+        air[:8] = b"FCB8" + bytes((1, kind, 96, 0))
+        struct.pack_into("<5I", air, 8, 789, 0, 321, 12345, 9876)
+        air[28], air[31] = 255, 6
+        pos = 32 if kind in (1, 8) else 47
+        air[pos:pos + 5] = tick.to_bytes(5, "little")
+        struct.pack_into("<I", air, 92, zlib.crc32(air[:92]))
+        offset = frame_offset + slot * 96
+        blob[offset:offset + 96] = air
+    row_crc = row + ROW_BYTES - 4
+    struct.pack_into("<I", blob, row_crc, zlib.crc32(blob[row:row_crc]))
+    return recalc(blob)
+
+
 class ArchiveTests(unittest.TestCase):
     def test_valid(self):
         got=parse(archive())
         self.assertEqual(got["count"],2)
         self.assertEqual([r["txn"] for r in got["rows"]],[0,1])
     def test_legacy_archive_is_readable(self):
-        result=parse(archive(legacy=True))
+        result=parse(archive(version=1))
         self.assertEqual(result["archive_schema"],"mode8.anchor.ops.v1")
         self.assertEqual(len(result["rows"][0]["air_frames"]),4)
+
+    def test_v3_preserves_selected_fresh_and_optional_primary_p2(self):
+        for has_primary in (False, True):
+            with self.subTest(has_primary=has_primary):
+                result = parse(complete_archive(VERSION, has_extra=has_primary))
+                self.assertEqual(result["archive_schema"], "mode8.anchor.ops.v3")
+                record = to_anchor_record(result["rows"][0], "anchor", 200000)
+                self.assertTrue(record["p2_retry"])
+                self.assertEqual(record["poll2_tx"]["actual"], 400)
+                self.assertEqual(record["tx"][2]["actual"], 500)
+                self.assertEqual(record["p2_primary_tx"]["ok"], has_primary)
+                self.assertEqual(record["p2_primary_tx"]["actual"], 300 if has_primary else 0)
+                self.assertEqual(bool(record["p2_primary_frame"]), has_primary)
+                self.assertNotIn("p2_repeat_tx", record)
+
+    def test_v2_retains_repeat_slot_and_requires_its_evidence(self):
+        with self.assertRaisesRegex(ArchiveError, "missing authenticated RF evidence"):
+            parse(complete_archive(2, has_extra=False))
+        result = parse(complete_archive(2, has_extra=True))
+        self.assertEqual(result["archive_schema"], "mode8.anchor.ops.v2")
+        record = to_anchor_record(result["rows"][0], "anchor", 200000)
+        self.assertEqual(record["p2_repeat_tx"]["actual"], 300)
+        self.assertNotIn("p2_primary_tx", record)
 
     def test_truncated_header(self):
         with self.assertRaises(ArchiveError):parse(bytes(31))
