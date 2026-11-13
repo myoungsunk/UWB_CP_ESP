@@ -62,6 +62,14 @@ class IntegrationGateTests(unittest.TestCase):
             self.assertIn("else profileStatus=ProfileStatus::Corrupt;", boot)
             self.assertLess(boot.index("prepareUartWire(desired)"), boot.index("hello();"))
 
+    def test_legacy_receiver_phase_getter_preserves_its_one_byte_buffer(self):
+        for root in ("anchor_p2_repeat", "tag_p2_repeat"):
+            for role in ("anchor", "tag"):
+                driver = BASE/"firmware"/root/"vendor"/role/"DW1000Ng/src/DW1000Ng.cpp"
+                body = driver.read_text(encoding="utf-8").split("uint8_t getRCphase() {", 1)[1].split("}", 1)[0]
+                self.assertNotRegex(body, r"data\s*\[\s*\d+\s*\]")
+                self.assertIn("bytesAsValue(data, LEN_RCphase_INDEX)", body)
+
     def test_rf_start_checks_wifi_even_when_internally_dispatched(self):
         ops = O.read_text(encoding="utf-8")
         start = ops[ops.index("static void opsLoop(){"):]

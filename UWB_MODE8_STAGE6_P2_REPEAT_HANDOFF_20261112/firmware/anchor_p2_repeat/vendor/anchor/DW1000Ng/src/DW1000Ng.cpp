@@ -2453,7 +2453,6 @@ uint8_t getRCphase() {
 		byte data[LEN_RCphase_INDEX];
 		memset(data, 0,LEN_RCphase_INDEX);
 		_readBytesFromRegister(RX_RCphase, RCphase_INDEX_SUB, data,LEN_RCphase_INDEX);
-                             data [8]=0;
 		return DW1000NgUtils::bytesAsValue(data, LEN_RCphase_INDEX);
 	}
 
