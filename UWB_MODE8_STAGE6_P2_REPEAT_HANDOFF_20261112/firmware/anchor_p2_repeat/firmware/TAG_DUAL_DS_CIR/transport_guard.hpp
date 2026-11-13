@@ -67,6 +67,58 @@ struct ReplaySlot {
  }
 };
 
+constexpr size_t CONTROL_REPLAY_BYTES=768;
+constexpr uint8_t CONTROL_REPLAY_LIMIT=2;
+
+// State for a bounded kind=1 control-frame cache. The app owns payload writes
+// and replay serialization. Callers protect these state methods with its lock.
+struct ControlReplaySlot {
+ RecordKey key{};
+ uint8_t payload[CONTROL_REPLAY_BYTES]{};
+ uint16_t size=0;
+ bool occupied=false, sending=false, nackPending=false, replaying=false;
+ uint8_t attempts=0;
+ uint64_t expires=0;
+
+ bool offerNack(const RecordKey& incoming,uint64_t now){
+  if(!occupied||!(key==incoming)||(!sending&&now>=expires)||attempts>=CONTROL_REPLAY_LIMIT||
+     nackPending)return false;
+  nackPending=true;
+  return true;
+ }
+ bool beginReplay(uint64_t now){
+  if(!occupied||sending||replaying||!nackPending)return false;
+  if(now>=expires||attempts>=CONTROL_REPLAY_LIMIT)return false;
+  nackPending=false;
+  replaying=true;
+  return true;
+ }
+ bool finishReplay(){
+  if(!occupied||!replaying)return false;
+  replaying=false;
+  ++attempts;
+  return true;
+ }
+ bool finishInitial(uint64_t expiry){
+  if(!occupied||!sending)return false;
+  sending=false;
+  expires=expiry;
+  return true;
+ }
+ uint8_t failSend(){
+  if(!occupied)return 0;
+  const uint8_t pending=uint8_t(nackPending)+uint8_t(replaying);
+  occupied=false;sending=false;nackPending=false;replaying=false;expires=0;size=0;
+  return pending;
+ }
+ bool expire(uint64_t now){
+  if(!occupied||sending||replaying||now<expires)return false;
+  const bool pending=nackPending;
+  occupied=false;nackPending=false;expires=0;size=0;
+  return pending;
+ }
+};
+
 enum class WireResult:uint8_t { Ok, Encoding, Timeout, Driver };
 
 template<class Uart>
@@ -99,8 +151,8 @@ class BoundedWire {
  WireResult finish(){return waitIdle();}
 };
 
-inline bool writerQuiet(uint32_t pending,unsigned awaiting,bool uartIdle){
- return !pending&&!awaiting&&uartIdle;
+inline bool writerQuiet(uint32_t pending,unsigned awaiting,bool uartIdle,unsigned controlReplayPending=0){
+ return !pending&&!awaiting&&!controlReplayPending&&uartIdle;
 }
 inline bool canChangeTransport(bool active,bool draining,bool sessionDrained,bool quiet){
  return !active&&!draining&&sessionDrained&&quiet;

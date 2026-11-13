@@ -42,14 +42,23 @@ static uint8_t* uartWire=nullptr;
 struct Out {
  uint8_t index=255;
  bool fragmented=false;
+ bool replayableControl=false;
+ RecordKey key{};
  char text[768]{};
 };
 static ReplaySlot cache[POOL]{};
+#if DUAL8_ANCHOR
+constexpr unsigned CONTROL_REPLAY_POOL=16;
+static ControlReplaySlot controlCache[CONTROL_REPLAY_POOL]{};
+#endif
 static portMUX_TYPE replayMux=portMUX_INITIALIZER_UNLOCKED;
 constexpr uint64_t REPLAY_TIMEOUT_US=1500000;
 constexpr unsigned REPLAY_LIMIT=2;
+constexpr uint64_t CONTROL_REPLAY_TIMEOUT_US=1500000;
 static std::atomic<unsigned> awaitingAck{0},retransmissions{0};
 static std::atomic<unsigned> ackQueued{0},ackRetired{0},peakAwaitingAck{0};
+static std::atomic<unsigned> controlReplayPending{0},controlNacksQueued{0},controlRetransmissions{0};
+static std::atomic<unsigned> controlReplayFailures{0},controlCacheMisses{0};
 static unsigned queueScheduleSkips=0;
 static std::atomic<uint32_t> pending{0},drops{0},sent{0},writerMaxUs{0};
 static uint32_t boot=0,session=0,txn=0,peerBoot=0,remaining=0,periodMiss=0;static uint64_t nextStart=0;
@@ -67,7 +76,10 @@ static const char*role(){return DUAL8_ANCHOR?"anchor":"tag";}
 static void emit(const char*fmt,...) __attribute__((format(printf,1,2)));
 static void emit(const char*fmt,...){
  if(!outQ){return;}
- Out o;o.fragmented=config.stage==6&&config.baud==2000000;va_list a;va_start(a,fmt);int n=vsnprintf(o.text,sizeof o.text,fmt,a);va_end(a);
+ Out o;o.fragmented=config.stage==6&&config.baud==2000000;
+ o.replayableControl=DUAL8_ANCHOR&&o.fragmented&&boot&&session;
+ o.key={boot,session,configId(config),0};
+ va_list a;va_start(a,fmt);int n=vsnprintf(o.text,sizeof o.text,fmt,a);va_end(a);
  if(n<0||size_t(n)>=sizeof o.text){++drops;return;}++pending;if(xQueueSend(outQ,&o,0)!=pdTRUE){--pending;++drops;}
 }
 #if DUAL8_ANCHOR
@@ -260,11 +272,12 @@ static void retireAck(uint8_t i){
 }
 static void noticeReplay(const RecordKey& key,bool ack){
  const uint64_t now=esp_timer_get_time();
- int ready=-1;
+ int ready=-1;bool found=false;
  portENTER_CRITICAL(&replayMux);
  for(uint8_t i=0;i<POOL;++i){
   auto& slot=cache[i];
   if(!slot.offer(key,ack,now))continue;
+  found=true;
   if(ack){
    ++ackQueued;
    if(slot.takeAck())ready=i;
@@ -274,7 +287,70 @@ static void noticeReplay(const RecordKey& key,bool ack){
  portEXIT_CRITICAL(&replayMux);
  // Free completed records without waiting for an unrelated UART write.
  if(ready>=0)retireAck(uint8_t(ready));
+ if(ack||found)return;
+#if DUAL8_ANCHOR
+ bool queued=false;
+ portENTER_CRITICAL(&replayMux);
+ for(auto& slot:controlCache){
+  if(slot.offerNack(key,now)){++controlNacksQueued;++controlReplayPending;queued=true;break;}
+ }
+ portEXIT_CRITICAL(&replayMux);
+ if(!queued)++controlCacheMisses;
+#endif
 }
+#if DUAL8_ANCHOR
+static int reserveControl(const RecordKey& key,uint32_t sequence,const char* text,size_t size){
+ if(size>CONTROL_REPLAY_BYTES)return -1;
+ const uint64_t now=esp_timer_get_time();int selected=-1;bool expiredPending=false;
+ portENTER_CRITICAL(&replayMux);
+ for(unsigned i=0;i<CONTROL_REPLAY_POOL;++i){
+  auto& slot=controlCache[i];
+  if(!slot.occupied){selected=int(i);break;}
+  if(!slot.sending&&!slot.replaying&&now>=slot.expires){expiredPending=slot.expire(now);selected=int(i);break;}
+ }
+ if(selected>=0){
+  auto& slot=controlCache[selected];slot=ControlReplaySlot{};
+  slot.key={key.boot,key.session,key.config,sequence};
+  memcpy(slot.payload,text,size);slot.size=uint16_t(size);
+  slot.occupied=true;slot.sending=true;
+ }
+ portEXIT_CRITICAL(&replayMux);
+ if(expiredPending){--controlReplayPending;++controlReplayFailures;++drops;}
+ return selected;
+}
+static void serviceControlReplay(){
+ const uint64_t now=esp_timer_get_time();
+ for(unsigned i=0;i<CONTROL_REPLAY_POOL;++i){
+  bool expiredPending=false,begin=false,exhaustedPending=false;uint32_t sequence=0;size_t size=0;
+  static char control[CONTROL_REPLAY_BYTES];
+  portENTER_CRITICAL(&replayMux);
+  auto& slot=controlCache[i];
+  expiredPending=slot.expire(now);
+  if(!expiredPending&&slot.occupied&&slot.nackPending&&slot.attempts>=CONTROL_REPLAY_LIMIT)
+   exhaustedPending=slot.failSend()!=0;
+  if(slot.beginReplay(now)){
+   sequence=slot.key.sequence;size=slot.size;
+   memcpy(control,slot.payload,size);begin=true;
+  }
+  portEXIT_CRITICAL(&replayMux);
+  if(expiredPending){--controlReplayPending;++controlReplayFailures;++drops;}
+  if(exhaustedPending){--controlReplayPending;++controlReplayFailures;++drops;}
+  if(!begin)continue;
+  const auto result=wireAt(sequence,1,control,size,nullptr,0,true);
+  portENTER_CRITICAL(&replayMux);
+  auto& finished=controlCache[i];
+  if(result==WireResult::Ok)finished.finishReplay();
+   else {
+   const uint8_t failed=finished.failSend();
+    if(failed>1)controlReplayPending.fetch_sub(unsigned(failed-1));
+  }
+  portEXIT_CRITICAL(&replayMux);
+  --controlReplayPending;
+  if(result==WireResult::Ok)++controlRetransmissions;
+  else {++controlReplayFailures;writerError(wireError(result),true,sequence,0);}
+ }
+}
+#endif
 static void serviceReplay(char* json){
  for(uint8_t i=0;i<POOL;++i){
   auto& slot=cache[i];
@@ -313,9 +389,33 @@ static void writer(void*){
  for(;;){
   const bool queued=xQueueReceive(outQ,&o,1)==pdTRUE;
   serviceReplay(json);
+#if DUAL8_ANCHOR
+  serviceControlReplay();
+#endif
   if(!queued)continue;
   if(o.index==255){
-   if(wire(1,o.text,strlen(o.text),nullptr,0,o.fragmented)!=WireResult::Ok)++drops;
+   const size_t size=strlen(o.text);const uint32_t sequence=recordSequence++;
+#if DUAL8_ANCHOR
+   int controlSlot=-1;
+   if(o.replayableControl){
+    controlSlot=reserveControl(o.key,sequence,o.text,size);
+    if(controlSlot<0){++controlReplayFailures;++drops;}
+   }
+   const auto result=wireAt(sequence,1,o.text,size,nullptr,0,o.fragmented);
+   if(controlSlot>=0){
+    portENTER_CRITICAL(&replayMux);
+    auto& slot=controlCache[controlSlot];
+    bool failedNack=false;
+    if(result==WireResult::Ok)slot.finishInitial(uint64_t(esp_timer_get_time())+CONTROL_REPLAY_TIMEOUT_US);
+    else failedNack=slot.failSend()!=0;
+    portEXIT_CRITICAL(&replayMux);
+    if(result!=WireResult::Ok&&failedNack)--controlReplayPending;
+   }
+  if(result!=WireResult::Ok){++drops;if(controlSlot>=0)++controlReplayFailures;}
+#else
+   const auto result=wireAt(sequence,1,o.text,size,nullptr,0,o.fragmented);
+   if(result!=WireResult::Ok)++drops;
+#endif
   }else{
    const uint8_t i=o.index;Record& r=recordAt(i);
    const uint32_t started=uint32_t(esp_timer_get_time()),sequence=recordSequence++;
@@ -398,16 +498,24 @@ static bool transportQuiet(){
  // Read pending first: the writer publishes replay state before dropping pending.
  const auto queued=pending.load();
  const auto held=awaitingAck.load();
+#if DUAL8_ANCHOR
+ const auto controls=controlReplayPending.load();
+ return writerQuiet(queued,held,!queued&&!held&&!controls&&UartTx::idle()>0,controls);
+#else
  return writerQuiet(queued,held,!queued&&!held&&UartTx::idle()>0);
+#endif
 }
 static bool transportChangeAllowed(){
  return canChangeTransport(active,drainRequest!=0,drainComplete,!active&&transportQuiet());
 }
 static void emitDrained(uint32_t request,bool ok,const char* reason){
  emit("{\"event\":\"DRAINED\",\"role\":\"%s\",\"boot\":%lu,\"session\":%lu,\"request\":%lu,"
-      "\"ok\":%s,\"rf_stopped\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"failures\":%lu,\"reason\":\"%s\"}",
+      "\"ok\":%s,\"rf_stopped\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"control_replay_pending\":%u,"
+      "\"record_retransmissions\":%u,\"control_retransmissions\":%u,\"control_nacks_queued\":%u,"
+      "\"control_replay_failures\":%u,\"control_cache_misses\":%u,\"failures\":%lu,\"reason\":\"%s\"}",
       role(),(unsigned long)boot,(unsigned long)session,(unsigned long)request,
-      ok?"true":"false",active?"false":"true",(unsigned long)pending.load(),awaitingAck.load(),
+      ok?"true":"false",active?"false":"true",(unsigned long)pending.load(),awaitingAck.load(),controlReplayPending.load(),
+      retransmissions.load(),controlRetransmissions.load(),controlNacksQueued.load(),controlReplayFailures.load(),controlCacheMisses.load(),
       (unsigned long)sessionFailures(),reason);
 }
 static void serviceDrain(){
