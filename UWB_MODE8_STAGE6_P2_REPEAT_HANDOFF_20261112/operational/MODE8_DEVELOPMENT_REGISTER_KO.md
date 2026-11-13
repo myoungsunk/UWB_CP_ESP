@@ -60,3 +60,7 @@
 | M26 | G0–G12 원시 증거 SHA·순서 검증 도구 | IMPLEMENTED(host) / FIELD HOLD: `ops_acceptance_gate.py`는 증거를 검산하지만 독립 실물 인수를 자동 PASS 처리하지 않음 |
 
 M17 선행 개선: LittleFS 가용 용량이 아카이브+8KiB 보수 여유보다 부족하면 RF 이전에 START 거부. 하드웨어 wear/정전 시험은 HOLD 유지.
+
+### M27 — 전용 유선 수집 시 앵커 Wi-Fi 재부팅 정책
+
+**IMPLEMENTED / FIELD HOLD**. 앵커 USB 정비 명령 `OPS NET AUTOSTART 0`은 NVS에 Wi-Fi 자동 연결 금지를 저장하고 현재 네트워크를 OFF로 만든다. 앱을 재부팅하거나 USB 포트를 다시 열어도 자동 Wi-Fi 복귀를 시도하지 않는다. 원격 정비로 돌아갈 때 USB에서 `OPS NET AUTOSTART 1`을 실행한다. 디폴트는 기존처럼 ON이며 단독 USB 실험에서만 OFF를 선택한다. 저장 실패·Wi-Fi OFF 실패를 정상으로 오인하지 않고 오류 응답으로 나타낸다. `testWifiAutostartIsPersistentAndExplicit` Mock, CI 타깃 빌드 검증만 수행. 실물 NVS·AP·UART 재부팅 반복 시험은 별도.

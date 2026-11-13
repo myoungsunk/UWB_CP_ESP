@@ -91,3 +91,39 @@ manifest `tests` 배열은 G0..G12 중 진행된 각 단계에
 `{"id":"G7","attempted":true,"pass":true,"evidence":[{"path":"raw/g7.uart","sha256":"<real 64-hex hash>"}]}`
 형식을 사용합니다. 존재하지 않는 로그·다른 파일 해시·선행단계 실패 후 PASS 선언은
 `FIELD_HOLD` 처리합니다. 개별 `pass` 표기는 실제 시험 원본을 대신하지 않습니다.
+
+## 추가 선택 시험 — 무중단 유선 측정 및 RF/ROS 동기화
+
+기본 G0–G12는 **원격 Wi-Fi OFF 단일 point 운영형**의 인수 계약이다. 아래 선택 시험은 장비 구성이 가능한 경우에만 진행하고, 기존 G 항목의 PASS로 대체하지 않는다.
+
+| ID | 대상 | 순차 절차 | 통과/중단 기준 |
+|---|---|---|---|
+| W01 | 두 USB 연결 연속 Mode8 1,000거래 | 앵커 `OPS NET AUTOSTART 0` 설정→재부팅·실제 Wi-Fi OFF 확인→두 USB 포트 확인→기본 dry-run→`ops_wired_continuous.py --execute --wifi-off-confirmed` | 1,000거래 P1/P2 공통축·전력그리드, 원본 anchor/tag RFB8 두 개와 SHA 증거. 이 시험은 원격 32거래 RAM 제한을 제거한 것이 아님 |
+| W02 | 영속 2Mbps 부팅·프로파일 | 앵커/태그 각 `PROFILE SAVE`, 100회 재부팅·2Mbps 초기 `HELLO/STOP` 수신, UART R8F6 원본 확인 | 부팅 초기 조각 손실·메모리 부족 0, RAM 부족 시 921600 진단 경로·무 RF 자동 START |
+| W03 | Wi-Fi 재시작 방지 | 앵커 유선 준비에서 `AUTOSTART 0` 후 100회 USB 재연결·전원 인가, `AUTOSTART 1` 후 TCP 정비 복원 | 0에서 Wi-Fi ON 없음, 1에서 명시적 연결, 측정 중 Wi-Fi OFF |
+| R01 | 이동 로봇 시간 정합 | anchor/tagA/tagB 각각 *동일 사건*의 `radio_ticks,ros_ns` 동기화 표본≥3, odom CSV, 실제 RF 선택 시각 CSV 제공→`ops_pose_align.py` | 각 도메인의 래핑·드리프트·잔차 검증, 실제 동기화 짝 없이 결과 생성 금지, 범위 밖 외삽 금지 |
+| R02 | P2 반복의 이동 시각 확인 | 반복된 P2 RF 수신 시각과 초기 P2를 일부러 교환한 악성 CSV→모듈별 시계·txn/probe 대조 | 다른 domain·ambiguous wrap/초과 잔차를 무효, 반복의 실제 관측 시각 사용 |
+| E01 | 현장 증거 자동검사 | `ops_acceptance_gate.py --manifest ... --evidence-root ... --expected-git-sha ... --out ...` 실행 | SHA 다른 영수증/미수행/선행 gate 실패는 HOLD. 모든 파일 해시가 맞더라도 `hardware_field_approved=false`: 담당자 실물 서명 별도 |
+
+### 유선 캡처 명령
+
+```bash
+# RF 송신 없음 (dry run)
+python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000
+# 앵커 USB에서 OPS NET AUTOSTART 0 실행하고 실제 OFF 확인 후
+python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000 --execute --wifi-off-confirmed
+```
+
+`PROFILE SAVE`로 초기 전송 속도를 2Mbps로 복원하는 장비에는 `--anchor-initial-baud 2000000`, `--tag-initial-baud 2000000`을 추가한다. 기본 921600으로 착각해 저장/분석을 시작하지 않는다. 유선과 원격 운영을 같은 세션에 섞지 않고 거래 시작 전에 역할·부팅·설정·최종 CRC를 반드시 대조한다.
+
+### 오프라인 odom 동기화 입력 형식
+
+- `time_sync.csv`: `domain,radio_ticks,ros_ns` (실제 동일 사건에 대응하는 독립 시계 짝)
+- `odom.csv`: `ros_ns,x_m,y_m,yaw_rad`
+- `rf_observations.csv`: `domain,session,txn,probe,radio_ticks,approx_ros_ns` (마지막 `approx_ros_ns`는 여러 40-bit 래핑 후보가 가능한 긴 실행에서만 필수)
+
+```bash
+python operational/host/ops_pose_align.py --sync time_sync.csv --odom odom.csv --rf rf_observations.csv --out captures/poses_aligned.csv
+```
+
+이 도구는 **시계 동기화 사건을 만들어 내지 않습니다**. 단순 ESP 수신 소프트웨어 시각을 RF 물리 시각과 동일시하지 않아야 합니다. 시험 데이터 없이 실제 TurtleBot GT/heading RMSE를 승인할 수 없습니다.
