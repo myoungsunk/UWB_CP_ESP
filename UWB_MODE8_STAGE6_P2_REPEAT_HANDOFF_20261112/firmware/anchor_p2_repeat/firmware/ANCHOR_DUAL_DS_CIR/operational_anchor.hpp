@@ -9,6 +9,7 @@ enum class OpsPhase : uint8_t { Idle, Armed, Measuring, Draining, Stored, Fault 
 static OpsPhase opsPhase=OpsPhase::Idle;
 static bool opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
 static bool opsTcpAuthorized=false,opsTcpOverflow=false,opsArchiveFailure=false;
+static bool opsWantNetwork=false;static uint32_t opsReconnectAtMs=0;
 static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0,opsLastAck=0;
 static uint64_t opsStartAt=0;
 static uint32_t opsOtaDeadline=0,opsTcpSince=0;
@@ -208,6 +209,7 @@ static bool opsSaveHexField(const char*name,const char*hex){
  p.end();memset(bytes,0,sizeof bytes);return ok;
 }
 static void opsWifiDown(){
+ opsWantNetwork=false;
  if(opsOtaOpen){ArduinoOTA.end();opsOtaOpen=false;}
  if(opsClient)opsClient.stop();
  opsServer.end();WiFi.disconnect(true,false);WiFi.mode(WIFI_OFF);
@@ -218,7 +220,7 @@ static bool opsWifiStart(){
     !opsNet.ssid[0]||!opsNet.pass[0])return false;
  WiFi.mode(WIFI_STA);WiFi.setAutoReconnect(false);
  WiFi.begin(opsNet.ssid,opsNet.pass);
- opsWifiUp=false;return true;
+ opsWifiUp=false;opsWantNetwork=true;opsReconnectAtMs=millis()+15000UL;return true;
 }
 static void opsTcpReply(const char*line){
  if(opsClient&&opsClient.connected()){opsClient.print(line);opsClient.print('\n');}
@@ -396,6 +398,8 @@ static void opsSetup(){
  opsFsOk=LittleFS.begin(false); // NO autoformat; preserve existing flash data.
  opsLoadNet();opsPhase=opsFilePending()?OpsPhase::Stored:OpsPhase::Idle;
  WiFi.mode(WIFI_OFF);
+ opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsReconnectAtMs=millis()+2000UL;
 }
 static bool opsUsbCommand(const char*line){
  if(strncmp(line,"OPS",3)||!(line[3]==' '||line[3]==0))return false;
@@ -454,6 +458,14 @@ static void opsLoop(){
   if(active||opsFilePending()||int32_t(millis()-opsOtaDeadline)>=0){
    ArduinoOTA.end();opsOtaOpen=false;
   }else ArduinoOTA.handle();
+ }
+ // Reconnect only in maintenance after boot or completed archival commit.
+ // Never retry Wi-Fi while RF is active or an offline run is armed.
+ if(opsWantNetwork&&!active&&opsPhase!=OpsPhase::Armed&&
+    opsPhase!=OpsPhase::Measuring&&opsPhase!=OpsPhase::Draining&&
+    WiFi.status()!=WL_CONNECTED&&
+    int32_t(millis()-opsReconnectAtMs)>=0&&opsRecordsDrained()){
+   opsWifiStart();
  }
  if(WiFi.status()==WL_CONNECTED&&!opsWifiUp&&!active){
   opsServer.begin();opsWifiUp=true;
