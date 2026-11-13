@@ -58,6 +58,8 @@
 | D06c | CRC가 맞는 아카이브에서 TX 시각 또는 부팅 ID 변조 | Pi 양단 대조 실패, ACKFILE 차단 |
 | D06d | 단독 GET에 --ack 또는 get_archive(ack=True) 사용 | 페어 감사 전 승인 경로 거부 |
 | D06e | 이전 boot/session/config의 active HELLO 삽입 | 태그 START 오승인 0 |
+| D06f | TCP 음수·32비트 초과·추가 인자 START/ACKFILE/GET/OTA | 상태 변경·삭제 승인 0, 명시적 오류 |
+| D06g | Wi-Fi OFF 실패나 예약 START 취소 100회 반복 | 아직 시작하지 않은 32거래 RAM이 해제됨, RF 0회 |
 | D07 | GET 파일 중간 단절과 2차 다운로드 | 원본 CRC·파일 SHA 동일, 받기 전 ACK 금지 |
 | D08 | 저장되지 않은 파일의 ACKFILE/PURGE | 거부. 성공 다운로드 후 명시적 PURGE만 가능 |
 | D09 | 보존 파일이 있는 상태 새 START/OTA | 거부 |

@@ -81,6 +81,18 @@ static void checkReplay(unsigned pool){
  assert(slot.take(101)==ReplayDecision::Expired);
 }
 
+static void testDecimalBoundaries(){
+ uint32_t out=17;
+ assert(parseDecimalU32("0",out)&&out==0);
+ assert(parseDecimalU32("00042",out)&&out==42);
+ assert(parseDecimalU32("4294967295",out)&&out==0xffffffffU);
+ for(const char* invalid:{"", "-1", "+1", " 1", "1 ", "1.0",
+                          "1e2", "4294967296", "999999999999999999999999"}){
+  assert(!parseDecimalU32(invalid,out));
+ }
+ assert(!parseDecimalU32(nullptr,out));
+}
+
 static void checkDrain(){
  assert(!writerQuiet(1,0,true)); // In-flight writer is included in pending.
  assert(!writerQuiet(0,1,true)); // STOP alone does not retire ACK cache.
@@ -153,6 +165,7 @@ int main(){
  checkReplay(3);
  checkReplay(5);
  checkDrain();
+ testDecimalBoundaries();
  checkUart();
  std::puts("Stage 6 bounded UART and drain regressions passed");
 }

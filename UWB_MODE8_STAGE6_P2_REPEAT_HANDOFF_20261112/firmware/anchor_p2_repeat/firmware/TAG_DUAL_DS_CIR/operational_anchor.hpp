@@ -82,11 +82,16 @@ static void opsRequestNetwork(){
  opsReconnectAtMs=millis()+1000UL;
 }
 static void opsFail(const char* reason){
+ // An unstarted reservation has no acquired RF data. Release its RAM
+ // if the Wi-Fi-off/start gate fails, retaining any committed files.
+ if(opsPhase==OpsPhase::Armed&&!active){delete[] opsArchive;opsArchive=nullptr;}
  opsPhase=OpsPhase::Fault;opsFailure=reason;opsRequestNetwork();
 }
 static void opsCancelScheduledStart(){
  if(opsPhase!=OpsPhase::Armed)return;
  // Explicit USB STOP cancels an accepted TCP START before the RF deadline.
+ // No RF measurement was started, so no archive evidence can be lost.
+ delete[] opsArchive;opsArchive=nullptr;
  opsPhase=OpsPhase::Idle;opsSession=0;opsCount=0;opsRows=0;opsStartAt=0;
  opsRequestNetwork();
 }
@@ -414,13 +419,19 @@ static void opsTcpCommand(char *line){
  if(!opsTcpAuthorized){
   if(!strcmp(op,"AUTH")){
    char*key=strtok_r(nullptr," \r\t",&save);
-   if(key&&opsHmac(key)){opsTcpAuthorized=true;opsTcpReply("AUTH_OK");}
+   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
+   if(!extra&&key&&opsHmac(key)){opsTcpAuthorized=true;opsTcpReply("AUTH_OK");}
    else {opsTcpReply("AUTH_FAIL");opsClient.stop();}
   }else opsTcpReply("AUTH_REQUIRED");
   return;
  }
- if(!strcmp(op,"STATUS")){opsTcpStatus();return;}
+ if(!strcmp(op,"STATUS")){
+  if(strtok_r(nullptr," \r\t",&save))opsTcpReply("ERROR EXTRA_ARGS");
+  else opsTcpStatus();
+  return;
+ }
  if(!strcmp(op,"GET")){
+  if(strtok_r(nullptr," \r\t",&save)){opsTcpReply("ERROR EXTRA_ARGS");return;}
   if(!opsDownload())opsTcpReply("ERROR GET_FAILED");
   return;
  }
@@ -428,13 +439,9 @@ static void opsTcpCommand(char *line){
   char*raw=strtok_r(nullptr," \r\t",&save);
   char*rawCrc=strtok_r(nullptr," \r\t",&save);
   char*extra=strtok_r(nullptr," \r\t",&save);
-  char*end=nullptr;
-  const unsigned long id=raw?strtoul(raw,&end,10):0;
-  const bool idOk=raw&&end&&!*end&&id&&id<=0xffffffffUL;
-  const unsigned long crc=rawCrc?strtoul(rawCrc,&end,10):0;
-  const bool crcOk=rawCrc&&end&&!*end&&crc<=0xffffffffUL;
+  uint32_t id=0,crc=0;
   OpsArchiveHeader h;
-  if(!idOk||!crcOk||extra||!opsReadHeader(h)||
+  if(!parseDecimalU32(raw,id)||!id||!parseDecimalU32(rawCrc,crc)||extra||!opsReadHeader(h)||
      !opsVerifyArchive(h)||h.session!=id||h.body_crc!=crc||
      !(opsDownloaded==opsIdentity(h))){
     opsTcpReply("ERROR ACKFILE");return;
@@ -452,14 +459,17 @@ static void opsTcpCommand(char *line){
   else opsTcpReply("ERROR NVS");
   return;
  }
- if(!strcmp(op,"PURGE")){opsTcpReply(opsEraseAcked()?"PURGE_OK":"ERROR UNACKED_FILE");return;}
+ if(!strcmp(op,"PURGE")){
+  if(strtok_r(nullptr," \r\t",&save)){opsTcpReply("ERROR EXTRA_ARGS");return;}
+  opsTcpReply(opsEraseAcked()?"PURGE_OK":"ERROR UNACKED_FILE");return;
+ }
  if(!strcmp(op,"START")){
-  char*a=strtok_r(nullptr," \r\t",&save),*b=strtok_r(nullptr," \r\t",&save),*end=nullptr;
-  const unsigned long sid=a?strtoul(a,&end,10):0;
-  if(!a||!end||*end||!sid||sid>0xffffffffUL){opsTcpReply("ERROR BAD_SESSION");return;}
-  const unsigned long count=b?strtoul(b,&end,10):0;
-  if(!b||!end||*end||!count||count>OPS_ARCHIVE_MAX||
-     !opsPlan(uint32_t(sid),uint32_t(count))){opsTcpReply("ERROR START_GUARD");return;}
+  char*a=strtok_r(nullptr," \r\t",&save),*b=strtok_r(nullptr," \r\t",&save);
+  char*extra=strtok_r(nullptr," \r\t",&save);
+  uint32_t sid=0,count=0;
+  if(!parseDecimalU32(a,sid)||!sid){opsTcpReply("ERROR BAD_SESSION");return;}
+  if(!parseDecimalU32(b,count)||!count||count>OPS_ARCHIVE_MAX||extra||
+     !opsPlan(sid,count)){opsTcpReply("ERROR START_GUARD");return;}
   if(!opsTcpReply("START_ACCEPTED_WIFI_OFF")){opsCancelScheduledStart();return;}
   delay(15);
   if(!opsWifiDown()){opsFail("WIFI_OFF_FAILED");return;}
@@ -467,9 +477,10 @@ static void opsTcpCommand(char *line){
   return;
  }
  if(!strcmp(op,"OTA")){
-  char*a=strtok_r(nullptr," \r\t",&save),*end=nullptr;
-  const unsigned long s=a?strtoul(a,&end,10):0;
-  opsTcpReply(a&&end&&!*end&&opsOtaStart(uint32_t(s))?"OTA_WINDOW_OPEN":"ERROR OTA_GUARD");
+  char*a=strtok_r(nullptr," \r\t",&save);
+  const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
+  uint32_t seconds=0;
+  opsTcpReply(!extra&&parseDecimalU32(a,seconds)&&opsOtaStart(seconds)?"OTA_WINDOW_OPEN":"ERROR OTA_GUARD");
   return;
  }
  opsTcpReply("ERROR UNKNOWN_COMMAND");

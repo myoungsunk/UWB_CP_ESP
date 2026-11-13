@@ -4,6 +4,20 @@
 
 namespace dual8app {
 
+// Strict decimal parser for TCP inputs. strtoul can accept signed values
+// and saturate on overflow; neither is valid for a Mode 8 32-bit identifier.
+inline bool parseDecimalU32(const char* str,uint32_t& out){
+ if(!str||!*str)return false;
+ uint64_t n=0;
+ for(const char* p=str;*p;++p){
+  if(*p<'0'||*p>'9')return false;
+  n=n*10+uint64_t(*p-'0');
+  if(n>0xffffffffULL)return false;
+ }
+ out=uint32_t(n);return true;
+}
+
+
 struct RecordKey {
  uint32_t boot, session, config, sequence;
  RecordKey(uint32_t b=0,uint32_t s=0,uint32_t c=0,uint32_t q=0):

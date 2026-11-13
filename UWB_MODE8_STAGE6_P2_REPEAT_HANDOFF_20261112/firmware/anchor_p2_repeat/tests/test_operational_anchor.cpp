@@ -1,4 +1,5 @@
 #include "core.hpp"
+#include "transport_guard.hpp"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
@@ -187,18 +188,39 @@ static void testRecovery(){
  assert(opsPhase==OpsPhase::Idle);
  assert(LittleFS.files[OPS_ARCHIVE_QUARANTINE]==bytes);
 }
+static void testInvalidTcpNumbers(){
+ opsPhase=OpsPhase::Idle;active=false;WiFi.selected=WIFI_STA;
+ connect();
+ for(const char* cmd:{"START -1 1","START +1 1","START 4294967296 1",
+                       "START 12 1 EXTRA","START 13 -1","START 1 4294967296"}){
+  tcp(cmd);assert(opsPhase==OpsPhase::Idle&&starts==0);
+ }
+ for(const char* cmd:{"ACKFILE -1 0","ACKFILE 4294967296 0",
+                      "ACKFILE 23 -1","ACKFILE 23 4294967296",
+                      "ACKFILE 23 0 EXTRA"}){
+  tcp(cmd);assert(opsClient.written=="ERROR ACKFILE\n");
+ }
+ tcp("GET EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
+ tcp("PURGE EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
+ tcp("STATUS EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
+ tcp("OTA +60");assert(opsClient.written=="ERROR OTA_GUARD\n");
+ tcp("OTA 60 EXTRA");assert(opsClient.written=="ERROR OTA_GUARD\n");
+}
+
 static void testWifiStart(){
  config.stage=6;config.period_us=200000;config.baud=2000000;
  WiFi.selected=WIFI_STA;WiFi.rejectOff=true;
  connect();tcp("START 80 1");
  assert(opsPhase==OpsPhase::Fault&&std::string(opsFailure)=="WIFI_OFF_FAILED");
+ assert(opsArchive==nullptr);
  nowUs+=1000000;opsLoop();assert(starts==0);
  opsPhase=OpsPhase::Idle;WiFi.rejectOff=false;connect();tcp("START 81 1");
  assert(opsPhase==OpsPhase::Armed);assert(WiFi.selected==WIFI_OFF);
  WiFi.selected=WIFI_STA;nowUs+=1000000;opsLoop();
  assert(starts==0&&std::string(opsFailure)=="WIFI_OFF_LOST");
  opsPhase=OpsPhase::Idle;connect();tcp("START 82 1");
- opsCancelScheduledStart();nowUs+=1000000;opsLoop();assert(starts==0);
+ opsCancelScheduledStart();assert(opsArchive==nullptr);
+ nowUs+=1000000;opsLoop();assert(starts==0);
  connect();tcp("START 83 1");
  nowUs+=1000000;opsLoop();assert(starts==1&&opsPhase==OpsPhase::Measuring);
  delete[] opsArchive;opsArchive=nullptr;
@@ -208,6 +230,6 @@ static void testWifiStart(){
 int main(){
  using namespace dual8app;
  opsFsOk=true;
- testApproval();testRecovery();testWifiStart();
+ testApproval();testRecovery();testInvalidTcpNumbers();testWifiStart();
  std::puts("PASS operational firmware mock: ACK reuse, journal recovery, Wi-Fi start guards");
 }
