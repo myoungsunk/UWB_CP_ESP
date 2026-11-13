@@ -43,6 +43,12 @@ static std::atomic<uint32_t> pending{0},drops{0},sent{0},writerMaxUs{0};
 static uint32_t boot=0,session=0,txn=0,peerBoot=0,remaining=0,periodMiss=0;static uint64_t nextStart=0;
 static uint64_t runExpire=0;static uint32_t targetCount=0;
 static bool active=false,hwOk=false;static uint32_t recordSequence=0;
+static std::atomic<bool> opsWriterBusy{false};
+static bool opsRecordsDrained(){
+ return !active&&pending.load(std::memory_order_acquire)==0&&awaitingAck.load(std::memory_order_acquire)==0
+  &&!opsWriterBusy.load(std::memory_order_acquire)&&freeQ&&outQ&&uxQueueMessagesWaiting(freeQ)==POOL;
+}
+
 static const char*role(){return DUAL8_ANCHOR?"anchor":"tag";}
 static void emit(const char*fmt,...) __attribute__((format(printf,1,2)));
 static void emit(const char*fmt,...){
@@ -207,13 +213,14 @@ static void writer(void*){
  static char json[JSON_MAX+1];Out o;ReplaySlot cache[POOL]{};
  for(;;){
   const bool queued=xQueueReceive(outQ,&o,pdMS_TO_TICKS(10))==pdTRUE;
+  opsWriterBusy.store(true,std::memory_order_release);
   const uint64_t now=uint64_t(esp_timer_get_time());
   for(uint8_t i=0;i<POOL;++i)if(cache[i].occupied&&now>=cache[i].expires){
    const uint32_t seq=cache[i].sequence,txn=recordAt(i).txn;
    retireReplay(cache[i],i);
    writerError("RECORD_ACK_TIMEOUT",true,seq,txn);
   }
-  if(!queued)continue;
+  if(!queued){opsWriterBusy.store(false,std::memory_order_release);continue;}
   if(o.action!=WriterAction::RecordOrEvent){
    for(uint8_t i=0;i<POOL;++i){
     auto& slot=cache[i];
@@ -248,6 +255,7 @@ static void writer(void*){
    if(elapsed>writerMaxUs)writerMaxUs=elapsed;
   }
   --pending;
+  opsWriterBusy.store(false,std::memory_order_release);
  }
 }
 static int reserve(bool countDrop=true){
@@ -341,6 +349,13 @@ static void command(char*line){
 #endif
   "SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; RESET\"}");return;}
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
+ if((!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
+      !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))
+      &&!opsRecordsDrained()){
+  emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\",\"session\":%lu,\"pending\":%lu,\"awaiting_ack\":%u}",
+    (unsigned long)session,(unsigned long)pending.load(),awaitingAck.load());
+  return;
+ }
  if(!strcmp(w[0],"RESET")&&n==1){idleAll();hwOk=port.initialize();hello();return;}
  if(!strcmp(w[0],"SELFTEST")&&n==1){
 #if DUAL8_ANCHOR
