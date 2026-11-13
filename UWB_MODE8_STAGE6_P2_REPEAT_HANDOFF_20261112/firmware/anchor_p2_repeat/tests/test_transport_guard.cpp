@@ -107,6 +107,13 @@ static void checkAckReclaimsFullPoolDuringOtherWrite(){
  assert(slots[4].takeAck());
  assert(!slots[4].takeAck());
 
+ auto failedInitial=cacheAt(inFlight,0);
+ assert(failedInitial.offer(inFlight,true,scheduled));
+ assert(!failedInitial.takeAck());
+ assert(failedInitial.cancelSend()); // Account for ACK even if the UART send fails.
+ assert(!failedInitial.occupied&&!failedInitial.takeAck());
+ assert(!failedInitial.offer(inFlight,true,scheduled));
+
  // ACK arriving during a NACK replay is deferred until writer completion.
  auto replay=cacheAt(inFlight,deadline);
  assert(replay.offer(inFlight,false,scheduled));

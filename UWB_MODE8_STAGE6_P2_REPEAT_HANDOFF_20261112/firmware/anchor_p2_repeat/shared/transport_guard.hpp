@@ -59,6 +59,12 @@ struct ReplaySlot {
   replaying=false;
   return takeAck();
  }
+ // An unsuccessful send releases storage but still accounts for a host
+ // ACK already accepted. The caller separately records the wire failure.
+ bool cancelSend(){
+  occupied=false;
+  return ack;
+ }
 };
 
 enum class WireResult:uint8_t { Ok, Encoding, Timeout, Driver };

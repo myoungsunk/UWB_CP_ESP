@@ -301,8 +301,7 @@ static void serviceReplay(char* json){
    continue;
   }
   portENTER_CRITICAL(&replayMux);
-  const bool alreadyAcked=slot.ack;
-  slot.occupied=false;
+  const bool alreadyAcked=slot.cancelSend();
   portEXIT_CRITICAL(&replayMux);
   if(!exhausted||!alreadyAcked)
    writerError(exhausted?"RECORD_REPLAY_EXHAUSTED":wireError(result),true,sequence,txn);
@@ -344,13 +343,16 @@ static void writer(void*){
     }else releaseRecord(i);
    }else{
     const uint32_t txn=r.txn;
+    bool acked=false;
     if(fragmented){
      portENTER_CRITICAL(&replayMux);
-     cache[i].occupied=false;
+     acked=cache[i].cancelSend();
      portEXIT_CRITICAL(&replayMux);
     }
     writerError(wireError(result),fragmented,sequence,txn);
-    if(fragmented)retireReplay(i);else releaseRecord(i);
+    if(acked)retireAck(i);
+    else if(fragmented)retireReplay(i);
+    else releaseRecord(i);
    }
    const uint32_t elapsed=uint32_t(esp_timer_get_time())-started;
    if(elapsed>writerMaxUs)writerMaxUs=elapsed;
