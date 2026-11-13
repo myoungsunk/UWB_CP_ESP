@@ -1,0 +1,86 @@
+"""Mode8 route custody: deterministic sessions, journal and no double START."""
+import json
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"host"))
+from ops_route import (validate_plan,derive_session,durable_json,RouteController,RouteHold)
+
+PLAN={"route_id":777,"mode":8,"stage":6,"period_us":200000,
+      "points":[{"point_id":"A1","count":32},{"point_id":"A2","count":20}]}
+KEY=b"x"*32
+
+class PlanTests(unittest.TestCase):
+    def test_unique_sessions(self):
+        sessions=[derive_session(777,i) for i in range(10000)]
+        self.assertEqual(len(set(sessions)),10000)
+        self.assertTrue(all(x>0 for x in sessions))
+        self.assertEqual(validate_plan(PLAN),PLAN)
+    def test_invalid_plan_fail_closed(self):
+        for bad in (
+            {**PLAN,"mode":7},{**PLAN,"period_us":190000},
+            {**PLAN,"points":[{"point_id":"a/b","count":20}]},
+            {**PLAN,"points":[{"point_id":"A","count":33}]},
+            {**PLAN,"points":[{"point_id":"A","count":True}]},
+            {**PLAN,"points":[{"point_id":"A","count":1},{"point_id":"A","count":1}]}
+        ):
+            with self.assertRaises(ValueError):validate_plan(bad)
+
+class RouteTests(unittest.TestCase):
+    def test_resume_rejects_changed_spec_and_missing_journal(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d)
+            with self.assertRaises(RouteHold):
+                RouteController(PLAN,root/"route","127.0.0.1","COM4",KEY,resume=True)
+            RouteController(PLAN,root/"route","127.0.0.1","COM4",KEY)
+            with self.assertRaises(FileExistsError):
+                RouteController(PLAN,root/"route","127.0.0.1","COM4",KEY)
+            with self.assertRaises(RouteHold):
+                RouteController({**PLAN,"route_id":778},root/"route","127.0.0.1","COM4",KEY,resume=True)
+    def test_request_is_durable_before_external_rf_and_never_auto_restarted(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/"route"
+            ctl=RouteController(PLAN,target,"127.0.0.1","COM4",KEY)
+            def failed(_cmd,check):
+                data=json.loads((target/"route_receipt.json").read_text())
+                self.assertEqual(data["points"][0]["state"],"REQUESTED")
+                self.assertFalse(check)
+                return type("Result",(),{"returncode":2})()
+            with patch("ops_route.subprocess.run",side_effect=failed) as proc:
+                with self.assertRaises(RouteHold):
+                    ctl.run()
+                self.assertEqual(proc.call_count,1)
+            resumed=RouteController(PLAN,target,"127.0.0.1","COM4",KEY,resume=True)
+            with patch("ops_route.subprocess.run") as forbidden:
+                with self.assertRaises(RouteHold):resumed.run()
+                forbidden.assert_not_called()
+    def test_purge_intent_makes_lost_reply_idempotent(self):
+        with tempfile.TemporaryDirectory() as d:
+            target=Path(d)/"route"
+            ctl=RouteController(PLAN,target,"127.0.0.1","COM4",KEY)
+            row=ctl.data["points"][0];row.update(state="PURGE_INTENT",anchor_boot=5)
+            ctl.save()
+            status={"phase":"IDLE","file":False,"boot":5}
+            with patch.object(ctl,"anchor_status",return_value=status):
+                with patch("ops_route.OperationalClient") as client:
+                    ctl.purge(0)
+                    client.assert_not_called()
+            self.assertEqual(row["state"],"PURGED")
+    def test_bad_remote_identity_prevents_purge(self):
+        with tempfile.TemporaryDirectory() as d:
+            ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
+            row=ctl.data["points"][0]
+            row.update(state="VERIFIED",anchor_boot=5)
+            with patch.object(ctl,"anchor_status",return_value={
+                "phase":"STORED","file":True,"file_session":row["session"],
+                "file_count":row["count"],"boot":6,"file_acked":True
+            }):
+                with patch("ops_route.OperationalClient") as client:
+                    with self.assertRaises(RouteHold):ctl.purge(0)
+                    client.assert_not_called()
+            self.assertEqual(row["state"],"VERIFIED")
+
+if __name__=="__main__":unittest.main()
