@@ -2,7 +2,7 @@ import json
 import unittest
 import zlib
 
-from rfb8 import HEADER as RFB8_HEADER, RAW_BYTES
+from rfb8 import Decoder, HEADER as RFB8_HEADER, JSON_MAX, RAW_BYTES, encode
 from uart_fragments import (
     CHUNK, END, HEADER, MAGIC, MULTIPLY, PACKED_IQ, FragmentDecoder, coefficient, parity_count,
 )
@@ -38,6 +38,25 @@ def wire(record_bytes, sequence, *, packed=False):
 
 
 class UsbFragmentTest(unittest.TestCase):
+    def test_max_metadata_and_full_raw_cir_cross_fragment_boundary(self):
+        meta = {"schema": "dual8.record.v1", "mode": 8, "role": "tag", "fixture": ""}
+        meta["fixture"] = "x" * (JSON_MAX - len(encode(meta, bytes(RAW_BYTES))) +
+                                 RFB8_HEADER.size + RAW_BYTES)
+        raw = bytes(range(256)) * (RAW_BYTES // 256)
+        payload = encode(meta, raw, sequence=28)
+        frames, count = wire(payload, 28)
+        self.assertGreater(count, 96)
+        frames[5] = frames[5][:70] + frames[5][71:]
+        receiver = FragmentDecoder()
+        restored = receiver.feed(b"".join(frames))
+        self.assertEqual(restored, payload)
+        self.assertEqual(receiver.counts["fragment_crc_errors"], 1)
+        packet, = Decoder().feed(restored)
+        self.assertEqual((packet.sequence, packet.meta, packet.raw), (28, meta, raw))
+        meta["fixture"] += "x"
+        with self.assertRaises(ValueError):
+            encode(meta, raw, sequence=28)
+
     def test_recovers_deleted_bytes_dropped_fragments_and_markers(self):
         payload = record(91)
         frames, count = wire(payload, 91)

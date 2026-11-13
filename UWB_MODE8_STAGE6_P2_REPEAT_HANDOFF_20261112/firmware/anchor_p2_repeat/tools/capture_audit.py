@@ -69,8 +69,8 @@ TICK_MODULUS = 1 << 40
 
 def diagnostic_period_us(firmware):
     # Stage 6 at 921600 baud has no fragment framing but must accommodate
-    # its entire raw CIR and 8500-byte metadata allowance with 20% headroom.
-    return 320000 if firmware in P1_FRESH_FIRMWARES else 300000
+    # its entire raw CIR and 10000-byte metadata allowance with 20% headroom.
+    return 350000 if firmware in P1_FRESH_FIRMWARES else 300000
 
 
 def p1_repeat_contract(anchor: dict, tag: dict) -> bool:

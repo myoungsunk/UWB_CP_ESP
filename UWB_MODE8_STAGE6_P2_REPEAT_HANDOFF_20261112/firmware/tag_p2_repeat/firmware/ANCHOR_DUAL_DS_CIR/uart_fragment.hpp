@@ -4,8 +4,9 @@
 
 namespace dual8 {
 constexpr unsigned UART_FRAGMENT_BYTES=256;
-constexpr unsigned UART_FRAGMENT_MAX_DATA=96;
+constexpr unsigned UART_FRAGMENT_MAX_DATA=102;
 constexpr unsigned UART_FRAGMENT_MAX_PARITY=20;
+static_assert(UART_FRAGMENT_MAX_DATA+UART_FRAGMENT_MAX_PARITY<128, "FEC index bounds");
 constexpr unsigned UART_FRAGMENT_HEADER=16;
 constexpr unsigned UART_FRAGMENT_END=255;
 constexpr unsigned UART_PACKED_IQ_FLAG=0x8000;

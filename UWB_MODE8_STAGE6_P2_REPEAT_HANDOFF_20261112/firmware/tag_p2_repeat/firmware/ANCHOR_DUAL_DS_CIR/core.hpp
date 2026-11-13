@@ -11,7 +11,7 @@ namespace dual8 {
 constexpr uint64_t MASK40=(1ULL<<40)-1, HALF40=1ULL<<39;
 constexpr double HZ=63897600000.0, DTU=1.0/HZ, C_AIR=299702547.0;
 constexpr double SAMPLE_S=1.0/998400000.0; // 64 DW1000 timestamp ticks, not 1 DTU.
-constexpr size_t RECORD_JSON_BYTES=8500;
+constexpr size_t RECORD_JSON_BYTES=10000;
 constexpr size_t NSAMP=992, CIR_BYTES=NSAMP*4, AIR_BYTES=96;
 constexpr uint32_t AIR_MAGIC=0x38424346, WIRE_MAGIC=0x38424652;
 constexpr uint8_t PROTOCOL_VERSION=1, MODE=8;

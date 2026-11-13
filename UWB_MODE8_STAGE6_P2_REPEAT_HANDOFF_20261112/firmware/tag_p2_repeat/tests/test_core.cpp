@@ -379,6 +379,35 @@ static void testsEngine(const std::string&out){
   CHECK(x.p1_tx_confirmed&&x.probe_frame[1].tag_poll_rx==x.probe_frame[0].probe_tx);
   CHECK(x.cir_meta[0].valid&&x.cir_meta[1].valid&&x.cir_meta[2].valid&&x.cir_meta[3].valid);
   CHECK(x.range[0].valid&&x.range[1].valid);
+  // The live serializer lost txn 7 before it put any bytes on the UART.
+  // Exercise the largest full P1/P2 recovery record, with fault traces.
+  auto wide=x;
+  wide.txn=7;
+  wide.session=wide.boot=wide.peer_boot=wide.config=UINT32_MAX;
+  wide.begin_us=UINT64_MAX-200000;wide.end_us=UINT64_MAX-1;
+  const auto widenRx=[](Rx& z){
+   z.hw=z.raw=z.status=MASK40;z.esp_us=z.arm_us=UINT64_MAX;
+   z.fp_raw=z.nacc=z.pwr=z.f1=z.f2=z.f3=z.noise=UINT16_MAX;
+   z.ci=INT32_MIN;z.diag_us=UINT32_MAX;
+  };
+  const auto widenTx=[](Tx& z){
+   z.requested=z.planned=z.actual=z.status=MASK40;
+   z.begin_us=z.end_us=UINT64_MAX;z.lead_us=INT32_MIN;
+  };
+  for(auto& z:wide.poll)widenRx(z);
+  for(auto& probe:wide.probe)for(auto& z:probe)widenRx(z);
+  for(auto& z:wide.p1_repeat_poll_rx)widenRx(z);
+  for(auto& z:wide.poll2_rx)widenRx(z);
+  for(auto& z:wide.tx)widenTx(z);
+  for(auto& z:wide.p1_repeat_response_tx)widenTx(z);
+  for(auto& z:wide.response2_tx)widenTx(z);
+  for(auto& z:wide.cir_meta)z.crc=z.read_us=z.repeat_us=UINT32_MAX;
+  for(auto& window:wide.rx_windows)for(auto& trace:window)
+   trace={MASK40,wide.begin_us+100000,wide.begin_us+110000,wide.end_us,UINT16_MAX,UINT8_MAX,false};
+  CHECK(serializeRecord(wide,json,sizeof json,n));
+  CHECK(n<=JSON_MAX&&strstr(json,"p1_repeat_poll_rx")&&strstr(json,"poll2_frame"));
+  CHECK(strstr(json,"power_formula")&&json[n-1]=='}');
+  std::cout<<"full_retry_json_bytes="<<n<<"\n";
  }
  for(unsigned primaryMiss:{1U,2U,3U}){
   SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.txn=24;
