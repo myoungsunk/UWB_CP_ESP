@@ -30,6 +30,7 @@ constexpr unsigned maxWireData=(24+JSON_MAX+maxRawBytes+UART_FRAGMENT_BYTES-1)/U
 constexpr unsigned wireBytes=(maxWireData+uartParityCount(maxWireData))*wireStride+3*UART_FRAGMENT_HEADER;
 static_assert(maxWireData<=UART_FRAGMENT_MAX_DATA,"RFB8 fragment capacity");
 static uint8_t* uartWire=nullptr;
+static uint8_t* uartPackedIq=nullptr;
 #if !DUAL8_ANCHOR
 static ProbeRepeatCapture* probeRepeatCapture=nullptr;
 #endif
@@ -57,9 +58,16 @@ static void emit(const char*fmt,...){
 }
 static bool prepareUartWire(const Config& next){
  if(next.stage!=6||next.baud!=2000000||uartWire)return true;
- uartWire=static_cast<uint8_t*>(malloc(wireBytes+maxRawBytes));
- if(uartWire)return true;
- emit("{\"event\":\"ERROR\",\"reason\":\"UART_RECORD_BUFFER_MEMORY\"}");
+ // Allocate the frame and compression scratch separately so the tag
+ // does not need a single contiguous block spanning both buffers.
+ auto* wire=static_cast<uint8_t*>(malloc(wireBytes));
+ auto* packed=wire&&maxRawBytes?static_cast<uint8_t*>(malloc(maxRawBytes)):nullptr;
+ if(wire&&(!maxRawBytes||packed)){
+  uartPackedIq=packed;uartWire=wire;return true;
+ }
+ free(packed);free(wire);
+ emit("{\"event\":\"ERROR\",\"reason\":\"UART_RECORD_BUFFER_MEMORY\",\"free_heap\":%lu,\"largest_block\":%lu}",
+      (unsigned long)ESP.getFreeHeap(),(unsigned long)ESP.getMaxAllocHeap());
  return false;
 }
 // UART0 has no TX ring. Only the writer submits bytes; the command task
@@ -92,8 +100,8 @@ static bool sendFragments(BoundedWire<UartTx>& output,uint32_t seq,const uint8_t
  constexpr unsigned stride=wireStride;
  uint8_t* const wire=uartWire;
  if(!wire||nraw>maxRawBytes)return false;
- const size_t packedBytes=nraw?packUartIq(raw,nraw,wire+wireBytes):0;
- if(packedBytes){raw=wire+wireBytes;nraw=packedBytes;}
+ const size_t packedBytes=nraw?packUartIq(raw,nraw,uartPackedIq):0;
+ if(packedBytes){raw=uartPackedIq;nraw=packedBytes;}
  const unsigned bytes=24+nmeta+nraw,dataCount=(bytes+UART_FRAGMENT_BYTES-1)/UART_FRAGMENT_BYTES;
  const unsigned sizeField=bytes|(packedBytes?UART_PACKED_IQ_FLAG:0);
  if(dataCount>maxWireData)return false;
