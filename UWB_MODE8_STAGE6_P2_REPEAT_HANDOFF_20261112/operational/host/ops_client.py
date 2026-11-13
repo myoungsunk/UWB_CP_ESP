@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import hmac
+import json
 import os
 from pathlib import Path
 import socket
@@ -19,9 +20,13 @@ class TransportError(RuntimeError):
     pass
 
 class OperationalClient:
-    def __init__(self,host:str,key:bytes,port:int=29310,timeout:float=10):
+    def __init__(self,host:str,key:bytes,port:int=29310,timeout:float=10,
+                 approval_key:bytes|None=None):
         if len(key)!=32: raise ValueError("AUTH key requires exactly 32 bytes")
+        if approval_key is not None and (len(approval_key)!=32 or approval_key==key):
+            raise ValueError("separate 32-byte custody key required")
         self.address=(host,port);self.key=key;self.timeout=timeout
+        self.approval_key=approval_key;self.nonce=None
         self.sock=None;self.stream=None
 
     def __enter__(self):
@@ -33,6 +38,7 @@ class OperationalClient:
             if len(hello)!=3 or hello[0]!="CHALLENGE":
                 raise TransportError(f"missing challenge: {hello!r}")
             nonce=int(hello[1],16)
+            self.nonce=nonce
             self.boot=int(hello[2],16)
             msg=f"MODE8:{nonce:08X}:{self.boot:08X}".encode("ascii")
             mac=hmac.new(self.key,msg,hashlib.sha256).hexdigest()
@@ -63,9 +69,29 @@ class OperationalClient:
         self.send(command)
         return self.readline()
 
+    def custody_proof(self,verb:str,session:int,body_crc:int)->str:
+        if self.approval_key is None or self.nonce is None:
+            raise TransportError("separate custody key required")
+        if not (1<=session<=0xffffffff and 0<=body_crc<=0xffffffff):
+            raise TransportError("invalid custody session/CRC")
+        message=f"MODE8-CUSTODY:{verb}:{self.boot:08X}:{session:08X}:{body_crc:08X}:{self.nonce:08X}"
+        return hmac.new(self.approval_key,message.encode("ascii"),hashlib.sha256).hexdigest()
+
     def acknowledge_archive(self, session: int, body_crc: int) -> str:
-        """Acknowledge a validated archive on its authenticated GET connection."""
-        return self.command(f"ACKFILE {session} {body_crc}")
+        """Only call after complete tag+anchor paired RF audit."""
+        proof=self.custody_proof("ACK",session,body_crc)
+        return self.command(f"ACKFILE {session} {body_crc} {proof}")
+
+    def purge_archive(self, session:int,body_crc:int,boot:int)->str:
+        if self.boot!=boot:
+            raise TransportError("anchor rebooted before purge")
+        status=json.loads(self.command("STATUS"))
+        if (status.get("boot")!=boot or status.get("file") is not True or
+            status.get("file_session")!=session or status.get("file_crc")!=body_crc or
+            status.get("file_boot")!=boot or status.get("file_acked") is not True):
+            raise TransportError("remote identity/ACK does not match local verified file")
+        proof=self.custody_proof("PURGE",session,body_crc)
+        return self.command(f"PURGE {session} {body_crc} {proof}")
 
     def get_archive(self,path:Path,expect_session:int|None=None,ack:bool=False):
         # Saving an anchor file is not a paired RF verification. Do not let
@@ -123,19 +149,28 @@ def main():
     a.add_argument("--host",required=True)
     a.add_argument("--port",type=int,default=29310)
     a.add_argument("--key-env",default="MODE8_AUTH_KEY_HEX")
+    a.add_argument("--approval-key-env",default="MODE8_APPROVAL_KEY_HEX")
     sub=a.add_subparsers(dest="action",required=True)
     sub.add_parser("status")
     start=sub.add_parser("start");start.add_argument("session",type=int);start.add_argument("count",type=int)
     get=sub.add_parser("get");get.add_argument("path",type=Path);get.add_argument("--session",type=int)
     # CLI GET never ACKs: only the paired controller runs the cross-endpoint audit.
-    sub.add_parser("purge")
+    purge=sub.add_parser("purge")
+    purge.add_argument("--archive",type=Path,required=True)
+    purge.add_argument("--receipt",type=Path,required=True)
     ota=sub.add_parser("ota");ota.add_argument("seconds",type=int)
     args=a.parse_args()
     secret=os.environ.get(args.key_env,"")
     try:key=bytes.fromhex(secret)
     except ValueError:raise SystemExit("invalid key hex")
     if len(key)!=32:raise SystemExit(f"Set {args.key_env} to the 64-hex-character provisioned HMAC key")
-    with OperationalClient(args.host,key,args.port) as ops:
+    approval=None
+    if args.action=="purge":
+        try:approval=bytes.fromhex(os.environ.get(args.approval_key_env,""))
+        except ValueError:raise SystemExit("invalid custody key")
+        if len(approval)!=32 or approval==key:
+            raise SystemExit("distinct MODE8_APPROVAL_KEY_HEX required for purge")
+    with OperationalClient(args.host,key,args.port,approval_key=approval) as ops:
         if args.action=="status": print(ops.command("STATUS"))
         elif args.action=="start":
             if not (1<=args.session<=0xFFFFFFFF and 1<=args.count<=32):raise SystemExit("invalid count/session")
@@ -143,7 +178,17 @@ def main():
         elif args.action=="get":
             doc=ops.get_archive(args.path,args.session,ack=False)
             print(f"Saved and verified {doc['count']} anchor records from session {doc['session']}")
-        elif args.action=="purge":print(ops.command("PURGE"))
+        elif args.action=="purge":
+            receipt=json.loads(args.receipt.read_text(encoding="utf-8"))
+            doc=parse(args.archive.read_bytes())
+            paired=receipt.get("paired_audit") or {}
+            anchor=receipt.get("anchor_identity") or {}
+            if (receipt.get("status")!="SAVED_BOTH_ENDPOINTS" or
+                receipt.get("requested_session")!=doc["session"] or
+                paired.get("paired_records")!=doc["count"] or
+                anchor.get("boot")!=doc["boot"]):
+                raise SystemExit("saved paired RF audit receipt required for purge")
+            print(ops.purge_archive(doc["session"],doc["crc32"],doc["boot"]))
         elif args.action=="ota":print(ops.command(f"OTA {args.seconds}"))
 
 if __name__=="__main__":
