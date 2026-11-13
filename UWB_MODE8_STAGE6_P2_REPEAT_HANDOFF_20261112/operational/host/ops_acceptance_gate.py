@@ -82,12 +82,16 @@ def assess(doc, root:Path, expected_git:str):
             verdict[gate]="BLOCKED_BY_PREVIOUS_GATE"
             continue
         verdict[gate]="PASS"
-    approved=all(verdict[g]=="PASS" for g in GATES)
+    evidence_complete=all(verdict[g]=="PASS" for g in GATES)
+    # No collection of self-supplied files can independently certify a real
+    # hardware run. Physical acceptance needs external authorized sign-off.
     return {"schema":"mode8.acceptance.v1","git_sha":expected_git,
             "source_host_build_candidate":all(verdict[g]=="PASS" for g in GATES[:5]),
-            "hardware_field_approved":approved,
+            "field_evidence_complete":evidence_complete,
+            "hardware_field_approved":False,
             "accuracy_calibration_deferred":True,
-            "gates":verdict,"result":"FIELD_PASS" if approved else "FIELD_HOLD"}
+            "gates":verdict,
+            "result":("EVIDENCE_READY_NEEDS_FIELD_SIGNOFF" if evidence_complete else "FIELD_HOLD")}
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)

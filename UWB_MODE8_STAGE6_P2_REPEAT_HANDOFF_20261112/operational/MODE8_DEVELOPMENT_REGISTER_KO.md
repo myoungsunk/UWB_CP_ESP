@@ -47,3 +47,16 @@
 **M20 — route 재시작 이후 로컬 원본 재감사(IMPLEMENTED / FIELD HOLD)**: 기존에는 `operational_receipt.json`의 과거 `paired_audit` 결과를 신뢰하고 파일 존재·현재 SHA만 확인했으므로, 기록이 나중에 손상된 경우에도 다음 point/PURGE를 진행할 수 있었다. `verify_point()`에서 `audit_archived_session()`을 다시 실행하고 기존 journal SHA가 존재하면 바이트 일치를 필수화했다. `purge()` 진입 직전에도 같은 검사를 수행한다. 자동 시험 `test_preverified_receipt_does_not_replace_raw_replay`, `test_verified_route_rejects_changed_hash_before_purge` 추가. 이 결과는 모의 실행 기준이며 실기 재개·저장장치 고장 주입은 G8/G9에 남는다.
 
 **M17 추가 구현 (2026-11-13)** — RF 시작 전 LittleFS `totalBytes/usedBytes`와 요청한 아카이브 크기(`32B header + count×1312B row`) 및 8192B 보수 여유를 계산하여 용량이 부족하면 `START_GUARD`로 거부한다. 저장 전 공간 검사는 정전·동시 쓰기·실제 flash erase 내구를 보장하지 않으며 G9/G11 물리 검증은 계속 HOLD이다.
+
+### 추가 구현 M21–M26 (2026-11-13)
+
+| ID | 개발 내용 | 코드 및 판정 |
+|---|---|---|
+| M21 | route journal HMAC·불가능한 상태/세션/순서 검증 | IMPLEMENTED / FIELD HOLD: `ops_route.py` 서명 검증, 자동 재실행 금지 |
+| M22 | 동일 route 복수 실행기 경쟁 방지 | IMPLEMENTED / FIELD HOLD: POSIX/Windows 비차단 단일 소유 파일 잠금 |
+| M23 | 영속 Stage6/2Mbps UART 부팅 송신 경로 | IMPLEMENTED / FIELD HOLD: HELLO/STOP 초기 조각 송신 버퍼 사전 준비, 실패 시 진단 복귀; 실제 재부팅 검증 필요 |
+| M24 | 유선 앵커+태그 두 USB의 연속 1,000거래 대안 | IMPLEMENTED(host wrapper) / FIELD HOLD: `ops_wired_continuous.py`; 무선 단독 앵커의 M04 문제를 해결하지는 않음 |
+| M25 | RF/A/B/ROS 시간·odom 정합 도구 | IMPLEMENTED(host) / FIELD HOLD: `ops_pose_align.py`; 독립 물리 동기화 사건이 없으면 정렬 거부, 실제 ROS 시간측정 미실시 |
+| M26 | G0–G12 원시 증거 SHA·순서 검증 도구 | IMPLEMENTED(host) / FIELD HOLD: `ops_acceptance_gate.py`는 증거를 검산하지만 독립 실물 인수를 자동 PASS 처리하지 않음 |
+
+M17 선행 개선: LittleFS 가용 용량이 아카이브+8KiB 보수 여유보다 부족하면 RF 이전에 START 거부. 하드웨어 wear/정전 시험은 HOLD 유지.

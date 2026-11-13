@@ -32,7 +32,9 @@ class GateTests(unittest.TestCase):
             data={"path":"proof.log","sha256":hashlib.sha256(b"actual-raw").hexdigest()}
             tests=[{"id":g,"attempted":True,"pass":True,"evidence":[data]} for g in GATES]
             report=assess(self.manifest(tests),Path(d),SHA)
-            self.assertTrue(report["hardware_field_approved"])
+            self.assertTrue(report["field_evidence_complete"])
+            self.assertFalse(report["hardware_field_approved"])
+            self.assertEqual(report["result"],"EVIDENCE_READY_NEEDS_FIELD_SIGNOFF")
             p.write_bytes(b"tampered")
             report=assess(self.manifest(tests),Path(d),SHA)
             self.assertFalse(report["hardware_field_approved"])
