@@ -105,6 +105,16 @@ static bool opsArchiveRecord(const dual8::Record& r){
  return true;
 }
 static bool opsFilePending(){return opsFsOk&&LittleFS.exists(OPS_ARCHIVE_PATH);}
+static bool opsAnyStoredFile(){
+ if(!opsFsOk)return true;
+ File root=LittleFS.open("/");
+ if(!root||!root.isDirectory())return true;
+ File item=root.openNextFile();
+ const bool exists=bool(item);
+ if(item)item.close();
+ root.close();
+ return exists;
+}
 static bool opsReadHeader(OpsArchiveHeader& h){
  if(!opsFilePending())return false;
  File f=LittleFS.open(OPS_ARCHIVE_PATH,"r");
@@ -272,7 +282,7 @@ static bool opsEraseAcked(){
  return ok;
 }
 static bool opsOtaStart(uint32_t seconds){
- if(seconds<60||seconds>600||!opsNet.otaSet||opsFilePending()||
+ if(seconds<60||seconds>600||!opsNet.otaSet||opsAnyStoredFile()||
     !opsRecordsDrained()||WiFi.status()!=WL_CONNECTED)return false;
  ArduinoOTA.setPort(3232);
  ArduinoOTA.setHostname("mode8-anchor");
@@ -289,13 +299,14 @@ static bool opsOtaStart(uint32_t seconds){
  return true;
 }
 static bool opsPlan(uint32_t sessionId,uint32_t count){
- if(!opsFsOk||opsFilePending()||opsPhase!=OpsPhase::Idle||
+ if(!opsFsOk||opsFilePending()||opsOtaOpen||opsPhase!=OpsPhase::Idle||
     !opsRecordsDrained()||!hwOk||port.faulted()||
     config.stage!=6||count==0||count>OPS_ARCHIVE_MAX||sessionId==0||
     validate(config))return false;
  if(!opsArchive){
   opsArchive=new(std::nothrow) OpsArchiveRow[OPS_ARCHIVE_MAX];
   if(!opsArchive)return false;
+  if(ESP.getFreeHeap()<32768){delete[] opsArchive;opsArchive=nullptr;return false;}
  }
  memset(opsArchive,0,size_t(count)*sizeof(OpsArchiveRow));
  opsSession=sessionId;opsCount=count;opsRows=0;opsArchiveFailure=false;
@@ -399,7 +410,7 @@ static bool opsUsbCommand(const char*line){
    opsFilePending()?"true":"false",(unsigned long)opsSession,(unsigned long)opsRows);
   return true;
  }
- if(active||!opsRecordsDrained()||opsPhase==OpsPhase::Armed||
+ if((opsOtaOpen&&strcmp(op,"STATUS")!=0)||active||!opsRecordsDrained()||opsPhase==OpsPhase::Armed||
     opsPhase==OpsPhase::Measuring||opsPhase==OpsPhase::Draining){
   emit("{\"event\":\"ERROR\",\"reason\":\"OPS_NOT_QUIESCENT\"}");return true;
  }
