@@ -86,7 +86,20 @@ def parse(blob: bytes) -> dict:
         frames=[]
         for k in range(4):
             air=bytes(row[offset:offset+96]);offset+=96
-            frames.append(air.hex() if check_air(air) else None)
+            if check_air(air):
+                if air[5] != (1, 4, 8, 5)[k]:
+                    raise ArchiveError(f"row {index}: wrong RF message type in frame {k}")
+                origin=(int.from_bytes(air[8:12], "little"),
+                        int.from_bytes(air[12:16], "little"),
+                        int.from_bytes(air[16:20], "little"),
+                        int.from_bytes(air[20:24], "little"))
+                if origin != (session,index,config,boot):
+                    raise ArchiveError(f"row {index}: RF session/txn/config/boot mismatch")
+                frames.append(air.hex())
+            else:
+                frames.append(None)
+        if complete and (not all(frames) or peer == 0):
+            raise ArchiveError(f"row {index}: complete archive missing authenticated RF evidence")
         if offset != ROW_BYTES-4:
             raise ArchiveError("parser layout mismatch")
         rows.append({"session":rs,"txn":txn,"boot":rb,"peer_boot":peer,
