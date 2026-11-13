@@ -35,6 +35,20 @@ class IntegrationGateTests(unittest.TestCase):
                        "opsVerifyArchive","OTA_WINDOW_OPEN" if False else "opsOtaStart",
                        "opsArchiveFailure","OPS_ARCHIVE_MAX=32"):
             self.assertIn(needle,s)
+    def test_tcp_start_can_be_cancelled_before_rf(self):
+        app=A.read_text()
+        ops=O.read_text()
+        self.assertIn("opsCancelScheduledStart();",app)
+        self.assertIn("opsPhase!=OpsPhase::Armed",ops)
+        self.assertIn("opsPhase=OpsPhase::Idle;opsSession=0",ops)
+        self.assertIn("opsWantNetwork=opsNet.ssid[0]!=0",ops)
+
+    def test_complete_archive_requires_real_rf_source_frames(self):
+        ops=O.read_text()
+        for key in ("const bool pollOk=", "const bool p1Ok=", "const bool poll2Ok=",
+                    "const bool p2Ok=", "if(r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok))"):
+            self.assertIn(key,ops)
+
     def test_compiler_guards_in_both_sketches(self):
         for d,sketch in (("anchor_p2_repeat","ANCHOR"),("tag_p2_repeat","TAG")):
             f=BASE/f"firmware/{d}/firmware/{sketch}_DUAL_DS_CIR/app.hpp"
