@@ -124,6 +124,7 @@ def main()->int:
     ap.add_argument("--anchor-ip",required=True)
     ap.add_argument("--anchor-port",type=int,default=29310)
     ap.add_argument("--tag-port",required=True)
+    ap.add_argument("--tag-initial-baud",type=int,choices=(921600,2000000),default=921600)
     ap.add_argument("--session",type=int,required=True)
     ap.add_argument("--count",type=int,default=20)
     ap.add_argument("--period-us",type=int,default=200000)
@@ -145,7 +146,7 @@ def main()->int:
              "tag_port":args.tag_port,"anchor":args.anchor_ip,"status":"INCOMPLETE"}
     link=None
     try:
-        link=Link("tag",args.tag_port,args.out)
+        link=Link("tag",args.tag_port,args.out,initial_baud=args.tag_initial_baud)
         time.sleep(.3)
         link.send("STOP")
         link.wait(lambda m:m.get("event")=="STOPPED",timeout=5,check_faults=False)

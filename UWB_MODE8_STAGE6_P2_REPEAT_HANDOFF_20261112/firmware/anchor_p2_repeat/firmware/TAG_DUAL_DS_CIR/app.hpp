@@ -21,6 +21,7 @@
 #endif
 namespace dual8app {
 using namespace dual8;
+#include "operational_profile.hpp"
 static Esp32Port port;static Config config;
 static constexpr unsigned BASE_POOL=3;
 static constexpr unsigned POOL=DUAL8_ANCHOR?5:BASE_POOL;
@@ -482,6 +483,27 @@ static void command(char*line){
  }
 #endif
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
+ if(!strcmp(w[0],"PROFILE")){
+  if(n==2&&!strcmp(w[1],"STATUS")){
+   emit("{\"event\":\"PROFILE\",\"status\":\"%s\",\"stage\":%u,\"period_us\":%lu,\"baud\":%lu}",
+        profileName(),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud);
+   return;
+  }
+  if(n!=2||(strcmp(w[1],"SAVE")&&strcmp(w[1],"CLEAR"))){
+   emit("{\"event\":\"ERROR\",\"reason\":\"PROFILE_USAGE\"}");return;
+  }
+  if(!transportChangeAllowed()){
+   emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\"}");return;
+  }
+#if DUAL8_ANCHOR
+  if(opsArchiveEnabled()||WiFi.getMode()!=WIFI_OFF){
+   emit("{\"event\":\"ERROR\",\"reason\":\"OPS_PROFILE_LOCK\"}");return;
+  }
+#endif
+  const bool ok=!strcmp(w[1],"SAVE")?profileSave(config):profileClear();
+  emit("{\"event\":\"PROFILE\",\"ok\":%s,\"status\":\"%s\"}",
+       ok?"true":"false",profileName());return;
+ }
  if(!strcmp(w[0],"RESET")&&n==1){
   if(!transportChangeAllowed()){
    emit("{\"event\":\"ERROR\",\"reason\":\"RECORD_DRAIN_PENDING\"}");return;
@@ -592,6 +614,14 @@ static void service(){
 }
 static void setup(){
  Serial.setRxBufferSize(2048);Serial.setTxBufferSize(0);Serial.begin(config.baud);delay(300);
+ // No profile => the diagnostic 921600-baud startup behavior is preserved.
+ // A damaged profile fails closed to diagnostics; never auto-start RF.
+ Config desired=config;
+ profileStatus=profileLoad(desired);
+ if(profileStatus==ProfileStatus::Valid){
+  if(uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)config=desired;
+  else profileStatus=ProfileStatus::Corrupt;
+ }
  freeQ=xQueueCreate(POOL,sizeof(uint8_t));outQ=xQueueCreate(12,sizeof(Out));
  if(!freeQ||!outQ){Serial.println("FATAL_QUEUE");while(true)delay(1000);}
  for(unsigned i=0;i<POOL;++i){

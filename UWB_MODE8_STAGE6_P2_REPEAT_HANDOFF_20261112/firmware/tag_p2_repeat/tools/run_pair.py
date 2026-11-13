@@ -141,10 +141,10 @@ def cir_payload_integrity(meta: dict, raw: bytes) -> bool:
 
 
 class Link:
-    def __init__(self, name: str, device: str, directory: Path):
+    def __init__(self, name: str, device: str, directory: Path, initial_baud: int = 921600):
         import serial
         self.name, self.device = name, device
-        self.serial = serial.Serial(port=None, baudrate=921600, timeout=0.1, write_timeout=2)
+        self.serial = serial.Serial(port=None, baudrate=initial_baud, timeout=0.1, write_timeout=2)
         self.serial.dtr = False
         self.serial.rts = False
         self.serial.port = device

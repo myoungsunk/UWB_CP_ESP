@@ -23,6 +23,18 @@ class IntegrationGateTests(unittest.TestCase):
         self.assertIn("opsUsbCommand(b)", app)
         self.assertNotIn("operational_anchor.hpp", T.read_text(encoding="utf-8"))
 
+    def test_operating_profile_both_roles_and_boot_restore(self):
+        for role in ("anchor", "tag"):
+            root=BASE/"firmware"/f"{role}_p2_repeat"
+            app=(root/"shared/app.hpp").read_text()
+            prof=(root/"shared/operational_profile.hpp").read_text()
+            for snippet in ("profileStatus=profileLoad(desired);","profileSave(config)","profileClear()",
+                            'if(uart_set_baudrate(UART_NUM_0,desired.baud)==ESP_OK)'):
+                self.assertIn(snippet,app)
+            for snippet in ("profileCrc","r.role==(DUAL8_ANCHOR?1:2)",
+                            "r.stage==6","r.period_us==200000","r.baud==2000000"):
+                self.assertIn(snippet,prof)
+
     def test_snapshot_headers_match(self):
         for role in ("anchor", "tag"):
             firmware = BASE/"firmware"/f"{role}_p2_repeat"
