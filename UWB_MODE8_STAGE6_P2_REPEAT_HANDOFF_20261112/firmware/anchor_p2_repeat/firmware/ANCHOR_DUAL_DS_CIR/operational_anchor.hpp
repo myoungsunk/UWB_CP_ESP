@@ -53,6 +53,8 @@ struct OpsArchiveHeader {
  uint32_t session=0,boot=0,config=0,count=0,body_crc=0,header_crc=0;
 };
 #pragma pack(pop)
+static_assert(sizeof(OpsArchiveRow)==1070,"Mode 8 archive row schema drift");
+static_assert(sizeof(OpsArchiveHeader)==32,"Mode 8 archive header schema drift");
 static OpsArchiveRow* opsArchive=nullptr;
 static bool opsArchiveEnabled(){
  return opsPhase==OpsPhase::Armed||opsPhase==OpsPhase::Measuring||
