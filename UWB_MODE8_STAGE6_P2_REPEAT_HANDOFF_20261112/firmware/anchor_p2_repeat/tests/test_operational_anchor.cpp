@@ -77,6 +77,8 @@ struct Filesystem {
 static std::map<std::string,std::vector<uint8_t>> nvs;
 struct Preferences {
  bool begin(const char*,bool){return true;}
+ bool getBool(const char* k,bool defaultValue){return nvs.count(k)?nvs[k][0]!=0:defaultValue;}
+ size_t putBool(const char* k,bool v){nvs[k]={uint8_t(v?1:0)};return 1;}
  void end(){}
  size_t getString(const char*,char*,size_t){return 0;}
  size_t getBytesLength(const char* k){return nvs.count(k)?nvs[k].size():0;}
@@ -338,6 +340,19 @@ static void testArchiveCapacityGuards(){
  opsPhase=OpsPhase::Idle;opsSession=opsCount=opsRows=0;
 }
 
+static void testWifiAutostartIsPersistentAndExplicit(){
+ opsPhase=OpsPhase::Idle;active=false;opsWifiAutoStart=true;
+ WiFi.selected=WIFI_STA;
+ assert(opsUsbCommand("OPS NET AUTOSTART 0"));
+ assert(!opsWifiAutoStart&&WiFi.selected==WIFI_OFF&&!opsWantNetwork);
+ opsWifiAutoStart=true;opsLoadNet();
+ assert(!opsWifiAutoStart);
+ assert(opsUsbCommand("OPS NET AUTOSTART 1"));
+ assert(opsWifiAutoStart);
+ assert(opsUsbCommand("OPS NET AUTOSTART -1"));
+ assert(opsWifiAutoStart); // malformed input cannot silently change policy
+}
+
 static void testWifiStart(){
  config.stage=6;config.period_us=200000;config.baud=2000000;
  WiFi.selected=WIFI_STA;WiFi.rejectOff=true;
@@ -362,6 +377,6 @@ int main(){
  using namespace dual8app;
  opsFsOk=true;
  testDownloadReadFailure();testPersistedHeader();testApproval();testDistinctKeys();
- testOtaImageBinding();testRecovery();testInvalidTcpNumbers();testArchiveCapacityGuards();testWifiStart();
+ testOtaImageBinding();testRecovery();testInvalidTcpNumbers();testArchiveCapacityGuards();testWifiAutostartIsPersistentAndExplicit();testWifiStart();
  std::puts("PASS operational firmware mock: archive integrity, custody, OTA and Wi-Fi guards");
 }

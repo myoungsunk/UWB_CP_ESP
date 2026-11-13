@@ -9,7 +9,7 @@ enum class OpsPhase : uint8_t { Idle, Armed, Measuring, Draining, Stored, Recove
 static OpsPhase opsPhase=OpsPhase::Idle;
 static bool opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
 static bool opsTcpAuthorized=false,opsTcpOverflow=false,opsArchiveFailure=false;
-static bool opsWantNetwork=false;static uint32_t opsReconnectAtMs=0;
+static bool opsWantNetwork=false,opsWifiAutoStart=true;static uint32_t opsReconnectAtMs=0;
 static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0;
 // An ACKFILE is only permitted after a complete GET on this authenticated
 // TCP connection, and it must bind to the exact archived body CRC.
@@ -78,7 +78,7 @@ static bool opsRecordsDrained(){
  return transportQuiet()&&freeQ&&uxQueueMessagesWaiting(freeQ)==POOL;
 }
 static void opsRequestNetwork(){
- opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsWantNetwork=opsWifiAutoStart&&opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
  opsReconnectAtMs=millis()+1000UL;
 }
 static void opsFail(const char* reason){
@@ -257,6 +257,7 @@ static bool opsCustodyKeyReady(){
 static void opsLoadNet(){
  opsLastAck={};
  Preferences p;if(!p.begin("mode8ops",true))return;
+ opsWifiAutoStart=p.getBool("autowifi",true);
  p.getString("ssid",opsNet.ssid,sizeof opsNet.ssid);
  p.getString("pass",opsNet.pass,sizeof opsNet.pass);
  opsNet.authSet=p.getBytesLength("auth")==sizeof opsNet.authKey
@@ -637,7 +638,7 @@ static void opsSetup(){
  if(opsFsOk)opsLoadArchiveState();
  opsOtaBootAttest();
  WiFi.mode(WIFI_OFF);
- opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsWantNetwork=opsWifiAutoStart&&opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
  opsReconnectAtMs=millis()+2000UL;
 }
 static bool opsUsbCommand(const char*line){
@@ -659,6 +660,27 @@ static bool opsUsbCommand(const char*line){
  }
  if(!strcmp(op,"NET")){
   char*sub=strtok_r(nullptr," \r\t",&save);
+  if(sub&&!strcmp(sub,"AUTOSTART")){
+   char*value=strtok_r(nullptr," \r\t",&save);
+   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
+   bool ok=false;
+   if(!extra&&value&&(!strcmp(value,"0")||!strcmp(value,"1"))){
+    const bool enabled=value[0]=='1';
+    Preferences p;
+    if(p.begin("mode8ops",false)){
+     ok=p.putBool("autowifi",enabled)==1;
+     p.end();
+    }
+    if(ok){
+     opsWifiAutoStart=enabled;
+     if(!enabled)ok=opsWifiDown();
+     else opsRequestNetwork();
+    }
+   }
+   emit("{\"event\":\"OPS_NET_AUTOSTART\",\"ok\":%s,\"enabled\":%s}",
+        ok?"true":"false",opsWifiAutoStart?"true":"false");
+   return true;
+  }
   if(sub&&!strcmp(sub,"ON")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiStart()?"true":"false");return true;}
   if(sub&&!strcmp(sub,"OFF")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiDown()?"true":"false");return true;}
  }
