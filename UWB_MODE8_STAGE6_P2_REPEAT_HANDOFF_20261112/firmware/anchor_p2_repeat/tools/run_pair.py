@@ -526,6 +526,10 @@ def main() -> int:
     p.add_argument("--stage", type=int, choices=range(2, 7), default=5)
     p.add_argument("--period-us", type=int, default=300000)
     p.add_argument("--baud", type=int, choices=(921600, 2000000), default=921600)
+    p.add_argument("--anchor-initial-baud", type=int, choices=(921600, 2000000), default=921600,
+                   help="Anchor UART baud before first STOP/HELLO (persisted profile)")
+    p.add_argument("--tag-initial-baud", type=int, choices=(921600, 2000000), default=921600,
+                   help="Tag UART baud before first STOP/HELLO (persisted profile)")
     p.add_argument("--calibration-profile", type=Path)
     p.add_argument("--rf-remeasure-limit", type=int, default=0, choices=range(0, 9),
                    help="After STOP, take at most this many separate Stage 6 exchanges for observed Probe misses")
@@ -580,7 +584,12 @@ def capture(args, profile):
                "rf_remeasurement": []}
     try:
         for name in ("tag", "anchor"):
-            link = Link(name, getattr(args, name), args.out)
+            link = Link(name, getattr(args, name), args.out,
+                        initial_baud=getattr(args, name+"_initial_baud", 921600))
+            # An opt-in persistent profile may boot with R8F6 fragments at
+            # 2 Mbps. Enable deframing before the first STOP/HELLO response.
+            if link.serial.baudrate == 2000000 and args.stage == 6:
+                link.enable_replay()
             links.append(link)
             time.sleep(0.3)
             link.send("STOP")
