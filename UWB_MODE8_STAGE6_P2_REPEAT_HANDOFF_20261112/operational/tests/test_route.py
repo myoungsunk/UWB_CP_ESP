@@ -64,11 +64,46 @@ class RouteTests(unittest.TestCase):
             row=ctl.data["points"][0];row.update(state="PURGE_INTENT",anchor_boot=5)
             ctl.save()
             status={"phase":"IDLE","file":False,"boot":5}
-            with patch.object(ctl,"anchor_status",return_value=status):
-                with patch("ops_route.OperationalClient") as client:
-                    ctl.purge(0)
-                    client.assert_not_called()
+            with patch.object(ctl,"verify_point",return_value={"anchor_boot":5}) as verify:
+                with patch.object(ctl,"anchor_status",return_value=status):
+                    with patch("ops_route.OperationalClient") as client:
+                        ctl.purge(0)
+                        client.assert_not_called()
+                        verify.assert_called_once_with(0)
             self.assertEqual(row["state"],"PURGED")
+    def test_preverified_receipt_does_not_replace_raw_replay(self):
+        # Before this fix the route trusted "paired_audit" from JSON and
+        # would accept arbitrary bytes in tag.rfb8 if the file was nonempty.
+        with tempfile.TemporaryDirectory() as d:
+            one={**PLAN,"points":[{"point_id":"A1","count":1}]}
+            ctl=RouteController(one,Path(d)/"route","127.0.0.1","COM4",KEY)
+            entry=ctl.data["points"][0]
+            folder=ctl.point_folder(0);folder.mkdir()
+            (folder/"tag.rfb8").write_bytes(b"NOT_A_VALID_RFB8_STREAM")
+            (folder/"anchor_archive.bin").write_bytes(b"archive-test")
+            receipt={"status":"SAVED_BOTH_ENDPOINTS",
+                     "requested_session":entry["session"],"requested_count":1,
+                     "anchor_identity":{"boot":5,"config_id":6,"firmware":"anchor"},
+                     "tag_identity":{"boot":7,"config_id":6,"firmware":"tag"},
+                     "tag_capture":{"records":1},
+                     "paired_audit":{"paired_records":1,"p1_common_grid":1,"p2_common_grid":1}}
+            (folder/"operational_receipt.json").write_text(json.dumps(receipt))
+            doc={"session":entry["session"],"count":1,"boot":5,"config":6,
+                 "crc32":123,"rows":[]}
+            with patch("ops_route.parse_archive",return_value=doc):
+                with self.assertRaisesRegex(RouteHold,"on-disk paired RF re-audit failed"):
+                    ctl.verify_point(0)
+
+    def test_verified_route_rejects_changed_hash_before_purge(self):
+        with tempfile.TemporaryDirectory() as d:
+            ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
+            entry=ctl.data["points"][0]
+            entry.update(state="VERIFIED",tag_sha256="original")
+            with patch.object(ctl,"verify_point",side_effect=RouteHold("tag_sha256 changed")):
+                with patch.object(ctl,"anchor_status") as status:
+                    with self.assertRaises(RouteHold):ctl.purge(0)
+                    status.assert_not_called()
+
     def test_reboot_does_not_fake_lost_purge_completion(self):
         with tempfile.TemporaryDirectory() as d:
             ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)

@@ -64,3 +64,9 @@ python operational/host/ops_route.py --plan operational/route_example.json --out
 \`\`\`
 
 **중단 조건**: CRC 정상으로 위장한 가짜 물리축 통과, 다른 세션 삭제, boot/role 어긋남, CLKPLL 오류 후 RF 강행, 자동 포맷, 원본 덮어쓰기, OTA 기록 파손.
+
+## G8 추가 적대적 검증 — 재개 시점 원본 변조
+
+- **AX15**: point가 `REQUESTED` 또는 `VERIFIED`인 상태에서 `operational_receipt.json`의 paired_audit는 PASS로 남기고 `tag.rfb8` 바이트를 변조한다. `ops_route.py`의 `verify_point()`는 반드시 원시 RFB8/앵커 아카이브를 재생해 실패하고, 후속 PURGE 및 새 RF START가 0회이어야 한다.
+- **AX16**: 최초 검증 후 `anchor_archive.bin`, `tag.rfb8` 또는 영수증을 교체한다. journal에 기록된 SHA-256과 새로 계산한 해시가 하나라도 다르면 `RouteHold`로 중단한다.
+- **AX17**: `PURGE_INTENT` 이후 재시작하면서 저장된 증거가 삭제되거나 손상됐다. 원격 앵커가 파일 없음만 반환해도 로컬 원본 재감사 없이 `PURGED`로 확정하지 않는다.

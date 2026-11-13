@@ -41,3 +41,7 @@
 - **G7**: 연속 1000거래/무중단 문제는 M04/M05 하드웨어 계약 충족 후 새 승인.
 
 **운영 금지**: G4 통과만으로 통합형 연구실 운영 펌웨어 승인을 표시하지 않는다. MID-MEASUREMENT 파워컷의 데이터 유실을 숨기는 "복구 완료" 표현을 금지한다.
+
+## 2026-11-13 추가 데이터 보존 결함
+
+**M20 — route 재시작 이후 로컬 원본 재감사(IMPLEMENTED / FIELD HOLD)**: 기존에는 `operational_receipt.json`의 과거 `paired_audit` 결과를 신뢰하고 파일 존재·현재 SHA만 확인했으므로, 기록이 나중에 손상된 경우에도 다음 point/PURGE를 진행할 수 있었다. `verify_point()`에서 `audit_archived_session()`을 다시 실행하고 기존 journal SHA가 존재하면 바이트 일치를 필수화했다. `purge()` 진입 직전에도 같은 검사를 수행한다. 자동 시험 `test_preverified_receipt_does_not_replace_raw_replay`, `test_verified_route_rejects_changed_hash_before_purge` 추가. 이 결과는 모의 실행 기준이며 실기 재개·저장장치 고장 주입은 G8/G9에 남는다.

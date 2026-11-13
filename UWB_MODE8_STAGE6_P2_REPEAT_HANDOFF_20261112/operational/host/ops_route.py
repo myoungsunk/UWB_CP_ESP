@@ -136,13 +136,33 @@ class RouteController:
         if doc["boot"]!=anchor.get("boot") or doc["config"]!=anchor.get("config_id") or not tag.get("boot"):
             raise RouteHold("pair boot/config provenance missing")
         paired=receipt.get("paired_audit") or {}
-        if any(paired.get(k)!=entry["count"] for k in ("paired_records","p1_common_grid","p2_common_grid")):
+        required=("paired_records","p1_common_grid","p2_common_grid")
+        if any(paired.get(k)!=entry["count"] for k in required):
             raise RouteHold("paired P1/P2 audit missing")
-        return {"anchor_sha256":sha256_file(archive_file),
-                "tag_sha256":sha256_file(tag_file),
-                "receipt_sha256":sha256_file(receipt_file),
-                "archive_crc":doc["crc32"],"anchor_boot":doc["boot"],
-                "tag_boot":tag["boot"]}
+        # A receipt created earlier is NOT proof the raw files are still good.
+        # Reparse tag.rfb8 and recompute both-endpoint P1/P2 provenance before
+        # resuming a route or authorizing the anchor to erase its only copy.
+        from ops_session import audit_archived_session
+        try:
+            recomputed=audit_archived_session(
+                folder,doc,anchor,tag,receipt.get("tag_capture") or {},
+                entry["session"],entry["count"],self.plan["period_us"])
+        except Exception as exc:
+            raise RouteHold(f"on-disk paired RF re-audit failed: {exc}") from exc
+        if any(recomputed.get(k)!=entry["count"] or recomputed.get(k)!=paired.get(k)
+               for k in required):
+            raise RouteHold("persisted paired audit differs from fresh raw replay")
+        proof={"anchor_sha256":sha256_file(archive_file),
+               "tag_sha256":sha256_file(tag_file),
+               "receipt_sha256":sha256_file(receipt_file),
+               "archive_crc":doc["crc32"],"anchor_boot":doc["boot"],
+               "tag_boot":tag["boot"]}
+        # If a prior route journal was already verified, its immutable proof
+        # must match the bytes just read. Never silently refresh a changed SHA.
+        for field,value in proof.items():
+            if field in entry and entry[field]!=value:
+                raise RouteHold(f"point {entry['point_id']} {field} changed after verification")
+        return proof
 
     def anchor_status(self):
         with OperationalClient(self.anchor_ip,self.key,self.anchor_port,timeout=5) as client:
@@ -152,6 +172,12 @@ class RouteController:
 
     def purge(self,index):
         entry=self.data["points"][index]
+        if entry["state"] not in ("VERIFIED","PURGE_INTENT"):
+            raise RouteHold("point is not verified and cannot be purged")
+        # Check the actual durable raw bytes AGAIN immediately before purge.
+        # The first audit in ops_session was performed before ACKFILE; a local
+        # disk error or alteration after that must stop destructive cleanup.
+        self.verify_point(index)
         status=self.anchor_status()
         if (entry["state"]=="PURGE_INTENT" and status.get("phase")=="IDLE" and
             status.get("file") is False and status.get("boot")==entry["anchor_boot"]):
