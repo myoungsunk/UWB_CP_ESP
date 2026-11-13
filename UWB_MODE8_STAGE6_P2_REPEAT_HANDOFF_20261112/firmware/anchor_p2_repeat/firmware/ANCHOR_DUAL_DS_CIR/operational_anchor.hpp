@@ -5,11 +5,16 @@
 // All DW1000 operations remain owned by the original Mode 8 RF loop.
 // This module never touches SPI, CIR accumulators or RF timestamps.
 #if DUAL8_ANCHOR
+// Enterprise EAP is opt-in and REQUIRES a site-authenticated CA. Build-time
+// MODE8_EAP_CA_CERT_PEM defaults empty to prevent anonymous PEAP fallback.
+#ifndef MODE8_EAP_CA_CERT_PEM
+#define MODE8_EAP_CA_CERT_PEM ""
+#endif
 enum class OpsPhase : uint8_t { Idle, Armed, Measuring, Draining, Stored, Recovery, Fault };
 static OpsPhase opsPhase=OpsPhase::Idle;
 static bool opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
 static bool opsTcpAuthorized=false,opsTcpOverflow=false,opsArchiveFailure=false;
-static bool opsWantNetwork=false;static uint32_t opsReconnectAtMs=0;
+static bool opsWantNetwork=false,opsWifiAutoStart=true;static uint32_t opsReconnectAtMs=0;
 static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0;
 // An ACKFILE is only permitted after a complete GET on this authenticated
 // TCP connection, and it must bind to the exact archived body CRC.
@@ -35,6 +40,8 @@ static WiFiServer opsServer(OPS_TCP_PORT);
 static WiFiClient opsClient;
 struct OpsNet {
  char ssid[33]{},pass[65]{},otaHash[65]{};
+ char eapIdentity[65]{},eapUser[65]{},eapPassword[65]{};
+ bool eapEnabled=false;
  uint8_t authKey[32]{},deleteKey[32]{};
  bool authSet=false,deleteSet=false,otaSet=false;
 };
@@ -77,8 +84,17 @@ static OpsFileIdentity opsIdentity(const OpsArchiveHeader& h){
 static bool opsRecordsDrained(){
  return transportQuiet()&&freeQ&&uxQueueMessagesWaiting(freeQ)==POOL;
 }
+static bool opsEapReady(){
+ const char* ca=MODE8_EAP_CA_CERT_PEM;
+ return opsNet.eapEnabled&&ca&&strstr(ca,"-----BEGIN CERTIFICATE-----")&&
+        strstr(ca,"-----END CERTIFICATE-----")&&opsNet.ssid[0]&&
+        opsNet.eapIdentity[0]&&opsNet.eapUser[0]&&opsNet.eapPassword[0];
+}
+static bool opsHasWifiCredentials(){
+ return opsNet.ssid[0]&&(opsNet.eapEnabled?opsEapReady():opsNet.pass[0]);
+}
 static void opsRequestNetwork(){
- opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsWantNetwork=opsWifiAutoStart&&opsHasWifiCredentials();
  opsReconnectAtMs=millis()+1000UL;
 }
 static void opsFail(const char* reason){
@@ -257,6 +273,11 @@ static bool opsCustodyKeyReady(){
 static void opsLoadNet(){
  opsLastAck={};
  Preferences p;if(!p.begin("mode8ops",true))return;
+ opsWifiAutoStart=p.getBool("autowifi",true);
+ opsNet.eapEnabled=p.getBool("eapmode",false);
+ p.getString("eapid",opsNet.eapIdentity,sizeof opsNet.eapIdentity);
+ p.getString("eapuser",opsNet.eapUser,sizeof opsNet.eapUser);
+ p.getString("eappass",opsNet.eapPassword,sizeof opsNet.eapPassword);
  p.getString("ssid",opsNet.ssid,sizeof opsNet.ssid);
  p.getString("pass",opsNet.pass,sizeof opsNet.pass);
  opsNet.authSet=p.getBytesLength("auth")==sizeof opsNet.authKey
@@ -282,6 +303,13 @@ static bool opsSaveHexField(const char*name,const char*hex){
  }else if(!strcmp(name,"PASS")&&n>=8&&n<=63){
   bytes[n]=0;ok=p.putString("pass",reinterpret_cast<const char*>(bytes))==n;
   if(ok)memcpy(opsNet.pass,bytes,n+1);
+ }else if((!strcmp(name,"EAPID")||!strcmp(name,"EAPUSER")||!strcmp(name,"EAPPASS"))
+          &&n>=1&&n<=64){
+  bytes[n]=0;
+  const char* key=!strcmp(name,"EAPID")?"eapid":!strcmp(name,"EAPUSER")?"eapuser":"eappass";
+  ok=p.putString(key,reinterpret_cast<const char*>(bytes))==n;
+  if(ok)memcpy(!strcmp(name,"EAPID")?opsNet.eapIdentity:
+                !strcmp(name,"EAPUSER")?opsNet.eapUser:opsNet.eapPassword,bytes,n+1);
  }else if(!strcmp(name,"AUTH")&&n==32){
   if(!opsNet.deleteSet||memcmp(bytes,opsNet.deleteKey,32)!=0){
    ok=p.putBytes("auth",bytes,32)==32;
@@ -315,9 +343,18 @@ static bool opsWifiDown(){
 }
 static bool opsWifiStart(){
  if(active||!opsRecordsDrained()||opsPhase==OpsPhase::Measuring||
-    !opsNet.ssid[0]||!opsNet.pass[0])return false;
- WiFi.mode(WIFI_STA);WiFi.setAutoReconnect(false);
- WiFi.begin(opsNet.ssid,opsNet.pass);
+    !opsHasWifiCredentials())return false;
+ if(!WiFi.mode(WIFI_STA))return false;
+ WiFi.setAutoReconnect(false);
+ if(opsNet.eapEnabled){
+#if defined(CONFIG_ESP_WIFI_ENTERPRISE_SUPPORT) && CONFIG_ESP_WIFI_ENTERPRISE_SUPPORT
+  // CA validation is REQUIRED; unsafe no-CA Enterprise is forbidden.
+  WiFi.begin(opsNet.ssid,WPA2_AUTH_PEAP,opsNet.eapIdentity,
+             opsNet.eapUser,opsNet.eapPassword,MODE8_EAP_CA_CERT_PEM);
+#else
+  WiFi.mode(WIFI_OFF);return false;
+#endif
+ }else WiFi.begin(opsNet.ssid,opsNet.pass);
  opsWifiUp=false;opsWantNetwork=true;opsReconnectAtMs=millis()+15000UL;return true;
 }
 static bool opsTcpReply(const char*line){
@@ -637,7 +674,7 @@ static void opsSetup(){
  if(opsFsOk)opsLoadArchiveState();
  opsOtaBootAttest();
  WiFi.mode(WIFI_OFF);
- opsWantNetwork=opsNet.ssid[0]!=0&&opsNet.pass[0]!=0;
+ opsWantNetwork=opsWifiAutoStart&&opsHasWifiCredentials();
  opsReconnectAtMs=millis()+2000UL;
 }
 static bool opsUsbCommand(const char*line){
@@ -659,11 +696,54 @@ static bool opsUsbCommand(const char*line){
  }
  if(!strcmp(op,"NET")){
   char*sub=strtok_r(nullptr," \r\t",&save);
+  if(sub&&!strcmp(sub,"EAP")){
+   char*value=strtok_r(nullptr," \r\t",&save);
+   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
+   bool ok=false;
+   if(value&&!extra&&(!strcmp(value,"0")||!strcmp(value,"1"))){
+    const bool enable=value[0]=='1';
+    if(!enable||(MODE8_EAP_CA_CERT_PEM[0]&&opsNet.eapIdentity[0]&&
+                 opsNet.eapUser[0]&&opsNet.eapPassword[0])){
+     Preferences pref;
+     if(pref.begin("mode8ops",false)){
+      ok=pref.putBool("eapmode",enable)==1;pref.end();
+     }
+     if(ok){
+      opsWifiDown();opsNet.eapEnabled=enable;opsRequestNetwork();
+     }
+    }
+   }
+   emit("{\"event\":\"OPS_NET_EAP\",\"ok\":%s,\"enabled\":%s}",
+        ok?"true":"false",opsNet.eapEnabled?"true":"false");
+   return true;
+  }
+  if(sub&&!strcmp(sub,"AUTOSTART")){
+   char*value=strtok_r(nullptr," \r\t",&save);
+   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
+   bool ok=false;
+   if(!extra&&value&&(!strcmp(value,"0")||!strcmp(value,"1"))){
+    const bool enabled=value[0]=='1';
+    Preferences p;
+    if(p.begin("mode8ops",false)){
+     ok=p.putBool("autowifi",enabled)==1;
+     p.end();
+    }
+    if(ok){
+     opsWifiAutoStart=enabled;
+     if(!enabled)ok=opsWifiDown();
+     else opsRequestNetwork();
+    }
+   }
+   emit("{\"event\":\"OPS_NET_AUTOSTART\",\"ok\":%s,\"enabled\":%s}",
+        ok?"true":"false",opsWifiAutoStart?"true":"false");
+   return true;
+  }
   if(sub&&!strcmp(sub,"ON")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiStart()?"true":"false");return true;}
   if(sub&&!strcmp(sub,"OFF")){emit("{\"event\":\"OPS_NET\",\"ok\":%s}",opsWifiDown()?"true":"false");return true;}
  }
  if(!strcmp(op,"SSID")||!strcmp(op,"PASS")||!strcmp(op,"AUTH")||
-    !strcmp(op,"DELETEKEY")||!strcmp(op,"OTAHASH")){
+    !strcmp(op,"DELETEKEY")||!strcmp(op,"OTAHASH")||
+    !strcmp(op,"EAPID")||!strcmp(op,"EAPUSER")||!strcmp(op,"EAPPASS")){
   char*value=strtok_r(nullptr," \r\t",&save);
   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
   // Credentials are not printed or echoed on serial.

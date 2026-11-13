@@ -11,14 +11,14 @@
 | G2 호스트 | route 계획 1~10000pts/point1~32, 중복/음수/초과/경로 주입 | mock 서브프로세스, crash/restart | 잘못된 계획 거부, 세션 중복 0, 미완료 START 재실행 0 |
 | G3 저장 승인 | 파일 CRC 정상이나 radio/boot/nonce 불일치, GET 절단, ACK/PURGE replay | 앵커 Mock + Pi unittest | 검증 전 삭제 0, 유효 증거 불변성, CRC mismatch 반드시 HOLD |
 | G4 빌드 | 앵커/태그 Core3.3.7, exact board FQBN | GitHub Actions target build, size, source hashes | 2역할 BIN/ELF 생성, 실제 빌드 영수증, 컴파일 오류 0 |
-| G5 장치 | 태그 A/B CS/IRQ/RSTn, RF 스위치 제거, 전원 | DEV_ID 0xDECA0130, SYS_TIME, RXENAB, SPI 20MHz | 수신 복구 시 오동작·CS 중첩·brownout 없는 장치 |
-| G6 RF | 정지 32거래 x ≥10 runs | 같은 Probe 양쪽 CIR/DS, on-air frame CRC, RF 시각 직접 비교 | 각 실행 P1/P2 공통축 요구수 충족, period ±4ms, 누락/재시도 원인 분리 |
-| G7 운영 | 단일 point TCP start→Wi-Fi OFF→RF→commit→ON→GET/ACKFILE/PURGE | AP, Pi, Wi-Fi 스니핑, USB 원시 로그 | RF 시간 동안 Wi-Fi OFF, 양단 ID/원본 CRC 검증, 임의 삭제 0 |
+| G5 장치 | 설치 이미지·핀맵, 앵커와 태그 A/B 초기화·수신 | USB HELLO·SELFTEST, DEV_ID, SYS_TIME 검사, RX 활성·해제 진단, SYS_STATUS·RF_STATUS | 전 모듈 DEV_ID 0xDECA0130, SELFTEST 통과, SYS_TIME 진행, 수신 전환·복구 정상, PLL 보호 정지·리셋 0건 |
+| G6 RF | 정지 32거래 x ≥10 runs | 같은 Probe의 양쪽 CIR/DS, 보드가 저장한 RF 프레임 CRC·TX/RX 타임스탬프 교차 검산 | 각 실행 P1/P2 공통축 요구수 충족, period ±4ms, 누락/재시도 원인 분리 |
+| G7 운영 | 단일 point TCP start→Wi-Fi OFF→RF→commit→ON→GET/ACKFILE/PURGE | AP/Pi 접속 기록, 앵커 Wi-Fi 모드 확인·펌웨어 RF 시작 가드, USB 원시 로그 | 보드 기록상 RF 구간 Wi-Fi OFF, 양단 ID/원본 CRC 검증, 임의 삭제 0 |
 | G8 다중 point | 32+32+20, 10×32, route resume | Pi route journal, 전원/USB/TCP 차단 | 각 point 원본 해시 재생, 불완전 점 자동 재측정 없음, RF 공백 별도 보고 |
-| G9 정전 | Armed/Measuring/Draining/Flash-temp/rename/ACK/OTA 6개 절단점 | 하드웨어 릴레이 전원차단, 복원 | 미커밋 RAM 손실은 명시 HOLD, 기존 원본 덮어쓰기 0, 손상 파일 오승인 0 |
+| G9 정전 | Armed/Measuring/Draining/Flash-temp/rename/ACK/OTA 단계별 전원 차단 | 보드 전원 수동 차단 또는 사용 가능한 전원 제어, 재부팅 로그로 복원 확인 | 미커밋 RAM 손실은 명시 HOLD, 기존 원본 덮어쓰기 0, 손상 파일 오승인 0 |
 | G10 OTA | 잘못된 역할 이미지, wrong sha, U_SPIFFS 요청, 중단 업데이트, rollback | 60–600초 정비창, 역할별 파티션/부트 확인 | 근거 없는 OTA 안전/롤백 성공 주장 금지, 기존 파일 불변 |
-| G11 장기 | 1h/24h 반복 운영, 인증/PLL/heap/stack, USB 조각 결손 | 고장 주입·스코프·heap watermark | 데이터 누락이 원인별로 기록, 복구 후 원본 byte 동일, heap 저수위 문턱 지킴 |
-| G12 이동 | 0.2m/s 로봇 및 회전, FP·NLoS | 로봇 GT/odom/IMU 실제 시간축 비교 | 반복 P2는 반복 시각 사용, 통신 손실·물리 거리 보정 별도 보고 |
+| G11 장기 | 1h/24h 반복 운영, 인증/PLL/heap/stack, USB 조각 결손 | 고장 주입·부팅 ID·보호 정지 로그·heap watermark | 데이터 누락이 원인별로 기록, 복구 후 원본 byte 동일, heap 저수위 문턱 지킴 |
+| G12 이동 | 0.2m/s 로봇 및 회전, FP·NLoS | 공통 동기화 사건과 odom/IMU/RF 원본의 시간축 비교 | 반복 P2는 반복 시각 사용, 통신 손실·물리 거리 보정 별도 보고 |
 
 ## 적대적 반례 카탈로그
 
@@ -54,7 +54,7 @@
 }
 \`\`\`
 
-누락, 오류 후 복구, 정상 최초 수신을 따로 집계하고 **최초 RF 성공률**과 **복구 후 데이터 보존율**을 구분합니다. 모든 시험에 실측 전원/네트워크/보드 정보가 없으면 해당 Gate는 NOT_RUN이며 합격으로 기입하지 않습니다.
+누락, 오류 후 복구, 정상 최초 수신을 따로 집계하고 **최초 RF 성공률**과 **복구 후 데이터 보존율**을 구분합니다. 합격에는 각 단계의 보드·Pi·호스트 원본 증거가 필요합니다. 외부 계측 장비는 필수 합격 조건에서 제외합니다. 보드 진단으로 확인한 정상 동작을 기록하며, CS 중첩·전원 강하·전파의 물리 파형과 절대 위치 정확도는 실측 판정 항목에 포함하지 않습니다. 필수 원본이 빠진 단계는 합격으로 기입하지 않습니다.
 
 ## 실제 실행 명령(운영 후보)
 
@@ -91,3 +91,59 @@ manifest `tests` 배열은 G0..G12 중 진행된 각 단계에
 `{"id":"G7","attempted":true,"pass":true,"evidence":[{"path":"raw/g7.uart","sha256":"<real 64-hex hash>"}]}`
 형식을 사용합니다. 존재하지 않는 로그·다른 파일 해시·선행단계 실패 후 PASS 선언은
 `FIELD_HOLD` 처리합니다. 개별 `pass` 표기는 실제 시험 원본을 대신하지 않습니다.
+
+## 추가 선택 시험 — 무중단 유선 측정 및 RF/ROS 동기화
+
+기본 G0–G12는 **원격 Wi-Fi OFF 단일 point 운영형**의 인수 계약이다. 아래 선택 시험은 장비 구성이 가능한 경우에만 진행하고, 기존 G 항목의 PASS로 대체하지 않는다.
+
+| ID | 대상 | 순차 절차 | 통과/중단 기준 |
+|---|---|---|---|
+| W01 | 두 USB 연결 연속 Mode8 1,000거래 | 앵커 `OPS NET AUTOSTART 0` 설정→재부팅·실제 Wi-Fi OFF 확인→두 USB 포트 확인→기본 dry-run→`ops_wired_continuous.py --execute --wifi-off-confirmed` | 1,000거래 P1/P2 공통축·전력그리드, 원본 anchor/tag RFB8 두 개와 SHA 증거. 이 시험은 원격 32거래 RAM 제한을 제거한 것이 아님 |
+| W02 | 영속 2Mbps 부팅·프로파일 | 앵커/태그 각 `PROFILE SAVE`, 100회 재부팅·2Mbps 초기 `HELLO/STOP` 수신, UART R8F6 원본 확인 | 부팅 초기 조각 손실·메모리 부족 0, RAM 부족 시 921600 진단 경로·무 RF 자동 START |
+| W03 | Wi-Fi 재시작 방지 | 앵커 유선 준비에서 `AUTOSTART 0` 후 100회 USB 재연결·전원 인가, `AUTOSTART 1` 후 TCP 정비 복원 | 0에서 Wi-Fi ON 없음, 1에서 명시적 연결, 측정 중 Wi-Fi OFF |
+| R01 | 이동 로봇 시간 정합 | anchor/tagA/tagB 각각 *동일 사건*의 `radio_ticks,ros_ns` 동기화 표본≥3, odom CSV, 실제 RF 선택 시각 CSV 제공→`ops_pose_align.py` | 각 도메인의 래핑·드리프트·잔차 검증, 실제 동기화 짝 없이 결과 생성 금지, 범위 밖 외삽 금지 |
+| R02 | P2 반복의 이동 시각 확인 | 반복된 P2 RF 수신 시각과 초기 P2를 일부러 교환한 악성 CSV→모듈별 시계·txn/probe 대조 | 다른 domain·ambiguous wrap/초과 잔차를 무효, 반복의 실제 관측 시각 사용 |
+| E01 | 현장 증거 자동검사 | `ops_acceptance_gate.py --manifest ... --evidence-root ... --expected-git-sha ... --out ...` 실행 | SHA 다른 영수증/미수행/선행 gate 실패는 HOLD. 모든 파일 해시가 맞더라도 `hardware_field_approved=false`: 담당자 실물 서명 별도 |
+
+### 유선 캡처 명령
+
+```bash
+# RF 송신 없음 (dry run)
+python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000
+# 앵커 USB에서 OPS NET AUTOSTART 0 실행하고 실제 OFF 확인 후
+python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000 --execute --wifi-off-confirmed
+```
+
+`PROFILE SAVE`로 초기 전송 속도를 2Mbps로 복원하는 장비에는 `--anchor-initial-baud 2000000`, `--tag-initial-baud 2000000`을 추가한다. 기본 921600으로 착각해 저장/분석을 시작하지 않는다. 현재 보드·배치에 적용할 안테나 지연 설정이 있으면 `--calibration-profile <file>`을 지정한다. 유선과 원격 운영을 같은 세션에 섞지 않고 거래 시작 전에 역할·부팅·설정·최종 CRC를 반드시 대조한다.
+
+### 오프라인 odom 동기화 입력 형식
+
+- `time_sync.csv`: `domain,radio_ticks,ros_ns` (실제 동일 사건에 대응하는 독립 시계 짝)
+- `odom.csv`: `ros_ns,x_m,y_m,yaw_rad`
+- `rf_observations.csv`: `domain,session,txn,probe,radio_ticks,approx_ros_ns` (마지막 `approx_ros_ns`는 여러 40-bit 래핑 후보가 가능한 긴 실행에서만 필수)
+
+```bash
+python operational/host/ops_pose_align.py --sync time_sync.csv --odom odom.csv --rf rf_observations.csv --out captures/poses_aligned.csv
+```
+
+이 도구는 **시계 동기화 사건을 만들어 내지 않습니다**. 단순 ESP 수신 소프트웨어 시각을 RF 물리 시각과 동일시하지 않아야 합니다. 시험 데이터 없이 실제 TurtleBot GT/heading RMSE를 승인할 수 없습니다.
+
+## EAP 실기 시험 (별도 기관망/CA 필요)
+
+- **EAP01** 기관에서 발급한 PEAP용 신뢰 CA 인증서를 `MODE8_EAP_CA_CERT_PEM`에 컴파일로 제공한 이미지에서만 시험. 인증서 없는 기본 이미지의 `OPS NET EAP 1`은 반드시 거부.
+- **EAP02** 앵커 USB에서 `OPS EAPID <UTF8-HEX>`, `OPS EAPUSER <UTF8-HEX>`, `OPS EAPPASS <UTF8-HEX>` 입력 후 `OPS NET EAP 1` → 인증기관 핸드셰이크/연결 확인. 로그에 평문 암호 노출 금지.
+- **EAP03** 다른 인증기관 CA, 잘못된 계정, AP 인증 실패, Wi-Fi OFF 중간 전환을 주입. 오류 발생 시 측정 RF 시작·데이터 삭제가 없어야 함.
+- **EAP04** `OPS NET EAP 0`으로 WPA 개인망으로 복귀. 실제 EAP 기관망을 알 수 없어 실물 합격 여부는 FIELD HOLD.
+
+## M02·M11·M13·M15·M16·M18 신규 단계 시험
+
+| ID | 대상·실행 예시 | 인수 조건 |
+|---|---|---|
+| A-M02 | `ops_plan_long_run.py --route-id 711 --total 1000 --per-point 32 --out plans/1000.json` | 32개 고유 point, 31개×32+마지막 8거래; 이어서 `ops_route.py`의 GET/ACK/PURGE 전 원본 검증. 원격 단일 앵커에서 거래간 무중단이라고 주장 금지 |
+| A-M11 | 기관 PEM CA 컴파일 제공 → USB `OPS EAPID/EAPUSER/EAPPASS` → `OPS NET EAP 1` | CA 누락·오류에서 연결 거부, RF 중 Wi-Fi OFF, 인증 없는 PEAP 금지. 실제 AP 인증 기록·메모리 확보 필수 |
+| A-M13 | `ops_period_sweep.py --anchor COM4 --tag COM7 --out trial --count 20` (dry-run) → 물리 OFF 확인 뒤 `--execute --wifi-off-confirmed` | 200→195→190ms 각 거래 P1/P2 2편파 CIR·거리·호스트 RFB8 100% 검증, 실패 후 짧은 주기 자동 진행 0. 현 200ms 기본 변경 금지 |
+| A-M15 | ROS2 Humble에서 `ops_ros_capture.py --out captures/ros01` → 별도 실제 RF 시계 동기화 짝으로 `ops_pose_align.py` | odom/IMU/header ROS stamp·실제 P2 반복 시각 사용, 이벤트 동기화 없이 물리 위치/heading 수치 생성 거부 |
+| A-M16 | `ops_soak_suite.py --anchor COM4 --tag COM7 --count 1000 --rounds 18 --out captures/soak01` dry-run → 실기에서 명시적 `--execute --wifi-off-confirmed` | 각 epoch 출력 원본·양단 SHA·수집 영수증, 최초 성공률/복구율/큐/PLL 추적, 중단 epoch 자동 RF 재실행 금지. epoch 사이 중단 존재 |
+| A-M18 | `ops_flash_readback.py --role anchor --serial COM4 --image <image> --build-receipt <receipt> --running-app-offset <verified actual offset> --out <receipt>` dry-run → 기기 오프라인에서 `--execute-readback` | read-only byte 동일, source SHA·role·partition offset 기록. 이를 “이미 실행 중인 부트 이미지 검증” 또는 secure boot 검증이라 부르지 않음 |
+
+**통합 인수 중단 조건**: signed OTA 미비 상태에서 3232 listener 활성화, EAP CA 미검증 fallback, 다른 부팅 ID/세션을 혼합, 이중 USB 아닌데 무중단 캡처 승인, 장치 readback에 쓴 가짜 partition offset, 190ms 실기 없이 운영 기본값 변경, 버퍼/PLL 미확인.

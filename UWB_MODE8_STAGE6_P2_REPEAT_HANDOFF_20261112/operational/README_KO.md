@@ -86,3 +86,18 @@ python operational/host/ops_client.py --host <anchor-ip> purge \
 ## 3. 인수 테스트
 
 \`VALIDATION_CHECKLIST_KO.md\`의 A(소스) → B(적대적) → C(타깃 빌드) → D(현장 하드웨어) → E(운영 계층) 순서로 검증한다. 실제 컴파일·실기 결과는 CI run ID와 별도 UART/RFB8 원본 해시로 기록한다.
+
+### 유선 1,000거래 우회 운용 및 Wi-Fi 부팅 정책
+
+원격 Wi-Fi OFF 앵커는 한 point당 최대 32거래이며, 다음 구간 시작 전 저장·Wi-Fi 재연결 공백이 있습니다. 두 보드(앵커와 태그)를 **같은 USB 호스트에 직접 연결할 수 있다면** `ops_wired_continuous.py`를 사용한 기존 Stage6 200ms·2Mbps 장기 연속 캡처 경로가 별도로 있습니다.
+
+앵커에 Wi-Fi 자격증명이 남은 상태로 USB 수집기를 재연결하면 보드가 재부팅되며 Wi-Fi가 자동으로 켜질 수 있습니다. 이를 막기 위해 **앵커 USB 정비 포트에서 `OPS NET AUTOSTART 0`을 먼저 수행**하십시오. 이 설정은 NVS에 보존되고 재부팅 이후에도 Wi-Fi 자동 재연결을 막습니다. 다시 원격 운영으로 복귀할 때는 USB에서 `OPS NET AUTOSTART 1`을 실행합니다. 기본값은 기존처럼 자동 재연결 허용입니다. 이는 실제 Wi-Fi RF 간섭/전원 안정성의 물리 검증을 대체하지 않습니다.
+
+```bash
+# 첫 명령은 실행 계획만 출력하고 RF를 송신하지 않음
+python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000
+# 두 보드 전원/USB/앵커 Wi-Fi OFF를 실물에서 확인한 후에만 실행
+python operational/host/ops_wired_continuous.py --anchor COM4 --tag COM7 --count 1000 --out captures/wired_1000 --execute --wifi-off-confirmed
+```
+
+`PROFILE SAVE`로 2Mbps 부팅이 설정돼 있다면 `--anchor-initial-baud 2000000` 또는 `--tag-initial-baud 2000000`을 추가해야 합니다. `ops_wired_continuous.py`의 기본 921600을 무조건 신뢰하지 마십시오. RF START 실패 시 자동으로 재측정하지 않고 원본·진단 로그를 보존합니다.
