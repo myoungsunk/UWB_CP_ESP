@@ -67,6 +67,10 @@ python operational/host/ops_client.py --host <anchor-ip> purge
 - 단독 \`ops_client.py get\`은 파일만 내려받으며 삭제 승인하지 않는다. 과거 \`--ack\` 옵션과 Python \`get_archive(ack=True)\`는 거부한다. ACKFILE은 신뢰된 호스트의 검증된 \`ops_session.py\` 경로에서만 자동 호출해야 한다. HMAC 키를 가진 다른 클라이언트의 직접 명령은 서버가 구분할 수 없으므로 폐쇄 LAN과 키 보호를 전제로 한다.
 - Pi는 요청 ID가 일치하는 STOPPED·DRAINED와 baud 복귀 응답이 저장된 원시 RFB8에 포함됐는지 확인한다. 양단 부팅 ID, 실제 송수신 시각, P1·P2 선택, CIR 무결성, 공통축·전력 그리드와 주기를 검산한 뒤 GET 연결에서 파일 CRC와 세션을 ACKFILE에 보낸다. 삭제 승인은 부팅 ID·세션·CRC에 묶고 삭제 직전에 폐기한다.
 
+## 최신 적대적 감사
+
+- [96d8430 기준 적대적 재감사·수정·인수 보고](ADVERSARIAL_REAUDIT_96D8430_20261113_KO.md): 독립 검증 범위를 넘는 주장은 제외하고 코드·CI·실기 인수를 분리한다.
+
 ## 3. 인수 테스트
 
 \`VALIDATION_CHECKLIST_KO.md\`의 A(소스) → B(적대적) → C(타깃 빌드) → D(현장 하드웨어) → E(운영 계층) 순서로 검증한다. 실제 컴파일·실기 결과는 CI run ID와 별도 UART/RFB8 원본 해시로 기록한다.

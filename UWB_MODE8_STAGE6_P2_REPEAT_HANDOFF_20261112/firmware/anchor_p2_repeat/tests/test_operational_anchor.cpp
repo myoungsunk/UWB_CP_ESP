@@ -189,12 +189,19 @@ static void testRecovery(){
  assert(LittleFS.files[OPS_ARCHIVE_QUARANTINE]==bytes);
 }
 static void testInvalidTcpNumbers(){
+ config.stage=6;config.period_us=200000;config.baud=2000000;
  opsPhase=OpsPhase::Idle;active=false;WiFi.selected=WIFI_STA;
  connect();
  for(const char* cmd:{"START -1 1","START +1 1","START 4294967296 1",
                        "START 12 1 EXTRA","START 13 -1","START 1 4294967296"}){
   tcp(cmd);assert(opsPhase==OpsPhase::Idle&&starts==0);
  }
+ // Supply a real checksum-valid archive and a completed GET; malformed
+ // inputs must be rejected even when every other ACKFILE condition is true.
+ makeArchive(OPS_ARCHIVE_PATH,41,9);
+ OpsArchiveHeader h;assert(opsReadHeader(h));
+ tcp("GET");assert(opsClient.written.find("END\n")!=std::string::npos);
+ assert(opsDownloaded==opsIdentity(h));
  for(const char* cmd:{"ACKFILE -1 0","ACKFILE 4294967296 0",
                       "ACKFILE 23 -1","ACKFILE 23 4294967296",
                       "ACKFILE 23 0 EXTRA"}){
@@ -205,6 +212,10 @@ static void testInvalidTcpNumbers(){
  tcp("STATUS EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
  tcp("OTA +60");assert(opsClient.written=="ERROR OTA_GUARD\n");
  tcp("OTA 60 EXTRA");assert(opsClient.written=="ERROR OTA_GUARD\n");
+ assert(opsLastAck.boot==0&&opsLastAck.session==0);
+ assert(!nvs.count("file_ack_v2"));
+ assert(LittleFS.remove(OPS_ARCHIVE_PATH));
+ opsDownloaded={};
 }
 
 static void testWifiStart(){
