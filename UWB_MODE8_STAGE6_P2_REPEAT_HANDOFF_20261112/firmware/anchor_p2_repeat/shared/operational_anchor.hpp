@@ -97,10 +97,15 @@ static bool opsArchiveRecord(const dual8::Record& r){
  opsCopyTx(d.tx[4],r.p2_repeat_tx);
  opsCopyRx(d.rx[0],r.responses[0]);opsCopyRx(d.rx[1],r.responses[1]);
  opsCopyRx(d.rx[2],r.response2_rx[0]);opsCopyRx(d.rx[3],r.response2_rx[1]);
- dual8::encode(r.poll_frame,d.frames[0]);
- if(r.have_probe_frame[0])dual8::encode(r.probe_frame[0],d.frames[1]);
- if(r.have_poll2_frame)dual8::encode(r.poll2_frame,d.frames[2]);
- if(r.have_probe_frame[1])dual8::encode(r.probe_frame[1],d.frames[3]);
+ const bool pollOk=dual8::encode(r.poll_frame,d.frames[0]);
+ const bool p1Ok=r.have_probe_frame[0]&&dual8::encode(r.probe_frame[0],d.frames[1]);
+ const bool poll2Ok=r.have_poll2_frame&&dual8::encode(r.poll2_frame,d.frames[2]);
+ const bool p2Ok=r.have_probe_frame[1]&&dual8::encode(r.probe_frame[1],d.frames[3]);
+ // Never report an archive row as complete when raw RF evidence was
+ // omitted, corrupted or not serializable.
+ if(r.complete&&(!pollOk||!p1Ok||!poll2Ok||!p2Ok)){
+  opsArchiveFailure=true;opsPhase=OpsPhase::Fault;return false;
+ }
  d.crc32=dual8::crc32(&d,offsetof(OpsArchiveRow,crc32));
  ++opsRows;
  return true;
