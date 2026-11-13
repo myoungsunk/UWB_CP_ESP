@@ -102,7 +102,7 @@ class FakeServer(threading.Thread):
                     s.sendall(prefix+self.archive[:18]);return
                 s.sendall(prefix+self.archive+b"END\n")
                 ack=f.readline().decode().strip()
-                if ack==f"ACKFILE 789 {parse(self.archive)[\'crc32\']}":s.sendall(b"ACKFILE_OK\n")
+                if ack=="ACKFILE 789 "+str(parse(self.archive)["crc32"]):s.sendall(b"ACKFILE_OK\n")
         except Exception as e:self.error=e
         finally:self.sock.close()
     def check(self,text):
