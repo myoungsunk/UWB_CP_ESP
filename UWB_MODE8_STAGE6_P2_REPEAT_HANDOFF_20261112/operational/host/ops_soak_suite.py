@@ -15,7 +15,7 @@ import subprocess
 import sys
 import time
 
-from ops_route import durable_json, RouteLock, RouteHold
+from ops_route import durable_json, route_lock, RouteHold
 from ops_wired_continuous import verify_receipt
 
 def requirement_bytes(count):
@@ -52,7 +52,7 @@ def main():
             return 0
         if not a.wifi_off_confirmed:
             raise RouteHold("operator must verify anchor Wi-Fi OFF")
-        with RouteLock(a.out):
+        with route_lock(a.out.with_name('.'+a.out.name+'.soak.lock')):
             a.out.mkdir(parents=True,exist_ok=False)
             journal=a.out/"soak_receipt.json"
             plan["status"]="IN_PROGRESS"
