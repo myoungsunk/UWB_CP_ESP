@@ -94,6 +94,40 @@ class RouteTests(unittest.TestCase):
                 with self.assertRaisesRegex(RouteHold,"on-disk paired RF re-audit failed"):
                     ctl.verify_point(0)
 
+    def test_route_replays_both_endpoints_and_detects_new_disk_corruption(self):
+        # Positive replay proof is required even when the prior receipt claims
+        # PASS. The stored journal hash then protects against later bit rot.
+        with tempfile.TemporaryDirectory() as d:
+            one={**PLAN,"points":[{"point_id":"A1","count":1}]}
+            ctl=RouteController(one,Path(d)/"route","127.0.0.1","COM4",KEY)
+            entry=ctl.data["points"][0]
+            folder=ctl.point_folder(0);folder.mkdir()
+            tag=folder/"tag.rfb8";tag.write_bytes(b"original-valid-test-placeholder")
+            (folder/"anchor_archive.bin").write_bytes(b"anchor-test-placeholder")
+            receipt={"status":"SAVED_BOTH_ENDPOINTS",
+                     "requested_session":entry["session"],"requested_count":1,
+                     "anchor_identity":{"boot":5,"config_id":6,"firmware":"anchor"},
+                     "tag_identity":{"boot":7,"config_id":6,"firmware":"tag"},
+                     "tag_capture":{"records":1},
+                     "paired_audit":{"paired_records":1,"p1_common_grid":1,"p2_common_grid":1}}
+            (folder/"operational_receipt.json").write_text(json.dumps(receipt))
+            doc={"session":entry["session"],"count":1,"boot":5,"config":6,
+                 "crc32":123,"rows":[]}
+            verified={"paired_records":1,"p1_common_grid":1,"p2_common_grid":1}
+            with patch("ops_route.parse_archive",return_value=doc):
+                with patch("ops_session.audit_archived_session",return_value=verified) as replay:
+                    proof=ctl.verify_point(0)
+                    replay.assert_called_once()
+                    entry.update(proof)
+                    tag.write_bytes(b"corrupted-after-first-verified-receipt")
+                    with self.assertRaisesRegex(RouteHold,"tag_sha256 changed"):
+                        ctl.verify_point(0)
+                    with patch.object(ctl,"anchor_status") as remote:
+                        entry["state"]="VERIFIED"
+                        with self.assertRaises(RouteHold):
+                            ctl.purge(0)
+                        remote.assert_not_called()
+
     def test_verified_route_rejects_changed_hash_before_purge(self):
         with tempfile.TemporaryDirectory() as d:
             ctl=RouteController(PLAN,Path(d)/"route","127.0.0.1","COM4",KEY)
