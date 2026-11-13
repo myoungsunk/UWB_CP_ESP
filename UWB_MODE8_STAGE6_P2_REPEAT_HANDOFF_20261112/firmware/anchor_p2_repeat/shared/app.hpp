@@ -10,6 +10,14 @@
 #include <atomic>
 #include <new>
 #include <stdlib.h>
+#if DUAL8_ANCHOR
+#include <WiFi.h>
+#include <Preferences.h>
+#include <LittleFS.h>
+#include <ArduinoOTA.h>
+#include <Update.h>
+#include <mbedtls/md.h>
+#endif
 namespace dual8app {
 using namespace dual8;
 static Esp32Port port;static Config config;
@@ -49,6 +57,14 @@ static bool opsRecordsDrained(){
   &&!opsWriterBusy.load(std::memory_order_acquire)&&freeQ&&outQ&&uxQueueMessagesWaiting(freeQ)==POOL;
 }
 
+#if DUAL8_ANCHOR
+static bool opsArchiveEnabled();
+static bool opsArchiveRecord(const dual8::Record&);
+static void opsSetup();
+static void opsLoop();
+static bool opsUsbCommand(const char*);
+static bool opsInternalStart=false;
+#endif
 static const char*role(){return DUAL8_ANCHOR?"anchor":"tag";}
 static void emit(const char*fmt,...) __attribute__((format(printf,1,2)));
 static void emit(const char*fmt,...){
@@ -237,6 +253,11 @@ static void writer(void*){
   }else{
    const uint8_t i=o.index;Record& r=recordAt(i);
    const uint32_t started=uint32_t(esp_timer_get_time()),sequence=recordSequence++;
+#if DUAL8_ANCHOR
+   if(opsArchiveEnabled()){
+    ++sent;releaseRecord(i);
+   }else
+#endif
    if(writeRecord(r,json,sequence)){
     ++sent;
     if(r.cfg.stage==6&&r.cfg.baud==2000000){
@@ -288,7 +309,7 @@ static bool number(const char*s,uint32_t&v){
  if(!s||!*s||*s=='-'||*s=='+'){return false;}
  char*end;unsigned long long n=strtoull(s,&end,10);if(*end||n>0xffffffffULL)return false;v=uint32_t(n);return true;
 }
-static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":false,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u,\"queue_schedule_skips\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load(),queueScheduleSkips);}
+static void hello(){emit("{\"event\":\"HELLO\",\"role\":\"%s\",\"firmware\":\"%s\",\"mode\":8,\"wire\":\"RFB8\",\"record_replay\":1,\"record_retransmissions\":%lu,\"hardware_profile\":\"%s\",\"hw_ok\":%s,\"fault_latched\":%s,\"boot\":%lu,\"config_id\":%lu,\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,\"active\":%s,\"wifi_ota\":true,\"cal_default_is_uncalibrated\":true,\"drops\":%lu,\"sent\":%lu,\"period_miss\":%lu,\"writer_max_us\":%lu,\"queue_pool\":%u,\"queue_ack_queued\":%u,\"queue_ack_retired\":%u,\"queue_peak_awaiting_ack\":%u,\"queue_schedule_skips\":%u}",role(),firmwareId(DUAL8_ANCHOR),(unsigned long)retransmissions.load(),DUAL8_ANCHOR?"esp32-dw1000-anchor-21-22-5":"esp32-dw1000-tag-ab-21-22-17-25-26-27",hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)boot,(unsigned long)configId(config),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,active?"true":"false",(unsigned long)drops.load(),(unsigned long)sent.load(),(unsigned long)periodMiss,(unsigned long)writerMaxUs.load(),POOL,ackQueued.load(),ackRetired.load(),peakAwaitingAck.load(),queueScheduleSkips);}
 static void stop(uint32_t request=0){
  active=false;remaining=0;idleAll();
  emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",role(),(unsigned long)session,(unsigned long)request);
@@ -348,6 +369,13 @@ static void command(char*line){
   "PLLSTATUS; RXFAULT; RXEDGES [index]; "
 #endif
   "SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; RESET\"}");return;}
+#if DUAL8_ANCHOR
+ if(opsArchiveEnabled()&&!opsInternalStart&&
+    (!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
+     !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))){
+  emit("{\"event\":\"ERROR\",\"reason\":\"OPS_ARCHIVE_LOCK\"}");return;
+ }
+#endif
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
  if((!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
       !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))
@@ -426,6 +454,9 @@ static void command(char*line){
  }
  emit("{\"event\":\"ERROR\",\"reason\":\"UNKNOWN_COMMAND\"}");
 }
+#if DUAL8_ANCHOR
+#include "operational_anchor.hpp"
+#endif
 static void service(){
  static char b[192];static size_t n=0;static bool overflow=false;
  uint8_t incoming[192];
@@ -433,7 +464,13 @@ static void service(){
  for(int i=0;i<count;++i){
   const char c=char(incoming[i]);
   if(c=='\n'){
-   if(!overflow){b[n]=0;command(b);}else emit("{\"event\":\"ERROR\",\"reason\":\"COMMAND_TOO_LONG\"}");
+   if(!overflow){b[n]=0;
+#if DUAL8_ANCHOR
+     if(!opsUsbCommand(b))command(b);
+#else
+     command(b);
+#endif
+   }else emit("{\"event\":\"ERROR\",\"reason\":\"COMMAND_TOO_LONG\"}");
    n=0;overflow=false;
   }else if(c!='\r'){
    if(n+1<sizeof b)b[n++]=c;else overflow=true;
@@ -452,10 +489,18 @@ static void setup(){
  }
  for(uint8_t i=0;i<POOL;++i)xQueueSend(freeQ,&i,0);
  if(xTaskCreatePinnedToCore(writer,"dual8_writer",8192,nullptr,1,nullptr,0)!=pdPASS){Serial.println("FATAL_WRITER");while(true)delay(1000);}
- boot=esp_random();if(!boot)boot=1;port.configure(config);hwOk=port.initialize();hello();
+ boot=esp_random();if(!boot)boot=1;port.configure(config);hwOk=port.initialize();
+#if DUAL8_ANCHOR
+ opsSetup();
+#endif
+ hello();
 }
 static void loop(){
- service();if(!active){delay(1);return;}
+ service();
+#if DUAL8_ANCHOR
+ opsLoop();
+#endif
+ if(!active){delay(1);return;}
  if(port.nowUs()>runExpire){emit("{\"event\":\"SESSION_DEADLINE\"}");stop();return;}
 #if DUAL8_ANCHOR
  if(port.nowUs()<nextStart){port.relax();return;}
@@ -471,6 +516,10 @@ static void loop(){
  }
  auto& record=recordAt(idx);
  runAnchor(port,config,session,txn++,boot,peerBoot,record);
+ if(!opsArchiveRecord(record)){
+  emit("{\"event\":\"ERROR\",\"reason\":\"OPS_ARCHIVE_RECORD_FAILURE\"}");
+  stop();
+ }
  if(record.peer_boot)peerBoot=record.peer_boot;
  submit(uint8_t(idx));
  if(port.faulted()&&port.anchorRxFault().phase)emitAnchorRxFault();
