@@ -376,6 +376,15 @@ static void command(char*line){
   emit("{\"event\":\"ERROR\",\"reason\":\"OPS_ARCHIVE_LOCK\"}");return;
  }
 #endif
+#if DUAL8_ANCHOR
+ // Wi-Fi maintenance and ArduinoOTA must never overlap a user-started
+ // Mode 8 RF session or a state-changing USB command.
+ if(WiFi.getMode()!=WIFI_OFF&&!opsInternalStart&&
+    (!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
+     !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))){
+  emit("{\"event\":\"ERROR\",\"reason\":\"OPS_WIFI_MAINTENANCE\"}");return;
+ }
+#endif
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
  if((!strcmp(w[0],"START")||!strcmp(w[0],"SET")||!strcmp(w[0],"BAUD")||
       !strcmp(w[0],"ANT")||!strcmp(w[0],"RESET")||!strcmp(w[0],"SELFTEST"))
