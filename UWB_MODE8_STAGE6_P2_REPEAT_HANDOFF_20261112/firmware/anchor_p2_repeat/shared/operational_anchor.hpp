@@ -463,7 +463,10 @@ static void opsLoop(){
  }
  if(opsPhase==OpsPhase::Measuring&&!active)opsPhase=OpsPhase::Draining;
  if(opsPhase==OpsPhase::Draining&&opsRecordsDrained()){
-  if(opsPersistArchive()){opsPhase=OpsPhase::Stored;opsWifiStart();}
+  if(opsPersistArchive()){
+   delete[] opsArchive;opsArchive=nullptr; // release RF archival RAM before Wi-Fi TCP maintenance
+   opsPhase=OpsPhase::Stored;opsWifiStart();
+  }
   else opsPhase=OpsPhase::Fault;
  }
  if(opsOtaOpen){
