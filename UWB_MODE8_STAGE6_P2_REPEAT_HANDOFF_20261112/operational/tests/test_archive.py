@@ -20,7 +20,7 @@ KEY=bytes(range(32))
 def archive(count=2, session=789, *, frame=False):
     rows=[]
     for i in range(count):
-        prefix=PREFIX.pack(session,i,12345,9876,321,0,1,3,3,0)
+        prefix=PREFIX.pack(session,i,12345,9876,321,0,0,3,3,0)
         tx=b"".join(TX.pack(0,0,0,0,0) for _ in range(5))
         rx=b"".join(RX.pack(0,0,0,0,0,0,0,0,0,bytes(96)) for _ in range(4))
         frames=bytes(384)
@@ -66,6 +66,14 @@ class ArchiveTests(unittest.TestCase):
         b[offset+RX.size-1]=0xAA
         struct.pack_into("<I",b,32+ROW_BYTES-4,zlib.crc32(b[32:32+ROW_BYTES-4]))
         with self.assertRaisesRegex(ArchiveError,"orphaned"):parse(recalc(b))
+    def test_complete_without_source_frames_rejected_even_with_valid_crcs(self):
+        b=bytearray(archive())
+        b[32 + 24] = 1  # complete=True in row 0
+        off=32
+        struct.pack_into("<I",b,off+ROW_BYTES-4,zlib.crc32(b[off:off+ROW_BYTES-4]))
+        with self.assertRaisesRegex(ArchiveError,"missing authenticated RF evidence"):
+            parse(recalc(b))
+
     def test_overlarge_count(self):
         b=bytearray(archive());struct.pack_into("<I",b,20,33)
         with self.assertRaises(ArchiveError):parse(recalc(b))
