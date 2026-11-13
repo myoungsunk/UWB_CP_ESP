@@ -15,7 +15,7 @@ import threading
 import time
 import sys
 from rfb8 import Decoder, CIR_BYTES, RAW_BYTES, read_file
-from capture_audit import verify_capture, stage6_accounting, strict_shutdown_ok
+from capture_audit import diagnostic_period_us, verify_capture, stage6_accounting, strict_shutdown_ok
 from uart_fragments import ReplayReceiver
 from calibration_profile import load_profile, check_record_calibration
 
@@ -131,11 +131,12 @@ def verify_pll_calibration(link, boot):
 
 
 def restore_default_baud(link, period_us, *, identity=None, session=None):
-    if period_us < 300000:
-        send_while_drained(link, "SET PERIOD_US 300000", lambda m: (
-            m.get("event") == "HELLO" and m.get("period_us") == 300000))
+    period = max(period_us, diagnostic_period_us((identity or {}).get("firmware")))
+    if period_us < period:
+        send_while_drained(link, f"SET PERIOD_US {period}", lambda m: (
+            m.get("event") == "HELLO" and m.get("period_us") == period))
         if identity is not None:
-            fresh_hello(link, identity, session, baud=2000000, period_us=300000)
+            fresh_hello(link, identity, session, baud=2000000, period_us=period)
     # seal_capture disables record ACKs/NACKs before this transition.
     silent = " SILENT" if identity is not None and identity.get("silent_baud") == 1 else ""
     send_while_drained(link, "BAUD 921600" + silent)
@@ -144,7 +145,7 @@ def restore_default_baud(link, period_us, *, identity=None, session=None):
     with link.write_lock:
         link.serial.baudrate = 921600
     if identity is not None:
-        return fresh_hello(link, identity, session, baud=921600, period_us=max(period_us, 300000))
+        return fresh_hello(link, identity, session, baud=921600, period_us=period)
     link.send("HELLO")
     return link.wait(lambda m: m.get("event") == "HELLO" and m.get("baud") == 921600)
 
@@ -676,6 +677,11 @@ def capture(args, profile):
                     raise ValueError("Tag image does not support required clock evidence")
                 if h.get("clock_trace") == 1:
                     receipt["tag_pll_calibration"] = verify_pll_calibration(link, h["boot"])
+            if args.stage == 6 and link.serial.baudrate == 921600:
+                diagnostic = diagnostic_period_us(h.get("firmware"))
+                if h.get("period_us", 0) < diagnostic:
+                    send_while_drained(link, f"SET PERIOD_US {diagnostic}", lambda m: (
+                        m.get("event") == "HELLO" and m.get("period_us") == diagnostic))
             send_while_drained(link, f"SET STAGE {args.stage}",
                                lambda m: m.get("event") == "HELLO" and m.get("stage") == args.stage)
             if link.serial.baudrate != args.baud:

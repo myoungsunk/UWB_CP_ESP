@@ -183,10 +183,25 @@ class SessionAckTests(unittest.TestCase):
              patch.object(ops_session.time, "sleep"):
             self.assertIs(ops_session.prepare_tag(link, 921600), ready)
         self.assertEqual([c.args[1] for c in send.call_args_list],
-                         ["SET STAGE 6", "BAUD 2000000 SILENT", "SET PERIOD_US 200000"])
+                         ["SET PERIOD_US 320000", "SET STAGE 6", "BAUD 2000000 SILENT", "SET PERIOD_US 200000"])
         self.assertEqual([c.kwargs["baud"] for c in hello.call_args_list], [921600, 2000000, 2000000])
         link.enable_replay.assert_called_once()
         self.assertEqual(link.serial.baudrate, 2000000)
+
+    def test_fresh_pair_restores_921600_with_enough_diagnostic_period(self):
+        link = Mock()
+        link.write_lock = Lock()
+        identity = {"boot": 7, "firmware": ops_session.P1_FRESH_FIRMWARES[1], "silent_baud": 1}
+        import run_pair
+        with patch.object(run_pair, "fresh_hello") as hello, \
+             patch.object(run_pair, "send_while_drained") as send, \
+             patch.object(run_pair.time, "sleep"):
+            run_pair.restore_default_baud(link, 200000, identity=identity, session=100)
+        self.assertEqual([call.args[1] for call in send.call_args_list],
+                         ["SET PERIOD_US 320000", "BAUD 921600 SILENT"])
+        self.assertEqual([call.kwargs["period_us"] for call in hello.call_args_list],
+                         [320000, 320000])
+        self.assertEqual(link.serial.baudrate, 921600)
 
     def test_paired_count_cannot_hide_tag_period_overrun_or_missing_ack(self):
         before = {"sent": 41, "drops": 2}

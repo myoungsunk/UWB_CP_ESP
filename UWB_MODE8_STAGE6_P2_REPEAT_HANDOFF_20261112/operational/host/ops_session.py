@@ -21,7 +21,7 @@ TAG_TOOLS=ROOT/"firmware/tag_p2_repeat/tools"
 sys.path.insert(0,str(TAG_TOOLS))
 from run_pair import (Link, cir_payload_integrity, fresh_hello, restore_default_baud,
                       send_while_drained, verify_shutdown_wire)
-from capture_audit import OPERATIONAL_DRAIN_FIRMWARES, P1_FRESH_FIRMWARES, P2_FRESH_FIRMWARES, verify_capture
+from capture_audit import OPERATIONAL_DRAIN_FIRMWARES, P1_FRESH_FIRMWARES, P2_FRESH_FIRMWARES, diagnostic_period_us, verify_capture
 from ops_archive import MAX_RECORDS, parse, to_anchor_record
 from ops_client import OperationalClient, TransportError
 from rfb8 import Decoder, read_file
@@ -65,6 +65,11 @@ def prepare_tag(link, initial_baud, firmware=None):
     test = link.wait(lambda m: m.get("event") == "SELFTEST" and m.get("role") == "tag")
     if test.get("pass") is not True:
         raise RuntimeError(f"Tag SELFTEST failed: {test}")
+    if initial_baud == 921600:
+        diagnostic = diagnostic_period_us(firmware)
+        if connected.get("period_us", 0) < diagnostic:
+            send_while_drained(link, f"SET PERIOD_US {diagnostic}", lambda m: (
+                m.get("event") == "HELLO" and m.get("period_us") == diagnostic))
     send_while_drained(link, "SET STAGE 6", lambda m: m.get("event") == "HELLO" and m.get("stage") == 6)
     if initial_baud != 2000000:
         send_while_drained(link, "BAUD 2000000 SILENT")

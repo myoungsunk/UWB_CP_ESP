@@ -67,6 +67,12 @@ P2_REPEAT_FIRMWARES = tuple(firmware for pair in REPEAT_PAIRS for firmware in pa
 TICK_MODULUS = 1 << 40
 
 
+def diagnostic_period_us(firmware):
+    # Stage 6 at 921600 baud has no fragment framing but must accommodate
+    # its entire raw CIR and 8500-byte metadata allowance with 20% headroom.
+    return 320000 if firmware in P1_FRESH_FIRMWARES else 300000
+
+
 def p1_repeat_contract(anchor: dict, tag: dict) -> bool:
     return (anchor.get('stage') == 6 or tag.get('stage') == 6) and (
         any(anchor.get('firmware') in pair or tag.get('firmware') in pair for pair in P1_REPEAT_PAIRS) or
@@ -739,7 +745,7 @@ def strict_shutdown_ok(receipt):
                     (receipt["baud"] == 2000000 and
                      (restore_proof["request"] == status_proof["request"] or
                       restore_proof["hello"].get("period_us") !=
-                      max(300000, status_proof["hello"]["period_us"])))):
+                      max(diagnostic_period_us(firmware), status_proof["hello"]["period_us"])))):
                 return False
             transport = stats["transport"]
             if (transport.get("pending_records") or transport.get("unresolved_sequences")
