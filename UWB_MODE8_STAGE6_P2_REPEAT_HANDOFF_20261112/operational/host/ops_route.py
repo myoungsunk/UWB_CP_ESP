@@ -82,13 +82,17 @@ def durable_json(path,data):
 
 class RouteController:
     def __init__(self,plan,out,anchor_ip,tag_port,key,*,anchor_port=29310,
-                 initial_baud=921600,resume=False,manual_confirm=False,timeout=90):
+                 initial_baud=921600,resume=False,manual_confirm=False,timeout=90,
+                 approval_key=None):
         self.plan=validate_plan(plan)
         if len(key)!=32:raise ValueError("32-byte HMAC key required")
         self.out=Path(out);self.path=self.out/"route_receipt.json"
         self.anchor_ip=anchor_ip;self.tag_port=tag_port;self.key=key
         self.anchor_port=anchor_port;self.initial_baud=initial_baud
         self.manual_confirm=manual_confirm;self.timeout=timeout
+        if approval_key is not None and (len(approval_key)!=32 or approval_key==key):
+            raise ValueError("custody key must be separate from TCP login key")
+        self.approval_key=approval_key
         digest=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(",",":")).encode()).hexdigest()
         if resume:
             if not self.path.is_file():raise RouteHold("resume requires existing durable journal")
@@ -160,10 +164,11 @@ class RouteController:
             status.get("file_acked") is not True):
             raise RouteHold("remote archive is not the ACKed original point")
         entry["state"]="PURGE_INTENT";self.save()
-        with OperationalClient(self.anchor_ip,self.key,self.anchor_port,timeout=8) as client:
-            if client.boot!=entry["anchor_boot"]:
-                raise RouteHold("anchor rebooted during purge")
-            reply=client.command("PURGE")
+        if self.approval_key is None:
+            raise RouteHold("separate custody approval key required; no purge")
+        with OperationalClient(self.anchor_ip,self.key,self.anchor_port,timeout=8,
+                               approval_key=self.approval_key) as client:
+            reply=client.purge_archive(entry["session"],entry["archive_crc"],entry["anchor_boot"])
             if reply!="PURGE_OK":raise RouteHold(f"anchor rejected purge: {reply}")
         final=self.anchor_status()
         if final.get("phase")!="IDLE" or final.get("file") is not False:
@@ -183,7 +188,7 @@ class RouteController:
                  "--anchor-ip",self.anchor_ip,"--anchor-port",str(self.anchor_port),
                  "--tag-port",self.tag_port,"--session",str(entry["session"]),
                  "--count",str(entry["count"]),"--out",str(folder),
-                 "--tag-initial-baud",str(self.initial_baud)]
+                 "--tag-initial-baud",str(self.initial_baud if index==0 else 921600)]
         result=subprocess.run(command,check=False)
         if result.returncode:
             raise RouteHold(f"point {entry['point_id']} capture incomplete (exit {result.returncode}); do not automatically repeat RF")
@@ -214,16 +219,21 @@ def main():
     ap.add_argument("--tag-port",required=True)
     ap.add_argument("--anchor-port",type=int,default=29310)
     ap.add_argument("--key-env",default="MODE8_AUTH_KEY_HEX")
+    ap.add_argument("--approval-key-env",default="MODE8_APPROVAL_KEY_HEX")
     ap.add_argument("--tag-initial-baud",type=int,choices=(921600,2000000),default=921600)
     ap.add_argument("--resume",action="store_true")
     ap.add_argument("--manual-confirm",action="store_true")
     args=ap.parse_args()
     key=bytes.fromhex(os.getenv(args.key_env,""))
+    approval_key=bytes.fromhex(os.getenv(args.approval_key_env,""))
+    if len(approval_key)!=32 or approval_key==key:
+        ap.error("distinct MODE8_APPROVAL_KEY_HEX is required before starting any route")
     try:
         ctl=RouteController(json.loads(args.plan.read_text(encoding="utf-8")),
                             args.out,args.anchor_ip,args.tag_port,key,
                             anchor_port=args.anchor_port,initial_baud=args.tag_initial_baud,
-                            resume=args.resume,manual_confirm=args.manual_confirm)
+                            resume=args.resume,manual_confirm=args.manual_confirm,
+                            approval_key=approval_key)
         ctl.run()
         print(f"Mode8 route complete: {ctl.path}")
         return 0

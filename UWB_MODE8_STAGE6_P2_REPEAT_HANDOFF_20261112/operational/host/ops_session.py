@@ -131,6 +131,7 @@ def main()->int:
     ap.add_argument("--baud",type=int,default=2000000,choices=(921600,2000000))
     ap.add_argument("--out",type=Path,required=True)
     ap.add_argument("--key-env",default="MODE8_AUTH_KEY_HEX")
+    ap.add_argument("--approval-key-env",default="MODE8_APPROVAL_KEY_HEX")
     ap.add_argument("--anchor-reconnect-timeout",type=int,default=90)
     args=ap.parse_args()
     if not 1<=args.count<=MAX_RECORDS or not 1<=args.session<=0xffffffff:
@@ -141,6 +142,10 @@ def main()->int:
     try:key=bytes.fromhex(raw)
     except ValueError:ap.error("Invalid authentication key hex")
     if len(key)!=32:ap.error(f"Set {args.key_env} to the provisioned 32-byte key")
+    try:approval_key=bytes.fromhex(os.environ.get(args.approval_key_env,""))
+    except ValueError:ap.error("invalid custody key hex")
+    if len(approval_key)!=32 or approval_key==key:
+        ap.error("distinct MODE8_APPROVAL_KEY_HEX required before RF START")
     args.out.mkdir(parents=True,exist_ok=False)
     receipt={"requested_session":args.session,"requested_count":args.count,
              "tag_port":args.tag_port,"anchor":args.anchor_ip,"status":"INCOMPLETE"}
@@ -219,7 +224,7 @@ def main()->int:
                 stored.get("hw_ok") is not True or stored.get("fault_latched") is not False or
                 stored.get("period_miss")!=0 or stored.get("failure")):
             raise RuntimeError(f"Anchor did not prove clean archive finalization: {stored}")
-        with OperationalClient(args.anchor_ip,key,args.anchor_port) as ctl:
+        with OperationalClient(args.anchor_ip,key,args.anchor_port,approval_key=approval_key) as ctl:
             if ctl.boot!=anchor["boot"]:
                 raise RuntimeError("Anchor restarted before GET")
             doc=ctl.get_archive(args.out/"anchor_archive.bin",args.session,ack=False)

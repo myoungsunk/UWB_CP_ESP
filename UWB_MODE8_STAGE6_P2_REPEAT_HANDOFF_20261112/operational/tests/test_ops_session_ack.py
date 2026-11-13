@@ -70,7 +70,8 @@ class SessionAckTests(unittest.TestCase):
                         cm.__exit__ = Mock(return_value=False)
                         contexts.append(cm)
                     with patch.object(sys, "argv", args), \
-                         patch.dict(os.environ, {"MODE8_AUTH_KEY_HEX": "00" * 32}), \
+                         patch.dict(os.environ, {"MODE8_AUTH_KEY_HEX": "00" * 32,
+                                                   "MODE8_APPROVAL_KEY_HEX": "11" * 32}), \
                          patch.object(ops_session, "Link", return_value=link), \
                          patch.object(ops_session, "OperationalClient", side_effect=contexts), \
                          patch.object(ops_session, "wait_for_anchor", return_value=stored), \

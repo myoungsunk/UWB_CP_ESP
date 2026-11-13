@@ -13,7 +13,7 @@
 | M04 | 무중단 1000거래(5 Hz) Wi-Fi OFF RF와 동시에 앵커 원본 보존 | HOLD — 기존 ESP32 내부 RAM 제한 | RF 미간섭 외부/분리 저장 또는 별도 데이터 회수 하드웨어 필요. USB 실험용 1000거래와 운영형은 별개 |
 | M05 | 측정 중 전원 차단 시 미커밋 RAM 원본 무손실 | HOLD — 물리적으로 RAM 보존 불가 | 전원 차단 뒤 진짜 raw 원본을 복원하려면 UPS/비휘발성 로깅 필요. 현재는 fail-closed와 ≤32거래 손실 범위 분명히 표시 |
 | M06 | 커밋 저널의 중단/CRC 복구, 자동 덮어쓰기 방지 | IMPLEMENTED / FIELD HOLD | tmp 검증·원자 rename, 손상 tmp 보존/격리; 실제 플래시 정전 주입 미실시 |
-| M07 | 파일 ACK/삭제 권한의 구분, 승인 없는 삭제 금지 | PARTIAL | 현재 동일 TCP HMAC 인증으로 GET/ACKFILE/PURGE 가능. 별도 승인권한/검증 영수증 적용 및 실기 시험 필요 |
+| M07 | 파일 ACK/삭제 권한의 구분, 승인 없는 삭제 금지 | IMPLEMENTED / FIELD HOLD | 별도 USB DELETEKEY, 세션·boot·CRC 및 연결 nonce와 ACK/PURGE 용도별 HMAC. 실물 보안 시험 필요 |
 | M08 | OTA 이미지의 앵커/태그 역할·해시 확인 | PARTIAL | 기존 ArduinoOTA 정비 창·파티션 검사만 존재. 실제 image role 검증·서명 확인 미인수 |
 | M09 | 잘못된 OTA의 안전 자동 롤백/부팅 확인 | HOLD | 부트로더 rollback/OTA 파티션 설정, 이미지 검증 서명/실물 전원 차단 증거 필요 |
 | M10 | ESP32 태그 OTA·원격 복구 | NOT_STARTED / OPTIONAL | 현재 태그는 Pi USB로 업로드. Wi-Fi 추가 시 RF/전원/메모리 동시성 새 감사 필요 |

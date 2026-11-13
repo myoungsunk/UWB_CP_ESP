@@ -45,6 +45,8 @@ ESP32 DevKit V1 및 현장 배선 확인 후, 복원 가능한 기존 펌웨어 
 6. 끝나면 앵커 \`m8_pending.bin\`이 검산된 뒤 Wi-Fi 재연결. Pi는 \`anchor_archive.bin\`을 받고 원시 \`tag.rfb8\`와 세션·부팅·설정을 교차 대조 후 ACKFILE 전송
 7. HOST가 실제 분석·백업을 마친 후 명시적 \`PURGE\`; 파일 삭제는 자동 실행하지 않는다
 
+**삭제 승인 권한 분리**: USB에서 `OPS DELETEKEY <64-HEX>`를 별도로 지정하고 Pi의 `MODE8_APPROVAL_KEY_HEX` 환경변수를 설정합니다. 이 키는 `OPS AUTH`와 달라야 합니다. 파일 승인/삭제는 접속별 nonce + boot + session + CRC + ACK/PURGE 동작에 대한 별도 HMAC를 요구합니다. 외부 LAN에는 포트를 공개하지 마십시오. 분리 키가 없는 단독 GET은 보관 파일을 내려받을 수 있지만 삭제 권한은 없습니다.
+
 **USB OPS 명령**: \`OPS STATUS\`, \`OPS SSID <UTF8-HEX>\`, \`OPS PASS <UTF8-HEX>\`, \`OPS AUTH <64-HEX-KEY>\`, \`OPS OTAHASH <64-HEX-SHA256>\`, \`OPS NET ON\`, \`OPS NET OFF\`, \`OPS OTA 60\`, \`OPS PURGE\`.
 
 \`OPS SSID/PASS/AUTH/OTAHASH\` 값은 출력·ACK에 재표시하지 않는다. HMAC 키는 암호학적 난수로 32바이트 생성하고 호스트 환경변수 \`MODE8_AUTH_KEY_HEX\`에 설정한다.
