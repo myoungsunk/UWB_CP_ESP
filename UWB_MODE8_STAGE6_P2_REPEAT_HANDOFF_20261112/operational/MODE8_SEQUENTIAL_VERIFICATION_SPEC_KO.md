@@ -70,3 +70,24 @@ python operational/host/ops_route.py --plan operational/route_example.json --out
 - **AX15**: point가 `REQUESTED` 또는 `VERIFIED`인 상태에서 `operational_receipt.json`의 paired_audit는 PASS로 남기고 `tag.rfb8` 바이트를 변조한다. `ops_route.py`의 `verify_point()`는 반드시 원시 RFB8/앵커 아카이브를 재생해 실패하고, 후속 PURGE 및 새 RF START가 0회이어야 한다.
 - **AX16**: 최초 검증 후 `anchor_archive.bin`, `tag.rfb8` 또는 영수증을 교체한다. journal에 기록된 SHA-256과 새로 계산한 해시가 하나라도 다르면 `RouteHold`로 중단한다.
 - **AX17**: `PURGE_INTENT` 이후 재시작하면서 저장된 증거가 삭제되거나 손상됐다. 원격 앵커가 파일 없음만 반환해도 로컬 원본 재감사 없이 `PURGED`로 확정하지 않는다.
+
+## G0–G12 원본 증거 자동 확인 CLI
+
+`operational/host/ops_acceptance_gate.py`는 단계별 증거 파일의 SHA-256,
+Git SHA, 앵커·태그 실제 flashed BIN SHA와 단계의 선행조건을 검사합니다.
+실물 장치의 계측 사실 자체를 인증하지 않으므로 **검증된 증거가 모두 있어도
+`hardware_field_approved=false`**로 기록합니다. 별도 담당자의 실기 검사·인수 서명은
+기존 검증표에 따라 수행해야 합니다.
+
+```bash
+python operational/host/ops_acceptance_gate.py \
+  --manifest captures/acceptance_manifest.json \
+  --evidence-root captures \
+  --expected-git-sha <40-character-actual-source-sha> \
+  --out captures/acceptance_gate_result.json
+```
+
+manifest `tests` 배열은 G0..G12 중 진행된 각 단계에
+`{"id":"G7","attempted":true,"pass":true,"evidence":[{"path":"raw/g7.uart","sha256":"<real 64-hex hash>"}]}`
+형식을 사용합니다. 존재하지 않는 로그·다른 파일 해시·선행단계 실패 후 PASS 선언은
+`FIELD_HOLD` 처리합니다. 개별 `pass` 표기는 실제 시험 원본을 대신하지 않습니다.
