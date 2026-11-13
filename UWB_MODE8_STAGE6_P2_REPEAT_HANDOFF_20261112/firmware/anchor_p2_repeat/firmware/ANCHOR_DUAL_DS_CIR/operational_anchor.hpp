@@ -18,6 +18,7 @@ static constexpr uint32_t OPS_ARCHIVE_MAX=32,OPS_TCP_PORT=29310;
 static constexpr uint32_t OPS_ARCHIVE_MAGIC=0x4f384d42UL; // "BM8O" LE
 static constexpr uint16_t OPS_ARCHIVE_VERSION=1;
 static const char *OPS_ARCHIVE_PATH="/m8_pending.bin";
+static const char *OPS_ARCHIVE_TMP="/m8_pending.tmp";
 static WiFiServer opsServer(OPS_TCP_PORT);
 static WiFiClient opsClient;
 struct OpsNet {
@@ -117,7 +118,9 @@ static bool opsArchiveRecord(const dual8::Record& r){
  ++opsRows;
  return true;
 }
-static bool opsFilePending(){return opsFsOk&&LittleFS.exists(OPS_ARCHIVE_PATH);}
+static bool opsFilePending(){
+ return opsFsOk&&(LittleFS.exists(OPS_ARCHIVE_PATH)||LittleFS.exists(OPS_ARCHIVE_TMP));
+}
 static bool opsAnyStoredFile(){
  if(!opsFsOk)return true;
  File root=LittleFS.open("/");
@@ -141,8 +144,8 @@ static bool opsReadHeader(OpsArchiveHeader& h){
  h.header_crc=found;
  return valid;
 }
-static bool opsVerifyArchive(const OpsArchiveHeader& h){
- File f=LittleFS.open(OPS_ARCHIVE_PATH,"r");
+static bool opsVerifyArchive(const OpsArchiveHeader& h,const char* path=OPS_ARCHIVE_PATH){
+ File f=LittleFS.open(path,"r");
  if(!f)return false;
  const size_t expected=sizeof h+size_t(h.count)*h.row_bytes;
  if(size_t(f.size())!=expected){f.close();return false;}
@@ -163,14 +166,17 @@ static bool opsPersistArchive(){
  h.session=opsSession;h.boot=boot;h.config=configId(config);h.count=opsRows;
  h.body_crc=dual8::crc32(opsArchive,size_t(opsRows)*sizeof(OpsArchiveRow));
  h.header_crc=0;h.header_crc=dual8::crc32(&h,sizeof h);
- File f=LittleFS.open(OPS_ARCHIVE_PATH,"w");
+ File f=LittleFS.open(OPS_ARCHIVE_TMP,"w");
  if(!f)return false;
  const size_t bytes=size_t(opsRows)*sizeof(OpsArchiveRow);
  const bool ok=f.write(reinterpret_cast<const uint8_t*>(&h),sizeof h)==sizeof h
               &&f.write(reinterpret_cast<const uint8_t*>(opsArchive),bytes)==bytes;
  f.flush();f.close();
- if(!ok||!opsVerifyArchive(h))return false;
- return true;
+ if(!ok||!opsVerifyArchive(h,OPS_ARCHIVE_TMP))return false;
+ if(!LittleFS.rename(OPS_ARCHIVE_TMP,OPS_ARCHIVE_PATH))return false;
+ // A reboot sees either a verified committed file or a pending .tmp;
+ // it must never silently overwrite an interrupted journal.
+ return opsVerifyArchive(h,OPS_ARCHIVE_PATH);
 }
 static bool opsHex(const char*hex,uint8_t*out,size_t capacity,size_t&length){
  length=0;if(!hex)return false;
