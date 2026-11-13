@@ -7,7 +7,7 @@
 #if DUAL8_ANCHOR
 enum class OpsPhase : uint8_t { Idle, Armed, Measuring, Draining, Stored, Fault };
 static OpsPhase opsPhase=OpsPhase::Idle;
-static bool opsInternalStart=false,opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
+static bool opsWifiUp=false,opsFsOk=false,opsOtaOpen=false;
 static bool opsTcpAuthorized=false,opsTcpOverflow=false,opsArchiveFailure=false;
 static uint32_t opsSession=0,opsCount=0,opsRows=0,opsNonce=0,opsLastAck=0;
 static uint64_t opsStartAt=0;
