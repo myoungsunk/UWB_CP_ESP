@@ -64,3 +64,5 @@ M17 선행 개선: LittleFS 가용 용량이 아카이브+8KiB 보수 여유보�
 ### M27 — 전용 유선 수집 시 앵커 Wi-Fi 재부팅 정책
 
 **IMPLEMENTED / FIELD HOLD**. 앵커 USB 정비 명령 `OPS NET AUTOSTART 0`은 NVS에 Wi-Fi 자동 연결 금지를 저장하고 현재 네트워크를 OFF로 만든다. 앱을 재부팅하거나 USB 포트를 다시 열어도 자동 Wi-Fi 복귀를 시도하지 않는다. 원격 정비로 돌아갈 때 USB에서 `OPS NET AUTOSTART 1`을 실행한다. 디폴트는 기존처럼 ON이며 단독 USB 실험에서만 OFF를 선택한다. 저장 실패·Wi-Fi OFF 실패를 정상으로 오인하지 않고 오류 응답으로 나타낸다. `testWifiAutostartIsPersistentAndExplicit` Mock, CI 타깃 빌드 검증만 수행. 실물 NVS·AP·UART 재부팅 반복 시험은 별도.
+
+**M11 코드 보완 (2026-11-13)**: 앵커에 PEAP Enterprise 구성용 `OPS EAPID/EAPUSER/EAPPASS` USB 프로비저닝과 `OPS NET EAP 0/1` 스위치를 추가했다. 기관 CA가 컴파일 시 `MODE8_EAP_CA_CERT_PEM`으로 제공되지 않으면 Enterprise 활성화가 실패하도록 했다. CA·인증서/계정·실물 AP가 없는 기본 이미지는 WPA 개인망만 사용한다. 타깃 컴파일 통과는 실제 EAP 인증 성공을 보장하지 않는다.

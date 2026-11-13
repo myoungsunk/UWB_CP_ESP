@@ -127,3 +127,10 @@ python operational/host/ops_pose_align.py --sync time_sync.csv --odom odom.csv -
 ```
 
 이 도구는 **시계 동기화 사건을 만들어 내지 않습니다**. 단순 ESP 수신 소프트웨어 시각을 RF 물리 시각과 동일시하지 않아야 합니다. 시험 데이터 없이 실제 TurtleBot GT/heading RMSE를 승인할 수 없습니다.
+
+## EAP 실기 시험 (별도 기관망/CA 필요)
+
+- **EAP01** 기관에서 발급한 PEAP용 신뢰 CA 인증서를 `MODE8_EAP_CA_CERT_PEM`에 컴파일로 제공한 이미지에서만 시험. 인증서 없는 기본 이미지의 `OPS NET EAP 1`은 반드시 거부.
+- **EAP02** 앵커 USB에서 `OPS EAPID <UTF8-HEX>`, `OPS EAPUSER <UTF8-HEX>`, `OPS EAPPASS <UTF8-HEX>` 입력 후 `OPS NET EAP 1` → 인증기관 핸드셰이크/연결 확인. 로그에 평문 암호 노출 금지.
+- **EAP03** 다른 인증기관 CA, 잘못된 계정, AP 인증 실패, Wi-Fi OFF 중간 전환을 주입. 오류 발생 시 측정 RF 시작·데이터 삭제가 없어야 함.
+- **EAP04** `OPS NET EAP 0`으로 WPA 개인망으로 복귀. 실제 EAP 기관망을 알 수 없어 실물 합격 여부는 FIELD HOLD.
