@@ -25,6 +25,7 @@ std::vector<uint8_t> Preferences::saved;
 #include "operational_profile.hpp"
 
 static void verify(){
+ assert(std::strcmp(profileName(),"MISSING")==0);
  dual8::Config config;
  assert(profileLoad(config)==ProfileStatus::Missing);
  assert(config.stage==5&&config.baud==921600);
