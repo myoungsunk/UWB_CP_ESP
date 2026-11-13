@@ -294,7 +294,7 @@ static bool opsPlan(uint32_t sessionId,uint32_t count){
     config.stage!=6||count==0||count>OPS_ARCHIVE_MAX||sessionId==0||
     validate(config))return false;
  if(!opsArchive){
-  opsArchive=static_cast<OpsArchiveRow*>(malloc(size_t(OPS_ARCHIVE_MAX)*sizeof(OpsArchiveRow)));
+  opsArchive=new(std::nothrow) OpsArchiveRow[OPS_ARCHIVE_MAX];
   if(!opsArchive)return false;
  }
  memset(opsArchive,0,size_t(count)*sizeof(OpsArchiveRow));
