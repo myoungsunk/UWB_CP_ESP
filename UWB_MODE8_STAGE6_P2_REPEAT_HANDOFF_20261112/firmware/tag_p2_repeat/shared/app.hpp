@@ -4,6 +4,7 @@
 #include "uart_fragment.hpp"
 #include "transport_guard.hpp"
 #include <esp_system.h>
+#include <esp_heap_caps.h>
 #include <driver/uart.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
@@ -56,18 +57,21 @@ static void emit(const char*fmt,...){
  Out o;o.fragmented=config.stage==6&&config.baud==2000000;va_list a;va_start(a,fmt);int n=vsnprintf(o.text,sizeof o.text,fmt,a);va_end(a);
  if(n<0||size_t(n)>=sizeof o.text){++drops;return;}++pending;if(xQueueSend(outQ,&o,0)!=pdTRUE){--pending;++drops;}
 }
+static bool allocateUartWire(){
+ if(uartWire)return true;
+ constexpr unsigned caps=MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT;
+ auto* wire=static_cast<uint8_t*>(heap_caps_malloc(wireBytes,caps));
+ if(!wire)return false;
+ auto* packed=maxRawBytes?static_cast<uint8_t*>(heap_caps_malloc(maxRawBytes,caps)):nullptr;
+ if(maxRawBytes&&!packed){heap_caps_free(wire);return false;}
+ uartPackedIq=packed;uartWire=wire;
+ return true;
+}
 static bool prepareUartWire(const Config& next){
- if(next.stage!=6||next.baud!=2000000||uartWire)return true;
- // Allocate the frame and compression scratch separately so the tag
- // does not need a single contiguous block spanning both buffers.
- auto* wire=static_cast<uint8_t*>(malloc(wireBytes));
- auto* packed=wire&&maxRawBytes?static_cast<uint8_t*>(malloc(maxRawBytes)):nullptr;
- if(wire&&(!maxRawBytes||packed)){
-  uartPackedIq=packed;uartWire=wire;return true;
- }
- free(packed);free(wire);
+ if(next.stage!=6||next.baud!=2000000||allocateUartWire())return true;
+ constexpr unsigned caps=MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT;
  emit("{\"event\":\"ERROR\",\"reason\":\"UART_RECORD_BUFFER_MEMORY\",\"free_heap\":%lu,\"largest_block\":%lu}",
-      (unsigned long)ESP.getFreeHeap(),(unsigned long)ESP.getMaxAllocHeap());
+      (unsigned long)heap_caps_get_free_size(caps),(unsigned long)heap_caps_get_largest_free_block(caps));
  return false;
 }
 // UART0 has no TX ring. Only the writer submits bytes; the command task
@@ -615,6 +619,8 @@ static void service(){
 }
 static void setup(){
  Serial.setRxBufferSize(2048);Serial.setTxBufferSize(0);Serial.begin(config.baud);delay(300);
+ // Reserve the transport buffers before creating the smaller queues and tasks.
+ allocateUartWire();
  // No profile => the diagnostic 921600-baud startup behavior is preserved.
  // A damaged profile fails closed to diagnostics; never auto-start RF.
  freeQ=xQueueCreate(POOL,sizeof(uint8_t));outQ=xQueueCreate(12,sizeof(Out));
