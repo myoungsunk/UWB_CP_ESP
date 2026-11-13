@@ -7,7 +7,8 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"host"))
-from ops_route import (validate_plan,derive_session,durable_json,RouteController,RouteHold)
+from ops_route import (validate_plan,derive_session,durable_json,RouteController,RouteHold,
+                       RouteLock,journal_signature,validate_journal_shape)
 
 PLAN={"route_id":777,"mode":8,"stage":6,"period_us":200000,
       "points":[{"point_id":"A1","count":32},{"point_id":"A2","count":20}]}
@@ -30,6 +31,46 @@ class PlanTests(unittest.TestCase):
             with self.assertRaises(ValueError):validate_plan(bad)
 
 class RouteTests(unittest.TestCase):
+
+    def test_journal_authentication_rejects_modified_purged_state(self):
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/"route"
+            ctl=RouteController(PLAN,path,"127.0.0.1","COM4",KEY)
+            saved=json.loads(ctl.path.read_text())
+            saved["points"][0]["state"]="PURGED"
+            ctl.path.write_text(json.dumps(saved))
+            with self.assertRaisesRegex(RouteHold,"authentication"):
+                RouteController(PLAN,path,"127.0.0.1","COM4",KEY,resume=True)
+
+    def test_signed_impossible_point_order_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/"route"
+            ctl=RouteController(PLAN,path,"127.0.0.1","COM4",KEY)
+            saved=json.loads(ctl.path.read_text())
+            saved["points"][1]["state"]="REQUESTED"
+            # Even a bad client holding a key cannot bypass semantic order.
+            saved["journal_hmac_sha256"]=journal_signature(saved,KEY)
+            ctl.path.write_text(json.dumps(saved))
+            with self.assertRaisesRegex(RouteHold,"ordering"):
+                RouteController(PLAN,path,"127.0.0.1","COM4",KEY,resume=True)
+
+    def test_resume_with_wrong_signing_key_fails(self):
+        with tempfile.TemporaryDirectory() as d:
+            path=Path(d)/"route"
+            RouteController(PLAN,path,"127.0.0.1","COM4",KEY)
+            with self.assertRaisesRegex(RouteHold,"authentication"):
+                RouteController(PLAN,path,"127.0.0.1","COM4",b"y"*32,resume=True)
+
+    def test_second_cli_controller_lock_is_rejected(self):
+        with tempfile.TemporaryDirectory() as d:
+            out=Path(d)/"route"
+            with RouteLock(out):
+                with self.assertRaisesRegex(RouteHold,"active controller"):
+                    with RouteLock(out):
+                        pass
+            with RouteLock(out):
+                pass
+
     def test_resume_rejects_changed_spec_and_missing_journal(self):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d)

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import hmac
 import json
 import os
 from pathlib import Path
@@ -18,6 +19,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from contextlib import contextmanager
 
 from ops_archive import parse as parse_archive
 from ops_client import OperationalClient
@@ -80,6 +82,92 @@ def durable_json(path,data):
     finally:
         if os.path.exists(name):os.unlink(name)
 
+def journal_signature(doc: dict, secret: bytes) -> str:
+    """Authenticate the journal contents; do not embed the custody key."""
+    payload={k:v for k,v in doc.items() if k!="journal_hmac_sha256"}
+    data=json.dumps(payload,sort_keys=True,separators=(",",":"),ensure_ascii=False).encode("utf-8")
+    return hmac.new(secret,data,hashlib.sha256).hexdigest()
+
+
+def validate_journal_shape(doc: dict, plan: dict) -> None:
+    if (not isinstance(doc,dict) or doc.get("schema")!="mode8.route.v1"
+            or doc.get("status") not in ("IN_PROGRESS","COMPLETED")
+            or type(doc.get("route_id")) is not int or doc["route_id"]!=plan["route_id"]):
+        raise RouteHold("invalid signed route journal metadata")
+    rows=doc.get("points")
+    if not isinstance(rows,list) or len(rows)!=len(plan["points"]):
+        raise RouteHold("signed route journal point count mismatch")
+    rank={"PENDING":0,"REQUESTED":1,"VERIFIED":2,"PURGE_INTENT":3,"PURGED":4}
+    previous=4
+    unfinished=0
+    for i,(saved,planned) in enumerate(zip(rows,plan["points"])):
+        if not isinstance(saved,dict):
+            raise RouteHold("invalid point entry in signed route journal")
+        if (saved.get("point_id")!=planned["point_id"]
+                or type(saved.get("count")) is not int or saved["count"]!=planned["count"]
+                or type(saved.get("session")) is not int
+                or saved["session"]!=derive_session(plan["route_id"],i)
+                or saved.get("state") not in rank):
+            raise RouteHold("point identity/session/state mismatch in signed route journal")
+        state=saved["state"]
+        if rank[state]>previous:
+            raise RouteHold("route journal has impossible point ordering")
+        previous=rank[state]
+        if state not in ("PURGED","PENDING"):
+            unfinished+=1
+        if state in ("VERIFIED","PURGE_INTENT","PURGED"):
+            for field in ("anchor_sha256","tag_sha256","receipt_sha256"):
+                value=saved.get(field)
+                if not isinstance(value,str) or len(value)!=64 or any(c not in "0123456789abcdef" for c in value):
+                    raise RouteHold("signed journal lacks verified immutable raw hashes")
+            for field in ("anchor_boot","tag_boot","archive_crc"):
+                value=saved.get(field)
+                if type(value) is not int or value<0 or value>0xffffffff or (field!="archive_crc" and value==0):
+                    raise RouteHold("signed journal lacks acquisition identity")
+    if unfinished>1:
+        raise RouteHold("more than one point is in flight in signed route journal")
+    if doc["status"]=="COMPLETED" and any(row["state"]!="PURGED" for row in rows):
+        raise RouteHold("route marked complete without every point purged")
+
+
+class RouteLock:
+    """Non-blocking advisory single-writer lock for the CLI (Pi and Windows)."""
+    def __init__(self, out):
+        self.path=Path(out).parent/("."+Path(out).name+".route.lock")
+        self.file=None
+
+    def __enter__(self):
+        self.path.parent.mkdir(parents=True,exist_ok=True)
+        self.file=self.path.open("a+b")
+        try:
+            if os.name=="nt":
+                import msvcrt
+                self.file.seek(0)
+                if self.file.read(1)!=b"1":
+                    self.file.seek(0);self.file.write(b"1");self.file.flush()
+                self.file.seek(0)
+                msvcrt.locking(self.file.fileno(),msvcrt.LK_NBLCK,1)
+            else:
+                import fcntl
+                fcntl.flock(self.file.fileno(),fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except (OSError,BlockingIOError) as exc:
+            self.file.close();self.file=None
+            raise RouteHold("route already has an active controller lock") from exc
+        return self
+
+    def __exit__(self,*_):
+        if not self.file:return
+        try:
+            if os.name=="nt":
+                import msvcrt
+                self.file.seek(0);msvcrt.locking(self.file.fileno(),msvcrt.LK_UNLCK,1)
+            else:
+                import fcntl
+                fcntl.flock(self.file.fileno(),fcntl.LOCK_UN)
+        finally:
+            self.file.close();self.file=None
+
+
 class RouteController:
     def __init__(self,plan,out,anchor_ip,tag_port,key,*,anchor_port=29310,
                  initial_baud=921600,resume=False,manual_confirm=False,timeout=90,
@@ -93,13 +181,20 @@ class RouteController:
         if approval_key is not None and (len(approval_key)!=32 or approval_key==key):
             raise ValueError("custody key must be separate from TCP login key")
         self.approval_key=approval_key
+        # Real CLI requires the distinct custody key. API-only test harnesses
+        # without one still authenticate the local journal with the login key.
+        self._journal_key=approval_key if approval_key is not None else key
         digest=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(",",":")).encode()).hexdigest()
         if resume:
             if not self.path.is_file():raise RouteHold("resume requires existing durable journal")
             self.data=json.loads(self.path.read_text(encoding="utf-8"))
-            if (self.data.get("plan_sha256")!=digest or self.data.get("route_id")!=plan["route_id"] or
-                len(self.data.get("points",[]))!=len(plan["points"])):
+            signature=self.data.get("journal_hmac_sha256")
+            if (not isinstance(signature,str) or len(signature)!=64
+                    or not hmac.compare_digest(signature,journal_signature(self.data,self._journal_key))):
+                raise RouteHold("route journal authentication failed; do not resume RF")
+            if self.data.get("plan_sha256")!=digest:
                 raise RouteHold("route plan changed; do not resume with a different contract")
+            validate_journal_shape(self.data,plan)
         else:
             if self.out.exists():raise FileExistsError(self.out)
             self.out.mkdir(parents=True)
@@ -108,9 +203,10 @@ class RouteController:
                 {"point_id":pt["point_id"],"count":pt["count"],
                  "session":derive_session(plan["route_id"],i),"state":"PENDING"}
                 for i,pt in enumerate(plan["points"])]}
-            durable_json(self.path,self.data)
+            self.save()
 
     def save(self):
+        self.data["journal_hmac_sha256"]=journal_signature(self.data,self._journal_key)
         durable_json(self.path,self.data)
 
     def point_folder(self,index):
@@ -256,13 +352,14 @@ def main():
     if len(approval_key)!=32 or approval_key==key:
         ap.error("distinct MODE8_APPROVAL_KEY_HEX is required before starting any route")
     try:
-        ctl=RouteController(json.loads(args.plan.read_text(encoding="utf-8")),
-                            args.out,args.anchor_ip,args.tag_port,key,
-                            anchor_port=args.anchor_port,initial_baud=args.tag_initial_baud,
-                            resume=args.resume,manual_confirm=args.manual_confirm,
-                            approval_key=approval_key)
-        ctl.run()
-        print(f"Mode8 route complete: {ctl.path}")
+        with RouteLock(args.out):
+            ctl=RouteController(json.loads(args.plan.read_text(encoding="utf-8")),
+                                args.out,args.anchor_ip,args.tag_port,key,
+                                anchor_port=args.anchor_port,initial_baud=args.tag_initial_baud,
+                                resume=args.resume,manual_confirm=args.manual_confirm,
+                                approval_key=approval_key)
+            ctl.run()
+            print(f"Mode8 route complete: {ctl.path}")
         return 0
     except (ValueError,RouteHold,FileExistsError,OSError) as exc:
         print(f"HOLD: {exc}; inspect local journal before any RF rerun",file=sys.stderr)
