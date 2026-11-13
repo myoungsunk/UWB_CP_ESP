@@ -229,7 +229,7 @@ static void testInvalidTcpNumbers(){
   tcp(cmd);assert(opsClient.written=="ERROR ACKFILE\n");
  }
  tcp("GET EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
- tcp("PURGE EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
+ tcp("PURGE EXTRA");assert(opsClient.written=="ERROR PURGE_GUARD\n");
  tcp("STATUS EXTRA");assert(opsClient.written=="ERROR EXTRA_ARGS\n");
  tcp("OTA +60");assert(opsClient.written=="ERROR OTA_GUARD\n");
  tcp("OTA 60 EXTRA");assert(opsClient.written=="ERROR OTA_GUARD\n");
