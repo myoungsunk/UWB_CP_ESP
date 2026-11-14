@@ -52,6 +52,10 @@ class Stage5P2Exchange(unittest.TestCase):
         self.assertTrue(all(row["axis_estimate_available"] for row in rows[:2]))
         self.assertFalse(any(row["axis_estimate_available"] for row in rows[2:]))
         self.assertEqual(arrays["common_p2_delay_s"].size, 0)
+        anchor["tx"][2]["actual"] ^= 1
+        arrays, rows = packet_arrays(stage6, self.raw, anchor)
+        self.assertFalse(any(row["axis_estimate_available"] for row in rows))
+        self.assertTrue(all(row["cir_valid"] for row in rows))
 
     def test_wrong_reference_in_crc_valid_second_reply(self):
         anchor = synthetic_anchor(self.tag)

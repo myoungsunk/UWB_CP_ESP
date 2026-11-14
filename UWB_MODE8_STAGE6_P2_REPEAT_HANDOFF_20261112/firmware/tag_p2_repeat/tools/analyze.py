@@ -179,10 +179,16 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
             and anchor_tx_matches((anchor.get('tx') or [{}])[0], 0, poll['poll_tx'])
             and anchor.get('metadata_conflict') is False and not anchor.get('errors', 0) & (1 | 64 | 256)
             and meta.get('metadata_conflict') is False and not meta.get('errors', 0) & (1 | 64 | 256))
-        p2_coherent = bool(canonical_match and p2_ok and p2_proof is not None
-                           and any(slot_ok[2:]) and all(
-                               not meta['probe_rx'][s].get('ok') or slot_ok[s] for s in (2, 3)))
-        p1_coherent = bool(p2_coherent and p1_ok and p1_proof is not None
+        p2_confirmed_p1 = bool(
+            canonical_match and p2_ok and any(slot_ok[2:]) and all_received_match
+            and isinstance(anchor.get('frames'), list) and len(anchor['frames']) == 3
+            and isinstance(anchor.get('tx'), list) and len(anchor['tx']) == 3
+            and anchor['frames'][2] == meta['frames'][2]
+            and anchor_tx_matches(anchor['tx'][2], 2, p2['probe_tx']))
+        p2_coherent = bool(
+            canonical_match and p2_ok and p2_proof is not None and any(slot_ok[2:])
+            and all(not meta['probe_rx'][s].get('ok') or slot_ok[s] for s in (2, 3)))
+        p1_coherent = bool(p2_confirmed_p1 and p1_ok and p1_proof is not None
                            and meta.get('p1_tx_confirmed') is True and all_received_match)
         coherent = p1_coherent and p2_coherent
     local_response_ok = []
@@ -200,7 +206,8 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
                         and anchor_tx_matches(txs[0], 0, poll['poll_tx'])
                         and anchor_tx_matches(p1_proof[1], 1, p1['probe_tx'])
                         and anchor_tx_matches(p2_proof[1], 2, p2['probe_tx']))
-    matched_anchor = [anchor_tx_ok and local_response_ok[radio] and
+    p1_anchor_tx_ok = p1_coherent if fresh_expected else anchor_tx_ok
+    matched_anchor = [p1_anchor_tx_ok and local_response_ok[radio] and
                       _anchor_response_matches(anchor, meta, p2, radio) for radio in range(2)]
 
     p1_polls, p1_txs = meta['poll_rx'], meta['tx']
