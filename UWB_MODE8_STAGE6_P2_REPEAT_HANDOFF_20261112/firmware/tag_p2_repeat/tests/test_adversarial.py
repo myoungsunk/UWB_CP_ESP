@@ -331,6 +331,7 @@ class AdversarialRunPair(unittest.TestCase):
     class InMemorySerial:
         def __init__(self, **_kwargs):
             self.port = None
+            self.baudrate = _kwargs["baudrate"]
             self.incoming = Queue()
             self.sequence = 0
             self.stage = 5

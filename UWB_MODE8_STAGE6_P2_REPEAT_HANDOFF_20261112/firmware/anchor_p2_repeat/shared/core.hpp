@@ -185,7 +185,11 @@ struct Record {
  ResponseRxTrace response_trace[2]{};
  bool have_probe_frame[2]{},have_poll2_frame=false;DsResult range[2]{};DsInput range_input[2]{};
  RxWindowTrace rx_windows[6][2]{};
- Calibration cal[2]{};Cir cir_meta[4]{};uint8_t cir[4][CIR_BYTES]{};
+ Calibration cal[2]{};Cir cir_meta[4]{};
+#if !defined(DUAL8_ANCHOR) || !DUAL8_ANCHOR
+ // The tag and portable RF tests retain the four raw IQ slots.
+ uint8_t cir[4][CIR_BYTES]{};
+#endif
 };
 inline uint8_t probeReceiveMask(const Record& r,unsigned probe){
  uint8_t mask=0;

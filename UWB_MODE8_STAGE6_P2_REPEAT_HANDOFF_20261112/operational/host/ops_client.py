@@ -61,13 +61,27 @@ class OperationalClient:
 
     def readline(self):
         result=self.stream.readline(4096)
-        if not result or len(result)>=4096:
-            raise TransportError("connection closed or oversized response")
+        if not result or len(result)>=4096 or not result.endswith(b"\n"):
+            raise TransportError("connection closed or response line incomplete or oversized")
         return result.rstrip(b"\r\n").decode("utf-8")
 
     def command(self,command:str):
         self.send(command)
         return self.readline()
+
+    def request_start(self, session: int, count: int) -> tuple[str, str]:
+        response = self.command(f"START {session} {count}")
+        fields = response.split(" ")
+        if (len(fields) != 3 or fields[:2] != ["START_READY", str(session)]
+                or len(fields[2]) != 8 or any(c not in "0123456789ABCDEF" for c in fields[2])
+                or fields[2] == "00000000"):
+            raise TransportError(f"invalid START offer: {response!r}")
+        return response, fields[2]
+
+    def acknowledge_start(self, session: int, nonce: str) -> None:
+        # The anchor switches Wi-Fi off after consuming this echo. Its next
+        # authenticated STATUS carries the anchor-side confirmation.
+        self.send(f"START_ACK {session} {nonce}")
 
     def custody_proof(self,verb:str,session:int,body_crc:int)->str:
         if self.approval_key is None or self.nonce is None:
@@ -177,7 +191,11 @@ def main():
         if args.action=="status": print(ops.command("STATUS"))
         elif args.action=="start":
             if not (1<=args.session<=0xFFFFFFFF and 1<=args.count<=32):raise SystemExit("invalid count/session")
-            print(ops.command(f"START {args.session} {args.count}"))
+            if json.loads(ops.command("STATUS")).get("start_ack_protocol") != 1:
+                raise TransportError("Anchor does not advertise confirmed START")
+            reply, nonce = ops.request_start(args.session, args.count)
+            ops.acknowledge_start(args.session, nonce)
+            print(reply)
         elif args.action=="get":
             doc=ops.get_archive(args.path,args.session,ack=False)
             print(f"Saved and verified {doc['count']} anchor records from session {doc['session']}")

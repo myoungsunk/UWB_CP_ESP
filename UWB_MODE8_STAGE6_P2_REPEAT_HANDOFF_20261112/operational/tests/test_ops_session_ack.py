@@ -1,5 +1,6 @@
 
 import json
+from io import BytesIO
 import os
 import sys
 import tempfile
@@ -10,10 +11,65 @@ from unittest.mock import Mock, call, patch, sentinel
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "host"))
 import ops_session
+from ops_client import OperationalClient, TransportError
 from capture_audit import DRAIN_FIRMWARES, OPERATIONAL_DRAIN_FIRMWARES, strict_shutdown_ok
 
 
 class SessionAckTests(unittest.TestCase):
+    def test_temporary_calibration_reapplied_after_usb_reset_and_checked(self):
+        profile = ops_session.load_profile(
+            Path(__file__).resolve().parents[2] / "provenance" / "calibration_stage6_temporary.json")
+        identity = {"boot": 7, "session": 0, "config_id": 8,
+                    "hardware_profile": profile["roles"]["tag"]["hardware_profile"]}
+        applied = {"pass": True, "ant_a_tx": 16279, "ant_a_rx": 16279,
+                   "ant_b_tx": 15886, "ant_b_rx": 15886}
+        for selftest, good in ((applied, True),
+                               (dict(applied, ant_b_tx=16436, ant_b_rx=16436), False)):
+            with self.subTest(good=good):
+                link = Mock()
+                link.condition = Lock()
+                link.events = [{"event": "HELLO", "hello_request": 0},
+                               {"event": "HELLO", "hello_request": 123}]
+                link.wait.return_value = selftest
+                with patch("ops_session.send_while_drained", side_effect=[
+                        {"hw_ok": True, "fault_latched": False}] * 2) as write, \
+                        patch("ops_session.fresh_hello", return_value={"hello": {"config_id": 8}}) as hello:
+                    if good:
+                        self.assertEqual(ops_session.apply_tag_calibration(link, identity, profile), applied)
+                        hello.assert_called_once_with(link, identity, 0, baud=2000000, period_us=200000)
+                    else:
+                        with self.assertRaisesRegex(RuntimeError, "readback mismatch"):
+                            ops_session.apply_tag_calibration(link, identity, profile)
+                        hello.assert_not_called()
+                    self.assertEqual([invocation.args[1] for invocation in write.call_args_list],
+                                     ["ANT 0 16279 16279 0 0.08423371",
+                                      "ANT 1 15886 15886 0 0.13965843"])
+                    link.send.assert_called_once_with("SELFTEST")
+                    self.assertEqual(link.events, [{"event": "HELLO", "hello_request": 123}])
+
+    def test_start_offer_requires_exact_session_nonce_and_terminated_line(self):
+        for raw, valid in (
+            (b"START_READY 789 ABCDEF01\n", True),
+            (b"START_READY 789 ABCDEF01", False),
+            (b"START_READY 788 ABCDEF01\n", False),
+            (b"START_READY 789 00000000\n", False),
+            (b"START_READY 789 ABCDEF01 extra\n", False),
+            (b"START_ACCEPTED_WIFI_OFF\n", False),
+        ):
+            with self.subTest(raw=raw):
+                ctl = OperationalClient("unused", bytes(32))
+                ctl.sock = Mock()
+                ctl.stream = BytesIO(raw)
+                if valid:
+                    _, nonce = ctl.request_start(789, 32)
+                    ctl.acknowledge_start(789, nonce)
+                    self.assertEqual(ctl.sock.sendall.call_args_list,
+                                     [call(b"START 789 32\n"), call(b"START_ACK 789 ABCDEF01\n")])
+                else:
+                    with self.assertRaises(TransportError):
+                        ctl.request_start(789, 32)
+                    ctl.sock.sendall.assert_called_once_with(b"START 789 32\n")
+
     def test_stale_active_hello_never_confirms_new_tag_start(self):
         ident={"boot":7,"config_id":8,"firmware":"TAG_EXACT"}
         good={"event":"HELLO","role":"tag","active":True,
@@ -64,10 +120,11 @@ class SessionAckTests(unittest.TestCase):
                 self.assertIs(strict_shutdown_ok(receipt), expected)
 
     def test_session_acks_verified_archive_with_crc_on_get_connection(self):
-        for good_archive, ack_reply, expected_status in (
-            (True, "ACKFILE_OK", "SAVED_BOTH_ENDPOINTS"),
-            (True, "ERROR ACKFILE", "INCOMPLETE"),
-            (False, "ACKFILE_OK", "INCOMPLETE"),
+        for good_archive, ack_reply, anchor_start_ack, expected_status in (
+            (True, "ACKFILE_OK", 789, "SAVED_BOTH_ENDPOINTS"),
+            (True, "ERROR ACKFILE", 789, "INCOMPLETE"),
+            (False, "ACKFILE_OK", 789, "INCOMPLETE"),
+            (True, "ACKFILE_OK", 788, "INCOMPLETE"),
         ):
             with self.subTest(good_archive=good_archive, ack_reply=ack_reply):
                 with tempfile.TemporaryDirectory() as temp:
@@ -85,14 +142,16 @@ class SessionAckTests(unittest.TestCase):
                                  "transport": {"durable_acks_sent": 1}}
                     shutdown = {"status_proof": {"hello": {"sent": 11, "drops": 0, "period_miss": 0}}}
                     stored = {"phase": "STORED", "boot": 9, "session": 789, "drained": True,
-                              "hw_ok": True, "fault_latched": False, "period_miss": 0}
+                              "hw_ok": True, "fault_latched": False, "period_miss": 0,
+                              "start_ack_session": anchor_start_ack}
                     status_ctl, start_ctl, archive_ctl = Mock(), Mock(), Mock()
                     status_ctl.boot = start_ctl.boot = archive_ctl.boot = 9
                     status_ctl.command.return_value = json.dumps(
                         {"phase": "IDLE", "file": False, "config": 8, "boot": 9,
                          "firmware": anchor_fw, "hw_ok": True, "fault_latched": False,
-                         "stage": 6, "period_us": 200000, "baud": 2000000, "drained": True})
-                    start_ctl.command.return_value = "START_ACCEPTED_WIFI_OFF"
+                         "stage": 6, "period_us": 200000, "baud": 2000000, "drained": True,
+                         "start_ack_protocol": 1})
+                    start_ctl.request_start.return_value = ("START_READY 789 ABCDEF01", "ABCDEF01")
                     archive_ctl.get_archive.return_value = {
                         "session": 789, "crc32": 0x89ABCDEF, "count": 1,
                         "rows": [{"complete": good_archive, "config": 8, "session": 789,
@@ -124,7 +183,9 @@ class SessionAckTests(unittest.TestCase):
                     receipt = json.loads((out / "operational_receipt.json").read_text(encoding="utf-8"))
                     self.assertEqual(receipt["status"], expected_status)
                     self.assertEqual(code, 0 if expected_status == "SAVED_BOTH_ENDPOINTS" else 2)
-                    if good_archive:
+                    start_ctl.acknowledge_start.assert_called_once_with(789, "ABCDEF01")
+                    if good_archive and anchor_start_ack == 789:
+                        self.assertIs(receipt["anchor_start_ack_confirmed"], True)
                         self.assertEqual(calls.mock_calls, [
                             call.get(out / "anchor_archive.bin", 789, ack=False),
                             call.ack(789, 0x89ABCDEF),

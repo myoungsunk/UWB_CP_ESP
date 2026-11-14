@@ -402,8 +402,15 @@ static void testsEngine(const std::string&out){
   for(auto& z:wide.p1_repeat_response_tx)widenTx(z);
   for(auto& z:wide.response2_tx)widenTx(z);
   for(auto& z:wide.cir_meta)z.crc=z.read_us=z.repeat_us=UINT32_MAX;
-  for(auto& window:wide.rx_windows)for(auto& trace:window)
-   trace={MASK40,wide.begin_us+100000,wide.begin_us+110000,wide.end_us,UINT16_MAX,UINT8_MAX,false};
+  for(auto& window:wide.rx_windows)for(auto& trace:window){
+   trace.first_status=MASK40;
+   trace.first_us=wide.begin_us+100000;
+   trace.recovery_us=wide.begin_us+110000;
+   trace.close_us=wide.end_us;
+   trace.failures=UINT16_MAX;
+   trace.first_reason=UINT8_MAX;
+   trace.accepted=false;
+  }
   CHECK(serializeRecord(wide,json,sizeof json,n));
   CHECK(n<=JSON_MAX&&strstr(json,"p1_repeat_poll_rx")&&strstr(json,"poll2_frame"));
   CHECK(strstr(json,"power_formula")&&json[n-1]=='}');

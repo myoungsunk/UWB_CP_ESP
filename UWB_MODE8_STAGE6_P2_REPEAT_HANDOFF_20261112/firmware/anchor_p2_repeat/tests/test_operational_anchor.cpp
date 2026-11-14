@@ -368,12 +368,34 @@ static void testEnterpriseRequiresCA(){
 }
 static void testWifiStart(){
  config.stage=6;config.period_us=200000;config.baud=2000000;
- WiFi.selected=WIFI_STA;WiFi.rejectOff=true;
- connect();tcp("START 80 1");
+ WiFi.selected=WIFI_STA;opsWifiUp=true;
+ connect();tcp("START 78 1");
+ assert(opsClient.written=="START_READY 78 00000011\n");
+ assert(opsPhase==OpsPhase::Armed&&opsStartAt==0&&WiFi.selected==WIFI_STA);
+ nowUs+=1000000;opsLoop();assert(starts==0);
+ for(const char* wrong:{"START_ACK 77 00000011","START_ACK 78 00000012",
+                         "START_ACK 78 00000011 EXTRA"}){
+  tcp(wrong);assert(opsClient.written=="ERROR START_ACK_GUARD\n");
+  assert(WiFi.selected==WIFI_STA&&opsStartAt==0);
+ }
+ nowUs+=uint64_t(OPS_START_ACK_TIMEOUT_MS)*1000;
+ tcp("START_ACK 78 00000011");
+ assert(opsClient.written=="ERROR START_ACK_GUARD\n");
+ opsLoop();
+ assert(opsPhase==OpsPhase::Idle&&opsArchive==nullptr&&starts==0&&WiFi.selected==WIFI_STA);
+ assert(std::string(opsFailure)=="START_ACK_TIMEOUT");
+ connect();tcp("START 79 1");
+ opsClient.stop();opsLoop();
+ assert(opsPhase==OpsPhase::Idle&&std::string(opsFailure)=="START_ACK_DISCONNECTED");
+ connect();tcp("START_ACK 79 00000011");
+ assert(opsClient.written=="ERROR START_ACK_GUARD\n"&&WiFi.selected==WIFI_STA);
+ WiFi.rejectOff=true;
+ tcp("START 80 1");tcp("START_ACK 80 00000011");
  assert(opsPhase==OpsPhase::Fault&&std::string(opsFailure)=="WIFI_OFF_FAILED");
  assert(opsArchive==nullptr);
  nowUs+=1000000;opsLoop();assert(starts==0);
  opsPhase=OpsPhase::Idle;WiFi.rejectOff=false;connect();tcp("START 81 1");
+ tcp("START_ACK 81 00000011");
  assert(opsPhase==OpsPhase::Armed);assert(WiFi.selected==WIFI_OFF);
  WiFi.selected=WIFI_STA;nowUs+=1000000;opsLoop();
  assert(starts==0&&std::string(opsFailure)=="WIFI_OFF_LOST");
@@ -381,7 +403,13 @@ static void testWifiStart(){
  opsCancelScheduledStart();assert(opsArchive==nullptr);
  nowUs+=1000000;opsLoop();assert(starts==0);
  connect();tcp("START 83 1");
- nowUs+=1000000;opsLoop();assert(starts==1&&opsPhase==OpsPhase::Measuring);
+ nowUs+=1000000;opsLoop();assert(starts==0&&WiFi.selected==WIFI_STA);
+ opsTcpAuthorized=false;tcp("START_ACK 83 00000011");
+ assert(opsClient.written=="AUTH_REQUIRED\n"&&WiFi.selected==WIFI_STA);
+ opsTcpAuthorized=true;tcp("START_ACK 83 00000011");
+ assert(WiFi.selected==WIFI_OFF&&opsStartAckSession==83);
+ nowUs+=249999;opsLoop();assert(starts==0);
+ ++nowUs;opsLoop();assert(starts==1&&opsPhase==OpsPhase::Measuring);
  delete[] opsArchive;opsArchive=nullptr;
 }
 }

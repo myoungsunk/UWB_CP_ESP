@@ -3,13 +3,14 @@
 from __future__ import annotations
 import argparse
 from collections import deque
+from dataclasses import dataclass
 import hashlib
 import json
 import os
 from copy import copy
 import zlib
 from pathlib import Path
-from queue import Empty, Full, Queue
+from queue import Full
 import secrets
 import threading
 import time
@@ -22,7 +23,106 @@ from calibration_profile import load_profile, check_record_calibration
 STOP_ACK_TIMEOUT_S = 5
 FINAL_UART_QUIET_S = 0.04
 FINAL_STORAGE_TIMEOUT_S = 5
-HANDOFF_MAX_BATCHES = 1024
+HANDOFF_MAX_BYTES = 512 * 1024
+HANDOFF_COALESCE_BYTES = 32 * 1024
+DURABLE_GROUP_MAX_RECORDS = 3
+DURABLE_GROUP_WAIT_NS = 220_000_000
+BOOT_PREAMBLE_MAX_BYTES = 4096
+
+
+@dataclass
+class CaptureBatch:
+    wire: bytearray
+    restored: bytearray
+    packets: list
+    duplicates: list
+    context: tuple
+    charge: int
+    received_ns: int
+
+
+class CaptureHandoff:
+    """Byte budget for queued and in-flight storage, guarded by Link.condition."""
+
+    def __init__(self, condition, limit=HANDOFF_MAX_BYTES):
+        self.condition = condition
+        self.limit = limit
+        self.batches = deque()
+        self.unfinished_tasks = self.peak_batches = 0
+        self.pending_bytes = self.peak_bytes = 0
+        self.rejected_bytes = 0
+
+    def put(self, wire, restored, packets, duplicates, context):
+        # Charge both streams, decoded raw payloads and an allowance for batch
+        # and event bookkeeping. A coalesced batch pays the allowance once.
+        payload_charge = (len(wire) + len(restored)
+                          + sum(len(p.raw) + 256 for p in packets)
+                          + 16 * len(duplicates))
+        with self.condition:
+            tail = self.batches[-1] if self.batches else None
+            merge = (tail is not None and tail.context == context
+                     and not tail.packets and not tail.duplicates
+                     and tail.charge + payload_charge <= HANDOFF_COALESCE_BYTES)
+            charge = payload_charge if merge else payload_charge + 256
+            if self.pending_bytes + charge > self.limit:
+                self.rejected_bytes = charge
+                raise Full
+            received_ns = time.perf_counter_ns()
+            if merge:
+                tail.wire.extend(wire)
+                tail.restored.extend(restored)
+                tail.packets, tail.duplicates = packets, duplicates
+                tail.charge += charge
+                tail.received_ns = received_ns
+            else:
+                self.batches.append(CaptureBatch(bytearray(wire), bytearray(restored),
+                                                 packets, duplicates, context, charge, received_ns))
+                self.unfinished_tasks += 1
+                self.peak_batches = max(self.peak_batches, self.unfinished_tasks)
+            self.pending_bytes += charge
+            self.peak_bytes = max(self.peak_bytes, self.pending_bytes)
+            self.condition.notify_all()
+
+    def take(self, timeout=0):
+        with self.condition:
+            if self.condition.wait_for(lambda: bool(self.batches), timeout):
+                return self.batches.popleft()
+            return None
+
+    def done(self, batch):
+        with self.condition:
+            self.pending_bytes -= batch.charge
+            self.unfinished_tasks -= 1
+            self.condition.notify_all()
+
+
+class TagBootPreamble:
+    """Keep the USB boot prefix out of RFB8 only at a validated boot HELLO."""
+
+    def __init__(self):
+        self.pending = bytearray()
+        self.frame_offset = None
+
+    def framed_bytes(self, restored, packets, decoder):
+        self.pending.extend(restored)
+        if not packets and len(self.pending) <= BOOT_PREAMBLE_MAX_BYTES:
+            return b""
+        first = packets[0] if packets else None
+        offset = decoder.first_packet_offset
+        if (first and first.kind == 1 and first.sequence == 0
+                and first.meta.get("event") == "HELLO"
+                and first.meta.get("hello_request") == 0
+                and first.meta.get("role") == "tag" and first.meta.get("mode") == 8
+                and first.meta.get("wire") == "RFB8" and first.meta.get("active") is False
+                and first.meta.get("baud") == 921600
+                and offset is not None and 0 < offset <= BOOT_PREAMBLE_MAX_BYTES
+                and not decoder.crc_errors and not decoder.schema_errors):
+            self.frame_offset = offset
+        else:
+            self.frame_offset = 0
+        data = bytes(self.pending[self.frame_offset:])
+        self.pending.clear()
+        return data
 
 
 def send_while_drained(link, command, accept=None):
@@ -208,7 +308,10 @@ def cir_payload_integrity(meta: dict, raw: bytes) -> bool:
 
 
 class Link:
-    def __init__(self, name: str, device: str, directory: Path, initial_baud: int = 921600):
+    def __init__(self, name: str, device: str, directory: Path, initial_baud: int = 921600,
+                 *, separate_tag_boot_preamble: bool = False,
+                 handoff_limit_bytes: int = HANDOFF_MAX_BYTES,
+                 durable_group_commit: bool = False, clock_sampler=None):
         import serial
         self.name, self.device = name, device
         self.serial = serial.Serial(port=None, baudrate=initial_baud, timeout=0.1, write_timeout=2)
@@ -217,6 +320,9 @@ class Link:
         self.serial.port = device
         self.serial.open()
         self.decoder = Decoder()
+        self.boot_preamble = (TagBootPreamble()
+                              if separate_tag_boot_preamble and name == "tag" and initial_baud == 921600
+                              else None)
         self.replay = ReplayReceiver() if initial_baud == 2000000 else None
         self.replay_identity = None
         self.write_lock = threading.Lock()
@@ -235,8 +341,11 @@ class Link:
         self.uart = (directory/f"{name}.uart").open("wb")
         self.raw = (directory/f"{name}.rfb8").open("wb")
         self.meta = (directory/f"{name}.jsonl").open("w", encoding="utf-8")
-        self.handoff = Queue(maxsize=HANDOFF_MAX_BATCHES)
-        self.handoff_peak = 0
+        self.handoff = CaptureHandoff(self.condition, handoff_limit_bytes)
+        self.storage_io = {}
+        self.durable_group_commit = durable_group_commit
+        self.clock_sampler = clock_sampler
+        self.durable_ack_timeline = deque(maxlen=64)
         self.reader_done = threading.Event()
         self.writer_error = None
         self.files_finalized = False
@@ -274,21 +383,26 @@ class Link:
                     try:
                         restored = self.filter_wire(wire)
                         packets = self.decoder.feed(restored) if restored else []
+                        if self.clock_sampler is not None:
+                            for packet in packets:
+                                self.clock_sampler.observe(packet)
+                        if self.boot_preamble is not None and self.boot_preamble.frame_offset is None:
+                            restored = self.boot_preamble.framed_bytes(restored, packets, self.decoder)
                         if identity:
                             duplicates = self.replay.take_duplicates()
                             missing = self.replay.request(time.monotonic())
                     except Exception as exc:
                         error = exc
-                    if wire or restored or duplicates:
+                    if wire or restored or packets or duplicates:
                         try:
-                            self.handoff.put_nowait((wire, restored, packets, duplicates,
-                                                     self.capture_active, self.capture_sealed,
-                                                     identity))
-                            self.handoff_peak = max(self.handoff_peak, self.handoff.qsize())
+                            self.handoff.put(wire, restored, packets, duplicates,
+                                             (self.capture_active, self.capture_sealed, identity))
                         except Full as exc:
                             self.capture_overflow = True
                             self.overflow_wire = wire
-                            raise RuntimeError(f"{self.name}: durable handoff queue is full") from exc
+                            raise RuntimeError(
+                                f"{self.name}: durable handoff exceeded {self.handoff.limit} bytes"
+                            ) from exc
                     if wire:
                         self.last_wire_at = time.monotonic()
                         self.condition.notify_all()
@@ -313,7 +427,8 @@ class Link:
 
     def _ack(self, sequence, identity, *, retry=False):
         boot, session = identity
-        if self._send_replay(f"REC_ACK {boot} {session} {sequence}", identity):
+        operation = "ack_retry" if retry else "ack_send"
+        if self._timed(operation, self._send_replay, f"REC_ACK {boot} {session} {sequence}", identity):
             with self.condition:
                 if retry:
                     self.ack_retries_sent += 1
@@ -321,6 +436,21 @@ class Link:
                     self.acks_sent += 1
             return True
         return False
+
+    def _record_time(self, operation, started_ns):
+        elapsed_us = (time.perf_counter_ns() - started_ns) / 1000
+        with self.condition:
+            timing = self.storage_io.setdefault(operation, {"count": 0, "total_us": 0, "max_us": 0})
+            timing["count"] += 1
+            timing["total_us"] += elapsed_us
+            timing["max_us"] = max(timing["max_us"], elapsed_us)
+
+    def _timed(self, operation, action, *args):
+        started_ns = time.perf_counter_ns()
+        try:
+            return action(*args)
+        finally:
+            self._record_time(operation, started_ns)
 
     def _retry_acks(self):
         now = time.monotonic()
@@ -350,33 +480,96 @@ class Link:
                 self.nacks_sent += 1
 
     def _persist(self) -> None:
+        group = []
+        inflight = []
         try:
-            while not self.reader_done.is_set() or not self.handoff.empty():
-                try:
-                    batch = self.handoff.get(timeout=0.02)
-                except Empty:
-                    self._request_replay()
-                    self._retry_acks()
-                    continue
-                try:
-                    self._persist_batch(*batch)
-                    self._request_replay()
-                    self._retry_acks()
-                finally:
+            while True:
+                wait = 0.02
+                if group:
+                    age_ns = time.perf_counter_ns() - group[0][0].received_ns
+                    wait = max(0, min(wait, (DURABLE_GROUP_WAIT_NS - age_ns) / 1e9))
+                batch = self.handoff.take(timeout=wait)
+                if batch is None and self.reader_done.is_set():
+                    # Observe EOF before checking again for the reader's final batch.
+                    batch = self.handoff.take()
+                    if batch is None:
+                        self._commit_records(group)
+                        break
+                if batch is not None:
+                    inflight.append(batch)
+                    self._persist_batch(batch, group)
+                if group and time.perf_counter_ns() - group[0][0].received_ns >= DURABLE_GROUP_WAIT_NS:
                     with self.condition:
-                        self.handoff.task_done()
-                        self.condition.notify_all()
+                        # A slow fsync may have queued more ready records. Consume those
+                        # without another wait so a new fsync can cover the backlog.
+                        ready = any(p.kind == 2 for b in self.handoff.batches
+                                    if b.context == group[0][0].context for p in b.packets)
+                    if not ready:
+                        self._commit_records(group)
+                charged = {id(b) for b, _, _ in group}
+                for b in inflight:
+                    if id(b) not in charged:
+                        self.handoff.done(b)
+                inflight = [b for b in inflight if id(b) in charged]
+                self._request_replay()
+                self._retry_acks()
         except Exception as exc:
             self._fail(exc, writer=True)
+        finally:
+            for batch in inflight:
+                self.handoff.done(batch)
 
-    def _persist_batch(self, wire, restored, packets, duplicates, active, sealed, identity):
-        if wire:
-            self.uart.write(wire)
-        if restored:
-            self.raw.write(restored)
-        for packet in packets:
+    def _publish_record(self, meta):
+        with self.condition:
+            self.records += 1
+            self.complete += bool(meta.get("complete"))
+            if len(self.capture_records) < 100000:
+                self.capture_records.append(meta)
+            else:
+                self.capture_overflow = True
+            self.condition.notify_all()
+
+    def _commit_records(self, group):
+        if not group:
+            return
+        self._timed("rfb8_flush", self.raw.flush)
+        fsync_start_ns = time.perf_counter_ns()
+        self._timed("rfb8_fsync", os.fsync, self.raw.fileno())
+        fsync_end_ns = time.perf_counter_ns()
+        for batch, sequence, meta in group:
+            identity = batch.context[2]
+            if not self._ack(sequence, identity):
+                raise RuntimeError(f"{self.name}: durable record ACK disabled")
+            self._record_time("record_to_ack", batch.received_ns)
+            ack_end_ns = time.perf_counter_ns()
+            with self.condition:
+                if self.durable_group_commit:
+                    self.durable_ack_timeline.append({
+                        "txn": meta.get("txn"), "sequence": sequence,
+                        "handoff_ns": batch.received_ns,
+                        "fsync_start_ns": fsync_start_ns, "fsync_end_ns": fsync_end_ns,
+                        "ack_write_end_ns": ack_end_ns,
+                    })
+                self.durable_records[sequence] = identity
+                if len(self.durable_records) > 64:
+                    del self.durable_records[next(iter(self.durable_records))]
+                self.ack_schedule[sequence] = (time.monotonic() + 0.08, 1)
+            self._publish_record(meta)
+            if self.clock_sampler is not None:
+                self.clock_sampler.tag_persisted(meta)
+        group.clear()
+
+    def _persist_batch(self, batch, group):
+        active, sealed, identity = batch.context
+        if group and group[0][0].context != batch.context:
+            self._commit_records(group)
+        if batch.wire:
+            self._timed("uart_write", self.uart.write, batch.wire)
+        if batch.restored:
+            self._timed("rfb8_write", self.raw.write, batch.restored)
+        for packet in batch.packets:
             m = packet.meta
-            self.meta.write(json.dumps(m, ensure_ascii=False) + "\n")
+            self._timed("jsonl_write", self.meta.write, json.dumps(m, ensure_ascii=False) + "\n")
             if packet.kind == 2 and active:
                 m = dict(m)
                 m['_raw_integrity_verified'] = cir_payload_integrity(m, packet.raw)
@@ -386,26 +579,15 @@ class Link:
                         raise ValueError(f"{self.name}: RFB8 replay record identity mismatch")
                     if not m['_raw_integrity_verified']:
                         raise ValueError(f"{self.name}: RFB8 CIR integrity failure")
-                    self.raw.flush()
-                    os.fsync(self.raw.fileno())
-                    if not self._ack(packet.sequence, identity):
-                        raise RuntimeError(f"{self.name}: durable record ACK disabled")
-                    with self.condition:
-                        self.durable_records[packet.sequence] = identity
-                        if len(self.durable_records) > 64:
-                            del self.durable_records[next(iter(self.durable_records))]
-                        self.ack_schedule[packet.sequence] = (time.monotonic() + 0.08, 1)
-                with self.condition:
-                    self.records += 1
-                    self.complete += bool(m.get("complete"))
-                    if len(self.capture_records) < 100000:
-                        self.capture_records.append(m)
-                    else:
-                        self.capture_overflow = True
-                    self.condition.notify_all()
+                    group.append((batch, packet.sequence, m))
+                    if not self.durable_group_commit or len(group) >= DURABLE_GROUP_MAX_RECORDS:
+                        self._commit_records(group)
+                else:
+                    self._publish_record(m)
             elif packet.kind == 2 and sealed:
                 raise RuntimeError(f"{self.name}: new RFB8 record arrived after host drain seal")
             elif packet.kind == 1:
+                self._commit_records(group)
                 with self.condition:
                     self.events.append(m)
                     if ((active or sealed)
@@ -415,7 +597,9 @@ class Link:
                              'SERIALIZE_OVERFLOW', 'BACKPRESSURE_DROP_POLL', 'BACKPRESSURE_NO_RF')):
                         self.fault_events += 1
                     self.condition.notify_all()
-        for sequence in duplicates:
+        if batch.duplicates:
+            self._commit_records(group)
+        for sequence in batch.duplicates:
             if self.durable_records.get(sequence) != identity:
                 raise RuntimeError(f"{self.name}: duplicate has no durable RFB8 record")
             if active and not self._ack(sequence, identity, retry=True):
@@ -480,6 +664,7 @@ class Link:
     def begin_capture(self, boot=None, session=None) -> None:
         with self.write_lock, self.condition:
             self.capture_records.clear()
+            self.durable_ack_timeline.clear()
             self.records = self.complete = 0
             self.fault_events = 0
             self.capture_overflow = False
@@ -525,12 +710,17 @@ class Link:
     def _finish_files(self, errors) -> None:
         try:
             with self.raw, self.meta, self.uart:
-                while not self.handoff.empty():
-                    self.uart.write(self.handoff.get_nowait()[0])
+                while (batch := self.handoff.take()) is not None:
+                    try:
+                        self._timed("uart_write", self.uart.write, batch.wire)
+                    finally:
+                        self.handoff.done(batch)
                 self.uart.write(self.overflow_wire)
+                if self.boot_preamble is not None and self.boot_preamble.pending:
+                    self.raw.write(self.boot_preamble.pending)
                 for stream in (self.raw, self.meta, self.uart):
-                    stream.flush()
-                    os.fsync(stream.fileno())
+                    self._timed("final_flush", stream.flush)
+                    self._timed("final_fsync", os.fsync, stream.fileno())
             with self.condition:
                 self.files_finalized = True
                 self.condition.notify_all()
@@ -570,18 +760,31 @@ class Link:
             delta = {k: (v - base.get(k, 0) if k != 'trailing_bytes' else v)
                      for k, v in current.items()}
             transport = self.replay.statistics() if self.replay else {}
+            handoff = {
+                "host_pending_batches": self.handoff.unfinished_tasks,
+                "host_peak_batches": self.handoff.peak_batches,
+                "host_buffer_limit_bytes": self.handoff.limit,
+                "host_pending_buffer_bytes": self.handoff.pending_bytes,
+                "host_peak_buffer_bytes": self.handoff.peak_bytes,
+                "host_rejected_buffer_bytes": self.handoff.rejected_bytes,
+            }
             if transport:
                 transport.update(durable_acks_sent=self.acks_sent,
                                  durable_ack_retries_sent=self.ack_retries_sent,
                                  replay_nacks_sent=self.nacks_sent,
-                                 host_pending_batches=self.handoff.unfinished_tasks,
-                                 host_peak_batches=self.handoff_peak)
+                                 **handoff)
                 transport['fragment'] = {k: v - self.transport_base.get(k, 0)
                                          for k, v in transport['fragment'].items()}
             return {"transport": transport, "port": self.device, "records": self.records, "complete": self.complete,
                     "reader_error": self.exception, "writer_error": self.writer_error, "fault_events": self.fault_events,
                     "capture_overflow": self.capture_overflow,
-                    "decoder": current, "capture_decoder": delta}
+                    "storage_handoff": handoff,
+                    "storage_io": {key: dict(value) for key, value in self.storage_io.items()},
+                    **({"durable_ack_timeline": list(self.durable_ack_timeline)}
+                       if self.durable_group_commit else {}),
+                    "decoder": current, "capture_decoder": delta,
+                    "tag_boot_preamble_bytes": (self.boot_preamble.frame_offset or 0)
+                    if self.boot_preamble is not None else 0}
 
 
 def main() -> int:
@@ -602,6 +805,8 @@ def main() -> int:
                    help="After STOP, take at most this many separate Stage 6 exchanges for observed Probe misses")
     p.add_argument("--require-tag-clock-evidence", action="store_true",
                    help="Require SYSSTAT-1 boot proof and runtime trace for both tag radios")
+    p.add_argument("--durable-tag-ack", action="store_true",
+                   help="ACK tag records after bounded batch fsync")
     args = p.parse_args()
     if args.require_tag_clock_evidence and args.stage != 6:
         p.error("--require-tag-clock-evidence requires Stage 6")
@@ -658,8 +863,9 @@ def capture(args, profile):
                "rf_remeasurement": []}
     try:
         for name in ("tag", "anchor"):
+            durable = {"durable_group_commit": True} if name == "tag" and getattr(args, "durable_tag_ack", False) else {}
             link = Link(name, getattr(args, name), args.out,
-                        initial_baud=getattr(args, name+"_initial_baud", 921600))
+                        initial_baud=getattr(args, name+"_initial_baud", 921600), **durable)
             links.append(link)
             time.sleep(0.3)
             link.send("STOP")

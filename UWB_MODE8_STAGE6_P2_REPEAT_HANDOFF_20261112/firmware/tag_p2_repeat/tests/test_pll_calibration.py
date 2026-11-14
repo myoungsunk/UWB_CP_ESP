@@ -9,7 +9,7 @@ VENDOR = ROOT / "vendor/tag/DW1000Ng/src"
 
 class PllCalibrationContract(unittest.TestCase):
     def test_calibration_precedes_first_automatic_clock_transition(self):
-        driver = (VENDOR / "DW1000Ng.cpp").read_text()
+        driver = (VENDOR / "DW1000Ng.cpp").read_text(encoding="utf-8")
         init = driver.split("static void initializeWithClockTrace(", 1)[1]
         init = init.split("void initialize(uint8_t ss", 1)[0]
         steps = (
@@ -27,7 +27,7 @@ class PllCalibrationContract(unittest.TestCase):
         cursor = 0
         for step in steps:
             cursor = init.index(step, cursor) + len(step)
-        registers = (VENDOR / "DW1000NgRegisters.hpp").read_text()
+        registers = (VENDOR / "DW1000NgRegisters.hpp").read_text(encoding="utf-8")
         self.assertIn("FS_CTRL = 0x2B;", registers)
         self.assertIn("FS_RES1_SUB = 0x00;", registers)
 

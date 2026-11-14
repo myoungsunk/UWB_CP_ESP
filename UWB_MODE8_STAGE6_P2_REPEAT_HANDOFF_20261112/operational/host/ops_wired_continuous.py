@@ -15,7 +15,7 @@ import subprocess
 import sys
 
 ROOT=Path(__file__).resolve().parents[2]
-PAIR_SCRIPT=ROOT/"firmware/anchor_p2_repeat/tools/run_pair.py"
+PAIR_SCRIPT=ROOT/"firmware/tag_p2_repeat/tools/run_pair.py"
 
 def command_for(anchor, tag, out, count, anchor_baud, tag_baud, calibration_profile=None):
     if not anchor or not tag or anchor==tag:
@@ -26,7 +26,7 @@ def command_for(anchor, tag, out, count, anchor_baud, tag_baud, calibration_prof
         raise ValueError("invalid boot baud")
     command = [sys.executable,str(PAIR_SCRIPT),"--anchor",anchor,"--tag",tag,
                "--out",str(out),"--stage","6","--period-us","200000",
-               "--baud","2000000","--count",str(count),
+               "--baud","2000000","--count",str(count),"--durable-tag-ack",
                "--anchor-initial-baud",str(anchor_baud),
                "--tag-initial-baud",str(tag_baud)]
     if calibration_profile is not None:

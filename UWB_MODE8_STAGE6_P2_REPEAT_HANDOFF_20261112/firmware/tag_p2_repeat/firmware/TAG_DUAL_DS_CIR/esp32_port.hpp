@@ -412,6 +412,18 @@ public:
  }
  bool healthy(uint8_t i)override{return i<N?guard(i):false;}
  uint64_t system(uint8_t i)override{if(i>=N||latched_[i])return 0;choose(i);return DW1000Ng::getSystemTimestamp()&MASK40;}
+#if !DUAL8_ANCHOR
+ bool readSyncClock(uint8_t i,uint64_t& ticks,uint64_t& before,uint64_t& after){
+  if(i>=N||!ready_[i]||faulted())return false;
+  const uint8_t previous=active_;
+  choose(i);
+  before=nowUs();
+  ticks=registerValue(0x06,0xffff,5);
+  after=nowUs();
+  choose(previous);
+  return (ticks&0x1ff)==0;
+ }
+#endif
  void idle(uint8_t i)override{
   if(i>=N){return;}
   choose(i);if(!latched_[i]&&ready_[i])DW1000Ng::forceTRxOff();rx_[i]=false;

@@ -15,11 +15,18 @@
 #include <WiFi.h>
 #include <Preferences.h>
 #include <LittleFS.h>
-#include <ArduinoOTA.h>
-#include <Update.h>
+#include <esp_app_desc.h>
+#include <esp_app_format.h>
 #include <mbedtls/md.h>
+#include <mbedtls/sha256.h>
 #include <esp_ota_ops.h>
 #include <esp_partition.h>
+#endif
+#if DUAL8_ANCHOR
+// Placed immediately after the ESP-IDF application descriptor by the Core 3.3.7 linker.
+extern const char mode8OtaRole[];
+const char mode8OtaRole[] __attribute__((used, section(".rodata_custom_desc"), aligned(4))) =
+    "MODE8-OTA-ROLE:ANCHOR:v1";
 #endif
 namespace dual8app {
 using namespace dual8;
@@ -243,8 +250,12 @@ static WireResult wire(uint8_t kind,const char*json,size_t size,const uint8_t*ra
 static WireResult writeRecord(Record& r,char* json,uint32_t sequence){
  size_t n=0;
  if(!serializeRecord(r,json,JSON_MAX+1,n))return WireResult::Encoding;
- return wireAt(sequence,2,json,n,r.anchor?nullptr:&r.cir[0][0],r.anchor?0:4*CIR_BYTES,
-   r.cfg.stage==6&&r.cfg.baud==2000000);
+ const bool fragmented=r.cfg.stage==6&&r.cfg.baud==2000000;
+#if DUAL8_ANCHOR
+ return wireAt(sequence,2,json,n,nullptr,0,fragmented);
+#else
+ return wireAt(sequence,2,json,n,r.anchor?nullptr:&r.cir[0][0],r.anchor?0:4*CIR_BYTES,fragmented);
+#endif
 }
 static void releaseRecord(uint8_t i){
  if(xQueueSend(freeQ,&i,0)!=pdTRUE)++drops;

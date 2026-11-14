@@ -31,10 +31,11 @@ inline uint64_t deadlineAt(Port&p,uint8_t radio,uint64_t origin,uint32_t offset_
  const uint64_t now=p.nowUs();const int64_t lead=signed40((origin+usTicks(offset_us))&MASK40,p.system(radio));
  return lead<=0?now:now+uint64_t(double(lead)*1e6/HZ);
 }
-inline void stopPair(Port&p){p.idle(0);p.idle(1);}
 inline bool scheduledRxQuiet(uint64_t now,uint64_t target){
  return now+500>=target&&now<target+1400;
 }
+#if !defined(DUAL8_ANCHOR) || !DUAL8_ANCHOR
+inline void stopPair(Port&p){p.idle(0);p.idle(1);}
 inline bool waitPair(Port&p,Record&r,unsigned probe,uint64_t deadline,bool secondPoll=false){
  bool got[2]={false,false};
  for(unsigned i=0;i<2;++i)if(!p.arm(uint8_t(i))){
@@ -153,6 +154,7 @@ inline void runTag(Port&p,const Config&c,uint32_t localBoot,uint8_t firstRadio,c
  if(c.stage>=4&&(!r.range[0].valid||!r.range[1].valid))r.errors|=ErrRange;
  r.end_us=p.nowUs();
 }
+#endif
 inline void receiveAnchorResponses(Port&p,Record&r,uint64_t origin,Rx*responses,uint8_t&mask,bool second,bool repeat=false){
   const auto& c=r.cfg;
   const Tx& poll=repeat?r.p1_repeat_poll_tx:second?r.poll2_tx:r.tx[0];

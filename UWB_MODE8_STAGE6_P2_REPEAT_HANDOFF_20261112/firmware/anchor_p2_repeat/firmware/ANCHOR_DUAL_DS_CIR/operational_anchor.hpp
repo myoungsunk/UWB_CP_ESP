@@ -27,7 +27,12 @@ struct OpsFileIdentity {
 static OpsFileIdentity opsLastAck{},opsDownloaded{};
 static const char* opsFailure=nullptr;
 static uint64_t opsStartAt=0;
-static uint32_t opsOtaDeadline=0,opsTcpSince=0;
+static uint32_t opsStartNonce=0,opsStartAckDeadline=0,opsStartAckSession=0;
+static constexpr uint32_t OPS_START_ACK_TIMEOUT_MS=5000;
+#if !defined(ESP_PLATFORM)
+static uint32_t opsOtaDeadline=0;
+#endif
+static uint32_t opsTcpSince=0;
 static char opsTcpLine[192]{};static size_t opsTcpUsed=0;
 static constexpr uint32_t OPS_ARCHIVE_MAX=32,OPS_TCP_PORT=29310;
 static constexpr uint32_t OPS_ARCHIVE_MAGIC=0x4f384d42UL; // "BM8O" LE
@@ -102,6 +107,7 @@ static void opsFail(const char* reason){
  // An unstarted reservation has no acquired RF data. Release its RAM
  // if the Wi-Fi-off/start gate fails, retaining any committed files.
  if(opsPhase==OpsPhase::Armed&&!active){delete[] opsArchive;opsArchive=nullptr;}
+ opsStartNonce=0;opsStartAt=0;
  opsPhase=OpsPhase::Fault;opsFailure=reason;opsRequestNetwork();
 }
 static void opsCancelScheduledStart(){
@@ -110,7 +116,11 @@ static void opsCancelScheduledStart(){
  // No RF measurement was started, so no archive evidence can be lost.
  delete[] opsArchive;opsArchive=nullptr;
  opsPhase=OpsPhase::Idle;opsSession=0;opsCount=0;opsRows=0;opsStartAt=0;
+ opsStartNonce=0;opsStartAckSession=0;
  opsRequestNetwork();
+}
+static bool opsStartAckExpired(){
+ return int32_t(millis()-opsStartAckDeadline)>=0;
 }
 static bool opsArchiveEnabled(){
  return opsPhase==OpsPhase::Armed||opsPhase==OpsPhase::Measuring||
@@ -340,7 +350,9 @@ static bool opsSaveHexField(const char*name,const char*hex){
 }
 static bool opsWifiDown(){
  opsWantNetwork=false;
+#if !defined(ESP_PLATFORM)
  if(opsOtaOpen){ArduinoOTA.end();opsOtaOpen=false;}
+#endif
  if(opsClient)opsClient.stop();
  opsServer.end();WiFi.disconnect(false,false);
  const bool modeSet=WiFi.mode(WIFI_OFF);
@@ -369,14 +381,15 @@ static bool opsTcpReply(const char*line){
 }
 static void opsTcpStatus(){
  if(!opsClient)return;
- char out[576];
+ char out[640];
  OpsArchiveHeader h;const bool stored=opsReadHeader(h)&&opsVerifyArchive(h);
  snprintf(out,sizeof out,
   "{\"event\":\"OPS_STATUS\",\"phase\":\"%s\",\"boot\":%lu,\"session\":%lu,\"records\":%lu,"
   "\"config\":%lu,\"wifi\":%s,\"file\":%s,\"file_session\":%lu,\"file_count\":%lu,"
   "\"file_acked\":%s,\"file_crc\":%lu,\"file_boot\":%lu,\"deletion_key_ready\":%s,\"pending\":%lu,\"awaiting_ack\":%u,\"free_slots\":%u,"
   "\"firmware\":\"%s\",\"stage\":%u,\"period_us\":%lu,\"baud\":%lu,"
-  "\"hw_ok\":%s,\"fault_latched\":%s,\"period_miss\":%lu,\"drained\":%s,\"failure\":\"%s\"}",
+  "\"hw_ok\":%s,\"fault_latched\":%s,\"period_miss\":%lu,\"drained\":%s,"
+  "\"start_ack_protocol\":1,\"start_ack_session\":%lu,\"failure\":\"%s\"}",
   opsPhaseText(),(unsigned long)boot,(unsigned long)opsSession,(unsigned long)opsRows,
   (unsigned long)configId(config),WiFi.status()==WL_CONNECTED?"true":"false",
   stored?"true":"false",(unsigned long)(stored?h.session:0),(unsigned long)(stored?h.count:0),
@@ -386,7 +399,8 @@ static void opsTcpStatus(){
   awaitingAck.load(),freeQ?unsigned(uxQueueMessagesWaiting(freeQ)):0,
   firmwareId(true),config.stage,(unsigned long)config.period_us,(unsigned long)config.baud,
   hwOk?"true":"false",port.faulted()?"true":"false",(unsigned long)periodMiss,
-  drainComplete&&drainClean&&opsRecordsDrained()?"true":"false",opsFailure?opsFailure:"");
+  drainComplete&&drainClean&&opsRecordsDrained()?"true":"false",
+  (unsigned long)(opsStartAckSession==opsSession?opsStartAckSession:0),opsFailure?opsFailure:"");
  opsTcpReply(out);
 }
 static bool opsHmac(const char*hex){
@@ -479,7 +493,10 @@ static bool opsEraseAcked(){
  }
  return ok;
 }
-// Device-only OTA partition gate. Does not enable the rollback bootloader.
+#if defined(ESP_PLATFORM)
+#include "operational_ota.hpp"
+#else
+// Portable OTA command guard for the host regression harness.
 static bool opsOtaPartitionsReady(){
 #if defined(ESP_PLATFORM)
  const auto*running=esp_ota_get_running_partition();
@@ -531,6 +548,7 @@ static bool opsOtaStart(uint32_t seconds){
  ArduinoOTA.begin();opsOtaOpen=true;opsOtaDeadline=millis()+seconds*1000UL;
  return true;
 }
+#endif
 // Reserve room for the full RAM archive plus LittleFS metadata/erase work
 // BEFORE switching Wi-Fi OFF. A failed commit after measurement cannot
 // recover erased RAM in the event of sudden power loss.
@@ -555,6 +573,7 @@ static bool opsPlan(uint32_t sessionId,uint32_t count){
   if(ESP.getFreeHeap()<32768){delete[] opsArchive;opsArchive=nullptr;return false;}
  }
  opsSession=sessionId;opsCount=count;opsRows=0;opsArchiveFailure=false;
+ opsStartAt=0;opsStartAckSession=0;
  opsFailure=nullptr;opsPhase=OpsPhase::Armed;
  return true;
 }
@@ -628,12 +647,39 @@ static void opsTcpCommand(char *line){
   if(!parseDecimalU32(a,sid)||!sid){opsTcpReply("ERROR BAD_SESSION");return;}
   if(!parseDecimalU32(b,count)||!count||count>OPS_ARCHIVE_MAX||extra||
      !opsPlan(sid,count)){opsTcpReply("ERROR START_GUARD");return;}
-  if(!opsTcpReply("START_ACCEPTED_WIFI_OFF")){opsCancelScheduledStart();return;}
-  delay(15);
+  opsStartNonce=esp_random();if(!opsStartNonce)opsStartNonce=1;
+  opsStartAckDeadline=millis()+OPS_START_ACK_TIMEOUT_MS;
+  char reply[52];
+  const int size=snprintf(reply,sizeof reply,"START_READY %lu %08lX\n",
+                          (unsigned long)sid,(unsigned long)opsStartNonce);
+  // Send the entire offer on the authenticated connection before waiting for its echo.
+  if(!opsClient||!opsClient.connected()||size<=0||size_t(size)>=sizeof reply||
+     opsClient.write(reinterpret_cast<const uint8_t*>(reply),size_t(size))!=size_t(size))
+   opsCancelScheduledStart();
+  return;
+ }
+ if(!strcmp(op,"START_ACK")){
+  char*rawSid=strtok_r(nullptr," \r\t",&save),*nonce=strtok_r(nullptr," \r\t",&save);
+  const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
+  uint32_t sid=0;
+  char expected[9];
+  snprintf(expected,sizeof expected,"%08lX",(unsigned long)opsStartNonce);
+  if(opsPhase!=OpsPhase::Armed||!opsStartNonce||opsStartAckExpired()||extra||
+     !parseDecimalU32(rawSid,sid)||sid!=opsSession||!nonce||strcmp(nonce,expected)){
+   opsTcpReply("ERROR START_ACK_GUARD");return;
+  }
+  opsStartNonce=0;opsStartAckSession=sid;
   if(!opsWifiDown()){opsFail("WIFI_OFF_FAILED");return;}
   opsStartAt=uint64_t(esp_timer_get_time())+250000ULL;
   return;
  }
+#if defined(ESP_PLATFORM)
+ if(!strcmp(op,"OTA_STATUS")){
+  if(strtok_r(nullptr," \r\t",&save)){opsTcpReply("ERROR EXTRA_ARGS");return;}
+  char status[384];opsOtaStatus(status,sizeof status);opsTcpReply(status);return;
+ }
+ if(!strcmp(op,"OTA")){opsOtaCommand(save);return;}
+#else
  if(!strcmp(op,"OTA")){
   char*a=strtok_r(nullptr," \r\t",&save);
   const bool extra=strtok_r(nullptr," \r\t",&save)!=nullptr;
@@ -644,11 +690,13 @@ static void opsTcpCommand(char *line){
   else opsTcpReply(opsOtaStart(seconds)?"OTA_WINDOW_OPEN":"ERROR OTA_GUARD");
   return;
  }
+#endif
  opsTcpReply("ERROR UNKNOWN_COMMAND");
 }
 static void opsTcpPoll(){
  if(!opsWifiUp)return;
  if(!opsClient||!opsClient.connected()){
+  if(opsStartNonce){opsCancelScheduledStart();opsFailure="START_ACK_DISCONNECTED";}
   if(opsClient)opsClient.stop();
   opsClient=opsServer.accept();
   opsTcpAuthorized=false;opsTcpUsed=0;opsTcpOverflow=false;
@@ -661,7 +709,10 @@ static void opsTcpPoll(){
   }
  }
  if(!opsClient)return;
- if(uint32_t(millis()-opsTcpSince)>90000){opsClient.stop();return;}
+ if(uint32_t(millis()-opsTcpSince)>90000){
+  if(opsStartNonce){opsCancelScheduledStart();opsFailure="START_ACK_DISCONNECTED";}
+  opsClient.stop();return;
+ }
  for(unsigned k=0;k<128&&opsClient.available();++k){
   const int n=opsClient.read();if(n<0)break;const char c=char(n);
   if(c=='\n'){
@@ -774,21 +825,35 @@ static bool opsUsbCommand(const char*line){
  if(!strcmp(op,"PURGE")){
   emit("{\"event\":\"OPS_PURGE\",\"ok\":false,\"reason\":\"TCP_CUSTODY_PROOF_REQUIRED\"}");return true;
  }
+#if defined(ESP_PLATFORM)
+ if(!strcmp(op,"OTA_STATUS")){
+  if(strtok_r(nullptr," \r\t",&save)){
+   emit("{\"event\":\"ERROR\",\"reason\":\"EXTRA_ARGS\"}");return true;
+  }
+  char status[384];opsOtaStatus(status,sizeof status);emit("%s",status);return true;
+ }
+#endif
  if(!strcmp(op,"OTA")){
+#if defined(ESP_PLATFORM)
+  emit("{\"event\":\"OPS_OTA\",\"ok\":false,\"reason\":\"AUTHENTICATED_TCP_REQUIRED\"}");
+#else
   char*value=strtok_r(nullptr," \r\t",&save);
   uint32_t seconds=0;
   if(strtok_r(nullptr," \r\t",&save)||!parseDecimalU32(value,seconds)||
      seconds<60||seconds>600)
    emit("{\"event\":\"OPS_OTA\",\"ok\":false,\"reason\":\"OTA_GUARD\"}");
-  else if(!opsOtaCanAttestImage())
+  else
    emit("{\"event\":\"OPS_OTA\",\"ok\":false,\"reason\":\"IMAGE_ATTESTATION_REQUIRED\"}");
-  else emit("{\"event\":\"OPS_OTA\",\"ok\":%s}",opsOtaStart(seconds)?"true":"false");
+#endif
   return true;
  }
  emit("{\"event\":\"ERROR\",\"reason\":\"UNKNOWN_OPS_COMMAND\"}");return true;
 }
 static void opsLoop(){
- if(opsPhase==OpsPhase::Armed&&!active&&uint64_t(esp_timer_get_time())>=opsStartAt){
+ if(opsStartNonce&&opsStartAckExpired()){
+  opsCancelScheduledStart();opsFailure="START_ACK_TIMEOUT";
+ }
+ if(opsPhase==OpsPhase::Armed&&!active&&opsStartAt&&uint64_t(esp_timer_get_time())>=opsStartAt){
   if(WiFi.getMode()!=WIFI_OFF){opsFail("WIFI_OFF_LOST");return;}
   // An incidental USB status reply can still be draining at the deadline.
   // Wait briefly for it before failing the armed session.
@@ -813,11 +878,13 @@ static void opsLoop(){
    opsPhase=OpsPhase::Recovery;opsFailure="ARCHIVE_RECOVERY_REQUIRED";opsRequestNetwork();
   }else opsFail("ARCHIVE_INCOMPLETE");
  }
+#if !defined(ESP_PLATFORM)
  if(opsOtaOpen){
   if(active||opsFilePending()||int32_t(millis()-opsOtaDeadline)>=0){
    ArduinoOTA.end();opsOtaOpen=false;
   }else ArduinoOTA.handle();
  }
+#endif
  // Reconnect only in maintenance after boot or completed archival commit.
  // Never retry Wi-Fi while RF is active or an offline run is armed.
  if(opsWantNetwork&&!active&&opsPhase!=OpsPhase::Armed&&
@@ -830,6 +897,7 @@ static void opsLoop(){
   opsServer.begin();opsWifiUp=true;
  }
  if(opsWifiUp&&WiFi.status()!=WL_CONNECTED){
+  if(opsStartNonce){opsCancelScheduledStart();opsFailure="START_ACK_DISCONNECTED";}
   opsWifiUp=false;opsClient.stop();opsServer.end();
  }
  if(!active)opsTcpPoll();

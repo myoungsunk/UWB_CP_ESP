@@ -223,7 +223,7 @@ def journal_signature(doc: dict, secret: bytes) -> str:
 class RouteController:
     def __init__(self,plan,out,anchor_ip,tag_port,key,*,anchor_port=29310,
                  initial_baud=921600,resume=False,manual_confirm=False,timeout=90,
-                 approval_key=None):
+                 approval_key=None,calibration_profile=None):
         self.plan=validate_plan(plan)
         if len(key)!=32:raise ValueError("32-byte HMAC key required")
         self.out=Path(out);self.path=self.out/"route_receipt.json"
@@ -233,6 +233,7 @@ class RouteController:
         if approval_key is not None and (len(approval_key)!=32 or approval_key==key):
             raise ValueError("custody key must be separate from TCP login key")
         self.approval_key=approval_key
+        self.calibration_profile = Path(calibration_profile) if calibration_profile is not None else None
         self._journal_key=approval_key if approval_key is not None else key
         self.digest=hashlib.sha256(json.dumps(plan,sort_keys=True,separators=(",",":")).encode()).hexdigest()
         if resume:
@@ -336,6 +337,8 @@ class RouteController:
                  "--tag-port",self.tag_port,"--session",str(entry["session"]),
                  "--count",str(entry["count"]),"--out",str(folder),
                  "--tag-initial-baud",str(self.initial_baud if index==0 else 921600)]
+        if self.calibration_profile is not None:
+            command.extend(("--calibration-profile", str(self.calibration_profile)))
         env=os.environ.copy()
         env["MODE8_AUTH_KEY_HEX"]=self.key.hex()
         env.pop("MODE8_APPROVAL_KEY_HEX",None)
@@ -382,6 +385,7 @@ def main():
     ap.add_argument("--tag-initial-baud",type=int,choices=(921600,2000000),default=921600)
     ap.add_argument("--resume",action="store_true")
     ap.add_argument("--manual-confirm",action="store_true")
+    ap.add_argument("--calibration-profile", type=Path)
     args=ap.parse_args()
     key=bytes.fromhex(os.getenv(args.key_env,""))
     approval_key=bytes.fromhex(os.getenv(args.approval_key_env,""))
@@ -392,7 +396,7 @@ def main():
                             args.out,args.anchor_ip,args.tag_port,key,
                             anchor_port=args.anchor_port,initial_baud=args.tag_initial_baud,
                             resume=args.resume,manual_confirm=args.manual_confirm,
-                            approval_key=approval_key)
+                            approval_key=approval_key,calibration_profile=args.calibration_profile)
         ctl.run()
         print(f"Mode8 route complete: {ctl.path}")
         return 0

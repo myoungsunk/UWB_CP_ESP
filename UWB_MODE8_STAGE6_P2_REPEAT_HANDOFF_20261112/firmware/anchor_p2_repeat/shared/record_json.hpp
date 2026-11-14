@@ -28,6 +28,9 @@ inline void jsonRx(Json&j,const Rx&o){
 inline void jsonTx(Json&j,const Tx&o){j.add("{\"attempted\":%s,\"ok\":%s,\"radio\":%u,\"type\":%u,\"requested\":%llu,\"planned\":%llu,\"actual\":%llu,\"status\":%llu,\"lead_us\":%ld,\"begin_us\":%llu,\"end_us\":%llu}",o.attempted?"true":"false",o.ok?"true":"false",o.radio,o.type,(unsigned long long)o.requested,(unsigned long long)o.planned,(unsigned long long)o.actual,(unsigned long long)o.status,(long)o.lead_us,(unsigned long long)o.begin_us,(unsigned long long)o.end_us);}
 inline void jsonFrame(Json&j,const Frame&f,bool valid){uint8_t b[AIR_BYTES];if(valid&&encode(f,b))j.hex(b,AIR_BYTES);else j.add("null");}
 inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes){
+#if defined(DUAL8_ANCHOR) && DUAL8_ANCHOR
+ if(!r.anchor){bytes=0;return false;}
+#endif
  Json j(out,capacity);
  j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"%s\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
  firmwareId(r.anchor),r.anchor?"anchor":"tag",r.cfg.stage,(unsigned long)r.session,(unsigned long)r.txn,(unsigned long)r.boot,(unsigned long)r.peer_boot,(unsigned long)r.config,(unsigned long long)r.begin_us,(unsigned long long)r.end_us,r.complete?"true":"false",(unsigned long)r.errors,r.metadata_conflict?"true":"false",r.p1_tx_confirmed?"true":"false",r.response_mask,(unsigned long)r.cfg.period_us,(unsigned long)r.cfg.cir_hz,(unsigned long)r.cfg.baud,r.txn&1?"B,A":"A,B");

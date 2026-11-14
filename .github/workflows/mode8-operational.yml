@@ -18,6 +18,7 @@ jobs:
             .github
             UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware
             UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/operational
+            UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/provenance/calibration_stage6_temporary.json
           sparse-checkout-cone-mode: false
       - uses: actions/setup-python@v5
         with:
@@ -26,7 +27,7 @@ jobs:
         run: python -m unittest discover -s UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/operational/tests -p 'test_*.py' -v
       - name: P2 fresh retry and recorded transaction 24 replay
         run: |
-          python -m pip install numpy==2.2.4
+          python -m pip install numpy==2.2.4 pyserial==3.5
           python UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat/tools/test_operational_p2_fresh_retry.py -v
       - name: Tag PLL calibration and clock-history regression
         run: |
@@ -42,7 +43,7 @@ jobs:
       - name: Portable C++ Mode 8 regression (without Arduino/Wi-Fi host stubs)
         run: |
           cd UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware/anchor_p2_repeat
-          mkdir -p build/host
+          mkdir -p build/host evidence/host
           g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie             -fsanitize=address,undefined -Ishared tests/test_core.cpp -o build/host/test_core
           build/host/test_core evidence/host
           g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie -fsanitize=address,undefined -Ishared tests/test_transport_guard.cpp -o build/host/test_transport_guard
@@ -53,6 +54,16 @@ jobs:
             g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie -fsanitize=address,undefined -DDUAL8_ANCHOR=$role -Ishared tests/test_operational_profile.cpp -o build/host/test_operational_profile_$role
             build/host/test_operational_profile_$role
           done
+      - name: Full firmware-tool regression with role-specific synthetic evidence
+        run: |
+          package=UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112/firmware
+          (cd "$package/anchor_p2_repeat" && python -m unittest discover -s tests -p 'test_*.py' -v)
+          cd "$package/tag_p2_repeat"
+          mkdir -p build/host evidence/host
+          g++ -std=c++11 -O1 -g -Wall -Wextra -Wpedantic -Werror -fno-pie -no-pie \
+            -fsanitize=address,undefined -Ishared tests/test_core.cpp -o build/host/test_core
+          build/host/test_core evidence/host
+          python -m unittest discover -s tests -p 'test_*.py' -v
 
   esp32-build:
     runs-on: ubuntu-latest

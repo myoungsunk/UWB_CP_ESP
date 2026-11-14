@@ -398,6 +398,44 @@ static void stop(uint32_t request=0){
  }else emit("{\"event\":\"STOPPED\",\"role\":\"%s\",\"session\":%lu,\"boot\":%lu,\"stop_request\":%lu,\"physical_rf_off_confirmed\":false}",
             role(),(unsigned long)session,(unsigned long)boot,(unsigned long)request);
 }
+#if !DUAL8_ANCHOR
+// The normal initial or retry POLL gives a conservative next-POLL boundary.
+// RX remains armed on both radios throughout these read-only SPI operations.
+struct SyncWindow {
+ bool valid=false;
+ uint8_t pollRadio=0;
+ uint64_t nextPollTicks=0;
+};
+static SyncWindow syncWindow;
+constexpr uint64_t SYNC_RF_MARGIN_TICKS=30000ULL*638976ULL/10ULL;
+
+static void emitSyncRejection(uint32_t marker,uint8_t radio,const char* reason){
+ emit("{\"event\":\"SYNC_MARK_REJECT\",\"role\":\"tag\",\"marker\":%lu,\"radio\":%u,\"boot\":%lu,\"session\":%lu,\"reason\":\"%s\"}",
+      (unsigned long)marker,unsigned(radio),(unsigned long)boot,(unsigned long)session,reason);
+}
+
+static void syncMark(uint32_t marker,uint8_t radio){
+ if(!hwOk||port.faulted()){emitSyncRejection(marker,radio,"HARDWARE");return;}
+ if(drainRequest||!transportQuiet()){emitSyncRejection(marker,radio,"UART_BUSY");return;}
+ uint64_t ticks,before,after;
+ if(active){
+  if(config.stage!=6||config.baud!=2000000||!syncWindow.valid){
+   emitSyncRejection(marker,radio,"NO_SAFE_RF_GAP");return;
+  }
+  if(!port.readSyncClock(syncWindow.pollRadio,ticks,before,after)||
+     signed40(syncWindow.nextPollTicks,ticks)<int64_t(SYNC_RF_MARGIN_TICKS)){
+   emitSyncRejection(marker,radio,"NO_SAFE_RF_GAP");return;
+  }
+ }
+ if(!port.readSyncClock(radio,ticks,before,after)){
+  emitSyncRejection(marker,radio,"SYS_TIME_READBACK");return;
+ }
+ emit("{\"event\":\"SYNC_MARK\",\"role\":\"tag\",\"marker\":%lu,\"radio\":%u,\"boot\":%lu,\"session\":%lu,\"sys_time\":%llu,\"esp_before_us\":%llu,\"esp_after_us\":%llu,\"txn\":%lu,\"active\":%s}",
+      (unsigned long)marker,unsigned(radio),(unsigned long)boot,(unsigned long)session,
+      (unsigned long long)ticks,(unsigned long long)before,(unsigned long long)after,
+      (unsigned long)txn,active?"true":"false");
+}
+#endif
 static void command(char*line){
  char*save=nullptr;char*w[9]{};unsigned n=0;for(char*p=strtok_r(line," \t\r",&save);p;p=strtok_r(nullptr," \t\r",&save)){if(n==9){emit("{\"event\":\"ERROR\",\"reason\":\"TOO_MANY_TOKENS\"}");return;}w[n++]=p;}if(!n)return;
  if(!strcmp(w[0],"REC_ACK")||!strcmp(w[0],"REC_NACK")){
@@ -431,7 +469,16 @@ static void command(char*line){
   else emit("{\"event\":\"ERROR\",\"reason\":\"BAD_STOP_REQUEST\"}");
   return;
  }
- if(!strcmp(w[0],"HELP")){emit("{\"event\":\"HELP\",\"commands\":\"HELLO; SELFTEST; SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; DRAIN session boot request; RESET%s\"}",DUAL8_ANCHOR?"":"; DEVID 0|1; PLLSTEP radio index; CLOCKTRACE radio offset");return;}
+ if(!strcmp(w[0],"HELP")){emit("{\"event\":\"HELP\",\"commands\":\"HELLO; SELFTEST; SET STAGE|PERIOD_US|CIR_HZ|VERIFY_CIR value; BAUD 921600|2000000; ANT radio tx rx cal_id sigma_m; START session count; STOP [request]; DRAIN session boot request; RESET%s\"}",DUAL8_ANCHOR?"":"; DEVID 0|1; PLLSTEP radio index; CLOCKTRACE radio offset; SYNC_MARK marker A|B");return;}
+#if !DUAL8_ANCHOR
+ if(!strcmp(w[0],"SYNC_MARK")){
+  uint32_t marker=0;
+  if(n!=3||!number(w[1],marker)||!marker||(strcmp(w[2],"A")&&strcmp(w[2],"B"))){
+   emitSyncRejection(marker,255,"BAD_ARGUMENT");return;
+  }
+  syncMark(marker,uint8_t(w[2][0]=='B'));return;
+ }
+#endif
  if(active){emit("{\"event\":\"ERROR\",\"reason\":\"STOP_REQUIRED\"}");return;}
 #if !DUAL8_ANCHOR
  if(!strcmp(w[0],"CLOCKTRACE")){
@@ -571,6 +618,7 @@ static void command(char*line){
   drainComplete=config.stage!=6||config.baud!=2000000;drainClean=drainComplete;
   session=s;remaining=count;targetCount=count;txn=0;peerBoot=0;periodMiss=0;writerMaxUs=0;nextStart=port.nowUs()+20000;runExpire=port.nowUs()+uint64_t(count)*config.period_us+10000000ULL;active=true;
 #if !DUAL8_ANCHOR
+  syncWindow=SyncWindow{};
   port.clearRxEvidence();
   port.beginClockHistory(config.stage==6);
 #endif
@@ -670,6 +718,7 @@ static void loop(){
  for(uint8_t i=0;i<2;++i){Frame f;Rx o;const int rc=port.receive(i,f,o);
   if(rc==1){
    if(f.type==Type::Poll&&!isProbe1RepeatPoll(f)&&f.session==session&&f.config==configId(config)&&f.stage==config.stage&&f.txn>=txn&&f.txn<targetCount&&(!peerBoot||peerBoot==f.boot)&&(!isRetryPoll(f)||!f.peer_boot||f.peer_boot==boot)){
+    syncWindow.valid=false;
     peerBoot=f.boot;txn=f.txn+1;int idx=reserve();if(idx<0){
      const unsigned held=awaitingAck.load(),queued=ackQueued.load(),retired=ackRetired.load();
      const uint32_t backlog=pending.load();
@@ -683,6 +732,7 @@ static void loop(){
      if(config.stage==6)port.finishRegisterTrace(recordAt(idx));
      const uint64_t nextPoll=(o.hw+usTicks(config.period_us-(isRetryPoll(f)?config.probe1DelayUs():0)))&MASK40;
      if(config.stage==6&&!port.faulted()&&signed40(port.system(i),nextPoll)>=0)++periodMiss;
+     if(config.stage==6&&recordAt(idx).complete&&!port.faulted())syncWindow={true,i,nextPoll};
      submit(uint8_t(idx));
     }
     remaining=targetCount-txn;if(remaining==0){stop();break;}if(port.faulted()){active=false;hwOk=false;idleAll();break;}

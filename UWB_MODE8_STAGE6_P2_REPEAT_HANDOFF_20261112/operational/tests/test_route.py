@@ -121,6 +121,22 @@ class RouteTests(unittest.TestCase):
             with patch("ops_route.subprocess.run") as forbidden:
                 with self.assertRaises(RouteHold):resumed.run()
                 forbidden.assert_not_called()
+    def test_calibration_profile_forwarded_to_each_point(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            profile = root / "profile.json"
+            controller = RouteController(PLAN, root / "route", "127.0.0.1", "COM4", KEY,
+                                         calibration_profile=profile)
+            with patch("ops_route.subprocess.run") as launch, \
+                    patch.object(controller, "verify_point", return_value={}):
+                launch.return_value.returncode = 0
+                for index in range(len(PLAN["points"])):
+                    controller.run_point(index)
+                self.assertEqual(launch.call_count, len(PLAN["points"]))
+                for invocation in launch.call_args_list:
+                    command = invocation.args[0]
+                    self.assertEqual(command[-2:], ["--calibration-profile", str(profile)])
+
     def test_purge_intent_makes_lost_reply_idempotent(self):
         with tempfile.TemporaryDirectory() as d:
             target=Path(d)/"route"
