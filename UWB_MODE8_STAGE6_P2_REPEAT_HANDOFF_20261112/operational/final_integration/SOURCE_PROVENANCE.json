@@ -9,6 +9,7 @@
     "Alternate operations": "43193033617a1b8542f5927894662302a9dd53e0"
   },
   "field_receipts_sha256": {
+    "g7_replay_20261114_2144926518/point_G7_2144926519/operational_receipt.json": "f1432c0d36ddcbe1263fc72a85ca5d9e03bc11eb0eee63bd713238c65d73ddc9",
     "g8_group_commit_20261114/ack_failure_and_regression.json": "fc4e50f1fc88aa8122950509a99b1f7103c65b57e0740b40f46522f0f7cf7735",
     "g8_group_commit_20261114/g8_pc_verified.json": "17515a7e71010ab1f01e9198e4b5f7e6d409ecbca937a6826bd592242a599e76",
     "g10_ota_attestation_20261114/evidence/g10_acceptance.json": "1098a5696b3cdad40b799cf38336e5bedfc9b42b44654505e4a13a58f970ff60",

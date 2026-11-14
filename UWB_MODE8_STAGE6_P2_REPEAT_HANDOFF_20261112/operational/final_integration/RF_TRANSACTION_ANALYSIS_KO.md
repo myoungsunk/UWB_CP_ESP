@@ -2,6 +2,12 @@
 
 `logs/01_final_pass/capture`와 `logs/02_p2_repeat_recovery/capture`의 RFB8·UART·JSONL을 영수증 SHA-256과 대조했다. 최신 분석기로 RFB8 및 A/B 원시 CIR의 CRC를 읽고, 양단 프레임과 DS-TWR를 검산했다. 수치와 거래 목록은 [재생 결과](replay-results.json)에 있다.
 
+패키지 루트에서 다음 명령을 실행한다. Python 3.11 이상과 CI에서 사용하는 `numpy==2.2.4`, `pyserial==3.5`가 필요하다. 출력 경로는 새 파일이어야 한다.
+
+```sh
+python -B operational/final_integration/replay.py --out mode8_replay.json
+```
+
 | 세션 | P1 최초 확인 | P1 공통축·전력 격자 | P2 공통축·전력 격자 | 기간 |
 |---|---:|---:|---:|---|
 | 3059936669 | 999/1000, txn 874 재시도 | 1000/1000 | 1000/1000 | 199878.982–200126.490 µs |

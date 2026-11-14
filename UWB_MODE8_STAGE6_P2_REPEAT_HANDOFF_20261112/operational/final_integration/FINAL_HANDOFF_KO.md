@@ -1,6 +1,6 @@
 # Mode 8 최종 통합 감사 인계
 
-이 패키지의 코드·빌드 입력 기준은 `17e496ccb584b4f73cfe75198db7cc08ca33f25b`이다. 후속 커밋은 인수 문서와 증거를 추가한다. 빌드 바이트 대조는 [build-binding.json](build-binding.json)을 참조한다.
+이 패키지의 펌웨어·운영 코드 빌드 입력 기준은 `17e496ccb584b4f73cfe75198db7cc08ca33f25b`이다. 후속 커밋은 인수 문서와 증거, 과거 원본 재생 스크립트를 추가한다. 빌드 바이트 대조는 [build-binding.json](build-binding.json)을 참조한다.
 
 **판정** `SOURCE_PASS / HOST_QA_PASS / TARGET_BUILD_PASS / HARDWARE_FIELD_HOLD`
 
