@@ -16,7 +16,9 @@ import math
 import zlib
 import numpy as np
 from rfb8 import read_file, Decoder, CIR_BYTES, RAW_BYTES
-from capture_audit import anchor_tx_matches, probe2_response_ticks, response_matches
+from capture_audit import (P1_FRESH_FIRMWARES, anchor_tx_matches, p1_exchange,
+                           p1_fresh_contract, p1_repeat_contract, p1_selection,
+                           p2_selection, probe2_response_ticks, response_matches)
 
 MASK40 = (1 << 40) - 1
 HZ = 63897600000
@@ -52,7 +54,7 @@ def air_frame(hex_bytes: str | None) -> dict | None:
             'config': read(16, 4), 'boot': read(20, 4), 'peer_boot': read(24, 4),
             'mask': b[29], 'tx_ok_mask': b[30], 'poll_tx': read(32),
             'resp_rx': [read(37), read(42)], 'probe_tx': read(47),
-            'prev_probe_actual': read(52)}
+            'prev_probe_actual': read(52), 'p1_repeat_actual': read(57)}
 
 
 def same_identity(f: dict | None, meta: dict, *, peer: bool) -> bool:
@@ -76,7 +78,7 @@ def _anchor_response_matches(anchor: dict, meta: dict, p2: dict, radio: int) -> 
                 not response_matches(rx[radio], meta['tx'][radio], meta['poll_rx'][radio],
                                      meta, radio, p2['poll_tx'], p2['resp_rx'][radio])):
             return False
-        if not all(anchor['frames'][j] == meta['frames'][j] for j in range(3)):
+        if anchor['frames'][0] != meta['frames'][0]:
             return False
         return True
     except (KeyError, IndexError, TypeError, ValueError):
@@ -98,7 +100,7 @@ def _slot_provenance(meta: dict, frames: list[dict | None], slot: int) -> bool:
                 f['peer_boot'] == (0 if meta['stage'] == 2 else meta['boot']))
 
 
-def _anchor_block_agrees(p1: dict | None, p2: dict | None) -> bool:
+def _anchor_block_agrees(p1: dict | None, p2: dict | None, repeat_used: bool) -> bool:
     if not p1 or not p2:
         return False
     return bool(p1['type'] == 4 and p2['type'] == 5 and
@@ -106,7 +108,7 @@ def _anchor_block_agrees(p1: dict | None, p2: dict | None) -> bool:
                 p1['resp_rx'] == p2['resp_rx'] and
                 p1['mask'] == p2['mask'] and
                 p1['peer_boot'] == p2['peer_boot'] and
-                p2['prev_probe_actual'] == p1['probe_tx'] and
+                (p2['p1_repeat_actual'] if repeat_used else p2['prev_probe_actual']) == p1['probe_tx'] and
                 p1['tx_ok_mask'] & 1 and p2['tx_ok_mask'] & 3 == 3)
 
 
@@ -150,7 +152,15 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
                  p1['peer_boot'] == meta['boot'])
     p2_ok = bool(p2 and p2['type'] == 5 and same_identity(p2, meta, peer=True) and
                  p2['peer_boot'] == meta['boot'])
-    coherent = bool(poll_ok and p1_ok and p2_ok and _anchor_block_agrees(p1, p2) and
+    p1_contract = p1_repeat_contract(anchor if isinstance(anchor, dict) else {}, meta)
+    p1_proof = p1_selection(anchor, meta) if isinstance(anchor, dict) else None
+    p2_proof = p2_selection(anchor, meta) if isinstance(anchor, dict) else None
+    repeat_used = p1_contract and meta.get('p1_repeat_used') is True
+    fresh_expected = meta['stage'] == 6 and meta.get('firmware') == P1_FRESH_FIRMWARES[1]
+    fresh = isinstance(anchor, dict) and p1_fresh_contract(anchor, meta)
+    coherent = bool(poll_ok and p1_ok and p2_ok and
+                    (not p1_contract or (p1_proof is not None and p2_proof is not None)) and
+                    _anchor_block_agrees(p1, p2, repeat_used) and
                     p1['poll_tx'] == poll['poll_tx'] and
                     meta.get('p1_tx_confirmed') is True and
                     meta.get('metadata_conflict') is False and not meta.get('errors', 0) & (1 | 64 | 256))
@@ -159,6 +169,28 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
     # frame makes the whole transaction's cross-radio physical timing untrusted.
     all_received_match = all(not meta['probe_rx'][s].get('ok') or slot_ok[s] for s in range(4))
     coherent = coherent and all_received_match and any(slot_ok[2:])
+    p1_coherent = p2_coherent = coherent
+    if fresh_expected:
+        canonical_match = bool(
+            fresh and poll_ok and anchor.get('role') == 'anchor'
+            and all(anchor.get(k) == meta.get(k) for k in ('session', 'txn', 'config', 'stage'))
+            and anchor.get('boot') == meta['peer_boot'] and anchor.get('peer_boot') == meta['boot']
+            and (anchor.get('frames') or [None])[0] == meta['frames'][0]
+            and anchor_tx_matches((anchor.get('tx') or [{}])[0], 0, poll['poll_tx'])
+            and anchor.get('metadata_conflict') is False and not anchor.get('errors', 0) & (1 | 64 | 256)
+            and meta.get('metadata_conflict') is False and not meta.get('errors', 0) & (1 | 64 | 256))
+        p2_confirmed_p1 = bool(
+            canonical_match and p2_ok and any(slot_ok[2:]) and all_received_match
+            and isinstance(anchor.get('frames'), list) and len(anchor['frames']) == 3
+            and isinstance(anchor.get('tx'), list) and len(anchor['tx']) == 3
+            and anchor['frames'][2] == meta['frames'][2]
+            and anchor_tx_matches(anchor['tx'][2], 2, p2['probe_tx']))
+        p2_coherent = bool(
+            canonical_match and p2_ok and p2_proof is not None and any(slot_ok[2:])
+            and all(not meta['probe_rx'][s].get('ok') or slot_ok[s] for s in (2, 3)))
+        p1_coherent = bool(p2_confirmed_p1 and p1_ok and p1_proof is not None
+                           and meta.get('p1_tx_confirmed') is True and all_received_match)
+        coherent = p1_coherent and p2_coherent
     local_response_ok = []
     for radio, (po, tx) in enumerate(zip(poll_slots, meta['tx'])):
         actual = tx.get('actual')
@@ -169,22 +201,33 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
     anchor_tx_ok = False
     if coherent and isinstance(anchor, dict):
         txs = anchor.get('tx')
-        rf_ticks = (poll['poll_tx'], p1['probe_tx'], p2['probe_tx'])
-        anchor_tx_ok = (isinstance(txs, list) and len(txs) == 3 and
-                        all(anchor_tx_matches(tx, slot, tick)
-                            for slot, (tx, tick) in enumerate(zip(txs, rf_ticks))))
-    matched_anchor = [anchor_tx_ok and local_response_ok[radio] and
+        anchor_tx_ok = (p1_proof is not None and p2_proof is not None
+                        and isinstance(txs, list) and len(txs) == 3
+                        and anchor_tx_matches(txs[0], 0, poll['poll_tx'])
+                        and anchor_tx_matches(p1_proof[1], 1, p1['probe_tx'])
+                        and anchor_tx_matches(p2_proof[1], 2, p2['probe_tx']))
+    p1_anchor_tx_ok = p1_coherent if fresh_expected else anchor_tx_ok
+    matched_anchor = [p1_anchor_tx_ok and local_response_ok[radio] and
                       _anchor_response_matches(anchor, meta, p2, radio) for radio in range(2)]
+
+    p1_polls, p1_txs = meta['poll_rx'], meta['tx']
+    if fresh and repeat_used and p1_coherent:
+        p1_polls, p1_txs, _ = p1_exchange(anchor, meta)
+        # p1_selection has already verified both fresh local events and anchor RESPONSEs.
+        local_response_ok = matched_anchor = [True, True]
+    p2_matched = ([p2_coherent and probe2_response_ticks(anchor, meta, radio) is not None
+                   for radio in range(2)] if fresh_expected else matched_anchor)
 
     # P1 DS is valid only if its timestamp evidence is the same as the P1/P2
     # over-air frames and local hardware events. Never trust math_valid alone.
     p1_results: list[tuple[float, bool]] = []
     for radio in range(2):
         fw = meta['ranges'][radio]
-        po, tx, rx = meta['poll_rx'][radio], meta['tx'][radio], meta['probe_rx'][radio]
+        po, tx, rx = p1_polls[radio], p1_txs[radio], meta['probe_rx'][radio]
         expected = ([p1['poll_tx'], p1['resp_rx'][radio], p1['probe_tx'],
-                     po.get('hw'), tx.get('actual'), rx.get('hw')] if coherent else None)
-        evidence_ok = bool(coherent and slot_ok[radio] and fw.get('math_valid') is True and
+                     po.get('hw'), tx.get('actual'), rx.get('hw')] if p1_coherent else None)
+        evidence_ok = bool(p1_coherent and (not p1_contract or matched_anchor[radio])
+                           and slot_ok[radio] and fw.get('math_valid') is True and
                            p1['mask'] & (1 << radio) and
                            local_response_ok[radio] and
                            rx.get('ok') and rx.get('lde') and
@@ -217,12 +260,12 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
         range_ok = False
         method = 'relative_only'
         fw = meta['ranges'][radio]
-        if valid[slot] and fp_ok and slot_ok[slot] and coherent:
+        if valid[slot] and fp_ok and slot_ok[slot] and (p1_coherent if probe == 1 else p2_coherent):
             if probe == 1:
                 distance, range_ok = p1_results[radio]
                 if range_ok:
                     method = 'P1_DS_confirmed_by_P2'
-            elif p2['mask'] & (1 << radio) and matched_anchor[radio]:
+            elif (fresh_expected or p2['mask'] & (1 << radio)) and p2_matched[radio]:
                 po, rt = meta['poll_rx'][radio], meta['tx'][radio]
                 if o.get('lde') is True:
                     if meta['stage'] in (5, 6):
@@ -248,7 +291,7 @@ def packet_arrays(meta: dict, raw: bytes, anchor: dict | None = None,
             normalized[slot] = cir[slot] / nacc
             if range_ok:
                 physical[slot] = relative[slot] + distance / C_AIR
-        acal = (anchor.get('calibration') or [{}])[0] if matched_anchor[radio] else {}
+        acal = (anchor.get('calibration') or [{}])[0] if (matched_anchor if probe == 1 else p2_matched)[radio] else {}
         tag_cal = meta.get('calibration', [])
         tag_cal_id = tag_cal[radio].get('id') if len(tag_cal) > radio else 0
         calibrated[slot] = bool(range_ok and tag_cal_id and fw.get('cal_id') == tag_cal_id and acal.get('id'))

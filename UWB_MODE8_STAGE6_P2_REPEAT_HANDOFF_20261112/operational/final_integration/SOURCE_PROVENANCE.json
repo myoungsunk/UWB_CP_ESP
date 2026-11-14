@@ -1,0 +1,21 @@
+{
+  "source_sha": "17e496ccb584b4f73cfe75198db7cc08ca33f25b",
+  "requested_base_sha": "44d3e4d93aa5947568b8652a050e5074287449dc",
+  "source_refs": {
+    "Stage 1–6": "a38338d1cdca00dbd9752d4f76343aea0d1f5317",
+    "P2 repeat Stage 6": "ce8f986793c5a12be0a020df924f05b516edf70e",
+    "Operational baseline": "44d3e4d93aa5947568b8652a050e5074287449dc",
+    "Combined RF and PLL": "b73451706b4410e4bc86b3046c55f8e70ba9f7b4",
+    "Alternate operations": "43193033617a1b8542f5927894662302a9dd53e0"
+  },
+  "field_receipts_sha256": {
+    "g7_replay_20261114_2144926518/point_G7_2144926519/operational_receipt.json": "f1432c0d36ddcbe1263fc72a85ca5d9e03bc11eb0eee63bd713238c65d73ddc9",
+    "g8_group_commit_20261114/ack_failure_and_regression.json": "fc4e50f1fc88aa8122950509a99b1f7103c65b57e0740b40f46522f0f7cf7735",
+    "g8_group_commit_20261114/g8_pc_verified.json": "17515a7e71010ab1f01e9198e4b5f7e6d409ecbca937a6826bd592242a599e76",
+    "g10_ota_attestation_20261114/evidence/g10_acceptance.json": "1098a5696b3cdad40b799cf38336e5bedfc9b42b44654505e4a13a58f970ff60",
+    "g11_endurance_20261114125427/g11_acceptance.json": "43899207fbbb9fc32f1353940f6ce0970bd62bb0d9e148997ee84f805c322126",
+    "g12_stationary_20261114_223738/g12_stationary_receipt.json": "d7509bef174508f329cc7b6e9ec44d3c43f08549af4152253e60ab12fd4dc5c1"
+  },
+  "field_root": "UWB_MODE8_OPS_REAUDIT_20261113",
+  "common_contract_sha256": "a5cca7d8a8d5f20f4a89ea9b6509da0b8d7506626aac4a47fa1d27891ff5ebdb"
+}

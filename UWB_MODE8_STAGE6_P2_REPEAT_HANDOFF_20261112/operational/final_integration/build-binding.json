@@ -1,0 +1,33 @@
+{
+  "git_sha": "17e496ccb584b4f73cfe75198db7cc08ca33f25b",
+  "fqbn": "esp32:esp32:esp32doit-devkit-v1",
+  "core": "3.3.7",
+  "roles": {
+    "anchor": {
+      "images": {
+        "ANCHOR_DUAL_DS_CIR.ino.bin": "56b2af47713e33e6fa4f16dda02f5f3328712558050baafb412902062af7a07a",
+        "ANCHOR_DUAL_DS_CIR.ino.bootloader.bin": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e",
+        "ANCHOR_DUAL_DS_CIR.ino.elf": "36dfddfea198bf557d63edff6961a7791f46da3e30281f0643ac8e519fd6e1ea",
+        "ANCHOR_DUAL_DS_CIR.ino.merged.bin": "fd42923703115570aa54a07a4b2f57b7509bbf2c7eef90f0c37b1753c2e75b19",
+        "ANCHOR_DUAL_DS_CIR.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1",
+        "compile.log": "ff7c25c791fdd3b6153223fe2a083f9cce58004f7e840ff329640986fa938434"
+      },
+      "source_manifest": "cc24a8a35f2e55f4926f761b3d68b3f4b84669aeb6e3913f57b9ba1bbe557c6d",
+      "source_paths_verified": 49,
+      "receipt_sha256": "00ab3d31cc5ee3bba341bb57a335d87b05fe79aeaed81c65128727a32904af08"
+    },
+    "tag": {
+      "images": {
+        "compile.log": "a55953a481f13503d3cffbe7124344118c9960b045d6bf5ae03518311c52be6a",
+        "TAG_DUAL_DS_CIR.ino.bin": "95b015819520f830a34d54a12c0819157f46a696f7a678574f2c623881a63cfa",
+        "TAG_DUAL_DS_CIR.ino.bootloader.bin": "0701bc39a0a45c667caab492ea3e33d5a5d3056cba9e0de225eb93ff2d7c456e",
+        "TAG_DUAL_DS_CIR.ino.elf": "17120819a985cd04db8d222492d1745e729ed4b3267a2d31219027e98d390de9",
+        "TAG_DUAL_DS_CIR.ino.merged.bin": "1fd842eb8a95963028e068d3e72c0395d300b1c842f89605b442584b86d96b40",
+        "TAG_DUAL_DS_CIR.ino.partitions.bin": "148b959cbff1c38aa8e1d5c0ba9d612c54997b945e56a63f41223eef650653a1"
+      },
+      "source_manifest": "29a30dcb19a8c32b124e88f57de91231bc7c8da77ed197df5732f81c439d8cb6",
+      "source_paths_verified": 47,
+      "receipt_sha256": "dfe91fff5e8da3ca4e3a83158d8b88d343b7b1e72455ffa68cfe13234f79810f"
+    }
+  }
+}

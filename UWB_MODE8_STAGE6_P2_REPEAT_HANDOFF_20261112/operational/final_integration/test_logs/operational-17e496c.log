@@ -1,0 +1,198 @@
+test_duplicate_or_path_escape_rejected (test_acceptance_gate.GateTests.test_duplicate_or_path_escape_rejected) ... ok
+test_full_proof_and_corrupt_proof (test_acceptance_gate.GateTests.test_full_proof_and_corrupt_proof) ... ok
+test_no_evidence_never_approves_hardware (test_acceptance_gate.GateTests.test_no_evidence_never_approves_hardware) ... ok
+test_previous_gate_must_pass (test_acceptance_gate.GateTests.test_previous_gate_must_pass) ... ok
+test_source_identity_mismatch_is_fatal (test_acceptance_gate.GateTests.test_source_identity_mismatch_is_fatal) ... ok
+test_complete_without_source_frames_rejected_even_with_valid_crcs (test_archive.ArchiveTests.test_complete_without_source_frames_rejected_even_with_valid_crcs) ... ok
+test_corrupt_body (test_archive.ArchiveTests.test_corrupt_body) ... ok
+test_corrupt_header (test_archive.ArchiveTests.test_corrupt_header) ... ok
+test_duplicate_txn_even_with_correct_crcs (test_archive.ArchiveTests.test_duplicate_txn_even_with_correct_crcs) ... ok
+test_legacy_archive_is_readable (test_archive.ArchiveTests.test_legacy_archive_is_readable) ... ok
+test_missing_rx_carries_orphan_bytes (test_archive.ArchiveTests.test_missing_rx_carries_orphan_bytes) ... ok
+test_overlarge_count (test_archive.ArchiveTests.test_overlarge_count) ... ok
+test_row_crc_even_when_outer_fixed (test_archive.ArchiveTests.test_row_crc_even_when_outer_fixed) ... ok
+test_truncated_header (test_archive.ArchiveTests.test_truncated_header) ... ok
+test_v2_retains_repeat_slot_and_requires_its_evidence (test_archive.ArchiveTests.test_v2_retains_repeat_slot_and_requires_its_evidence) ... ok
+test_v3_preserves_selected_fresh_and_optional_primary_p2 (test_archive.ArchiveTests.test_v3_preserves_selected_fresh_and_optional_primary_p2) ... ok
+test_v4_has_separate_recovery_poll_and_responses (test_archive.ArchiveTests.test_v4_has_separate_recovery_poll_and_responses) ... ok
+test_valid (test_archive.ArchiveTests.test_valid) ... ok
+test_different_archive_cannot_replace_prior_evidence (test_archive.TransportTests.test_different_archive_cannot_replace_prior_evidence) ... ok
+test_durable_get_ack (test_archive.TransportTests.test_durable_get_ack) ... ok
+test_retry_after_ack_reply_is_lost (test_archive.TransportTests.test_retry_after_ack_reply_is_lost) ... ok
+test_standalone_get_ack_cannot_bypass_paired_audit (test_archive.TransportTests.test_standalone_get_ack_cannot_bypass_paired_audit) ... ok
+test_truncated_download_never_acked (test_archive.TransportTests.test_truncated_download_never_acked) ... ok
+test_byte_mismatch_rejected (test_flash_readback.ReadbackTests.test_byte_mismatch_rejected) ... ok
+test_default_command_only_reads_flash (test_flash_readback.ReadbackTests.test_default_command_only_reads_flash) ... ok
+test_rejects_bad_partition_and_size (test_flash_readback.ReadbackTests.test_rejects_bad_partition_and_size) ... ok
+test_modified_appended_digest_rejected (test_image_preflight.ImageTests.test_modified_appended_digest_rejected) ... ok
+test_recomputed_hash_does_not_hide_bad_esp32_checksum (test_image_preflight.ImageTests.test_recomputed_hash_does_not_hide_bad_esp32_checksum) ... ok
+test_renamed_other_role_rejected_even_with_matching_receipt (test_image_preflight.ImageTests.test_renamed_other_role_rejected_even_with_matching_receipt) ... ok
+test_role_and_tampering (test_image_preflight.ImageTests.test_role_and_tampering) ... ok
+test_unverified_receipt_rejected (test_image_preflight.ImageTests.test_unverified_receipt_rejected) ... ok
+test_valid_image_and_appended_digest (test_image_preflight.ImageTests.test_valid_image_and_appended_digest) ... ok
+test_anchor_and_tag_use_p1_drain (test_integration_gates.IntegrationGateTests.test_anchor_and_tag_use_p1_drain) ... ok
+test_legacy_receiver_phase_getter_preserves_its_one_byte_buffer (test_integration_gates.IntegrationGateTests.test_legacy_receiver_phase_getter_preserves_its_one_byte_buffer) ... ok
+test_only_anchor_spools_for_operations (test_integration_gates.IntegrationGateTests.test_only_anchor_spools_for_operations) ... ok
+test_operating_profile_both_roles_and_boot_restore (test_integration_gates.IntegrationGateTests.test_operating_profile_both_roles_and_boot_restore) ... ok
+test_persisted_profile_prepares_wire_before_baud_and_boot_hello (test_integration_gates.IntegrationGateTests.test_persisted_profile_prepares_wire_before_baud_and_boot_hello) ... ok
+test_rf_start_checks_wifi_even_when_internally_dispatched (test_integration_gates.IntegrationGateTests.test_rf_start_checks_wifi_even_when_internally_dispatched) ... ok
+test_silent_baud_leaves_no_unreceivable_control_frame (test_integration_gates.IntegrationGateTests.test_silent_baud_leaves_no_unreceivable_control_frame) ... ok
+test_snapshot_headers_match (test_integration_gates.IntegrationGateTests.test_snapshot_headers_match) ... ok
+test_ack_uses_the_exact_replayed_bytes_and_rechecks_before_sending (test_ops_session_ack.SessionAckTests.test_ack_uses_the_exact_replayed_bytes_and_rechecks_before_sending) ... ok
+test_default_baud_transition_does_not_emit_an_unreceivable_sequence (test_ops_session_ack.SessionAckTests.test_default_baud_transition_does_not_emit_an_unreceivable_sequence) ... ok
+test_fresh_pair_restores_921600_with_enough_diagnostic_period (test_ops_session_ack.SessionAckTests.test_fresh_pair_restores_921600_with_enough_diagnostic_period) ... ok
+test_operational_pair_can_prove_strict_shutdown (test_ops_session_ack.SessionAckTests.test_operational_pair_can_prove_strict_shutdown) ... ok
+test_paired_count_cannot_hide_tag_period_overrun_or_missing_ack (test_ops_session_ack.SessionAckTests.test_paired_count_cannot_hide_tag_period_overrun_or_missing_ack) ... ok
+test_saved_profile_does_not_reset_active_fragment_decoder_or_baud (test_ops_session_ack.SessionAckTests.test_saved_profile_does_not_reset_active_fragment_decoder_or_baud) ... ok
+test_session_acks_verified_archive_with_crc_on_get_connection (test_ops_session_ack.SessionAckTests.test_session_acks_verified_archive_with_crc_on_get_connection) ... ok
+test_stale_active_hello_never_confirms_new_tag_start (test_ops_session_ack.SessionAckTests.test_stale_active_hello_never_confirms_new_tag_start) ... ok
+test_start_offer_requires_exact_session_nonce_and_terminated_line (test_ops_session_ack.SessionAckTests.test_start_offer_requires_exact_session_nonce_and_terminated_line) ... ok
+test_temporary_calibration_reapplied_after_usb_reset_and_checked (test_ops_session_ack.SessionAckTests.test_temporary_calibration_reapplied_after_usb_reset_and_checked) ... ok
+test_crc_valid_not_enough_without_both_polarization_grids (test_period_sweep.PeriodTests.test_crc_valid_not_enough_without_both_polarization_grids) ... ok
+test_dry_run_no_rf (test_period_sweep.PeriodTests.test_dry_run_no_rf) ... ok
+test_order_and_bounds (test_period_sweep.PeriodTests.test_order_and_bounds) ... ok
+test_rejects_replaced_raw_after_complete_trial (test_period_sweep.PeriodTests.test_rejects_replaced_raw_after_complete_trial) ... ok
+test_500_ms_fsync_keeps_usb_reading_and_ack_follows_fsync (test_pi_handoff.PiHandoffTest.test_500_ms_fsync_keeps_usb_reading_and_ack_follows_fsync) ... ok
+test_byte_limit_rejects_record_and_keeps_received_wire (test_pi_handoff.PiHandoffTest.test_byte_limit_rejects_record_and_keeps_received_wire) ... ok
+test_failed_fsync_or_bad_cir_never_acks_record (test_pi_handoff.PiHandoffTest.test_failed_fsync_or_bad_cir_never_acks_record) ... ok
+test_group_commit_keeps_200ms_stream_durable_under_repeated_sd_delays (test_pi_handoff.PiHandoffTest.test_group_commit_keeps_200ms_stream_durable_under_repeated_sd_delays) ... ok
+test_group_commits_pending_records_at_control_and_eof (test_pi_handoff.PiHandoffTest.test_group_commits_pending_records_at_control_and_eof) ... ok
+test_group_failure_acknowledges_none_of_the_uncommitted_records (test_pi_handoff.PiHandoffTest.test_group_failure_acknowledges_none_of_the_uncommitted_records) ... ok
+test_1000_observations_are_32_plus_short_last_point (test_plan_long_run.RoutePlanTests.test_1000_observations_are_32_plus_short_last_point) ... ok
+test_invalid_count_or_prefix_fails_before_rf (test_plan_long_run.RoutePlanTests.test_invalid_count_or_prefix_fails_before_rf) ... ok
+test_one_point_and_maximum_count (test_plan_long_run.RoutePlanTests.test_one_point_and_maximum_count) ... ok
+test_original_plan_is_never_overwritten (test_plan_long_run.RoutePlanTests.test_original_plan_is_never_overwritten) ... ok
+test_backward_ambiguous_ticks_and_no_extrapolation (test_pose_align.AlignTests.test_backward_ambiguous_ticks_and_no_extrapolation) ... ok
+test_bad_sync_and_unknown_domain_rejected (test_pose_align.AlignTests.test_bad_sync_and_unknown_domain_rejected) ... ok
+test_heading_wrap_shortest_arc (test_pose_align.AlignTests.test_heading_wrap_shortest_arc) ... ok
+test_multiple_wrap_choices_require_coarse_time (test_pose_align.AlignTests.test_multiple_wrap_choices_require_coarse_time) ... ok
+test_wrap_aware_sync_and_pose (test_pose_align.AlignTests.test_wrap_aware_sync_and_pose) ... ok
+test_bad_ros_stamp_and_quaternion_rejected (test_ros_capture.RosCaptureTests.test_bad_ros_stamp_and_quaternion_rejected) ... ok
+test_duplicate_stamp_fail_closed_preserves_partials (test_ros_capture.RosCaptureTests.test_duplicate_stamp_fail_closed_preserves_partials) ... ok
+test_preexisting_output_cannot_be_overwritten (test_ros_capture.RosCaptureTests.test_preexisting_output_cannot_be_overwritten) ... ok
+test_ros2_odom_imu_csv_and_unsynced_contract (test_ros_capture.RosCaptureTests.test_ros2_odom_imu_csv_and_unsynced_contract) ... ok
+test_duplicate_nested_json_key_rejected (test_route.PlanTests.test_duplicate_nested_json_key_rejected) ... ok
+test_invalid_plan_fail_closed (test_route.PlanTests.test_invalid_plan_fail_closed) ... ok
+test_unique_sessions (test_route.PlanTests.test_unique_sessions) ... ok
+test_bad_remote_identity_prevents_purge (test_route.RouteTests.test_bad_remote_identity_prevents_purge) ... ok
+test_calibration_profile_forwarded_to_each_point (test_route.RouteTests.test_calibration_profile_forwarded_to_each_point) ... ok
+test_concurrent_and_stale_resume_cannot_repeat_start (test_route.RouteTests.test_concurrent_and_stale_resume_cannot_repeat_start) ... ok
+test_journal_authentication_rejects_modified_purged_state (test_route.RouteTests.test_journal_authentication_rejects_modified_purged_state) ... ok
+test_present_receipt_hashes_must_bind_both_raw_snapshots (test_route.RouteTests.test_present_receipt_hashes_must_bind_both_raw_snapshots) ... ok
+test_preverified_receipt_does_not_replace_raw_replay (test_route.RouteTests.test_preverified_receipt_does_not_replace_raw_replay) ... ok
+test_purge_intent_makes_lost_reply_idempotent (test_route.RouteTests.test_purge_intent_makes_lost_reply_idempotent) ... ok
+test_purge_rechecks_after_remote_status_and_confirms_same_boot (test_route.RouteTests.test_purge_rechecks_after_remote_status_and_confirms_same_boot) ... ok
+test_reboot_does_not_fake_lost_purge_completion (test_route.RouteTests.test_reboot_does_not_fake_lost_purge_completion) ... ok
+test_replay_cannot_pin_bytes_replaced_during_audit (test_route.RouteTests.test_replay_cannot_pin_bytes_replaced_during_audit) ... ok
+test_request_is_durable_before_external_rf_and_never_auto_restarted (test_route.RouteTests.test_request_is_durable_before_external_rf_and_never_auto_restarted) ... ok
+test_resume_rechecks_purged_original_before_next_point (test_route.RouteTests.test_resume_rechecks_purged_original_before_next_point) ... ok
+test_resume_rejects_changed_journal_point_order_and_proof (test_route.RouteTests.test_resume_rejects_changed_journal_point_order_and_proof) ... ok
+test_resume_rejects_changed_spec_and_missing_journal (test_route.RouteTests.test_resume_rejects_changed_spec_and_missing_journal) ... ok
+test_resume_with_wrong_signing_key_fails (test_route.RouteTests.test_resume_with_wrong_signing_key_fails) ... ok
+test_route_replays_both_endpoints_and_detects_new_disk_corruption (test_route.RouteTests.test_route_replays_both_endpoints_and_detects_new_disk_corruption) ... ok
+test_signed_impossible_point_order_is_rejected (test_route.RouteTests.test_signed_impossible_point_order_is_rejected) ... ok
+test_verified_route_rejects_changed_hash_before_purge (test_route.RouteTests.test_verified_route_rejects_changed_hash_before_purge) ... ok
+test_bad_raw_proof_stops_after_requested_epoch (test_soak_suite.SoakTests.test_bad_raw_proof_stops_after_requested_epoch) ... SOAK_HOLD (do not re-run a requested epoch): SHA-256 mismatch
+ok
+test_dry_run_never_calls_hardware (test_soak_suite.SoakTests.test_dry_run_never_calls_hardware) ... ok
+test_failed_epoch_has_durable_requested_journal_no_retry (test_soak_suite.SoakTests.test_failed_epoch_has_durable_requested_journal_no_retry) ... SOAK_HOLD (do not re-run a requested epoch): epoch 0 failed; not starting another
+ok
+test_full_batch_dry_run_and_valid_disk_headroom (test_soak_suite.SoakTests.test_full_batch_dry_run_and_valid_disk_headroom) ... ok
+test_both_domains_match_known_slope (test_usb_clock.UsbClockTest.test_both_domains_match_known_slope) ... ok
+test_duplicate_marker_and_wrong_identity_rejected (test_usb_clock.UsbClockTest.test_duplicate_marker_and_wrong_identity_rejected) ... ok
+test_jump_and_large_USB_interval_rejected (test_usb_clock.UsbClockTest.test_jump_and_large_USB_interval_rejected) ... ok
+test_dry_run_never_uses_serial (test_wired_continuous.WiredTests.test_dry_run_never_uses_serial) ... ok
+test_execute_requires_wifi_off_and_nonexisting_directory (test_wired_continuous.WiredTests.test_execute_requires_wifi_off_and_nonexisting_directory) ... HOLD (NO AUTOMATIC RF RESTART): wifi-off-confirmed is required before RF
+ok
+test_rejects_changed_rfb8_and_missing_original_hash (test_wired_continuous.WiredTests.test_rejects_changed_rfb8_and_missing_original_hash) ... ok
+test_rejects_incomplete_grids_even_with_pass_receipt (test_wired_continuous.WiredTests.test_rejects_incomplete_grids_even_with_pass_receipt) ... ok
+test_requires_two_ports_and_stage6 (test_wired_continuous.WiredTests.test_requires_two_ports_and_stage6) ... ok
+
+----------------------------------------------------------------------
+Ran 106 tests in 12.220s
+
+OK
+{"buffer": {"host_buffer_limit_bytes": 524288, "host_peak_batches": 8, "host_peak_buffer_bytes": 235084, "host_pending_batches": 0, "host_pending_buffer_bytes": 0, "host_rejected_buffer_bytes": 0}, "durable_acks": 4, "originals_equal": true, "test": "500ms fsync", "timing": {"ack_send": {"count": 4, "max_us": 10.4, "total_us": 33.7}, "final_flush": {"count": 3, "max_us": 47.3, "total_us": 49.599999999999994}, "final_fsync": {"count": 3, "max_us": 5778.1, "total_us": 12916.2}, "jsonl_write": {"count": 5, "max_us": 144.7, "total_us": 237.7}, "record_to_ack": {"count": 4, "max_us": 503987.4, "total_us": 1986786.4}, "rfb8_flush": {"count": 4, "max_us": 1.1, "total_us": 2.7}, "rfb8_fsync": {"count": 4, "max_us": 502252.1, "total_us": 508202.0}, "rfb8_write": {"count": 5, "max_us": 1143.4, "total_us": 1484.3999999999999}, "uart_write": {"count": 11, "max_us": 350.0, "total_us": 848.3}}}
+{"buffer": {"host_buffer_limit_bytes": 524288, "host_peak_batches": 9, "host_peak_buffer_bytes": 272535, "host_pending_batches": 0, "host_pending_buffer_bytes": 0, "host_rejected_buffer_bytes": 0}, "durable_acks": 32, "originals_equal": true, "peak_simulated_unacked": 5, "test": "200ms grouped durability with 721ms and 245ms sync stalls", "timing": {"ack_retry": {"count": 62, "max_us": 11.2, "total_us": 174.59999999999997}, "ack_send": {"count": 32, "max_us": 9.2, "total_us": 142.0}, "final_flush": {"count": 3, "max_us": 41.3, "total_us": 43.699999999999996}, "final_fsync": {"count": 3, "max_us": 9222.8, "total_us": 12774.5}, "jsonl_write": {"count": 33, "max_us": 222.6, "total_us": 1229.5000000000002}, "record_to_ack": {"count": 32, "max_us": 959988.7, "total_us": 13836418.399999997}, "rfb8_flush": {"count": 16, "max_us": 1.6, "total_us": 19.899999999999995}, "rfb8_fsync": {"count": 16, "max_us": 724837.8, "total_us": 4472436.600000001}, "rfb8_write": {"count": 33, "max_us": 287.6, "total_us": 2008.8}, "uart_write": {"count": 95, "max_us": 590.3, "total_us": 4165.2}}}
+{
+  "schema": "mode8.soa.v1",
+  "status": "DRY_RUN_NO_RF",
+  "count": 1000,
+  "rounds": 18,
+  "bytes_reserved_per_round": 268435456,
+  "rf_gap_free_between_rounds": false,
+  "entries": [
+    {
+      "epoch": 0,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 1,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 2,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 3,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 4,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 5,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 6,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 7,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 8,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 9,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 10,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 11,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 12,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 13,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 14,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 15,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 16,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 17,
+      "status": "PENDING"
+    }
+  ]
+}

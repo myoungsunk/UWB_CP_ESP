@@ -72,8 +72,8 @@ struct SimTag:Port {
  }
 };
 struct SimAnchor:Port {
- Config cfg;uint64_t t=0,poll=0,poll2=0;bool armed=false,seen[2][2]{},lost[2]{},lost2[2]{},badBoot=false,txfail=false;uint32_t peer=202;std::vector<Frame> txframes;
- unsigned readsDuringResponse=0,pollAttempts=0,poll2Attempts=0;bool loseRetry=false;
+ Config cfg;uint64_t t=0,poll=0,poll2=0,poll1Recovery=0;bool armed=false,seen[3][2]{},lost[2]{},lost2[2]{},badBoot=false,txfail=false;uint32_t peer=202;std::vector<Frame> txframes;
+ unsigned readsDuringResponse=0,pollAttempts=0,poll2Attempts=0;bool requestFreshP1=false;bool loseRetry=false,freshRequested=false;
  uint64_t nowUs()override{return t;}
  uint64_t system(uint8_t)override{return (1000000+usTicks(t))&MASK40;}
  bool healthy(uint8_t)override{return true;}
@@ -82,13 +82,16 @@ struct SimAnchor:Port {
  int receive(uint8_t,Frame&f,Rx&o)override{
   if(!armed)return 0;
   const bool second=poll2!=0;
-  const uint64_t origin=second?poll2:poll;
-  for(unsigned i=0;i<2;++i){if(seen[second][i])continue;
+  const bool recovering=!second&&poll1Recovery!=0;
+  const uint64_t origin=second?poll2:recovering?poll1Recovery:poll;
+  const unsigned round=recovering?2:unsigned(second);
+  for(unsigned i=0;i<2;++i){if(seen[round][i]||(recovering&&!requestFreshP1))continue;
    uint64_t at=(origin+usTicks(cfg.responseDelayUs(i))+2132)&MASK40;
    const int64_t relative=signed40(system(0),at);
    if(relative>=-int64_t(usTicks(350))&&relative<int64_t(usTicks(1050)))++readsDuringResponse;
    if(relative<int64_t(usTicks(1200))){return 0;}
-   seen[second][i]=true;if(second?(lost2[i]&&(poll2Attempts==1||loseRetry)):(lost[i]&&pollAttempts==1))continue;
+   seen[round][i]=true;if(second&&poll2Attempts==2&&!freshRequested&&!lost2[0]&&!lost2[1])continue;
+   if(second?(lost2[i]&&(poll2Attempts==1||loseRetry)):(lost[i]&&pollAttempts==1))continue;
    f=Frame{};f.type=responseType(second,i);f.radio=i;f.session=77;f.txn=0;f.config=configId(cfg);f.boot=badBoot&&i?999:peer;f.peer_boot=101;f.stage=cfg.stage;f.poll_tx=origin;
    o=Rx{};o.received=o.lde=true;o.hw=at;o.radio=0;o.type=uint8_t(f.type);o.esp_us=t;o.bytes=AIR_BYTES;CHECK(encode(f,o.air));armed=false;return 1;
   }return 0;
@@ -96,6 +99,7 @@ struct SimAnchor:Port {
  bool send(uint8_t,Frame&f,uint64_t requested,Tx&o)override{
   o=Tx{};o.attempted=true;o.planned=plannedStamp(requested,16436);o.requested=requested;o.actual=o.planned;o.ok=!(txfail&&f.type==Type::Probe1);
   t+=uint64_t(double(signed40(o.planned,system(0)))*1e6/HZ)+1200;
+  if(isProbe1RepeatPoll(f)){seen[2][0]=seen[2][1]=false;poll1Recovery=o.planned;f.poll_tx=poll1Recovery;return o.ok;}
   if(f.type==Type::Poll){++pollAttempts;seen[0][0]=seen[0][1]=false;poll=o.planned;f.poll_tx=poll;}else if(f.type==Type::Poll2){++poll2Attempts;seen[1][0]=seen[1][1]=false;poll2=o.planned;f.poll_tx=poll2;return o.ok;}else f.probe_tx=o.planned;txframes.push_back(f);return o.ok;
  }
  CirRead readCir(uint8_t,uint8_t*,Cir&)override{return CirRead::Invalid;}
@@ -177,7 +181,7 @@ static void testsEngine(const std::string&out){
  {SimTag q;q.cfg.stage=6;q.cfg.baud=2000000;q.cfg.period_us=150000;CHECK(validate(q.cfg)!=nullptr);q.cfg.period_us=200000;
   q.holdResponseASetupUntilUs=6463;q.holdResponse2ASetupUntilUs=6463;auto x=q.execute();
   CHECK(!validate(q.cfg)&&q.cfg.probe2PollDelayUs()==86000&&
-        q.cfg.probe2_us()==114000&&q.cfg.probe2RepeatUs()==128000&&x.complete);
+        q.cfg.probe2_us()==114000&&q.cfg.probe2PollDelayUs(true)==128000&&q.cfg.probe2_us(true)==156000&&x.complete);
   CHECK(x.tx[0].ok&&x.tx[1].ok&&x.have_poll2_frame);
   CHECK(x.response2_tx[0].ok&&x.response2_tx[1].ok);
   CHECK(serializeRecord(x,json,sizeof json,n));
@@ -203,21 +207,45 @@ static void testsEngine(const std::string&out){
   CHECK(x.p1_first_errors==ErrResponseA&&x.p2_first_errors==ErrResponse2B);
   CHECK(isRetryPoll(x.poll_frame)&&x.poll_frame.probe_tx==x.initial_poll_tx);
   CHECK(diff40((x.initial_poll_tx+usTicks(28000))&MASK40,x.tx[0].actual)<=511);
-  CHECK(diff40((x.initial_poll_tx+usTicks(170000))&MASK40,x.tx[2].actual)<=1533);
-  CHECK(diff40((x.initial_poll_tx+usTicks(184000))&MASK40,x.p2_repeat_tx.actual)<=1533);
+  CHECK(diff40((x.initial_poll_tx+usTicks(184000))&MASK40,x.tx[2].actual)<=1533);
+  CHECK(!x.p2_primary_tx.attempted);
  }
  for(bool loseRetry:{false,true}){
   SimAnchor q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.lost2[1]=true;q.loseRetry=loseRetry;
   auto x=q.execute();
-  CHECK(q.poll2Attempts==2&&x.p2_retry&&x.p2_first_errors==ErrResponse2B);
+  CHECK(q.poll2Attempts==2&&x.p2_retry==!loseRetry);
   CHECK(x.complete==!loseRetry&&x.response2_mask==(loseRetry?1:3));
-  CHECK(diff40((x.tx[0].actual+usTicks(114000))&MASK40,x.poll2_tx.actual)<=511);
-  CHECK(diff40((x.tx[0].actual+usTicks(142000))&MASK40,x.tx[2].actual)<=511);
-  CHECK(diff40((x.tx[0].actual+usTicks(156000))&MASK40,x.p2_repeat_tx.actual)<=511);
-  CHECK(x.p2_repeat_tx.ok&&x.p2_repeat_frame.probe_tx==x.p2_repeat_tx.actual);
-  Frame normalized=x.p2_repeat_frame;normalized.probe_tx=x.probe_frame[1].probe_tx;
-  CHECK(sameFrame(normalized,x.probe_frame[1]));
-  CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"p2_repeat_frame")&&strstr(json,"p2_repeat_tx"));
+  CHECK(x.p2_first_errors==(loseRetry?0U:ErrResponse2B));
+  if(!loseRetry){
+   CHECK(diff40((x.tx[0].actual+usTicks(128000))&MASK40,x.poll2_tx.actual)<=511);
+   CHECK(diff40((x.tx[0].actual+usTicks(156000))&MASK40,x.tx[2].actual)<=511);
+   CHECK(x.probe_frame[1].tag_resp_tx==x.poll2_tx.actual);
+   CHECK(!x.p2_primary_tx.attempted);
+  }
+ }
+ for(bool needsFresh:{false,true}){
+  SimAnchor q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.freshRequested=needsFresh;q.requestFreshP1=needsFresh;
+  auto x=q.execute();
+  CHECK(q.poll2Attempts==2&&x.complete&&x.p2_retry==needsFresh&&x.response2_mask==3);
+  CHECK(diff40((x.tx[0].actual+usTicks(needsFresh?128000:86000))&MASK40,x.poll2_tx.actual)<=511);
+  CHECK(diff40((x.tx[0].actual+usTicks(needsFresh?156000:114000))&MASK40,x.tx[2].actual)<=511);
+  CHECK(x.p2_primary_tx.ok==needsFresh);
+  if(needsFresh)CHECK(diff40((x.tx[0].actual+usTicks(114000))&MASK40,x.p2_primary_tx.actual)<=511);
+  CHECK(validate(q.cfg)==nullptr&&x.p1_repeat_poll_tx.ok);
+  CHECK(isProbe1RepeatPoll(x.p1_repeat_poll_frame)&&x.p1_repeat_poll_frame.probe_tx==x.tx[0].actual);
+  CHECK(diff40((x.tx[0].actual+usTicks(42000))&MASK40,x.p1_repeat_poll_tx.actual)<=511);
+  CHECK(x.p1_repeat_tx.ok==needsFresh);
+  if(needsFresh){
+   CHECK(x.p1_repeat_frame.probe_tx==x.p1_repeat_tx.actual);
+   CHECK(x.p1_repeat_frame.poll_tx==x.p1_repeat_poll_tx.actual);
+   CHECK(diff40((x.p1_repeat_poll_tx.actual+usTicks(28000))&MASK40,x.p1_repeat_tx.actual)<=511);
+   CHECK(x.p1_repeat_frame.resp_rx[0]==x.p1_repeat_responses[0].hw);
+   CHECK(x.p1_repeat_frame.resp_rx[1]==x.p1_repeat_responses[1].hw);
+  }
+  CHECK(x.probe_frame[1].prev_probe_actual==x.tx[1].actual);
+  CHECK(x.probe_frame[1].tag_poll_rx==x.p1_repeat_tx.actual);
+  CHECK(x.probe_frame[1].tag_resp_tx==(needsFresh?x.poll2_tx.actual:0));
+  CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"p2_primary_frame")&&strstr(json,"p2_primary_tx"));
  }
  {SimAnchor q;q.lost[0]=true;auto x=q.execute();CHECK(x.response_mask==2);CHECK(!x.complete);CHECK(q.txframes.size()==3);}
  {SimAnchor q;q.lost[1]=true;auto x=q.execute();CHECK(x.response_mask==1);CHECK(x.tx[1].ok&&x.tx[2].ok);}

@@ -1,0 +1,272 @@
+test_duplicate_or_path_escape_rejected (test_acceptance_gate.GateTests.test_duplicate_or_path_escape_rejected) ... ok
+test_full_proof_and_corrupt_proof (test_acceptance_gate.GateTests.test_full_proof_and_corrupt_proof) ... ok
+test_no_evidence_never_approves_hardware (test_acceptance_gate.GateTests.test_no_evidence_never_approves_hardware) ... ok
+test_previous_gate_must_pass (test_acceptance_gate.GateTests.test_previous_gate_must_pass) ... ok
+test_source_identity_mismatch_is_fatal (test_acceptance_gate.GateTests.test_source_identity_mismatch_is_fatal) ... ok
+test_complete_without_source_frames_rejected_even_with_valid_crcs (test_archive.ArchiveTests.test_complete_without_source_frames_rejected_even_with_valid_crcs) ... ok
+test_corrupt_body (test_archive.ArchiveTests.test_corrupt_body) ... ok
+test_corrupt_header (test_archive.ArchiveTests.test_corrupt_header) ... ok
+test_duplicate_txn_even_with_correct_crcs (test_archive.ArchiveTests.test_duplicate_txn_even_with_correct_crcs) ... ok
+test_legacy_archive_is_readable (test_archive.ArchiveTests.test_legacy_archive_is_readable) ... ok
+test_missing_rx_carries_orphan_bytes (test_archive.ArchiveTests.test_missing_rx_carries_orphan_bytes) ... ok
+test_overlarge_count (test_archive.ArchiveTests.test_overlarge_count) ... ok
+test_row_crc_even_when_outer_fixed (test_archive.ArchiveTests.test_row_crc_even_when_outer_fixed) ... ok
+test_truncated_header (test_archive.ArchiveTests.test_truncated_header) ... ok
+test_valid (test_archive.ArchiveTests.test_valid) ... ok
+test_different_archive_cannot_replace_prior_evidence (test_archive.TransportTests.test_different_archive_cannot_replace_prior_evidence) ... ok
+test_durable_get_ack (test_archive.TransportTests.test_durable_get_ack) ... ok
+test_retry_after_ack_reply_is_lost (test_archive.TransportTests.test_retry_after_ack_reply_is_lost) ... ok
+test_standalone_get_ack_cannot_bypass_paired_audit (test_archive.TransportTests.test_standalone_get_ack_cannot_bypass_paired_audit) ... ok
+test_truncated_download_never_acked (test_archive.TransportTests.test_truncated_download_never_acked) ... ok
+test_byte_mismatch_rejected (test_flash_readback.ReadbackTests.test_byte_mismatch_rejected) ... ok
+test_default_command_only_reads_flash (test_flash_readback.ReadbackTests.test_default_command_only_reads_flash) ... ok
+test_rejects_bad_partition_and_size (test_flash_readback.ReadbackTests.test_rejects_bad_partition_and_size) ... ok
+test_modified_appended_digest_rejected (test_image_preflight.ImageTests.test_modified_appended_digest_rejected) ... ok
+test_recomputed_hash_does_not_hide_bad_esp32_checksum (test_image_preflight.ImageTests.test_recomputed_hash_does_not_hide_bad_esp32_checksum) ... ok
+test_renamed_other_role_rejected_even_with_matching_receipt (test_image_preflight.ImageTests.test_renamed_other_role_rejected_even_with_matching_receipt) ... ok
+test_role_and_tampering (test_image_preflight.ImageTests.test_role_and_tampering) ... ok
+test_unverified_receipt_rejected (test_image_preflight.ImageTests.test_unverified_receipt_rejected) ... ok
+test_valid_image_and_appended_digest (test_image_preflight.ImageTests.test_valid_image_and_appended_digest) ... ok
+test_anchor_and_tag_use_p1_drain (test_integration_gates.IntegrationGateTests.test_anchor_and_tag_use_p1_drain) ... ok
+test_legacy_receiver_phase_getter_preserves_its_one_byte_buffer (test_integration_gates.IntegrationGateTests.test_legacy_receiver_phase_getter_preserves_its_one_byte_buffer) ... ok
+test_only_anchor_spools_for_operations (test_integration_gates.IntegrationGateTests.test_only_anchor_spools_for_operations) ... ok
+test_operating_profile_both_roles_and_boot_restore (test_integration_gates.IntegrationGateTests.test_operating_profile_both_roles_and_boot_restore) ... ok
+test_persisted_profile_prepares_wire_before_baud_and_boot_hello (test_integration_gates.IntegrationGateTests.test_persisted_profile_prepares_wire_before_baud_and_boot_hello) ... ok
+test_rf_start_checks_wifi_even_when_internally_dispatched (test_integration_gates.IntegrationGateTests.test_rf_start_checks_wifi_even_when_internally_dispatched) ... ok
+test_silent_baud_leaves_no_unreceivable_control_frame (test_integration_gates.IntegrationGateTests.test_silent_baud_leaves_no_unreceivable_control_frame) ... ok
+test_snapshot_headers_match (test_integration_gates.IntegrationGateTests.test_snapshot_headers_match) ... ok
+test_ack_uses_the_exact_replayed_bytes_and_rechecks_before_sending (test_ops_session_ack.SessionAckTests.test_ack_uses_the_exact_replayed_bytes_and_rechecks_before_sending) ... ok
+test_default_baud_transition_does_not_emit_an_unreceivable_sequence (test_ops_session_ack.SessionAckTests.test_default_baud_transition_does_not_emit_an_unreceivable_sequence) ... ok
+test_operational_pair_can_prove_strict_shutdown (test_ops_session_ack.SessionAckTests.test_operational_pair_can_prove_strict_shutdown) ... ok
+test_paired_count_cannot_hide_tag_period_overrun_or_missing_ack (test_ops_session_ack.SessionAckTests.test_paired_count_cannot_hide_tag_period_overrun_or_missing_ack) ... ok
+test_saved_profile_does_not_reset_active_fragment_decoder_or_baud (test_ops_session_ack.SessionAckTests.test_saved_profile_does_not_reset_active_fragment_decoder_or_baud) ... ok
+test_session_acks_verified_archive_with_crc_on_get_connection (test_ops_session_ack.SessionAckTests.test_session_acks_verified_archive_with_crc_on_get_connection) ... ok
+test_stale_active_hello_never_confirms_new_tag_start (test_ops_session_ack.SessionAckTests.test_stale_active_hello_never_confirms_new_tag_start) ... ok
+test_crc_valid_not_enough_without_both_polarization_grids (test_period_sweep.PeriodTests.test_crc_valid_not_enough_without_both_polarization_grids) ... ok
+test_dry_run_no_rf (test_period_sweep.PeriodTests.test_dry_run_no_rf) ... ok
+test_order_and_bounds (test_period_sweep.PeriodTests.test_order_and_bounds) ... ok
+test_1000_observations_are_32_plus_short_last_point (test_plan_long_run.RoutePlanTests.test_1000_observations_are_32_plus_short_last_point) ... ok
+test_invalid_count_or_prefix_fails_before_rf (test_plan_long_run.RoutePlanTests.test_invalid_count_or_prefix_fails_before_rf) ... ok
+test_one_point_and_maximum_count (test_plan_long_run.RoutePlanTests.test_one_point_and_maximum_count) ... ok
+test_original_plan_is_never_overwritten (test_plan_long_run.RoutePlanTests.test_original_plan_is_never_overwritten) ... ok
+test_backward_ambiguous_ticks_and_no_extrapolation (test_pose_align.AlignTests.test_backward_ambiguous_ticks_and_no_extrapolation) ... ok
+test_bad_sync_and_unknown_domain_rejected (test_pose_align.AlignTests.test_bad_sync_and_unknown_domain_rejected) ... ok
+test_heading_wrap_shortest_arc (test_pose_align.AlignTests.test_heading_wrap_shortest_arc) ... ok
+test_multiple_wrap_choices_require_coarse_time (test_pose_align.AlignTests.test_multiple_wrap_choices_require_coarse_time) ... ok
+test_wrap_aware_sync_and_pose (test_pose_align.AlignTests.test_wrap_aware_sync_and_pose) ... ok
+test_bad_ros_stamp_and_quaternion_rejected (test_ros_capture.RosCaptureTests.test_bad_ros_stamp_and_quaternion_rejected) ... ok
+test_duplicate_stamp_fail_closed_preserves_partials (test_ros_capture.RosCaptureTests.test_duplicate_stamp_fail_closed_preserves_partials) ... ok
+test_preexisting_output_cannot_be_overwritten (test_ros_capture.RosCaptureTests.test_preexisting_output_cannot_be_overwritten) ... ok
+test_ros2_odom_imu_csv_and_unsynced_contract (test_ros_capture.RosCaptureTests.test_ros2_odom_imu_csv_and_unsynced_contract) ... ok
+test_duplicate_nested_json_key_rejected (test_route.PlanTests.test_duplicate_nested_json_key_rejected) ... ok
+test_invalid_plan_fail_closed (test_route.PlanTests.test_invalid_plan_fail_closed) ... ok
+test_unique_sessions (test_route.PlanTests.test_unique_sessions) ... ok
+test_bad_remote_identity_prevents_purge (test_route.RouteTests.test_bad_remote_identity_prevents_purge) ... ok
+test_concurrent_and_stale_resume_cannot_repeat_start (test_route.RouteTests.test_concurrent_and_stale_resume_cannot_repeat_start) ... ok
+test_journal_authentication_rejects_modified_purged_state (test_route.RouteTests.test_journal_authentication_rejects_modified_purged_state) ... ok
+test_present_receipt_hashes_must_bind_both_raw_snapshots (test_route.RouteTests.test_present_receipt_hashes_must_bind_both_raw_snapshots) ... ok
+test_preverified_receipt_does_not_replace_raw_replay (test_route.RouteTests.test_preverified_receipt_does_not_replace_raw_replay) ... ok
+test_purge_intent_makes_lost_reply_idempotent (test_route.RouteTests.test_purge_intent_makes_lost_reply_idempotent) ... ok
+test_purge_rechecks_after_remote_status_and_confirms_same_boot (test_route.RouteTests.test_purge_rechecks_after_remote_status_and_confirms_same_boot) ... ok
+test_reboot_does_not_fake_lost_purge_completion (test_route.RouteTests.test_reboot_does_not_fake_lost_purge_completion) ... ok
+test_replay_cannot_pin_bytes_replaced_during_audit (test_route.RouteTests.test_replay_cannot_pin_bytes_replaced_during_audit) ... ok
+test_request_is_durable_before_external_rf_and_never_auto_restarted (test_route.RouteTests.test_request_is_durable_before_external_rf_and_never_auto_restarted) ... ok
+test_resume_rechecks_purged_original_before_next_point (test_route.RouteTests.test_resume_rechecks_purged_original_before_next_point) ... ok
+test_resume_rejects_changed_journal_point_order_and_proof (test_route.RouteTests.test_resume_rejects_changed_journal_point_order_and_proof) ... ok
+test_resume_rejects_changed_spec_and_missing_journal (test_route.RouteTests.test_resume_rejects_changed_spec_and_missing_journal) ... ok
+test_resume_with_wrong_signing_key_fails (test_route.RouteTests.test_resume_with_wrong_signing_key_fails) ... ok
+test_route_replays_both_endpoints_and_detects_new_disk_corruption (test_route.RouteTests.test_route_replays_both_endpoints_and_detects_new_disk_corruption) ... ok
+test_signed_impossible_point_order_is_rejected (test_route.RouteTests.test_signed_impossible_point_order_is_rejected) ... ok
+test_verified_route_rejects_changed_hash_before_purge (test_route.RouteTests.test_verified_route_rejects_changed_hash_before_purge) ... ok
+test_dry_run_never_calls_hardware (test_soak_suite.SoakTests.test_dry_run_never_calls_hardware) ... ok
+test_failed_epoch_has_durable_requested_journal_no_retry (test_soak_suite.SoakTests.test_failed_epoch_has_durable_requested_journal_no_retry) ... SOAK_HOLD (do not re-run a requested epoch): epoch 0 failed; not starting another
+ok
+test_full_batch_dry_run_and_valid_disk_headroom (test_soak_suite.SoakTests.test_full_batch_dry_run_and_valid_disk_headroom) ... ok
+test_dry_run_never_uses_serial (test_wired_continuous.WiredTests.test_dry_run_never_uses_serial) ... ok
+test_execute_requires_wifi_off_and_nonexisting_directory (test_wired_continuous.WiredTests.test_execute_requires_wifi_off_and_nonexisting_directory) ... HOLD (NO AUTOMATIC RF RESTART): wifi-off-confirmed is required before RF
+ok
+test_rejects_incomplete_grids_even_with_pass_receipt (test_wired_continuous.WiredTests.test_rejects_incomplete_grids_even_with_pass_receipt) ... ok
+test_requires_two_ports_and_stage6 (test_wired_continuous.WiredTests.test_requires_two_ports_and_stage6) ... ok
+
+----------------------------------------------------------------------
+Ran 87 tests in 2.155s
+
+OK
+{
+  "mode": "DRY_RUN_NO_RF",
+  "commands": [
+    [
+      "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "D:\\SLAM_bot\\artifacts\\MODE8_FINAL_INTEGRATION_AUDIT_001\\repo\\UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112\\firmware\\anchor_p2_repeat\\tools\\run_pair.py",
+      "--anchor",
+      "COM4",
+      "--tag",
+      "COM6",
+      "--out",
+      "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Temp\\tmpdf1ufhm6\\data\\period_200000",
+      "--stage",
+      "6",
+      "--period-us",
+      "200000",
+      "--baud",
+      "2000000",
+      "--count",
+      "20",
+      "--anchor-initial-baud",
+      "921600",
+      "--tag-initial-baud",
+      "921600"
+    ],
+    [
+      "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "D:\\SLAM_bot\\artifacts\\MODE8_FINAL_INTEGRATION_AUDIT_001\\repo\\UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112\\firmware\\anchor_p2_repeat\\tools\\run_pair.py",
+      "--anchor",
+      "COM4",
+      "--tag",
+      "COM6",
+      "--out",
+      "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Temp\\tmpdf1ufhm6\\data\\period_195000",
+      "--stage",
+      "6",
+      "--period-us",
+      "195000",
+      "--baud",
+      "2000000",
+      "--count",
+      "20",
+      "--anchor-initial-baud",
+      "921600",
+      "--tag-initial-baud",
+      "921600"
+    ],
+    [
+      "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+      "D:\\SLAM_bot\\artifacts\\MODE8_FINAL_INTEGRATION_AUDIT_001\\repo\\UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112\\firmware\\anchor_p2_repeat\\tools\\run_pair.py",
+      "--anchor",
+      "COM4",
+      "--tag",
+      "COM6",
+      "--out",
+      "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Temp\\tmpdf1ufhm6\\data\\period_190000",
+      "--stage",
+      "6",
+      "--period-us",
+      "190000",
+      "--baud",
+      "2000000",
+      "--count",
+      "20",
+      "--anchor-initial-baud",
+      "921600",
+      "--tag-initial-baud",
+      "921600"
+    ]
+  ]
+}
+{
+  "status": "NOT_STARTED",
+  "schema": "mode8.soa.v1",
+  "count": 1000,
+  "rounds": 18,
+  "bytes_reserved_per_round": 268435456,
+  "rf_gap_free_between_rounds": false,
+  "entries": [
+    {
+      "epoch": 0,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 1,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 2,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 3,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 4,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 5,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 6,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 7,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 8,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 9,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 10,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 11,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 12,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 13,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 14,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 15,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 16,
+      "status": "PENDING"
+    },
+    {
+      "epoch": 17,
+      "status": "PENDING"
+    }
+  ]
+}
+{
+  "status": "DRY_RUN_NO_RF",
+  "command": [
+    "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+    "D:\\SLAM_bot\\artifacts\\MODE8_FINAL_INTEGRATION_AUDIT_001\\repo\\UWB_MODE8_STAGE6_P2_REPEAT_HANDOFF_20261112\\firmware\\anchor_p2_repeat\\tools\\run_pair.py",
+    "--anchor",
+    "COM4",
+    "--tag",
+    "COM7",
+    "--out",
+    "C:\\Users\\Myoungsun Kim\\AppData\\Local\\Temp\\tmpbq7qhosh\\capture",
+    "--stage",
+    "6",
+    "--period-us",
+    "200000",
+    "--baud",
+    "2000000",
+    "--count",
+    "1000",
+    "--anchor-initial-baud",
+    "921600",
+    "--tag-initial-baud",
+    "921600"
+  ]
+}

@@ -1,0 +1,22 @@
+RUN core
+tag_json_bytes=6084 sizeof_Record=21160
+wide_json_bytes=6393
+PASS checks=11653 (HOST SYNTHETIC ONLY)
+RUN transport
+Stage 6 bounded UART, control replay, and drain regressions passed
+RUN operations
+PASS operational firmware mock: archive integrity, custody, OTA and Wi-Fi guards
+RUN profile_anchor
+PASS profile CRC, cross-role and corruption fallback
+RUN profile_tag
+PASS profile CRC, cross-role and corruption fallback
+RUN clock
+tests/test_core.cpp: In function ‘void testsEngine(const std::string&)’:
+tests/test_core.cpp:405:36: error: this ‘for’ clause does not guard... [-Werror=misleading-indentation]
+  405 |   for(auto& window:wide.rx_windows)for(auto& trace:window)
+      |                                    ^~~
+tests/test_core.cpp:407:4: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘for’
+  407 |    trace.first_us=wide.begin_us+100000;
+      |    ^~~~~
+tests/test_core.cpp:407:4: error: ‘trace’ was not declared in this scope
+cc1plus: all warnings being treated as errors

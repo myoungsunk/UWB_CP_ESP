@@ -23,6 +23,10 @@ class Stage6Reliability(unittest.TestCase):
     def test_restore_baud_increases_period_before_lowering_uart_rate(self):
         class MockLink:
             def __init__(self):
+                from threading import Condition, Lock
+                self.condition = Condition()
+                self.write_lock = Lock()
+                self.events = []
                 self.serial = SimpleNamespace(baudrate=2000000)
                 self.commands = []
                 self.period = 200000
@@ -37,10 +41,12 @@ class Stage6Reliability(unittest.TestCase):
                         raise RuntimeError("PERIOD_UART_BUDGET")
                     self.reported_baud = 921600
 
-            def wait(self, predicate):
-                if not predicate({"event": "HELLO", "period_us": self.period,
-                                  "baud": self.reported_baud}):
-                    raise AssertionError("unexpected confirmation")
+            def wait(self, predicate, *args, **kwargs):
+                event = {"event": "HELLO", "period_us": self.period,
+                         "baud": self.reported_baud}
+                if not predicate(event):
+                    raise TimeoutError("no response on the old baud")
+                return event
 
             def disable_replay(self):
                 self.commands.append("disable_replay")
@@ -52,7 +58,7 @@ class Stage6Reliability(unittest.TestCase):
         self.assertEqual(link.serial.baudrate, 921600)
 
     def test_temporary_calibration_validates_each_readback(self):
-        path = Path(__file__).resolve().parents[2]/"calibration_stage6_temporary.json"
+        path = Path(__file__).resolve().parents[3]/"provenance/calibration_stage6_temporary.json"
         profile = load_profile(path)
         for role, binding in profile["roles"].items():
             readbacks = [{"range_sigma_m": cal["sigma_m"], **cal} for cal in binding["radios"]]
@@ -79,7 +85,7 @@ class Stage6Reliability(unittest.TestCase):
         self.assertEqual(rx.request(0.0), 1412)
         self.assertIsNone(rx.request(0.1))
         self.assertEqual(rx.feed(b"".join(fragments)), original + after)
-        self.assertEqual(rx.statistics()["replayed_sequences"], [1412])
+        self.assertEqual(rx.statistics()["gaps_repaired_after_nack_scheduled"], [1412])
         self.assertEqual(rx.statistics()["unresolved_sequences"], [])
         self.assertEqual(rx.statistics()["fragment"]["unrepairable_records"], 1)
         self.assertEqual(rx.feed(b"".join(fragments)), b"")

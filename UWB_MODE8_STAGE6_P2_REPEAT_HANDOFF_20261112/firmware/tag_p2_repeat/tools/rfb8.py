@@ -12,7 +12,7 @@ MAGIC = b"RFB8"
 HEADER = struct.Struct("<4sBBHIIII")
 CIR_BYTES = 3968
 RAW_BYTES = 4 * CIR_BYTES
-JSON_MAX = 7000
+JSON_MAX = 10000
 
 @dataclass
 class Packet:
@@ -29,8 +29,11 @@ class Decoder:
         self.schema_errors = 0
         self.sequence_gaps = 0
         self.last_sequence: int | None = None
+        self.bytes_received = 0
+        self.first_packet_offset: int | None = None
 
     def feed(self, data: bytes) -> list[Packet]:
+        self.bytes_received += len(data)
         self.buffer.extend(data)
         packets: list[Packet] = []
         while True:
@@ -77,6 +80,8 @@ class Decoder:
             if self.last_sequence is not None and seq != (self.last_sequence + 1) & 0xffffffff:
                 self.sequence_gaps += 1  # event count, not a guessed number of lost frames
             self.last_sequence = seq
+            if self.first_packet_offset is None:
+                self.first_packet_offset = self.bytes_received - len(self.buffer)
             packets.append(Packet(kind, seq, meta, payload[nj:]))
             del self.buffer[:total]
         return packets

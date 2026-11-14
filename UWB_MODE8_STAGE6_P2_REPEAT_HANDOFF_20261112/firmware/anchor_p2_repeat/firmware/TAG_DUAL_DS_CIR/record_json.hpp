@@ -3,14 +3,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 namespace dual8 {
-constexpr size_t JSON_MAX=7000;
+constexpr size_t JSON_MAX=RECORD_JSON_BYTES;
 inline unsigned rxTraceOffset(uint64_t timestamp,uint64_t begin){
  if(!timestamp)return 0;
  constexpr unsigned unavailable=0xffffff;
  if(timestamp<begin||timestamp-begin>=unavailable-1)return unavailable;
  return unsigned(timestamp-begin)+1;
 }
-inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_P2_REPEAT_20261112":"D8_TAG_STAGE6_RELIABILITY_20261112";}
+inline const char* firmwareId(bool anchor){return anchor?"D8_ANCHOR_STAGE6_P1_P2_FRESH_OPS_20261114":"D8_TAG_STAGE6_RELIABILITY_20261112";}
 class Json {
  char* p_;size_t cap_;
 public:
@@ -28,6 +28,9 @@ inline void jsonRx(Json&j,const Rx&o){
 inline void jsonTx(Json&j,const Tx&o){j.add("{\"attempted\":%s,\"ok\":%s,\"radio\":%u,\"type\":%u,\"requested\":%llu,\"planned\":%llu,\"actual\":%llu,\"status\":%llu,\"lead_us\":%ld,\"begin_us\":%llu,\"end_us\":%llu}",o.attempted?"true":"false",o.ok?"true":"false",o.radio,o.type,(unsigned long long)o.requested,(unsigned long long)o.planned,(unsigned long long)o.actual,(unsigned long long)o.status,(long)o.lead_us,(unsigned long long)o.begin_us,(unsigned long long)o.end_us);}
 inline void jsonFrame(Json&j,const Frame&f,bool valid){uint8_t b[AIR_BYTES];if(valid&&encode(f,b))j.hex(b,AIR_BYTES);else j.add("null");}
 inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes){
+#if defined(DUAL8_ANCHOR) && DUAL8_ANCHOR
+ if(!r.anchor){bytes=0;return false;}
+#endif
  Json j(out,capacity);
  j.add("{\"schema\":\"dual8.record.v1\",\"firmware\":\"%s\",\"role\":\"%s\",\"mode\":8,\"stage\":%u,\"session\":%lu,\"txn\":%lu,\"boot\":%lu,\"peer_boot\":%lu,\"config\":%lu,\"begin_us\":%llu,\"end_us\":%llu,\"complete\":%s,\"errors\":%lu,\"metadata_conflict\":%s,\"p1_tx_confirmed\":%s,\"resp_mask\":%u,\"period_us\":%lu,\"cir_hz\":%lu,\"baud\":%lu,\"read_order\":\"%s\",\"tx\":[",
  firmwareId(r.anchor),r.anchor?"anchor":"tag",r.cfg.stage,(unsigned long)r.session,(unsigned long)r.txn,(unsigned long)r.boot,(unsigned long)r.peer_boot,(unsigned long)r.config,(unsigned long long)r.begin_us,(unsigned long long)r.end_us,r.complete?"true":"false",(unsigned long)r.errors,r.metadata_conflict?"true":"false",r.p1_tx_confirmed?"true":"false",r.response_mask,(unsigned long)r.cfg.period_us,(unsigned long)r.cfg.cir_hz,(unsigned long)r.cfg.baud,r.txn&1?"B,A":"A,B");
@@ -102,11 +105,17 @@ inline bool serializeRecord(const Record&r,char*out,size_t capacity,size_t&bytes
    j.add("]");
   }
   if(r.cfg.stage==6&&r.anchor){
-   j.add(",\"p2_repeat_frame\":");jsonFrame(j,r.p2_repeat_frame,r.p2_repeat_tx.ok);
-   j.add(",\"p2_repeat_tx\":");jsonTx(j,r.p2_repeat_tx);
+   j.add(",\"p1_repeat_frame\":");jsonFrame(j,r.p1_repeat_frame,r.p1_repeat_tx.ok);
+   j.add(",\"p1_repeat_tx\":");jsonTx(j,r.p1_repeat_tx);
+   j.add(",\"p1_repeat_poll_frame\":");jsonFrame(j,r.p1_repeat_poll_frame,r.p1_repeat_poll_tx.ok);
+   j.add(",\"p1_repeat_poll_tx\":");jsonTx(j,r.p1_repeat_poll_tx);
+   j.add(",\"p1_repeat_responses\":[");
+   jsonRx(j,r.p1_repeat_responses[0]);j.add(",");jsonRx(j,r.p1_repeat_responses[1]);j.add("]");
+   j.add(",\"p2_primary_frame\":");jsonFrame(j,r.p2_primary_frame,r.p2_primary_tx.ok);
+   j.add(",\"p2_primary_tx\":");jsonTx(j,r.p2_primary_tx);
   }else if(r.cfg.stage==6){
-   j.add(",\"p2_repeat_used\":%s,\"p2_primary_rx_mask\":%u,\"p2_primary_cir_mask\":%u",
-         r.p2_repeat_used?"true":"false",unsigned(r.p2_primary_rx_mask),unsigned(r.p2_primary_cir_mask));
+   j.add(",\"p2_primary_rx_mask\":%u,\"p2_primary_cir_mask\":%u",
+         unsigned(r.p2_primary_rx_mask),unsigned(r.p2_primary_cir_mask));
   }
   if(r.cfg.stage==6)j.add(",\"rx_deadline_latch\":%u,\"initial_poll_tx\":%llu,\"p1_retry\":%s,\"p1_first_errors\":%lu,\"p2_retry\":%s,\"p2_first_errors\":%lu",
    unsigned(r.rx_deadline_latch),(unsigned long long)r.initial_poll_tx,

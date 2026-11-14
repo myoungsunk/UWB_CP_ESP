@@ -69,7 +69,7 @@ def synthetic_anchor(tag):
             frame[62:67] = tx['actual'].to_bytes(5, 'little')
             frame[92:96] = zlib.crc32(frame[:92]).to_bytes(4, 'little')
             responses2.append({'ok': True, 'lde': True, 'radio': 0, 'type': 6+radio, 'hw': ar, 'air': frame.hex()})
-    return {
+    result = {
         'schema': 'dual8.record.v1', 'role': 'anchor', 'mode': 8,
         'stage': tag['stage'], 'period_us': tag['period_us'],
         'session': tag['session'], 'txn': tag['txn'],
@@ -88,3 +88,11 @@ def synthetic_anchor(tag):
         'poll2_tx': poll2_tx,
         'calibration': [{'id': 0}],
     }
+    if tag.get('firmware') == 'D8_TAG_STAGE6_P1_P2_FRESH_20261114':
+        result.update(firmware='D8_ANCHOR_STAGE6_P1_P2_FRESH_OPS_20261114',
+                      p1_repeat_frame=None, p1_repeat_tx={'ok': False},
+                      p1_repeat_poll_frame=None, p1_repeat_poll_tx={'ok': False},
+                      p2_primary_frame=None, p2_primary_tx={'ok': False, 'attempted': False})
+        for tx in result['tx']:
+            tx.update(attempted=True, status=0x80)
+    return result

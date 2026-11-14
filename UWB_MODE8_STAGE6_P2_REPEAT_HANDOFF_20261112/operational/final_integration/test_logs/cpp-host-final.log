@@ -1,0 +1,25 @@
+RUN core
+tag_json_bytes=6084 sizeof_Record=21160
+wide_json_bytes=6393
+PASS checks=11653 (HOST SYNTHETIC ONLY)
+RUN transport
+Stage 6 bounded UART, control replay, and drain regressions passed
+RUN operations
+PASS operational firmware mock: archive integrity, custody, OTA and Wi-Fi guards
+RUN profile_anchor
+PASS profile CRC, cross-role and corruption fallback
+RUN profile_tag
+PASS profile CRC, cross-role and corruption fallback
+RUN clock
+tests/test_core.cpp: In function ‘void testsEngine(const std::string&)’:
+tests/test_core.cpp:406:98: error: no match for ‘operator=’ (operand types are ‘dual8::RxWindowTrace’ and ‘<brace-enclosed initializer list>’)
+  406 |    trace={MASK40,wide.begin_us+100000,wide.begin_us+110000,wide.end_us,UINT16_MAX,UINT8_MAX,false};
+      |                                                                                                  ^
+In file included from shared/engine.hpp:2,
+                 from tests/test_core.cpp:1:
+shared/core.hpp:154:8: note: candidate: ‘dual8::RxWindowTrace& dual8::RxWindowTrace::operator=(const dual8::RxWindowTrace&)’
+  154 | struct RxWindowTrace {
+      |        ^~~~~~~~~~~~~
+shared/core.hpp:154:8: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘const dual8::RxWindowTrace&’
+shared/core.hpp:154:8: note: candidate: ‘dual8::RxWindowTrace& dual8::RxWindowTrace::operator=(dual8::RxWindowTrace&&)’
+shared/core.hpp:154:8: note:   no known conversion for argument 1 from ‘<brace-enclosed initializer list>’ to ‘dual8::RxWindowTrace&&’

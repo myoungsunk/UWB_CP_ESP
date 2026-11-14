@@ -12,7 +12,7 @@ MAGIC = b"RFB8"
 HEADER = struct.Struct("<4sBBHIIII")
 CIR_BYTES = 3968
 RAW_BYTES = 4 * CIR_BYTES
-JSON_MAX = 7000
+JSON_MAX = 10000
 
 @dataclass
 class Packet:

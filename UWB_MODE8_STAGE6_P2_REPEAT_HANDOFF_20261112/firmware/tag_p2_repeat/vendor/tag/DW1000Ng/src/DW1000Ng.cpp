@@ -1421,6 +1421,16 @@ namespace DW1000Ng {
 		_fsxtalt();
 		_recordClockStep(samples, TrimWritten);
 
+		// DW1000 errata SYSSTAT-1: calibrate after XTAL trim in INIT,
+		// before LDE loading can switch the system clock back to AUTO.
+		_recordClockStep(samples, PllCalibrationWritten);
+		const uint8_t clock_control = samples ? uint8_t(samples[PllCalibrationWritten].pmsc_ctrl0)
+		                                     : uint8_t(_readClockRegister(PMSC, PMSC_CTRL0_SUB, 1));
+		const bool xti_forced = (clock_control & 0x03U) == SYS_XTI_CLOCK;
+		constexpr uint32_t pll_calibration = 0xE7950448UL;
+		if(xti_forced) _writeValueToRegister(FS_CTRL, FS_RES1_SUB, pll_calibration, 4);
+		if(samples) samples[PllCalibrationWritten].pll_calibration_command = xti_forced ? pll_calibration : 0;
+
 		// load LDE micro-code
 		_manageLDE(samples);
 
@@ -2447,7 +2457,6 @@ uint8_t getRCphase() {
 		byte data[LEN_RCphase_INDEX];
 		memset(data, 0,LEN_RCphase_INDEX);
 		_readBytesFromRegister(RX_RCphase, RCphase_INDEX_SUB, data,LEN_RCphase_INDEX);
-                             data [8]=0;
 		return DW1000NgUtils::bytesAsValue(data, LEN_RCphase_INDEX);
 	}
 

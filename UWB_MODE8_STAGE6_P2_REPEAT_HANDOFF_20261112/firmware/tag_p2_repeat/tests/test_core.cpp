@@ -33,13 +33,17 @@ static unsigned checks=0;
 #define CHECK(x) do{++checks;if(!(x))throw std::runtime_error(std::string(__FILE__)+":"+std::to_string(__LINE__)+" " #x);}while(0)
 struct Clock {long double rate=1;uint64_t base=0;uint64_t at(long double ticks)const{return (base+uint64_t(llroundl(ticks*rate)))&MASK40;}};
 struct SimTag:Port {
+ uint32_t p1RecoveryCirCost=0;
  Config cfg;Clock ac,tc[2];long double t=0,t0=usTicks(10000),tau[2]={1066,1090};
- bool armed[2]{},used[2][8]{},drop[2][8]{},retryProbe=false,retryFirst=false,badP1=false,conflict=false,failTx[2]{},corruptCir=false,hwFault=false;
- long double armT[2]{};uint64_t respAnchor[2]{};unsigned last[2]{},calls[2]{},arms[2]{};
- uint8_t respMask=0;uint32_t cirCost=3600,p2CirCost=0,txn=0,holdResponseASetupUntilUs=0,holdResponse2ASetupUntilUs=0;
+ bool armed[2]{},used[2][10]{},drop[2][10]{},suppressPrimaryProbe2=false,retryFirst=false,badP1=false,conflict=false,failTx[2]{},corruptCir=false,hwFault=false;
+ long double armT[2]{};uint64_t respAnchor[2]{},freshRespAnchor[2]{};unsigned last[2]{},calls[2]{},arms[2]{};
+ uint8_t respMask=0,freshRespMask=0;uint32_t cirCost=3600,p2CirCost=0,txn=0,holdResponseASetupUntilUs=0,holdResponse2ASetupUntilUs=0;
  unsigned probeReadsDuringFrame=0,probe2ReadsInsideProtection=0;
- uint64_t injectProbe2StatusA=0;
- bool repeatMetadataConflict=false;
+ uint64_t injectProbe2StatusA=0,injectProbe1Status=0;
+ unsigned failProbe1Radio=0,repeatP1Confirmation=0;
+ bool freshMetadataConflict=false;
+ unsigned response2Sends[2][2]{};
+ uint64_t response2AnchorTicks[2][2]{};
  RxWindowTrace* windowTrace=nullptr;
  bool injectProbeWakeDelay=false, injected=false;
  int armFaultRadio=-1,cirFaultRadio=-1;unsigned cirFaultProbe=1;
@@ -61,34 +65,51 @@ struct SimTag:Port {
  long double firstGlobal(){return retryFirst?delayedGlobal(t0,cfg.probe1DelayUs()):t0;}
  long double probeGlobal(unsigned k){
   if(k==6)return firstGlobal();
-  if(k==7)return delayedGlobal(firstGlobal(),cfg.probe2RepeatUs(retryProbe));
+  if(k==9)return delayedGlobal(firstGlobal(),cfg.probe1RepeatUs());
+  if(k==8)return delayedGlobal(probeGlobal(9),cfg.probe1DelayUs());
   const uint32_t offset=(k==3||k==4)?cfg.probe2PollDelayUs(k==4):(k==1?cfg.probe1DelayUs():cfg.probe2_us(k==5));
   return delayedGlobal(firstGlobal(),offset);
  }
  long double eventAt(unsigned k,unsigned i){return (k?probeGlobal(k):t0)+tau[i];}
  Frame frame(unsigned k,unsigned i){Frame f;f.session=77;f.txn=txn;f.config=configId(cfg);f.boot=101;f.stage=cfg.stage;f.poll_tx=ac.at(k?firstGlobal():t0);
   if(k==6){f.tx_ok_mask=1;f.probe_tx=ac.at(t0);}
+  else if(k==9){f.tx_ok_mask=2;f.peer_boot=202;f.probe_tx=f.poll_tx;f.poll_tx=ac.at(probeGlobal(9));}
   else if(k==3||k==4){f.type=Type::Poll2;f.peer_boot=202;f.poll_tx=ac.at(probeGlobal(k));}
-  else if(k){f.type=k==1?Type::Probe1:Type::Probe2;f.peer_boot=respMask?202:0;f.resp_mask=respMask;f.resp_rx[0]=respAnchor[0];f.resp_rx[1]=respAnchor[1];f.tx_ok_mask=1;
+  else if(k){f.type=k==1||k==8?Type::Probe1:Type::Probe2;f.peer_boot=respMask?202:0;f.resp_mask=respMask;f.resp_rx[0]=respAnchor[0];f.resp_rx[1]=respAnchor[1];f.tx_ok_mask=1;
+   if(k==8){
+    f.poll_tx=ac.at(probeGlobal(9));f.resp_mask=freshRespMask;
+    f.resp_rx[0]=freshRespAnchor[0];f.resp_rx[1]=freshRespAnchor[1];
+   }
    f.probe_tx=ac.at(probeGlobal(k));
-   if(k==2||k==5||k==7){f.prev_probe_actual=ac.at(probeGlobal(1));if(!badP1)f.tx_ok_mask|=2;else ++f.prev_probe_actual;}
+   if(k==2||k==5){
+    f.prev_probe_actual=ac.at(probeGlobal(1));
+    if(!badP1)f.tx_ok_mask|=2;else ++f.prev_probe_actual;
+    if(cfg.stage==6&&freshRespMask==3&&repeatP1Confirmation!=1)
+     f.tag_poll_rx=(ac.at(probeGlobal(8))+(repeatP1Confirmation==2?1:0))&MASK40;
+   }
    if(conflict&&i==1&&k==1)++f.resp_rx[0];
-   if(repeatMetadataConflict&&k==7)++f.ci[0];
+   if(k==5){
+    f.tag_resp_tx=ac.at(probeGlobal(4));
+    if(freshMetadataConflict&&i==1)++f.ci[0];
+   }
   }return f;
  }
  int receive(uint8_t i,Frame&f,Rx&o)override{
   if(hwFault){return -2;}
   if(!armed[i])return 0;
-  for(unsigned k:{0U,6U,1U,3U,2U,4U,5U,7U}){
-   if((k==3&&!cfg.rangesProbe2())||(k==2&&retryProbe)||(k>=4&&k<=5&&!retryProbe)||
-      (k==6&&!retryFirst)||(k==7&&cfg.stage!=6)||used[i][k])continue;
+  for(unsigned k:{0U,6U,1U,9U,8U,3U,2U,4U,5U}){
+   if((k==3&&!cfg.rangesProbe2())||(k==2&&suppressPrimaryProbe2)||
+      (k==5&&(!response2Sends[1][0]||!response2Sends[1][1]))||
+      (k==6&&!retryFirst)||(k==8&&freshRespMask!=3)||
+      ((k==4||k==5||k==8||k==9)&&cfg.stage!=6)||used[i][k])continue;
    const long double at=eventAt(k,i);
    if(k&&t>=at-usTicks(350)&&t<at+usTicks(1050))++probeReadsDuringFrame;
-   if((k==2||k==5||k==7)&&t>=at-usTicks(900)&&t<at+usTicks(1800))++probe2ReadsInsideProtection;
+   if((k==2||k==5)&&t>=at-usTicks(900)&&t<at+usTicks(1800))++probe2ReadsInsideProtection;
    if(t<at+usTicks(1200))return 0;
    used[i][k]=true;if(drop[i][k]||armT[i]>at-usTicks(250))continue;
-   if(injectProbe2StatusA&&(k==2||k==5)&&i==0){
-    const uint64_t status=injectProbe2StatusA;
+   const uint64_t status=k==2&&i==0?injectProbe2StatusA:
+                         k==1&&i==failProbe1Radio?injectProbe1Status:0;
+   if(status){
     CHECK(rxguard::classify(status)==rxguard::Action::Failed);
     CHECK(windowTrace);
     windowTrace[i].fail(status,nowUs(),uint8_t(rxguard::Action::Failed));
@@ -106,17 +127,22 @@ struct SimTag:Port {
   o=Tx{};o.attempted=true;o.radio=i;o.type=uint8_t(f.type);o.requested=req;o.planned=plannedStamp(req,16436);o.begin_us=nowUs();
   if(i==0&&holdResponseASetupUntilUs)t=std::max(t,eventAt(0,i)+usTicks(holdResponseASetupUntilUs));
   const bool second=f.type==responseType(true,i);
-  if(second&&i==0&&holdResponse2ASetupUntilUs)t=std::max(t,eventAt(3,i)+usTicks(holdResponse2ASetupUntilUs));
+  const unsigned round=unsigned(last[i]==4);
+  if(second&&i==0&&holdResponse2ASetupUntilUs)t=std::max(t,eventAt(round?4:3,i)+usTicks(holdResponse2ASetupUntilUs));
   const int64_t lead=signed40(o.planned,system(i));if(lead<int64_t(usTicks(600)))return false;
   const long double sendAt=t+static_cast<long double>(lead)/tc[i].rate;
   t=sendAt+usTicks(1200);o.actual=o.planned+(failTx[i]?1:0);o.ok=second||!failTx[i];if(second)o.actual=o.planned;o.status=o.ok?0x80:0;o.end_us=nowUs();f.tag_resp_tx=o.planned;
-  if(!second){respAnchor[i]=ac.at(sendAt+tau[i]);respMask|=uint8_t(1U<<i);}return o.ok;
+  if(second){++response2Sends[round][i];response2AnchorTicks[round][i]=ac.at(sendAt+tau[i]);}
+  else if(last[i]==9){freshRespAnchor[i]=ac.at(sendAt+tau[i]);freshRespMask|=uint8_t(1U<<i);}
+  else {respAnchor[i]=ac.at(sendAt+tau[i]);respMask|=uint8_t(1U<<i);}
+  return o.ok;
  }
  CirRead readCir(uint8_t i,uint8_t*d,Cir&o)override{
-  CHECK(!armed[0]&&!armed[1]);CHECK(last[i]==1||last[i]==2||last[i]==5||last[i]==7);
-  const uint32_t cost=p2CirCost&&last[i]!=1?p2CirCost:cirCost;
+  CHECK(!armed[0]&&!armed[1]);CHECK(last[i]==1||last[i]==2||last[i]==5||last[i]==8);
+  uint32_t cost=p2CirCost&&last[i]!=1&&last[i]!=8?p2CirCost:cirCost;
+  if(last[i]==8&&p1RecoveryCirCost)cost=p1RecoveryCirCost;
   ++calls[i];o.present=true;o.bytes=CIR_BYTES;o.read_us=cost/2;o.repeat_us=cost/2;
-  const int repeatOffset=last[i]==7?13:0;
+  const int repeatOffset=(last[i]==5||last[i]==8)?13:0;
   for(size_t k=0;k<NSAMP;++k){putLE(d+4*k,uint16_t(int16_t((int(k)+int(i)*3)%50-25+repeatOffset)),2);putLE(d+4*k+2,uint16_t(int16_t(20-int(k)%31)),2);}
   o.crc=crc32(d,CIR_BYTES);t+=usTicks(cost);
   if(i==cirFaultRadio&&last[i]==cirFaultProbe){hwFault=true;return CirRead::HardwareFault;}
@@ -131,13 +157,13 @@ struct SimTag:Port {
  }
  Record execute(bool useRepeat=false){Record r;arm(0);arm(1);Frame f;Rx o;uint8_t first=0;
   bool found=false;for(unsigned n=0;n<2000&&!found;++n){for(unsigned i=0;i<2&&!found;++i)if(receive(i,f,o)==1){first=i;found=true;}if(!found)relax();}CHECK(found);
-  Probe2RepeatCapture repeat;
+  ProbeRepeatCapture repeat;
   runTag(*this,cfg,202,first,f,o,r,useRepeat?&repeat:nullptr);return r;
  }
 };
 struct SimAnchor:Port {
- Config cfg;uint64_t t=0,poll=0,poll2=0;bool armed=false,seen[2][2]{},lost[2]{},lost2[2]{},badBoot=false,txfail=false;uint32_t peer=202;std::vector<Frame> txframes;
- unsigned readsDuringResponse=0,pollAttempts=0,poll2Attempts=0;bool loseRetry=false;
+ Config cfg;uint64_t t=0,poll=0,poll2=0,poll1Recovery=0;bool armed=false,seen[3][2]{},lost[2]{},lost2[2]{},badBoot=false,txfail=false;uint32_t peer=202;std::vector<Frame> txframes;
+ unsigned readsDuringResponse=0,pollAttempts=0,poll2Attempts=0;bool requestFreshP1=false;bool loseRetry=false,requestFresh=false;
  uint64_t nowUs()override{return t;}
  uint64_t system(uint8_t)override{return (1000000+usTicks(t))&MASK40;}
  bool healthy(uint8_t)override{return true;}
@@ -146,13 +172,17 @@ struct SimAnchor:Port {
  int receive(uint8_t,Frame&f,Rx&o)override{
   if(!armed)return 0;
   const bool second=poll2!=0;
-  const uint64_t origin=second?poll2:poll;
-  for(unsigned i=0;i<2;++i){if(seen[second][i])continue;
+  const bool recovering=!second&&poll1Recovery!=0;
+  const uint64_t origin=second?poll2:recovering?poll1Recovery:poll;
+  const unsigned round=recovering?2:unsigned(second);
+  for(unsigned i=0;i<2;++i){if(seen[round][i]||(recovering&&!requestFreshP1))continue;
    uint64_t at=(origin+usTicks(cfg.responseDelayUs(i))+2132)&MASK40;
    const int64_t relative=signed40(system(0),at);
    if(relative>=-int64_t(usTicks(350))&&relative<int64_t(usTicks(1050)))++readsDuringResponse;
    if(relative<int64_t(usTicks(1200))){return 0;}
-   seen[second][i]=true;if(second?(lost2[i]&&(poll2Attempts==1||loseRetry)):(lost[i]&&pollAttempts==1))continue;
+   seen[round][i]=true;
+   if(second&&poll2Attempts==2&&!requestFresh&&!lost2[0]&&!lost2[1])continue;
+   if(second?(lost2[i]&&(poll2Attempts==1||loseRetry)):(lost[i]&&pollAttempts==1))continue;
    f=Frame{};f.type=responseType(second,i);f.radio=i;f.session=77;f.txn=0;f.config=configId(cfg);f.boot=badBoot&&i?999:peer;f.peer_boot=101;f.stage=cfg.stage;f.poll_tx=origin;
    o=Rx{};o.received=o.lde=true;o.hw=at;o.radio=0;o.type=uint8_t(f.type);o.esp_us=t;o.bytes=AIR_BYTES;CHECK(encode(f,o.air));armed=false;return 1;
   }return 0;
@@ -160,6 +190,7 @@ struct SimAnchor:Port {
  bool send(uint8_t,Frame&f,uint64_t requested,Tx&o)override{
   o=Tx{};o.attempted=true;o.planned=plannedStamp(requested,16436);o.requested=requested;o.actual=o.planned;o.ok=!(txfail&&f.type==Type::Probe1);
   t+=uint64_t(double(signed40(o.planned,system(0)))*1e6/HZ)+1200;
+  if(isProbe1RepeatPoll(f)){seen[2][0]=seen[2][1]=false;poll1Recovery=o.planned;f.poll_tx=poll1Recovery;return o.ok;}
   if(f.type==Type::Poll){++pollAttempts;seen[0][0]=seen[0][1]=false;poll=o.planned;f.poll_tx=poll;}else if(f.type==Type::Poll2){++poll2Attempts;seen[1][0]=seen[1][1]=false;poll2=o.planned;f.poll_tx=poll2;return o.ok;}else f.probe_tx=o.planned;txframes.push_back(f);return o.ok;
  }
  CirRead readCir(uint8_t,uint8_t*,Cir&)override{return CirRead::Invalid;}
@@ -254,7 +285,8 @@ static void testsEngine(const std::string&out){
  {SimTag q;q.cfg.stage=6;q.cfg.baud=2000000;q.cfg.period_us=150000;CHECK(validate(q.cfg)!=nullptr);q.cfg.period_us=200000;
   q.holdResponseASetupUntilUs=6463;q.holdResponse2ASetupUntilUs=6463;auto x=q.execute();
   CHECK(!validate(q.cfg)&&q.cfg.probe2PollDelayUs()==86000&&
-        q.cfg.probe2_us()==114000&&q.cfg.probe2RepeatUs()==128000&&x.complete);
+        q.cfg.probe2_us()==114000&&q.cfg.probe2PollDelayUs(true)==128000&&
+        q.cfg.probe2_us(true)==156000&&x.complete);
   CHECK(x.tx[0].ok&&x.tx[1].ok&&x.have_poll2_frame);
   CHECK(x.response2_tx[0].ok&&x.response2_tx[1].ok);
   CHECK(serializeRecord(x,json,sizeof json,n));
@@ -274,14 +306,14 @@ static void testsEngine(const std::string&out){
   q.cfg.period_us=100000;CHECK(validate(q.cfg)!=nullptr);
  }
  for(unsigned probe=0;probe<2;++probe){
-  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.drop[1][probe+1]=true;
+  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.drop[1][probe+1]=true;q.drop[0][4]=q.drop[1][4]=true;
   auto x=q.execute();const unsigned window=probe?4:0;
   CHECK(!x.complete&&probeReceiveMask(x,probe)==1&&probeCirMask(x,probe)==1);
   CHECK(x.rx_windows[window][0].accepted&&!x.rx_windows[window][1].accepted);
   CHECK(x.rx_windows[window][1].close_us>0);
  }
  {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
-  q.cfg.grace_us=1500;q.txn=781;q.injectProbe2StatusA=0x00810f02;
+  q.cfg.grace_us=1500;q.txn=781;q.injectProbe2StatusA=0x00810f02;q.drop[0][4]=q.drop[1][4]=true;
   auto x=q.execute();
   CHECK(x.errors==ErrProbe2&&!x.complete);
   CHECK(probeReceiveMask(x,0)==3&&probeReceiveMask(x,1)==2&&probeCirMask(x,1)==2);
@@ -291,58 +323,169 @@ static void testsEngine(const std::string&out){
   CHECK(x.probe2_spi_quiet[0][1]-x.probe2_spi_quiet[0][0]==2500);
   CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"probe2_spi_quiet_offsets_us"));
  }
- for(const uint64_t status:{0x00810f02ULL,0x00801302ULL}){
+ for(unsigned failureRadio:{0U,1U}){
   for(bool responseRetry:{false,true}){
    SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
-   q.injectProbe2StatusA=status;q.retryProbe=responseRetry;
+   q.failProbe1Radio=failureRadio;q.injectProbe1Status=failureRadio?0x100810f02ULL:0x00810f02ULL;
+   q.retryFirst=responseRetry;
    auto x=q.execute(true);
-   CHECK(x.complete&&x.p2_repeat_used&&!x.p2_repeat_late&&x.p2_retry==responseRetry);
-   CHECK(x.p2_primary_rx_mask==2&&x.p2_primary_cir_mask==2);
-   CHECK(x.rx_windows[responseRetry?5:4][0].first_status==status);
-   CHECK(x.rx_windows[3][0].accepted&&x.rx_windows[3][1].accepted);
-   CHECK(probeReceiveMask(x,1)==3&&probeCirMask(x,1)==3&&q.last[0]==7&&q.last[1]==7);
-   CHECK(x.probe_frame[1].probe_tx==q.ac.at(q.probeGlobal(7)));
-   CHECK(x.probe[1][0].hw==q.tc[0].at(q.eventAt(7,0))&&x.probe[1][1].hw==q.tc[1].at(q.eventAt(7,1)));
-   for(unsigned i=0;i<2;++i)CHECK(x.cir_meta[2+i].crc==crc32(x.cir[2+i],CIR_BYTES));
-   CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"\"p2_repeat_used\":true"));
+   CHECK(x.complete&&x.p1_repeat_used&&!x.p1_repeat_late&&x.p1_retry==responseRetry);
+   CHECK(x.p1_primary_rx_mask==(3U^(1U<<failureRadio))&&x.p1_primary_cir_mask==x.p1_primary_rx_mask);
+   CHECK(x.rx_windows[responseRetry?1:0][failureRadio].first_status==q.injectProbe1Status);
+   CHECK(x.rx_windows[6][0].accepted&&x.rx_windows[6][1].accepted);
+   CHECK(x.rx_windows[7][0].accepted&&x.rx_windows[7][1].accepted);
+   CHECK(x.have_p1_primary_frame&&x.p1_primary_frame.probe_tx==q.ac.at(q.probeGlobal(1)));
+   CHECK(x.have_p1_repeat_poll_frame&&x.p1_repeat_poll_frame.poll_tx==q.ac.at(q.probeGlobal(9)));
+   CHECK(x.p1_tx_confirmed&&x.probe_frame[0].probe_tx==q.ac.at(q.probeGlobal(8)));
+   CHECK(x.probe_frame[1].tag_poll_rx==x.probe_frame[0].probe_tx);
+   CHECK(x.probe_frame[1].prev_probe_actual==q.ac.at(q.probeGlobal(1)));
+   for(unsigned i=0;i<2;++i){
+    CHECK(x.probe[0][i].hw==q.tc[i].at(q.eventAt(8,i))&&x.cir_meta[i].crc==crc32(x.cir[i],CIR_BYTES));
+    CHECK(x.range_input[i].a_probe_tx==q.ac.at(q.probeGlobal(8))&&x.range_input[i].t_probe_rx==x.probe[0][i].hw);
+    CHECK(x.range_input[i].a_poll_tx==q.ac.at(q.probeGlobal(9))&&x.range_input[i].a_resp_rx==q.freshRespAnchor[i]);
+    CHECK(x.range_input[i].t_poll_rx==x.p1_repeat_poll_rx[i].hw&&x.range_input[i].t_resp_tx==x.p1_repeat_response_tx[i].actual);
+    CHECK(fabs(x.range[i].range_m-double(q.tau[i])*DTU*C_AIR)<0.01);
+   }
+   CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"\"p1_repeat_used\":true"));
   }
  }
+ for(unsigned confirmation:{1U,2U}){
+  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
+  q.drop[0][1]=true;q.repeatP1Confirmation=confirmation;
+  auto x=q.execute(true);
+  CHECK(x.p1_repeat_used&&!x.p1_tx_confirmed&&!x.complete&&(x.errors&ErrRange));
+  CHECK(x.cir_meta[0].valid&&x.cir_meta[1].valid&&!x.range[0].valid&&!x.range[1].valid);
+ }
+ {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
+  q.drop[0][1]=true;q.drop[1][8]=true;auto x=q.execute(true);
+  CHECK(!x.complete&&!x.p1_repeat_used&&(x.errors&ErrProbe1));
+  CHECK(probeReceiveMask(x,0)==2&&probeCirMask(x,0)==2&&x.p1_primary_rx_mask==2);
+  CHECK(x.probe[0][1].hw==q.tc[1].at(q.eventAt(1,1))&&x.cir_meta[1].crc==crc32(x.cir[1],CIR_BYTES));}
  {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;auto x=q.execute(true);
-  CHECK(x.complete&&!x.p2_repeat_used&&x.p2_primary_rx_mask==3&&x.p2_primary_cir_mask==3);
-  CHECK(!q.used[0][7]&&!q.used[1][7]);}
+  CHECK(x.complete&&!x.p1_repeat_used&&x.p1_primary_rx_mask==3&&x.p1_primary_cir_mask==3);
+  CHECK(q.last[0]==2&&q.last[1]==2&&q.probeReadsDuringFrame==0);
+  CHECK(q.freshRespMask==0&&!x.have_p1_repeat_poll_frame);}
+ // Live txn 933: primary P1 A missed, P1 recovery succeeded, then the
+ // recovered CIR processing ran past primary POLL2. The fresh P2 still fits.
+ {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.txn=933;
+  q.injectProbe1Status=0x00810f02ULL;q.failProbe1Radio=0;q.p1RecoveryCirCost=9000;
+  q.suppressPrimaryProbe2=true;
+  const auto x=q.execute(true);
+  CHECK(x.complete&&x.errors==0&&x.p1_repeat_used&&x.p2_retry);
+  CHECK(x.p1_primary_rx_mask==2&&x.p2_primary_rx_mask==0);
+  CHECK(x.p2_first_errors==(ErrLate|ErrPoll2|ErrResponse2A|ErrResponse2B|ErrProbe2));
+  CHECK(!q.response2Sends[0][0]&&!q.response2Sends[0][1]);
+  CHECK(q.response2Sends[1][0]==1&&q.response2Sends[1][1]==1);
+  CHECK(x.p1_tx_confirmed&&x.probe_frame[1].tag_poll_rx==x.probe_frame[0].probe_tx);
+  CHECK(x.cir_meta[0].valid&&x.cir_meta[1].valid&&x.cir_meta[2].valid&&x.cir_meta[3].valid);
+  CHECK(x.range[0].valid&&x.range[1].valid);
+  // The live serializer lost txn 7 before it put any bytes on the UART.
+  // Exercise the largest full P1/P2 recovery record, with fault traces.
+  auto wide=x;
+  wide.txn=7;
+  wide.session=wide.boot=wide.peer_boot=wide.config=UINT32_MAX;
+  wide.begin_us=UINT64_MAX-200000;wide.end_us=UINT64_MAX-1;
+  const auto widenRx=[](Rx& z){
+   z.hw=z.raw=z.status=MASK40;z.esp_us=z.arm_us=UINT64_MAX;
+   z.fp_raw=z.nacc=z.pwr=z.f1=z.f2=z.f3=z.noise=UINT16_MAX;
+   z.ci=INT32_MIN;z.diag_us=UINT32_MAX;
+  };
+  const auto widenTx=[](Tx& z){
+   z.requested=z.planned=z.actual=z.status=MASK40;
+   z.begin_us=z.end_us=UINT64_MAX;z.lead_us=INT32_MIN;
+  };
+  for(auto& z:wide.poll)widenRx(z);
+  for(auto& probe:wide.probe)for(auto& z:probe)widenRx(z);
+  for(auto& z:wide.p1_repeat_poll_rx)widenRx(z);
+  for(auto& z:wide.poll2_rx)widenRx(z);
+  for(auto& z:wide.tx)widenTx(z);
+  for(auto& z:wide.p1_repeat_response_tx)widenTx(z);
+  for(auto& z:wide.response2_tx)widenTx(z);
+  for(auto& z:wide.cir_meta)z.crc=z.read_us=z.repeat_us=UINT32_MAX;
+  for(auto& window:wide.rx_windows)for(auto& trace:window){
+   trace.first_status=MASK40;
+   trace.first_us=wide.begin_us+100000;
+   trace.recovery_us=wide.begin_us+110000;
+   trace.close_us=wide.end_us;
+   trace.failures=UINT16_MAX;
+   trace.first_reason=UINT8_MAX;
+   trace.accepted=false;
+  }
+  CHECK(serializeRecord(wide,json,sizeof json,n));
+  CHECK(n<=JSON_MAX&&strstr(json,"p1_repeat_poll_rx")&&strstr(json,"poll2_frame"));
+  CHECK(strstr(json,"power_formula")&&json[n-1]=='}');
+  std::cout<<"full_retry_json_bytes="<<n<<"\n";
+ }
+ for(unsigned primaryMiss:{1U,2U,3U}){
+  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.txn=24;
+  for(unsigned i=0;i<2;++i)q.drop[i][2]=bool(primaryMiss&(1U<<i));
+  const auto x=q.execute(true);
+  CHECK(x.complete&&x.p2_retry&&x.p2_first_errors==ErrProbe2);
+  CHECK(x.p2_primary_rx_mask==(3U^primaryMiss)&&x.p2_primary_cir_mask==x.p2_primary_rx_mask);
+  CHECK(x.rx_windows[3][0].accepted&&x.rx_windows[3][1].accepted);
+  CHECK(x.rx_windows[5][0].accepted&&x.rx_windows[5][1].accepted);
+  CHECK(probeReceiveMask(x,1)==3&&probeCirMask(x,1)==3&&q.last[0]==5&&q.last[1]==5);
+  CHECK(x.poll2_frame.poll_tx==q.ac.at(q.probeGlobal(4)));
+  CHECK(x.probe_frame[1].probe_tx==q.ac.at(q.probeGlobal(5)));
+  CHECK(x.probe_frame[1].tag_resp_tx==x.poll2_frame.poll_tx);
+  for(unsigned i=0;i<2;++i){
+   CHECK(q.response2Sends[0][i]==1&&q.response2Sends[1][i]==1);
+   CHECK(q.response2AnchorTicks[0][i]!=q.response2AnchorTicks[1][i]);
+   CHECK(x.poll2_rx[i].hw==q.tc[i].at(q.eventAt(4,i)));
+   CHECK(x.probe[1][i].hw==q.tc[i].at(q.eventAt(5,i)));
+   CHECK(x.cir_meta[2+i].crc==crc32(x.cir[2+i],CIR_BYTES));
+   CHECK(fabs(x.range[i].range_m-double(q.tau[i])*DTU*C_AIR)<0.01);
+   DsInput fresh;
+   fresh.a_poll_tx=x.poll2_frame.poll_tx;fresh.a_resp_rx=q.response2AnchorTicks[1][i];
+   fresh.a_probe_tx=x.probe_frame[1].probe_tx;fresh.t_poll_rx=x.poll2_rx[i].hw;
+   fresh.t_resp_tx=x.response2_tx[i].actual;fresh.t_probe_rx=x.probe[1][i].hw;
+   const auto range=dsTwr(fresh);
+   CHECK(range.valid&&fabs(range.range_m-double(q.tau[i])*DTU*C_AIR)<0.01);
+  }
+  CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"\"p2_retry\":true"));
+ }
  {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
-  q.drop[0][2]=true;q.drop[1][7]=true;auto x=q.execute(true);
-  CHECK(!x.complete&&!x.p2_repeat_used&&(x.errors&ErrProbe2));
+  q.injectProbe2StatusA=0x00801302ULL;const auto x=q.execute(true);
+  CHECK(x.complete&&x.p2_retry&&x.p2_primary_rx_mask==2);
+  CHECK(x.rx_windows[4][0].first_status==q.injectProbe2StatusA);
+  CHECK(q.probe2ReadsInsideProtection==0);}
+ {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;const auto x=q.execute(true);
+  CHECK(x.complete&&!x.p2_retry&&x.p2_primary_rx_mask==3&&x.p2_primary_cir_mask==3);
+  CHECK(x.probe_frame[1].tag_resp_tx==0&&q.last[0]==2&&q.last[1]==2);
+  CHECK(!q.response2Sends[1][0]&&!q.response2Sends[1][1]);}
+ for(unsigned lostFresh:{4U,5U}){
+  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
+  q.drop[0][2]=true;q.drop[1][lostFresh]=true;const auto x=q.execute(true);
+  CHECK(!x.complete&&!x.p2_retry&&(x.errors&ErrProbe2));
   CHECK(probeReceiveMask(x,1)==2&&probeCirMask(x,1)==2&&x.p2_primary_rx_mask==2);
-  CHECK(x.probe[1][1].hw==q.tc[1].at(q.eventAt(2,1))&&x.cir_meta[3].crc==crc32(x.cir[3],CIR_BYTES));}
+  CHECK(x.poll2_frame.poll_tx==q.ac.at(q.probeGlobal(3)));
+  CHECK(x.probe[1][1].hw==q.tc[1].at(q.eventAt(2,1))&&x.cir_meta[3].crc==crc32(x.cir[3],CIR_BYTES));
+  CHECK(q.response2Sends[1][0]==1&&q.response2Sends[1][1]==unsigned(lostFresh==5));
+ }
  {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
-  q.drop[0][2]=true;q.p2CirCost=13000;auto x=q.execute(true);
-  CHECK(!x.complete&&!x.p2_repeat_used&&x.p2_repeat_late&&(x.errors&ErrProbe2));
-  CHECK(!q.used[0][7]&&!q.used[1][7]&&probeReceiveMask(x,1)==2);}
+  q.drop[0][2]=true;q.p2CirCost=13000;const auto x=q.execute(true);
+  CHECK(!x.complete&&!x.p2_retry&&(x.errors&ErrLate)&&(x.errors&ErrProbe2));
+  CHECK(!q.response2Sends[1][0]&&!q.response2Sends[1][1]&&probeReceiveMask(x,1)==2);}
  {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
-  q.drop[0][2]=true;q.repeatMetadataConflict=true;auto x=q.execute(true);
-  CHECK(!x.complete&&!x.p2_repeat_used&&(x.errors&ErrMetadata)&&x.metadata_conflict);}
+  q.drop[0][2]=true;q.freshMetadataConflict=true;const auto x=q.execute(true);
+  CHECK(!x.complete&&!x.p2_retry&&(x.errors&ErrMetadata)&&x.metadata_conflict);}
  for(bool firstPollMissed:{false,true}){
-  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.retryFirst=q.retryProbe=true;
-  q.drop[0][0]=q.drop[1][0]=firstPollMissed;
-  auto x=q.execute();
+  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
+  q.retryFirst=q.suppressPrimaryProbe2=true;q.drop[0][0]=q.drop[1][0]=firstPollMissed;
+  const auto x=q.execute(true);
   CHECK(x.complete&&x.p1_retry&&x.p2_retry&&x.errors==0);
   CHECK(x.p1_first_errors==(firstPollMissed?ErrPoll:0U)&&x.initial_poll_tx==q.ac.at(q.t0));
   CHECK(x.poll_frame.poll_tx==q.ac.at(q.firstGlobal())&&x.poll_frame.probe_tx==x.initial_poll_tx);
   CHECK(x.poll[0].hw==q.tc[0].at(q.eventAt(6,0))&&x.poll[1].hw==q.tc[1].at(q.eventAt(6,1)));
  }
  for(bool missedPoll2:{false,true}){
-  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.retryProbe=true;q.drop[1][3]=missedPoll2;
-  auto x=q.execute();
+  SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;
+  q.suppressPrimaryProbe2=true;q.drop[1][3]=missedPoll2;
+  const auto x=q.execute(true);
   CHECK(x.complete&&x.p2_retry&&x.errors==0&&x.have_poll2_frame);
-  CHECK(x.p2_first_errors==(missedPoll2?(ErrPoll2|ErrResponse2B):0));
+  CHECK(x.p2_first_errors==(missedPoll2?(ErrPoll2|ErrResponse2B|ErrProbe2):ErrProbe2));
   CHECK(x.response2_tx[0].ok&&x.response2_tx[1].ok&&x.cir_meta[2].valid&&x.cir_meta[3].valid);
   CHECK(q.last[0]==5&&q.last[1]==5&&x.poll2_frame.poll_tx==q.ac.at(q.probeGlobal(4)));
- }
- {SimTag q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.retryProbe=true;
-  q.drop[1][4]=true;auto x=q.execute();
-  CHECK(x.p2_retry&&!x.complete&&(x.errors&ErrPoll2)&&(x.errors&ErrResponse2B));
-  CHECK(x.response2_tx[0].ok&&!x.response2_tx[1].ok);
  }
  {SimAnchor q;q.cfg.stage=4;auto x=q.execute();CHECK(x.complete&&x.response_mask==3);CHECK(q.readsDuringResponse==0);}
  {SimAnchor q;q.cfg.stage=3;auto x=q.execute();CHECK(x.complete&&x.response_mask==3);CHECK(q.readsDuringResponse==0);}
@@ -363,21 +506,38 @@ static void testsEngine(const std::string&out){
   CHECK(x.p1_first_errors==ErrResponseA&&x.p2_first_errors==ErrResponse2B);
   CHECK(isRetryPoll(x.poll_frame)&&x.poll_frame.probe_tx==x.initial_poll_tx);
   CHECK(diff40((x.initial_poll_tx+usTicks(28000))&MASK40,x.tx[0].actual)<=511);
-  CHECK(diff40((x.initial_poll_tx+usTicks(170000))&MASK40,x.tx[2].actual)<=1533);
-  CHECK(diff40((x.initial_poll_tx+usTicks(184000))&MASK40,x.p2_repeat_tx.actual)<=1533);
+  CHECK(diff40((x.initial_poll_tx+usTicks(184000))&MASK40,x.tx[2].actual)<=1533);
+  CHECK(!x.p2_primary_tx.attempted&&x.probe_frame[1].tag_resp_tx==x.poll2_tx.actual);
  }
  for(bool loseRetry:{false,true}){
   SimAnchor q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.lost2[1]=true;q.loseRetry=loseRetry;
-  auto x=q.execute();
-  CHECK(q.poll2Attempts==2&&x.p2_retry&&x.p2_first_errors==ErrResponse2B);
+  const auto x=q.execute();
+  CHECK(q.poll2Attempts==2&&x.p2_retry==!loseRetry);
   CHECK(x.complete==!loseRetry&&x.response2_mask==(loseRetry?1:3));
-  CHECK(diff40((x.tx[0].actual+usTicks(114000))&MASK40,x.poll2_tx.actual)<=511);
-  CHECK(diff40((x.tx[0].actual+usTicks(142000))&MASK40,x.tx[2].actual)<=511);
-  CHECK(diff40((x.tx[0].actual+usTicks(156000))&MASK40,x.p2_repeat_tx.actual)<=511);
-  CHECK(x.p2_repeat_tx.ok&&x.p2_repeat_frame.probe_tx==x.p2_repeat_tx.actual);
-  Frame normalized=x.p2_repeat_frame;normalized.probe_tx=x.probe_frame[1].probe_tx;
-  CHECK(sameFrame(normalized,x.probe_frame[1]));
-  CHECK(serializeRecord(x,json,sizeof json,n)&&strstr(json,"p2_repeat_frame")&&strstr(json,"p2_repeat_tx"));
+  CHECK(!x.p2_primary_tx.attempted);
+  if(loseRetry){
+   CHECK((x.errors&(ErrResponse2B|ErrProbe2))==(ErrResponse2B|ErrProbe2));
+   CHECK(diff40((x.tx[0].actual+usTicks(86000))&MASK40,x.poll2_tx.actual)<=511);
+   CHECK(!x.tx[2].attempted);
+  }else{
+   CHECK(x.p2_first_errors==ErrResponse2B);
+   CHECK(diff40((x.tx[0].actual+usTicks(128000))&MASK40,x.poll2_tx.actual)<=511);
+   CHECK(diff40((x.tx[0].actual+usTicks(156000))&MASK40,x.tx[2].actual)<=511);
+   CHECK(x.probe_frame[1].tag_resp_tx==x.poll2_tx.actual);
+  }
+ }
+ for(bool requestFresh:{false,true}){
+  SimAnchor q;q.cfg.stage=6;q.cfg.period_us=200000;q.cfg.baud=2000000;q.requestFresh=requestFresh;
+  const auto x=q.execute();
+  CHECK(x.complete&&x.p2_retry==requestFresh&&q.poll2Attempts==2);
+  CHECK(x.p2_primary_tx.ok==requestFresh);
+  CHECK(diff40((x.tx[0].actual+usTicks(requestFresh?128000:86000))&MASK40,x.poll2_tx.actual)<=511);
+  CHECK(diff40((x.tx[0].actual+usTicks(requestFresh?156000:114000))&MASK40,x.tx[2].actual)<=511);
+  CHECK(x.probe_frame[1].tag_resp_tx==(requestFresh?x.poll2_tx.actual:0));
+  if(requestFresh){
+   CHECK(diff40((x.tx[0].actual+usTicks(114000))&MASK40,x.p2_primary_tx.actual)<=511);
+   CHECK(x.p2_primary_frame.probe_tx==x.p2_primary_tx.actual&&x.p2_primary_frame.tag_resp_tx==0);
+  }
  }
  {SimAnchor q;q.lost[0]=true;auto x=q.execute();CHECK(x.response_mask==2);CHECK(!x.complete);CHECK(q.txframes.size()==3);}
  {SimAnchor q;q.lost[1]=true;auto x=q.execute();CHECK(x.response_mask==1);CHECK(x.tx[1].ok&&x.tx[2].ok);}
