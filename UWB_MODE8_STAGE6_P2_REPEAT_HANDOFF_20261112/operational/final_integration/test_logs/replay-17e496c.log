@@ -1,0 +1,2 @@
+01_final_pass {'P1_axis': 1000, 'P1_power_grid': 1000, 'P2_axis': 1000, 'P2_power_grid': 1000, 'P1A_cir': 1000, 'P1A_axis': 1000, 'P1B_cir': 1000, 'P1B_axis': 1000, 'P2A_cir': 1000, 'P2A_axis': 1000, 'P2B_cir': 1000, 'P2B_axis': 1000} None
+02_p2_repeat_recovery {'P1_axis': 999, 'P1_power_grid': 999, 'P2_axis': 1000, 'P2_power_grid': 1000, 'P1A_cir': 1000, 'P1A_axis': 1000, 'P1B_cir': 999, 'P1B_axis': 999, 'P2A_cir': 1000, 'P2A_axis': 1000, 'P2B_cir': 1000, 'P2B_axis': 1000} None

@@ -1,0 +1,6 @@
+"defect","severity","reproduction","root_cause","revision","source","revalidation"
+"F01","HIGH","G8 P_0003 ACK 지연, 최초 POLL txn20 누락","태그 슬롯이 지연된 파일 동기화를 기다림","afe7d68","ops_session.py; run_pair.py; operational_anchor.hpp","G8 보드 후보 및 호스트 106개"
+"F02","HIGH","변조된 P2 POLL2 TX timestamp","P1 판정이 P2 전체 거리 유효성에 결합","17e496c","firmware/*/tools/analyze.py","P2 POLL2 변조 → P1 유지. P2 최종 TX 변조 → P1·P2 물리축 거부"
+"F03","MEDIUM","Windows cp949 및 고장 스텁을 실행한 전체 회귀","UTF-8 및 포트 모델 불일치, 합성 자료 생성 누락","afe7d68","test_pll_calibration.py; test_adversarial.py; workflow","앵커 67 태그 89"
+"F04","HIGH","업로더 HMAC만으로 OTA 이미지 접근","공급자 서명 검증 전제 부족","afe7d68","operational_ota.hpp","타깃 빌드 및 상태 점검. 수신 개방 차단"
+"F05","HIGH","G11 최대 7.679326초 저장 지연","6개 슬롯 포화 및 1.5초 ACK 시간 초과. 단일 상위 원인 미확정","afe7d68","run_pair.py; ops_wired_continuous.py","그룹/계측 도입. 장기 실물 HOLD"

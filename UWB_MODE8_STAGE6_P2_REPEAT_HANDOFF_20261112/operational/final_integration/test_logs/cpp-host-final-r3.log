@@ -1,0 +1,18 @@
+RUN core
+tag_json_bytes=6084 sizeof_Record=21160
+wide_json_bytes=6393
+PASS checks=11653 (HOST SYNTHETIC ONLY)
+RUN transport
+Stage 6 bounded UART, control replay, and drain regressions passed
+RUN operations
+PASS operational firmware mock: archive integrity, custody, OTA and Wi-Fi guards
+RUN profile_anchor
+PASS profile CRC, cross-role and corruption fallback
+RUN profile_tag
+PASS profile CRC, cross-role and corruption fallback
+RUN clock
+RUN core_tag
+tag_json_bytes=6084 sizeof_Record=21328
+full_retry_json_bytes=9964
+wide_json_bytes=6393
+PASS checks=12433 (HOST SYNTHETIC ONLY)

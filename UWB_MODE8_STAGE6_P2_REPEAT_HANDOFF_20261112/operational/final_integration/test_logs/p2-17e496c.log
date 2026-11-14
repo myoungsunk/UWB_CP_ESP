@@ -1,0 +1,13 @@
+test_fresh_final_bound_to_old_poll2_cannot_create_common_axis (__main__.P2FreshRetry.test_fresh_final_bound_to_old_poll2_cannot_create_common_axis) ... ok
+test_fresh_firmware_accepts_primary_p1_without_repeat_responses (__main__.P2FreshRetry.test_fresh_firmware_accepts_primary_p1_without_repeat_responses) ... ok
+test_fresh_p1_rejects_a_stale_response_but_keeps_independent_p2 (__main__.P2FreshRetry.test_fresh_p1_rejects_a_stale_response_but_keeps_independent_p2) ... ok
+test_fresh_p1_rejects_wrong_p2_confirmation_with_valid_crc (__main__.P2FreshRetry.test_fresh_p1_rejects_wrong_p2_confirmation_with_valid_crc) ... ok
+test_fresh_p1_replaces_negative_final_only_range_with_fresh_ticks (__main__.P2FreshRetry.test_fresh_p1_replaces_negative_final_only_range_with_fresh_ticks) ... ok
+test_fresh_poll2_and_both_response2_produce_axes (__main__.P2FreshRetry.test_fresh_poll2_and_both_response2_produce_axes) ... ok
+test_recorded_txn24_final_only_repeat_loses_p2_grid (__main__.P2FreshRetry.test_recorded_txn24_final_only_repeat_loses_p2_grid) ... ok
+test_stale_response2_from_either_radio_cannot_create_common_axis (__main__.P2FreshRetry.test_stale_response2_from_either_radio_cannot_create_common_axis) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.031s
+
+OK

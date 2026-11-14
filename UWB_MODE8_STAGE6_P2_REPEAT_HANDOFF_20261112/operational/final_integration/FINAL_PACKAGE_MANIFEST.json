@@ -1,0 +1,63 @@
+{
+  "source_sha": "17e496ccb584b4f73cfe75198db7cc08ca33f25b",
+  "field_receipts_sha256": {
+    "g8_group_commit_20261114/ack_failure_and_regression.json": "fc4e50f1fc88aa8122950509a99b1f7103c65b57e0740b40f46522f0f7cf7735",
+    "g8_group_commit_20261114/g8_pc_verified.json": "17515a7e71010ab1f01e9198e4b5f7e6d409ecbca937a6826bd592242a599e76",
+    "g10_ota_attestation_20261114/evidence/g10_acceptance.json": "1098a5696b3cdad40b799cf38336e5bedfc9b42b44654505e4a13a58f970ff60",
+    "g11_endurance_20261114125427/g11_acceptance.json": "43899207fbbb9fc32f1353940f6ce0970bd62bb0d9e148997ee84f805c322126",
+    "g12_stationary_20261114_223738/g12_stationary_receipt.json": "d7509bef174508f329cc7b6e9ec44d3c43f08549af4152253e60ab12fd4dc5c1"
+  },
+  "canonical_inventory": "PACKAGE_INVENTORY.csv",
+  "canonical_inventory_sha256": "0db0887373ace6043eb5e3d94b0d8f8b007becf774ba20b101cef8fc80ee0c6a",
+  "source_manifest_sha256": "6806ace3117ce5dcc1098591e9b223856c57ab4fb31fc9a3b4d80a97bb51871b",
+  "packages": [
+    {
+      "name": "Stage 1–6",
+      "git_sha": "a38338d1cdca00dbd9752d4f76343aea0d1f5317",
+      "classification": "SUPERSEDED",
+      "scope": "Remote tree retained as frozen history"
+    },
+    {
+      "name": "P2 repeat Stage 6",
+      "git_sha": "ce8f986793c5a12be0a020df924f05b516edf70e",
+      "classification": "INTEGRATED",
+      "scope": "Anchor/tag tools and frozen log directories"
+    },
+    {
+      "name": "Operational baseline",
+      "git_sha": "44d3e4d93aa5947568b8652a050e5074287449dc",
+      "classification": "INTEGRATED",
+      "scope": "G0–G12 contract and operational code"
+    },
+    {
+      "name": "Combined RF and PLL",
+      "git_sha": "b73451706b4410e4bc86b3046c55f8e70ba9f7b4",
+      "classification": "INTEGRATED",
+      "scope": "Sixteen commits above baseline"
+    },
+    {
+      "name": "Alternate operations",
+      "git_sha": "43193033617a1b8542f5927894662302a9dd53e0",
+      "classification": "NOT_VERIFIED",
+      "scope": "Object available; no blanket merge of alternate runtime"
+    },
+    {
+      "name": "G8 durable capture",
+      "git_sha": null,
+      "classification": "INTEGRATED",
+      "scope": "Verified candidate allowlist, START and Pi write paths"
+    },
+    {
+      "name": "G10 OTA field image",
+      "git_sha": null,
+      "classification": "SUPERSEDED",
+      "scope": "Archive-safe diagnostics; publisher-signature gate closed"
+    },
+    {
+      "name": "G12 USB tag A/B",
+      "git_sha": null,
+      "classification": "INTEGRATED",
+      "scope": "Tag marker plus Pi capture and bounded fitting"
+    }
+  ]
+}
